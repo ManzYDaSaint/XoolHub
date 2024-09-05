@@ -1,0 +1,27 @@
+.notFound {
+    padding: 3rem;
+    margin: 15% auto;
+    position: relative;
+    overflow: hidden !important;
+    width: 100% !important;
+    height: 100vh !important;
+}
+.container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+.container img {
+    width: 25rem;
+}
+.conter {
+    margin-left: 7rem;
+}
+.conter h3 {
+    font-family: "Pacifico", system-ui;
+    font-size: 5rem;
+}
+.conter p {
+    font-size: 1.3rem;
+}
