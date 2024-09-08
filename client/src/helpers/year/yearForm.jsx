@@ -4,10 +4,10 @@ import FormInput from '../../components/input/formInput.jsx'
 import FormButton from '../../components/input/formButton.jsx'
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
-import { setIsEditMode, setEditItemId, setFormData } from './examSlice.jsx';
+import { setIsEditMode, setEditItemId, setFormData } from '../examination/examSlice.jsx';
 
 
-const ExamForm = () => {
+const YearForm = () => {
     const formData = useSelector((state) => state.exam.formData);
     const dispatch = useDispatch();
     const isEditMode = useSelector((state) => state.exam.isEditMode);
@@ -16,7 +16,7 @@ const ExamForm = () => {
       // Handle submit
       const handleSubmit = async(data) => {
         if(isEditMode) {
-          const res = await api.updateExam(editItemId, data);
+          const res = await api.updateYear(editItemId, data);
           if(res.data.success === true) {
             toast.success(res.data.message);
           }
@@ -26,7 +26,7 @@ const ExamForm = () => {
         }
         else {
             try {
-              const res = await api.addExam({ data });
+              const res = await api.addYear({ data });
               if (res.data.success === true) {
                 toast.success(res.data.message);
               } 
@@ -38,8 +38,7 @@ const ExamForm = () => {
             }
           }
           dispatch(setFormData({
-            namer: '',
-            percentage: '',
+            yearName: '',
           }));
           setIsEditMode(false);
           setEditItemId(null);
@@ -62,25 +61,17 @@ const ExamForm = () => {
     <form onSubmit={onSubmit} autoComplete='off'>
       <div className='formGroup'>
         <FormInput
-          label={'Examination Type'}
+          label={'Academic Year'}
           type={'text'}
-          name='namer'
-          value={formData.namer}
-          onChange={handleChange}
-          placeholder={'Type here...'}
-        />
-        <FormInput
-          label={'Percentage'}
-          type={'text'}
-          name={'percentage'}
-          value={formData.percentage}
+          name='yearName'
+          value={formData.yearName}
           onChange={handleChange}
           placeholder={'Type here...'}
         />
       </div>
-      <FormButton label={isEditMode ? 'Update Type' : 'Add Type'} id="tyepButton" />
+      <FormButton label={isEditMode ? 'Update Year' : 'Add Year'} id="tyepButton" />
     </form>
   );
 };
 
-export default ExamForm;
+export default YearForm;

@@ -4,30 +4,28 @@ import { Icon } from 'semantic-ui-react';
 import api from '../../services/apiServices.jsx'
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import { setIsEditMode, setEditItemId, setFormData } from './examSlice.jsx';
+import { setIsEditMode, setEditItemId, setFormData } from '../examination/examSlice.jsx';
 
-const ExamTable = ({ setShowType }) => {
+const YearTable = ({ setShowYear }) => {
   const dispatch = useDispatch();
-  const [examData, setExamData] = useState([]);
+  const [yearData, setYearData] = useState([]);
 
   // Fetch all the exams
   const fetchData = async () => {
-    const res = await api.getExam();
-    const data = res.data.exam;
+    const res = await api.getYear();
+    const data = res.data.year;
     if(data.length < 1) {
-        const examData = data.map((item, index) => ({
+        const yearData = data.map((item, index) => ({
         sr: "",
         name: "No records found...",
-        percentage: "",
         actions: ""
         }));
-        setExamData(examData);
+        setYearData(yearData);
     }
     else {
-        const examData = data.map((item, index) => ({
+        const yearData = data.map((item, index) => ({
         sr: index + 1,
         name: item.name,
-        percentage: item.percentage,
         actions: (
             <div>
             <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
@@ -35,7 +33,7 @@ const ExamTable = ({ setShowType }) => {
             </div>
         ),
         }));
-        setExamData(examData);
+        setYearData(yearData);
     }
   };
 
@@ -47,11 +45,10 @@ const ExamTable = ({ setShowType }) => {
 
   // Get One exam
   const handleEdit = async(id) => {
-    setShowType(true);
-    const res = await api.editExam(id);
+    setShowYear(true);
+    const res = await api.editYear(id);
     dispatch(setFormData({
-      namer: res.data.edit.name,
-      percentage: res.data.edit.percentage,
+      yearName: res.data.edit.name,
     }));
     dispatch(setIsEditMode(true));
     dispatch(setEditItemId(res.data.edit.id));
@@ -60,7 +57,7 @@ const ExamTable = ({ setShowType }) => {
     //   Handle Delete
     const handleDelete = async (id) => {
       try {
-          const res = await api.deleteExam(id);
+          const res = await api.deleteYear(id);
           if (res.data.success === true) {
               fetchData();
               toast.success(res.data.message);
@@ -72,19 +69,18 @@ const ExamTable = ({ setShowType }) => {
       }
     };
 
-  const examColumn = [
+  const yearColumn = [
     { key: 'sr', label: 'SR', width: '10%' },
-    { key: 'name', label: 'Name', width: '50%' },
-    { key: 'percentage', label: 'Percentage', width: '20%' },
+    { key: 'name', label: 'Name', width: '70%' },
     { key: 'actions', label: 'Actions', width: '20%' }
   ];
 
 
   return (
     <div>
-        <UniversalTable columns={examColumn} data={examData} />
+        <UniversalTable columns={yearColumn} data={yearData} />
     </div>
   )
 }
 
-export default ExamTable
+export default YearTable

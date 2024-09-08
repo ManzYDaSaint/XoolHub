@@ -13,6 +13,11 @@ const {
     deleteExams,
     updateExams,
     editExams,
+    addYear,
+    getYears,
+    deleteYears,
+    editYears,
+    updateYears,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -47,6 +52,18 @@ router.route('/editexam/:id').get(editExams);
 router.route('/updatexam/:id').put(updateExams);
 
 // ------- EXAM ROUTES ----------- 
+
+
+
+// ------- YEAR ROUTES -----------
+
+router.route('/addyear').post(addYear);
+router.route('/getyear').get(getYears);
+router.route('/deletyear/:id').delete(deleteYears);
+router.route('/edityear/:id').get(editYears);
+router.route('/updatyear/:id').put(updateYears);
+
+// ------- YEAR ROUTES ----------- 
 
 
 module.exports = router;

@@ -8,6 +8,7 @@ const ExamSlice = createSlice({
     formData: {
       namer: '',
       percentage: '',
+      yearName: '',
     },
   },
   reducers: {

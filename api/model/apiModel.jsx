@@ -81,9 +81,9 @@ const deleteExam = async(id) => {
 }
 
 // Updating Examination Type
-const updateExam = async(id, name, percentage) => {
-    const query = "UPDATE exam SET name = $1, percentage = $2 WHERE id = $3";
-    const values = [name, percentage, id]
+const updateExam = async(id, name, percentage, update) => {
+    const query = "UPDATE exam SET name = $1, percentage = $2, updated_at = $3 WHERE id = $4";
+    const values = [name, percentage, update, id]
     const res = await kneX.query(query, values);
     return res.rows;
 }
@@ -97,6 +97,62 @@ const editExam = async(id) => {
 }
 
 // --------------------------------------- EXAM CRUD ------------------------------------------------
+
+
+
+
+
+// --------------------------------------- ACADEMIC YEAR CRUD ------------------------------------------------
+
+// Check if academic year exists
+const checkYear = async(name) => {
+    const query = "SELECT name FROM acyear WHERE name = $1";
+    const value = [name];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// Add new academic year
+const insertYear = async(name) => {
+    const query = "INSERT INTO acyear(name) VALUES ($1) RETURNING *";
+    const values = [name];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+// Get all academic year
+const getYear = async() => {
+    const query = "SELECT * FROM acyear";
+    const res = await kneX.query(query);
+    return res.rows;
+}
+
+
+// Delete academic year
+const deleteYear = async(id) => {
+    const query = "DELETE FROM acyear WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+// Updating academic year
+const updateYear = async(id, name, update) => {
+    const query = "UPDATE acyear SET name = $1, updated_at = $2 WHERE id = $3";
+    const values = [name, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+// Get Single academic year
+const editYear = async(id) => {
+    const query = "SELECT id, name FROM acyear WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// --------------------------------------- ACADEMIC YEAR CRUD ------------------------------------------------
 
 module.exports = {
     getSchools,
@@ -113,4 +169,14 @@ module.exports = {
     updateExam,
     editExam,
     // ----- EXAM SECTION -----
+
+
+    // ----- YEAR SECTION -----
+    checkYear,
+    insertYear,
+    getYear,
+    deleteYear,
+    updateYear,
+    editYear,
+    // ----- YEAR SECTION -----
 };

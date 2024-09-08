@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { addSchool, getSchools, existSchool, checkMail, checkExam, insertExam, getExam, deleteExam, updateExam, editExam } = require('../model/apiModel.jsx');
+const { addSchool, getSchools, existSchool, checkMail, checkExam, insertExam, getExam, deleteExam, updateExam, editExam, checkYear, insertYear, getYear, deleteYear, editYear, updateYear } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
 require('dotenv').config()
@@ -175,12 +175,6 @@ const addExam = async (req, res) => {
                 message: "Percentage field must contain a valid number"
             });
         }
-        else if(!namer || typeof text !== 'string') {
-            return res.json({
-                success: false,
-                message: "Examination type field must contain a non-empty string"
-            });
-        }
 
         // Check if exam exists
         const checker = await checkExam(namer);
@@ -289,6 +283,8 @@ const updateExams = async(req, res) => {
     const { id } = req.params;
     const { namer, percentage } = req.body;
     try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkExam(namer);
         if(checker) {
@@ -298,7 +294,7 @@ const updateExams = async(req, res) => {
             });
         }
         else {
-            const update = await updateExam(id, namer, percentage);
+            const update = await updateExam(id, namer, percentage, updateAt);
             if(update) {
                 res.json({
                     success: true,
@@ -324,6 +320,164 @@ const updateExams = async(req, res) => {
 
 
 
+
+// ----------------------- YEAR CONTROLLER -----------------------
+
+const addYear = async (req, res) => {
+    const { yearName } = req.body.data;
+    try {
+        if(!yearName) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if exam exists
+        const checker = await checkYear(yearName);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Academic year already exists..."
+            });
+        }
+        else {
+            // Add new exam
+            const newYear = await insertYear(yearName);
+            if(newYear) {
+                res.json({ 
+                    success: true,
+                    message: "Academic year added successfully",
+                    newYear,
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Academic year adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getYears = async (req, res) => {
+    try {
+        const year = await getYear();
+        if(year) {
+            res.json({
+                success: true,
+                year,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteYears = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteYear(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Academic year deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Academic year deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editYears = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editYear(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving academic year data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateYears = async(req, res) => {
+    const { id } = req.params;
+    const { yearName } = req.body;
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkYear(yearName);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Academic year already exists..."
+            });
+        }
+        else {
+            const update = await updateYear(id, yearName, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Academic year updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Academic year updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- YEAR CONTROLLER -----------------------
+
+
+
 module.exports = { 
     signup, 
     getAllSchools, 
@@ -342,4 +496,13 @@ module.exports = {
     editExams,
     updateExams,
     // ----- EXAM EXPORTS ------
+
+
+    // ----- YEAR EXPORTS ------
+    addYear,
+    getYears,
+    deleteYears,
+    editYears,
+    updateYears,
+    // ----- YEAR EXPORTS ------
 };

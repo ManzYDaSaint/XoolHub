@@ -20,6 +20,17 @@ const updateExam = (id, data) => axios.put(API + '/updatexam/' + id, data);
 
 // --------- EXAM AXIOS -----------
 
+
+// --------- YEAR AXIOS -----------
+
+const addYear = (data) => axios.post(API + '/addyear', data);
+const getYear = () => axios.get(API + '/getyear');
+const deleteYear = (id) => axios.delete(API + '/deletyear/' + id);
+const editYear = (id) => axios.get(API + '/edityear/' + id);
+const updateYear = (id, data) => axios.put(API + '/updatyear/' + id, data);
+
+// --------- YEAR AXIOS -----------
+
 export default {
   createSchool,
   Logon,
@@ -31,4 +42,13 @@ export default {
   editExam,
   updateExam,
   // ------ EXAM EXPORT -------
+
+
+  // ------ YEAR EXPORT -------
+  addYear,
+  getYear,
+  deleteYear,
+  editYear,
+  updateYear,
+  // ------ YEAR EXPORT -------
 };

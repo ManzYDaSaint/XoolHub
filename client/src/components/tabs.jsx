@@ -17,21 +17,22 @@ import ExamPro from './assets/examPro.png'
 import FormButton from './input/formButton'
 import ExamTable from '../helpers/examination/examTable.jsx'
 import ExamForm from '../helpers/examination/examForm.jsx'
+import YearForm from '../helpers/year/yearForm.jsx'
+import YearTable from '../helpers/year/yearTable.jsx'
 
 
 const Tabs = () => {
   // Closing and Opening Tabs and Divs
   const [selectedTab, setSelectedTab] = useState(0);
   const [active, setActive] = useState(0);
-  const [showDiv, setShowDiv] = useState(false);
+  const [showType, setShowType] = useState(false);
+  const [showYear, setShowYear] = useState(false);
   
-  const handleOpen = () => {
-    setShowDiv(true);
-  };
+  const handleOpen = () => { setShowType(true); };
+  const handleYearOpen = () => { setShowYear(true); };
   
-  const handleClose = () => {
-    setShowDiv(false);
-  };
+  const handleClose = () => { setShowType(false); };
+  const handleYearClose = () => { setShowYear(false); };
   
   const handleTabClick = (index) => {
     setSelectedTab(index);
@@ -61,14 +62,14 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="examination__container mt-4">
-                <div className="div" style={{ display: showDiv ? 'none' : 'block' }}>
+                <div className="div" style={{ display: showType ? 'none' : 'block' }}>
                   <button type="button" onClick={handleOpen} 
                     class="add__rows__btn">
                     <Icon name='plus' className='plus' />
                     Add
                   </button>
                 </div>
-                <div className="toggleDiv" style={{ display: showDiv ? 'block' : 'none' }}>
+                <div className="toggleDiv" style={{ display: showType ? 'block' : 'none' }}>
                   <ExamForm />
                   <FormButton 
                     label={'Close'}
@@ -77,7 +78,7 @@ const Tabs = () => {
                   />
                 </div>
                 <div className="tableContainer">
-                  <ExamTable setShowDiv={setShowDiv} />
+                  <ExamTable setShowType={setShowType} />
                 </div>
               </div>
             </div>
@@ -236,11 +237,23 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="year__container mt-4">
-              <button type="button" onclick="document.getElementById('year__modal').style.display='block'" className="add__rows__btn">
-              <Icon name='plus' className='plus' />
-              Add</button>
+              <div className="div" style={{ display: showYear ? 'none' : 'block' }}>
+                  <button type="button" onClick={handleYearOpen} 
+                    class="add__rows__btn">
+                    <Icon name='plus' className='plus' />
+                    Add
+                  </button>
+                </div>
+                <div className="toggleDiv" style={{ display: showYear ? 'block' : 'none' }}>
+                  <YearForm />
+                  <FormButton 
+                    label={'Close'}
+                    id={'closeBtn'}
+                    onClick={handleYearClose}
+                  />
+                </div>
                 <table className="custom__table table-hover mt-3" id="year__table">
-                  
+                  <YearTable setShowYear={setShowYear} />
                 </table>
               </div>
             </div>
