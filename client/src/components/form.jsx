@@ -1,61 +1,43 @@
 import React, { useState } from 'react';
 import FormInput from './input/formInput';
-// import { FormGroup } from 'semantic-ui-react';
 import FormButton from './input/formButton';
-import { toast } from 'react-hot-toast';
-import schoolServices from '../services/authServices.jsx'
 
-const CustomisedForm = () => {
-  const [typeName, setTypeName] = useState([]);
-  const [percentage, setPercentage] = useState([]);
 
-  const handleSubmit = async (e) => {
+const CustomisedForm = ({ formData, setFormData, handleSubmit, isEditMode }) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+        ...formData,
+        [name]: value,
+    });
+  };
+
+  const onSubmit = (e) => {
     e.preventDefault();
-
-    // Truthy/Falsy Check
-    if (!typeName.length) {
-      toast.error('Enter examination type please..');
-      return;
-    } else if (!percentage.length) {
-      toast.error('Enter percentage please..');
-      return;
-    }
-
-    try {
-      const response = await schoolServices.newType({ typeName, percentage });
-
-      if (response) {
-        toast.success(response.data.msg);
-      } else {
-        toast.error(response.data.msg); // Assuming your API provides error messages
-      }
-    } catch (error) {
-      toast.error('An error occurred. Please try again.');
-      console.error('Error:', error);
-    }
+    handleSubmit(formData);
   };
 
   return (
-    <form onSubmit={handleSubmit} autoComplete='off'>
+    <form onSubmit={onSubmit} autoComplete='off'>
       <div className='formGroup'>
         <FormInput
           label={'Examination Type'}
           type={'text'}
-          name={'type'}
-          value={typeName}
-          onChange={e => setTypeName(e.target.value)}
+          name='namer'
+          value={formData.namer}
+          onChange={handleChange}
           placeholder={'Type here...'}
         />
         <FormInput
           label={'Percentage'}
           type={'text'}
           name={'percentage'}
-          value={percentage}
-          onChange={e => setPercentage(e.target.value)}
+          value={formData.percentage}
+          onChange={handleChange}
           placeholder={'Type here...'}
         />
       </div>
-      <FormButton label={'Add Type'} id="tyepButton" />
+      <FormButton label={isEditMode ? 'Update Type' : 'Add Type'} id="tyepButton" />
     </form>
   );
 };

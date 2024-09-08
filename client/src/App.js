@@ -14,6 +14,8 @@ import NotFound from './pages/nopage/nopage.jsx'
 import Students from './pages/administrator/students.jsx';
 import Fees from './pages/administrator/fees.jsx';
 import Teachers from './pages/administrator/teachers.jsx';
+import { Provider } from 'react-redux';
+import Store from './helpers/examination/examStore.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -76,9 +78,11 @@ function App() {
   ])
 
   return (
-    <main>
-      <RouterProvider router={router} />
-    </main>
+    <Provider store={Store}>
+      <main>
+        <RouterProvider router={router} />
+      </main>
+    </Provider>
   );
 }
 

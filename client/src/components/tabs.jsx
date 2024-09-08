@@ -14,10 +14,10 @@ import Grading from './assets/grading.png'
 import GradingPro from './assets/gradingPro.png'
 import Exam from './assets/exam.png'
 import ExamPro from './assets/examPro.png'
-import UniversalTable from './table'
-import { studentColumns, studentData } from '../helpers/data'
-import CustomisedForm from './form'
 import FormButton from './input/formButton'
+import ExamTable from '../helpers/examination/examTable.jsx'
+import ExamForm from '../helpers/examination/examForm.jsx'
+
 
 const Tabs = () => {
   // Closing and Opening Tabs and Divs
@@ -62,14 +62,14 @@ const Tabs = () => {
             <div class="col-lg-12">
               <div class="examination__container mt-4">
                 <div className="div" style={{ display: showDiv ? 'none' : 'block' }}>
-                <button type="button" onClick={handleOpen} 
-                  class="add__rows__btn">
-                  <Icon name='plus' className='plus' />
-                  Add
-                </button>
+                  <button type="button" onClick={handleOpen} 
+                    class="add__rows__btn">
+                    <Icon name='plus' className='plus' />
+                    Add
+                  </button>
                 </div>
                 <div className="toggleDiv" style={{ display: showDiv ? 'block' : 'none' }}>
-                  <CustomisedForm />
+                  <ExamForm />
                   <FormButton 
                     label={'Close'}
                     id={'closeBtn'}
@@ -77,7 +77,7 @@ const Tabs = () => {
                   />
                 </div>
                 <div className="tableContainer">
-                  <UniversalTable columns={studentColumns} data={studentData} />
+                  <ExamTable setShowDiv={setShowDiv} />
                 </div>
               </div>
             </div>

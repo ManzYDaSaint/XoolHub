@@ -3,9 +3,7 @@ import regIcon from './assets/files (2).png'
 import './register.css'
 import Input from '../../components/input/input'
 import 'react-toastify/dist/ReactToastify.css';
-import useFormik from 'formik'
-import SchoolServices from '../../services/authServices.jsx'
-import { registerVerify } from '../../helpers/validate.jsx';
+import SchoolServices from '../../services/apiServices.jsx'
 import { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
 

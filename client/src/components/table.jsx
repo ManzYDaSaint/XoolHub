@@ -65,7 +65,7 @@ function UniversalTable({ columns, data }) {
       <thead>
         <tr>
           {columns.map((column, index) => (
-            <th key={index} onClick={() => handleSort(column.key)}>
+            <th key={index} onClick={() => handleSort(column.key)} style={{ width: column.width, textAlign: column.textAlign }}>
               {column.label}
               {sortColumn === column && (
                 <span className="sort-icon">

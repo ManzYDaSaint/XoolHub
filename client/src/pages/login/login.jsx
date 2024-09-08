@@ -6,7 +6,7 @@ import Input from '../../components/input/input';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
-import schoolServices from '../../services/authServices.jsx'
+import schoolServices from '../../services/apiServices.jsx'
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
