@@ -18,16 +18,21 @@ const {
     deleteYears,
     editYears,
     updateYears,
+    addSubject,
+    getSubjects,
+    deleteSubjects,
+    editSubjects,
+    updateSubjects,
+    verify,
+    Logout,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
 
-router.route('/signup').post(signup)
 router.route('/schools').get(getAllSchools)
 
 // ***** POST Methods
 router.route('/authenticate').post((req, res) => res.end());
-router.route('/login').post(login);
 
 // ***** GET Methods
 router.route('/school/:username').get();
@@ -39,6 +44,24 @@ router.route('/createResetSession').get(createResetSession);
 // ***** PUT Methods
 router.route('/updateschool').put(updateSchool);
 router.route('/resetPassword').put(resetPassword);
+
+
+
+// ------- REGISTER ROUTES -----------
+router.route('/signup').post(signup)
+
+// ------- REGISTER ROUTES -----------
+
+
+
+
+// ------- LOGIN ROUTES -----------
+
+router.route('/login').post(login);
+router.route('/verify').post(verify);
+router.route('/logout').post(Logout);
+
+// ------- LOGIN ROUTES -----------
 
 
 
@@ -64,6 +87,18 @@ router.route('/edityear/:id').get(editYears);
 router.route('/updatyear/:id').put(updateYears);
 
 // ------- YEAR ROUTES ----------- 
+
+
+
+// ------- SUBJECT ROUTES -----------
+
+router.route('/addsubject').post(addSubject);
+router.route('/getsubject').get(getSubjects);
+router.route('/deletsubject/:id').delete(deleteSubjects);
+router.route('/editsubject/:id').get(editSubjects);
+router.route('/updatsubject/:id').put(updateSubjects);
+
+// ------- SUBJECT ROUTES ----------- 
 
 
 module.exports = router;

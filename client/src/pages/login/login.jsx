@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import './login.css'
 import 'semantic-ui-css/semantic.min.css'
 import logImg from './assets/lgin_image.svg';
@@ -6,43 +6,55 @@ import Input from '../../components/input/input';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
-import schoolServices from '../../services/apiServices.jsx'
+import api from '../../services/apiServices.jsx'
 import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setLoginData } from '../../helpers/examination/examSlice.jsx';
+
 
 const Login = () => {
-    const [ schoolEmail, setSchoolEmail ] = useState([]);
-    const [ schoolPassword, setSchoolPassword ] = useState([]);
     const navigate = useNavigate();
+    const loginData = useSelector((state) => state.exam.loginData);
+    const dispatch = useDispatch();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        if (!schoolEmail) {
-            toast.error('Please enter the email address..');
-            return;
-        }
-        else if(!schoolPassword) {
-            toast.error('Please enter the password..');
-            return;
-        }
-
+    const handleSubmit = async (data) => {
         try {
-            const response = await schoolServices.Logon({schoolEmail, schoolPassword});
+            const res = await api.Logon(data);
+            if(res.data.success === true) {
+                toast.success(res.data.message);
 
-            if (response) {
-                toast.success(response.data.msg);
-                localStorage.setItem('token', response.data.token);
-
-                // Redirect to the dashboard or another page
-                navigate('/administrator')
-            } else {
-                toast.error(response.data.msg);
+                // Redirecting to dashboard after successful login
+                setTimeout(() => {
+                    navigate('/administrator');
+                  }, 2000);
+                
             }
+            else {
+            toast.error(res.data.message);
+            }
+            dispatch(setLoginData({
+                schoolEmail: '',
+                schoolPassword: '',
+              }));
         } catch (error) {
             toast.error('An error occurred. Please try again.');
             console.error('Error:', error);
         }
     };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        dispatch(
+            setLoginData({
+            ...loginData,
+            [name]: value,
+          }));
+      };
+    
+      const onSubmit = (e) => {
+        e.preventDefault();
+        handleSubmit(loginData);
+      };
   return (
     <main class="login__page">
         <Toaster />
@@ -55,7 +67,7 @@ const Login = () => {
                         </div>
                     </div>
                     <div class="col-lg-6">
-                        <form action="" class="ui form login__form" onSubmit={handleSubmit} id="login__form" autoComplete='off'>
+                        <form action="" class="ui form login__form" onSubmit={onSubmit} id="login__form" autoComplete='off'>
                             <h2 class="login__header">Welcome Back :)</h2>
                             <p class="login__paragraph mb-4">To log in to the system, provide your credentials which 
                                 you registerd with the system for authentication!
@@ -64,17 +76,19 @@ const Login = () => {
                                 icon='user outline'
                                 label="Email"
                                 type="text"
+                                name={'schoolEmail'}
                                 placeholder="Type email here.."
-                                value={schoolEmail}
-                                onChange={e => setSchoolEmail(e.target.value)}
+                                value={loginData.schoolEmail}
+                                onChange={handleChange}
                             />
                             <Input 
                                 icon='lock'
                                 label="Password"
                                 type="password"
+                                name={'schoolPassword'}
                                 placeholder="Type password here.."
-                                value={schoolPassword}
-                                onChange={e => setSchoolPassword(e.target.value)}
+                                value={loginData.schoolPassword}
+                                onChange={handleChange}
                             />
                             <Link class="login__forgot__password" to={'./forgot'}>Forgot Password?</Link>
                             <div class="form__button">

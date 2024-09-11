@@ -4,11 +4,11 @@ import FormInput from '../../components/input/formInput.jsx'
 import FormButton from '../../components/input/formButton.jsx'
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
-import { setIsEditMode, setEditItemId, setYearFormData } from '../examination/examSlice.jsx';
+import { setIsEditMode, setEditItemId, setSubjectFormData } from '../examination/examSlice.jsx';
 
 
-const YearForm = () => {
-    const yearFormData = useSelector((state) => state.exam.yearFormData);
+const SubjectForm = () => {
+    const subjectFormData = useSelector((state) => state.exam.subjectFormData);
     const dispatch = useDispatch();
     const isEditMode = useSelector((state) => state.exam.isEditMode);
     const editItemId = useSelector((state) => state.exam.editItemId);
@@ -16,7 +16,7 @@ const YearForm = () => {
       // Handle submit
       const handleSubmit = async(data) => {
         if(isEditMode) {
-          const res = await api.updateYear(editItemId, data);
+          const res = await api.updateSubject(editItemId, data);
           if(res.data.success === true) {
             toast.success(res.data.message);
           }
@@ -26,7 +26,7 @@ const YearForm = () => {
         }
         else {
             try {
-              const res = await api.addYear({ data });
+              const res = await api.addSubject({ data });
               if (res.data.success === true) {
                 toast.success(res.data.message);
               } 
@@ -37,8 +37,9 @@ const YearForm = () => {
               toast.error('An error occurred. Please try again.');
             }
           }
-          dispatch(setYearFormData({
-            yearName: '',
+          dispatch(setSubjectFormData({
+            subjectName: '',
+            code: '',
           }));
           setIsEditMode(false);
           setEditItemId(null);
@@ -46,32 +47,40 @@ const YearForm = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     dispatch(
-      setYearFormData({
-        ...yearFormData,
+      setSubjectFormData({
+        ...subjectFormData,
         [name]: value,
       }));
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    handleSubmit(yearFormData);
+    handleSubmit(subjectFormData);
   };
 
   return (
     <form onSubmit={onSubmit} autoComplete='off'>
       <div className='formGroup'>
         <FormInput
-          label={'Academic Year'}
+          label={'Subject Name'}
           type={'text'}
-          name='yearName'
-          value={yearFormData.yearName}
+          name='subjectName'
+          value={subjectFormData.subjectName}
+          onChange={handleChange}
+          placeholder={'Type here...'}
+        />
+        <FormInput
+          label={'Code'}
+          type={'text'}
+          name='code'
+          value={subjectFormData.code}
           onChange={handleChange}
           placeholder={'Type here...'}
         />
       </div>
-      <FormButton label={isEditMode ? 'Update Year' : 'Add Year'} id="tyepButton" />
+      <FormButton label={isEditMode ? 'Update Subject' : 'Add Subject'} id="tyepButton" />
     </form>
   );
 };
 
-export default YearForm;
+export default SubjectForm;

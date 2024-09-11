@@ -16,6 +16,7 @@ import Fees from './pages/administrator/fees.jsx';
 import Teachers from './pages/administrator/teachers.jsx';
 import { Provider } from 'react-redux';
 import Store from './helpers/examination/examStore.jsx';
+import InactivityHandler from './hooks/activity.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -49,38 +50,66 @@ function App() {
     },
     {
       path: '/administrator',
-      element: <AdminDashboard />
+      element: (
+          <InactivityHandler>
+            <AdminDashboard />
+          </InactivityHandler>
+      )
     },
     {
       path: '/report',
-      element: <Report />
+      element: (
+          <InactivityHandler>
+          <Report />
+          </InactivityHandler>
+        )
     },
     {
       path: '/general',
-      element: <General />
+      element: (
+        <InactivityHandler>
+        <General />
+        </InactivityHandler>
+      )
     },
     {
       path: '/student',
-      element: <Students />
+      element: (
+          <InactivityHandler>
+          <Students />
+          </InactivityHandler>
+      )
     },
     {
       path: '/setting',
-      element: <Setting />
+      element: (
+        <InactivityHandler>
+          <Setting />
+        </InactivityHandler>
+      )
     },
     {
       path: '/fees',
-      element: <Fees />
+      element: (
+          <InactivityHandler>
+          <Fees />
+          </InactivityHandler>
+        )
     },
     {
       path: '/teachers',
-      element: <Teachers />
+      element: (
+          <InactivityHandler>
+          <Teachers />
+          </InactivityHandler>
+        )
     },
   ])
 
   return (
     <Provider store={Store}>
       <main>
-        <RouterProvider router={router} />
+         <RouterProvider router={router} />
       </main>
     </Provider>
   );

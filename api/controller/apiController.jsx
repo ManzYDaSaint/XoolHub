@@ -1,50 +1,200 @@
 const bcrypt = require('bcryptjs');
-const { addSchool, getSchools, existSchool, checkMail, checkExam, insertExam, getExam, deleteExam, updateExam, editExam, checkYear, insertYear, getYear, deleteYear, editYear, updateYear } = require('../model/apiModel.jsx');
+const {
+    checkMail, 
+    checkExam, 
+    insertExam, 
+    getExam, 
+    deleteExam, 
+    updateExam, 
+    editExam, 
+    checkYear, 
+    insertYear, 
+    getYear, 
+    deleteYear, 
+    editYear, 
+    updateYear, 
+    checkSubject, 
+    insertSubject, 
+    getSubject, 
+    deleteSubject, 
+    editSubject, 
+    updateSubject, 
+    checkSchool, 
+    insertSchool 
+} = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
 require('dotenv').config()
 
-// Regitser new school at localhost:5000/api/auth/signup
-const signup = async (req, res) => {
-    const { schoolName, schoolEmail, schoolPhone, schoolPassword } = req.body;
 
+
+
+// ----------------------- REGISTER CONTROLLER -----------------------
+
+
+const signup = async (req, res) => {
+    const { schoolName, schoolEmail, schoolContact, schoolPassword, confirm } = req.body;
         try {
-            // Check if the school already exists
-            const schoolExists = await existSchool(schoolName);
-            if (schoolExists) {
-                return res.status(400).send({
-                    msg: "School already exists..."
+            if(!schoolName || !schoolEmail || !schoolContact || !schoolPassword || !confirm) {
+                return res.json({
+                    success: false,
+                    message: "Please fill up all the fields",
+                });
+            }
+            else if(schoolPassword !== confirm) {
+                return res.json({
+                    success: false,
+                    message: "Password does not match..",
                 });
             }
 
-            // Hash the password
-            const hashedPassword = await bcrypt.hash(schoolPassword, 10);
+            // Check if the school already exists
+            const exist = await checkSchool(schoolName);
+            if (exist) {
+                return res.json({
+                    success: false,
+                    message: "School already exists..."
+                });
+            }
+            else {
+                // Hash the password
+                const hashedPassword = await bcrypt.hash(schoolPassword, 10);
 
-            // Add the new school
-            const newSchool = await addSchool({
-                schoolName,
-                schoolEmail,
-                schoolPhone,
-                schoolPassword: hashedPassword
-            });
-
-            res.status(201).send({
-                msg: "School registered successfully",
-                school: newSchool
-            });
+                // Add the new school
+                const newSchool = await insertSchool( schoolName, schoolEmail, schoolContact, hashedPassword );
+                if(newSchool) {
+                    res.json({
+                        success: true,
+                        message: "School registered successfully",
+                    });
+                }
+                else {
+                    res.json({
+                        success: false,
+                        message: "School registration failed",
+                    });
+                }
+            }  
         } catch (error) {
-            res.status(500).send({
-                error: "Internal Server Error"
+            res.json({
+                success: false,
+                message: "Internal Server Error. Please try again later.",
             });
         }
-    };
+};
+
+
+// ----------------------- REGISTER CONTROLLER -----------------------
+
+
+
+
+// ----------------------- LOGIN CONTROLLER -----------------------
+
+const login = async(req, res) => {
+    const { schoolEmail, schoolPassword } = req.body;
+
+    try {
+        if(!schoolEmail || !schoolPassword) {
+            return res.json({
+                success: false,
+                message: "Please fill in up the fields"
+            })
+        }
+
+        // Find the school by email
+        const school = await checkMail(schoolEmail);
+        if (!school) {
+            return res.json({
+                success: false,
+                message: "Invalid email or password 1",
+            });
+        }
+
+        // Compare the password
+        const isMatch = await bcrypt.compare(schoolPassword, school.password);
+        if (!isMatch) {
+            return res.json({
+                success: false,
+                message: "Invalid email or password 2",
+            });
+        }
+
+        // Create a JWT
+        const token = jwt.sign(
+            { id: school.sid },
+            process.env.JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // Set the token as an HTTP-only cookie
+        res.cookie('schoolToken', token, {
+            httpOnly: true,
+            sameSite: 'Lax',
+            maxAge: 60 * 60 * 1000, // 1 hour
+        });
+
+        res.json({
+            success: true,
+            message: "Login successfully..",
+        });
+    } catch (error) {
+        res.status(500).send({
+            error: "Internal Server Error"
+        });
+    }
+}
+
+// Endpoint to verify authentication
+const verify = (req, res) => {
+    const token = req.cookies.schoolToken;
+    if (!token) {
+      return res.json({ 
+        success: false,
+        message: 'Not authenticated. Access denied!' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if(decoded) {
+          res.json({ 
+              success: true,
+              message: 'Authenticated', 
+              school: decoded,
+            });
+            return;
+        }
+        res.json({ 
+            success: false,
+            message: 'Access denied', 
+          });
+    } 
+    catch (err) {
+      res.json({ 
+        success: false,
+        message: 'Invalid token' 
+        });
+    }
+};
+
+const Logout = async(req, res) => {
+    res.clearCookie('schoolToken');
+    res.json({ 
+        success: true,
+        message: 'Logged out successfully' 
+    });
+}
+
+// ----------------------- LOGIN CONTROLLER -----------------------
+
+
+
 
 
 // Verify User
 const verifyUser = async(req, res) => {
     const { schoolEmail } = req.body;
 
-    console.log(schoolEmail);
     try {
         const checker = await checkMail({schoolEmail});
         if (!checker) {
@@ -66,44 +216,10 @@ const verifyUser = async(req, res) => {
 
 
 // Login at localhost:5000/api/auth/login
-const login = async(req, res) => {
-    const { schoolEmail, schoolPassword } = req.body;
 
-    try {
-        // Find the school by email
-        const school = await checkMail(schoolEmail);
-        if (!school) {
-            return res.status(400).send({
-                msg: "Invalid email or password",
-            });
-        }
 
-        // Compare the password
-        const isMatch = await bcrypt.compare(schoolPassword, school.schoolpassword);
-        if (!isMatch) {
-            return res.status(400).send({
-                msg: "Invalid email or password 2",
-            });
-        }
 
-        // Create a JWT
-        const token = jwt.sign(
-            { schoolId: school.id },
-            process.env.JWT_SECRET,
-            { expiresIn: '24h' }
-        );
 
-        res.status(200).send({
-            msg: "Login successfully..",
-            email: school.schoolemail,
-            token,
-        });
-    } catch (error) {
-        res.status(500).send({
-            error: "Internal Server Error"
-        });
-    }
-}
 
 // GET all the schools through localhost:5000/api/auth/schools
 const getAllSchools = async (req, res, next) => {
@@ -162,6 +278,10 @@ const resetPassword = async (req, res, next) => {
 
 const addExam = async (req, res) => {
     const { namer, percentage } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+
     try {
         if(!namer || !percentage) {
             return res.json({
@@ -186,7 +306,7 @@ const addExam = async (req, res) => {
         }
         else {
             // Add new exam
-            const newExam = await insertExam(namer, percentage);
+            const newExam = await insertExam(id, namer, percentage);
             if(newExam) {
                 res.json({ 
                     success: true,
@@ -325,6 +445,10 @@ const updateExams = async(req, res) => {
 
 const addYear = async (req, res) => {
     const { yearName } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+
     try {
         if(!yearName) {
             return res.json({
@@ -344,7 +468,7 @@ const addYear = async (req, res) => {
         }
         else {
             // Add new exam
-            const newYear = await insertYear(yearName);
+            const newYear = await insertYear(id, yearName);
             if(newYear) {
                 res.json({ 
                     success: true,
@@ -478,10 +602,178 @@ const updateYears = async(req, res) => {
 
 
 
+
+// ----------------------- SUBJECT CONTROLLER -----------------------
+
+const addSubject = async (req, res) => {
+    const { subjectName, code } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!subjectName || !code) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if subject exists
+        const checker = await checkSubject(subjectName);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Subject already exists..."
+            });
+        }
+        else {
+            // Add new subject
+            const newSubject = await insertSubject(id, subjectName, code);
+            if(newSubject) {
+                res.json({ 
+                    success: true,
+                    message: "Subject added successfully",
+                    newSubject,
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Subject adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getSubjects = async (req, res) => {
+    try {
+        const subject = await getSubject();
+        if(subject) {
+            res.json({
+                success: true,
+                subject,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteSubjects = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteSubject(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Subject deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Subject deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editSubjects = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editSubject(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving subject data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateSubjects = async(req, res) => {
+    const { id } = req.params;
+    const { subjectName, code } = req.body;
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkSubject(subjectName);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Subject already exists..."
+            });
+        }
+        else {
+            const update = await updateSubject(id, subjectName, code, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Subject updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Subject updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- SUBJECT CONTROLLER -----------------------
+
+
+
 module.exports = { 
+    // ----- LOGIN EXPORTS ------
+    login, 
+    verify,
+    Logout,
+    // ----- LOGIN EXPORTS ------
+
+    // ----- REGISTER EXPORTS ------
     signup, 
     getAllSchools, 
-    login, 
     updateSchool, 
     generateOTP, 
     verifyOTP, 
@@ -505,4 +797,14 @@ module.exports = {
     editYears,
     updateYears,
     // ----- YEAR EXPORTS ------
+
+
+
+    // ----- SUBJECT EXPORTS ------
+    addSubject,
+    getSubjects,
+    deleteSubjects,
+    editSubjects,
+    updateSubjects,
+    // ----- SUBJECT EXPORTS ------
 };

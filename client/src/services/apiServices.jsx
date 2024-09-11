@@ -1,13 +1,33 @@
 import axios from 'axios';
 
+axios.defaults.withCredentials = true;
 const API = 'http://localhost:5000/api';
 
-// const getSchools = () => axios.get(API_URL);
+// const getSchools = () => axios.get(API_RL);
 // const getSchool = (id) => axios.get(`${API_URL}${id}`);
-const createSchool = (data) => axios.post(API + '/signup', data);
-const Logon = (data) => axios.post(API + '/login', data);
 // const updateSchool = (id, data) => axios.put(`${API_URL}${id}`, data);
 // const deleteSchool = (id) => axios.delete(`${API_URL}${id}`);
+
+// --------- REGISTER AXIOS -----------
+
+const createSchool = (data) => axios.post(API + '/signup', data);
+
+// --------- REGISTER AXIOS -----------
+
+
+
+
+
+// --------- LOGIN AXIOS -----------
+
+const Logon = (data) => axios.post(API + '/login', data);
+const Verify = () => axios.post(API + '/verify');
+const Logout = () => axios.post(API + '/logout');
+
+// --------- LOGIN AXIOS -----------
+
+
+
 
 
 // --------- EXAM AXIOS -----------
@@ -31,10 +51,31 @@ const updateYear = (id, data) => axios.put(API + '/updatyear/' + id, data);
 
 // --------- YEAR AXIOS -----------
 
-export default {
-  createSchool,
-  Logon,
 
+// --------- SUBJECT AXIOS -----------
+
+const addSubject = (data) => axios.post(API + '/addsubject', data);
+const getSubject = () => axios.get(API + '/getsubject');
+const deleteSubject = (id) => axios.delete(API + '/deletsubject/' + id);
+const editSubject = (id) => axios.get(API + '/editsubject/' + id);
+const updateSubject = (id, data) => axios.put(API + '/updatsubject/' + id, data);
+
+// --------- SUBJECT AXIOS -----------
+
+
+// eslint-disable-next-line
+export default {
+  // ------ REGISTER EXPORT -------
+  createSchool,
+  // ------ REGISTER EXPORT -------
+
+
+  // ------ LOGIN EXPORT -------
+  Verify,
+  Logon,
+  Logout,
+  // ------ LOGIN EXPORT -------
+  
   // ------ EXAM EXPORT -------
   addExam,
   getExam,
@@ -51,4 +92,13 @@ export default {
   editYear,
   updateYear,
   // ------ YEAR EXPORT -------
+
+
+  // ------ SUBJECT EXPORT -------
+  addSubject,
+  getSubject,
+  deleteSubject,
+  editSubject,
+  updateSubject,
+  // ------ SUBJECT EXPORT -------
 };

@@ -19,6 +19,8 @@ import ExamTable from '../helpers/examination/examTable.jsx'
 import ExamForm from '../helpers/examination/examForm.jsx'
 import YearForm from '../helpers/year/yearForm.jsx'
 import YearTable from '../helpers/year/yearTable.jsx'
+import SubjectForm from '../helpers/subject/subjectForm.jsx'
+import SubjectTable from '../helpers/subject/subjectTable.jsx'
 
 
 const Tabs = () => {
@@ -27,12 +29,15 @@ const Tabs = () => {
   const [active, setActive] = useState(0);
   const [showType, setShowType] = useState(false);
   const [showYear, setShowYear] = useState(false);
+  const [showSubject, setShowSubject] = useState(false);
   
   const handleOpen = () => { setShowType(true); };
   const handleYearOpen = () => { setShowYear(true); };
+  const handleSubjectOpen = () => { setShowSubject(true); };
   
   const handleClose = () => { setShowType(false); };
   const handleYearClose = () => { setShowYear(false); };
+  const handleSubjectClose = () => { setShowSubject(false); };
   
   const handleTabClick = (index) => {
     setSelectedTab(index);
@@ -213,12 +218,23 @@ const Tabs = () => {
               </div>
               <div class="col-lg-12">
                 <div class="subject__container mt-4">
-                  <button type="button" onclick="document.getElementById('subject__modal').style.display='block'" class="add__rows__btn">
-                    <Icon name='plus' className='plus' />
-                    Add
-                  </button>
+                  <div className="div" style={{ display: showSubject ? 'none' : 'block' }}>
+                    <button type="button" onClick={handleSubjectOpen} 
+                      class="add__rows__btn">
+                      <Icon name='plus' className='plus' />
+                      Add
+                    </button>
+                  </div>
+                  <div className="toggleDiv" style={{ display: showSubject ? 'block' : 'none' }}>
+                    <SubjectForm />
+                    <FormButton 
+                      label={'Close'}
+                      id={'closeBtn'}
+                      onClick={handleSubjectClose}
+                    />
+                  </div>
                   <table class="custom__table table-hover mt-3" id="subject__table">
-                    
+                    <SubjectTable setShowSubject={setShowSubject} />
                   </table>
                 </div>
               </div>
@@ -237,7 +253,7 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="year__container mt-4">
-              <div className="div" style={{ display: showYear ? 'none' : 'block' }}>
+                <div className="div" style={{ display: showYear ? 'none' : 'block' }}>
                   <button type="button" onClick={handleYearOpen} 
                     class="add__rows__btn">
                     <Icon name='plus' className='plus' />

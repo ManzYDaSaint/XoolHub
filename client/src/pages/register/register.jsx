@@ -1,32 +1,55 @@
-import React, {useState} from 'react'
+import React from 'react'
 import regIcon from './assets/files (2).png'
 import './register.css'
 import Input from '../../components/input/input'
 import 'react-toastify/dist/ReactToastify.css';
-import SchoolServices from '../../services/apiServices.jsx'
+import api from '../../services/apiServices.jsx'
 import { Toaster } from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
+import { useSelector, useDispatch } from 'react-redux';
+import { setRegisterData } from '../../helpers/examination/examSlice.jsx';
 
 
 const Register = () => {
-    const [ schoolName, setSchoolName ] = useState([]);
-    const [ schoolEmail, setSchoolEmail ] = useState([]);
-    const [ schoolPhone, setSchoolPhone ] = useState([]);
-    const [ schoolPassword, setSchoolPassword ] = useState([]);
-    const [ confirmPassword, setConfirmPassword ] = useState([]);
+    const registerData = useSelector((state) => state.exam.registerData);
+    const dispatch = useDispatch();
 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
+    const handleSubmit = async(data) => {
         try {
-            const response = await SchoolServices.createSchool({schoolName, schoolEmail, schoolPhone, schoolPassword});
-
-            console.log('Success:', response);
+            const res = await api.createSchool(data);
+            if(res.data.success === true) {
+                toast.success(res.data.message);
+              }
+              else {
+                toast.error(res.data.message);
+              }
         } catch (error) {
-            console.error('Error:', error);
+            toast.error('An error occurred. Please try again.');
         }
+        dispatch(setRegisterData({
+            schoolName: '',
+            schoolEmail: '',
+            schoolContact: '',
+            schoolPassword: '',
+            confirm: '',
+          }));
     };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        dispatch(
+          setRegisterData({
+            ...registerData,
+            [name]: value,
+          }));
+      };
+    
+      const onSubmit = (e) => {
+        e.preventDefault();
+        handleSubmit(registerData);
+      };
 
   return (
     <main className="register__page">
@@ -40,18 +63,17 @@ const Register = () => {
             </div>
             <div className="row divider">
                 <div className="col-lg-12 mt-4">
-                    <form className="ui form reg__form" onSubmit={handleSubmit} method="post" id="register__form" autoComplete="off">
+                    <form className="ui form reg__form" onSubmit={onSubmit} method="post" id="register__form" autoComplete="off">
                         <div className="top__form register__form" id="top__form">
                             <div className="field">
                                 <Input 
                                     icon='student'
                                     label='School name'
                                     type='text'
-                                    name='Name'
-                                    id='school__name'
+                                    name='schoolName'
                                     placeholder='type school name here..'
-                                    value={schoolName}
-                                    onChange={e => setSchoolName(e.target.value)}
+                                    value={registerData.schoolName}
+                                    onChange={handleChange}
                                 />
                                 <p className="info">Add school name eg:. 'EA PRIVATE SECONDARY SCHOOL'</p>
                             </div>
@@ -63,10 +85,9 @@ const Register = () => {
                                             label='School Email'
                                             type='email'
                                             name='schoolEmail'
-                                            id='email'
                                             placeholder='type school email here..'
-                                            value={schoolEmail}
-                                            onChange={e => setSchoolEmail(e.target.value)}
+                                            value={registerData.schoolEmail}
+                                            onChange={handleChange}
                                         />
                                         <p className="info">Add school email address eg:. 'example@mail.com'</p>
                                     </div>
@@ -75,11 +96,11 @@ const Register = () => {
                                             icon='phone'
                                             label='School Contact'
                                             type='text'
-                                            name='schoolPhone'
+                                            name='schoolContact'
                                             id='phone'
                                             placeholder='type school contact here..'
-                                            value={schoolPhone}
-                                            onChange={e => setSchoolPhone(e.target.value)}
+                                            value={registerData.schoolContact}
+                                            onChange={handleChange}
                                         />
                                         <p className="info">Add school contact (one)</p>
                                     </div>
@@ -95,8 +116,8 @@ const Register = () => {
                                             name='schoolPassword'
                                             id='password'
                                             placeholder='type password here..'
-                                            value={schoolPassword}
-                                            onChange={e => setSchoolPassword(e.target.value)}
+                                            value={registerData.schoolPassword}
+                                            onChange={handleChange}
                                         />
                                         <p className="info">Add login password</p>
                                     </div>
@@ -105,11 +126,11 @@ const Register = () => {
                                             icon='check circle'
                                             label='Confirm Password'
                                             type='text'
-                                            name='confirmPassword'
+                                            name='confirm'
                                             id='confirm'
                                             placeholder='type confirm password here..'
-                                            value={confirmPassword}
-                                            onChange={e => setConfirmPassword(e.target.value)}
+                                            value={registerData.confirm}
+                                            onChange={handleChange}
                                         />
                                         <p className="info">Confirm login password</p>
                                     </div>

@@ -4,9 +4,11 @@ import './dashboard.css'
 import Navbar from '../../components/input/top.jsx'
 import Tabs from '../../components/tabs.jsx'
 import { Toaster } from 'react-hot-toast'
+import Auth0 from '../../hooks/auth.jsx'
 
 const Setting = () => {
   return (
+    <Auth0>
     <div className='dashboard__container'>
       <Toaster />
       <div className="dashboard__content">
@@ -22,6 +24,7 @@ const Setting = () => {
         </div>
       </div>
     </div>
+    </Auth0>
   )
 }
 

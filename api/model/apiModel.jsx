@@ -1,47 +1,43 @@
 const kneX = require('../database/db.jsx');
 
-// --------------------------------------- SCHOOL CRUD ------------------------------------------------
-// add a new school
-const addSchool = async ({ schoolName, schoolEmail, schoolPhone, schoolPassword }) => {
-    const query = `
-    INSERT INTO Schools (schoolName, schoolEmail, schoolPhone, schoolPassword)
-    VALUES ($1, $2, $3, $4)
-    RETURNING *;
-    `;
-    const values = [schoolName, schoolEmail, schoolPhone, schoolPassword];
-    const res = await kneX.query(query, values);
+// --------------------------------------- REGISTER CRUD ------------------------------------------------
+
+const checkSchool = async(name) => {
+    const query = "SELECT name FROM schools WHERE name = $1";
+    const value = [name];
+    const res = await kneX.query(query, value);
     return res.rows[0];
-};
+}
 
-
-// Check if a school already exists in the database
-const existSchool = async(schoolName) => {
-    const query = 'SELECT schoolName FROM Schools WHERE schoolName = $1';
-    const values = [schoolName];
+const insertSchool = async(name, email, contact, password) => {
+    const query = "INSERT INTO schools(name, email, contact, password) VALUES ($1, $2, $3, $4) RETURNING *";
+    const values = [name, email, contact, password];
     const res = await kneX.query(query, values);
     return res.rows.length > 0;
 }
 
+const editSchool = async(id) => {
+    const query = "SELECT * FROM Schools WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
 
-// Login
-const checkMail = async(schoolEmail) => {
-    const query = 'SELECT * FROM Schools WHERE schoolEmail = $1';
-    const values = [schoolEmail];
+// --------------------------------------- REGISTER CRUD ------------------------------------------------
+
+
+
+
+// --------------------------------------- LOGIN ------------------------------------------------
+
+const checkMail = async(email) => {
+    const query = 'SELECT * FROM schools WHERE email = $1';
+    const values = [email];
     const res = await kneX.query(query, values);
     return res.rows[0];
 }
 
-
-// Getiing all the schools
-const getSchools = async() => {
-    const query = 'SELECT * FROM Schools';
-    const res = await kneX.query(query);
-    return res.rows;
-}
-// --------------------------------------- SCHOOL CRUD ------------------------------------------------
-
-
-
+// --------------------------------------- LOGIN ------------------------------------------------
 
 
 
@@ -57,9 +53,9 @@ const checkExam = async(name) => {
 }
 
 // Add new examination type
-const insertExam = async(name, percentage) => {
-    const query = "INSERT INTO exam(name, percentage) VALUES ($1, $2) RETURNING *";
-    const values = [name, percentage];
+const insertExam = async(id, name, percentage) => {
+    const query = "INSERT INTO exam(sid, name, percentage) VALUES ($1, $2, $3) RETURNING *";
+    const values = [id, name, percentage];
     const res = await kneX.query(query, values);
     return res.rows.length > 0;
 }
@@ -113,9 +109,9 @@ const checkYear = async(name) => {
 }
 
 // Add new academic year
-const insertYear = async(name) => {
-    const query = "INSERT INTO acyear(name) VALUES ($1) RETURNING *";
-    const values = [name];
+const insertYear = async(id, name) => {
+    const query = "INSERT INTO acyear(sid, name) VALUES ($1, $2) RETURNING *";
+    const values = [id, name];
     const res = await kneX.query(query, values);
     return res.rows.length > 0;
 }
@@ -154,10 +150,68 @@ const editYear = async(id) => {
 
 // --------------------------------------- ACADEMIC YEAR CRUD ------------------------------------------------
 
+
+
+
+// --------------------------------------- SUBJECT CRUD ------------------------------------------------
+
+// Check if subject exists
+const checkSubject = async(name) => {
+    const query = "SELECT name FROM subject WHERE name = $1";
+    const value = [name];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// Add new subject
+const insertSubject = async(sid, name, code) => {
+    const query = "INSERT INTO subject(sid, name, code) VALUES ($1, $2, $3) RETURNING *";
+    const values = [sid, name, code];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+// Get all subject
+const getSubject = async() => {
+    const query = "SELECT * FROM subject";
+    const res = await kneX.query(query);
+    return res.rows;
+}
+
+
+// Delete subject
+const deleteSubject = async(id) => {
+    const query = "DELETE FROM subject WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+// Updating subject
+const updateSubject = async(id, name, code, update) => {
+    const query = "UPDATE subject SET name = $1, code = $2, updated_at = $3 WHERE id = $4";
+    const values = [name, code, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+// Get Single subject
+const editSubject = async(id) => {
+    const query = "SELECT id, name, code FROM subject WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// --------------------------------------- SUBJECT CRUD ------------------------------------------------
+
 module.exports = {
-    getSchools,
-    existSchool,
-    addSchool,
+    // ----- REGISTER SECTION -----
+    checkSchool,
+    insertSchool,
+    editSchool,
+    // ----- REGISTER SECTION -----
+
     checkMail,
 
 
@@ -179,4 +233,14 @@ module.exports = {
     updateYear,
     editYear,
     // ----- YEAR SECTION -----
+
+
+    // ----- SUBJECT SECTION -----
+    checkSubject,
+    insertSubject,
+    getSubject,
+    deleteSubject,
+    updateSubject,
+    editSubject,
+    // ----- SUBJECT SECTION -----
 };

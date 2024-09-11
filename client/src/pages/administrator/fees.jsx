@@ -1,8 +1,11 @@
 import React from 'react'
+import Auth0 from '../../hooks/auth'
 
 const Fees = () => {
   return (
-    <div>Fees</div>
+    <Auth0>
+      <div>Fees</div>
+    </Auth0>
   )
 }
 
