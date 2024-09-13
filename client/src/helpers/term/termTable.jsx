@@ -1,9 +1,9 @@
 import React from 'react'
 import UniversalTable from '../../components/table.jsx'
 
-const YearTable = ({ yearData }) => {
+const TermTable = ({ termData }) => {
 
-  const yearColumn = [
+  const termColumn = [
     { key: 'sr', label: 'SR', width: '10%' },
     { key: 'name', label: 'Name', width: '70%' },
     { key: 'actions', label: 'Actions', width: '20%' }
@@ -12,9 +12,9 @@ const YearTable = ({ yearData }) => {
 
   return (
     <div>
-        <UniversalTable columns={yearColumn} data={yearData} />
+        <UniversalTable columns={termColumn} data={termData} />
     </div>
   )
 }
 
-export default YearTable
+export default TermTable

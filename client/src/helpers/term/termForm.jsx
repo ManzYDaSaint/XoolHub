@@ -4,11 +4,11 @@ import FormInput from '../../components/input/formInput.jsx'
 import FormButton from '../../components/input/formButton.jsx'
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
-import { setIsEditMode, setEditItemId, setYearFormData } from '../examination/examSlice.jsx';
+import { setIsEditMode, setEditItemId, setTermFormData } from '../examination/examSlice.jsx';
 
 
-const YearForm = ({ fetchData }) => {
-    const yearFormData = useSelector((state) => state.exam.yearFormData);
+const TermForm = ({ fetchData }) => {
+    const termFormData = useSelector((state) => state.exam.termFormData);
     const dispatch = useDispatch();
     const isEditMode = useSelector((state) => state.exam.isEditMode);
     const editItemId = useSelector((state) => state.exam.editItemId);
@@ -16,20 +16,20 @@ const YearForm = ({ fetchData }) => {
       // Handle submit
       const handleSubmit = async(data) => {
         if(isEditMode) {
-          const res = await api.updateYear(editItemId, data);
+          const res = await api.updateTerm(editItemId, data);
           if(res.data.success === true) {
             fetchData();
             toast.success(res.data.message);
-            dispatch(setIsEditMode(false));
-            dispatch(setEditItemId(null));
           }
           else {
             toast.error(res.data.message);
           }
+          dispatch(setIsEditMode(false));
+          dispatch(setEditItemId(null));
         }
         else {
             try {
-              const res = await api.addYear({ data });
+              const res = await api.addTerm({ data });
               if (res.data.success === true) {
                 fetchData();
                 toast.success(res.data.message);
@@ -40,42 +40,44 @@ const YearForm = ({ fetchData }) => {
             } catch (error) {
               toast.error('An error occurred. Please try again.');
             }
+            dispatch(setIsEditMode(false));
+            dispatch(setEditItemId(null));
           }
-          dispatch(setYearFormData({
-            yearName: '',
+          dispatch(setTermFormData({
+            termName: '',
           }));
-          dispatch(setIsEditMode(false));
-          dispatch(setEditItemId(null));
+          setIsEditMode(false);
+          setEditItemId(null);
       };
   const handleChange = (e) => {
     const { name, value } = e.target;
     dispatch(
-      setYearFormData({
-        ...yearFormData,
+        setTermFormData({
+        ...termFormData,
         [name]: value,
       }));
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
-    handleSubmit(yearFormData);
+    handleSubmit(termFormData);
   };
 
   return (
     <form onSubmit={onSubmit} autoComplete='off'>
       <div className='formGroup'>
         <FormInput
-          label={'Academic Year'}
+          label={'Term'}
           type={'text'}
-          name='yearName'
-          value={yearFormData.yearName}
+          name='termName'
+          value={termFormData.termName}
           onChange={handleChange}
           placeholder={'Type here...'}
         />
       </div>
-      <FormButton label={isEditMode ? 'Update Year' : 'Add Year'} id="tyepButton" />
+      <FormButton label={isEditMode ? 'Update Term' : 'Add Term'} id="tyepButton" />
     </form>
   );
 };
 
-export default YearForm;
+export default TermForm;

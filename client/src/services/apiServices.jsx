@@ -63,6 +63,70 @@ const updateSubject = (id, data) => axios.put(API + '/updatsubject/' + id, data)
 // --------- SUBJECT AXIOS -----------
 
 
+// --------- CLASS AXIOS -----------
+
+const addClass = (data) => axios.post(API + '/addclass', data);
+const getClass = () => axios.get(API + '/getclass');
+const deleteClass = (id) => axios.delete(API + '/deletclass/' + id);
+const editClass = (id) => axios.get(API + '/editclass/' + id);
+const updateClass = (id, data) => axios.put(API + '/updatclass/' + id, data);
+
+// --------- CLASS AXIOS -----------
+
+
+
+// --------- TERM AXIOS -----------
+
+const addTerm = (data) => axios.post(API + '/addterm', data);
+const getTerm = () => axios.get(API + '/getterm');
+const deleteTerm = (id) => axios.delete(API + '/deletterm/' + id);
+const editTerm = (id) => axios.get(API + '/editterm/' + id);
+const updateTerm = (id, data) => axios.put(API + '/updatterm/' + id, data);
+
+// --------- TERM AXIOS -----------
+
+
+
+
+// --------- GRADE AXIOS -----------
+
+const addGrade = (data) => axios.post(API + '/addgrade', data);
+const getGrade = () => axios.get(API + '/getgrade');
+const deleteGrade = (id) => axios.delete(API + '/deletgrade/' + id);
+const editGrade = (id) => axios.get(API + '/editgrade/' + id);
+const updateGrade = (id, data) => axios.put(API + '/updatgrade/' + id, data);
+
+// --------- GRADE AXIOS -----------
+
+
+
+
+// --------- JCE AXIOS -----------
+
+const addJCE = (data) => axios.post(API + '/addjce', data);
+const getJCE = () => axios.get(API + '/getjce');
+const deleteJCE = (id) => axios.delete(API + '/deletjce/' + id);
+const editJCE = (id) => axios.get(API + '/editjce/' + id);
+const updateJCE = (id, data) => axios.put(API + '/updatjce/' + id, data);
+
+// --------- JCE AXIOS -----------
+
+
+
+
+// --------- MSCE AXIOS -----------
+
+const addMSCE = (data) => axios.post(API + '/addmsce', data);
+const getMSCE = () => axios.get(API + '/getmsce');
+const deleteMSCE = (id) => axios.delete(API + '/deletmsce/' + id);
+const editMSCE = (id) => axios.get(API + '/editmsce/' + id);
+const updateMSCE = (id, data) => axios.put(API + '/updatmsce/' + id, data);
+
+// --------- MSCE AXIOS -----------
+
+
+
+
 // eslint-disable-next-line
 export default {
   // ------ REGISTER EXPORT -------
@@ -101,4 +165,52 @@ export default {
   editSubject,
   updateSubject,
   // ------ SUBJECT EXPORT -------
+
+
+  // ------ CLASS EXPORT -------
+  addClass,
+  getClass,
+  deleteClass,
+  editClass,
+  updateClass,
+  // ------ CLASS EXPORT -------
+
+
+  // ------ TERM EXPORT -------
+  addTerm,
+  getTerm,
+  deleteTerm,
+  editTerm,
+  updateTerm,
+  // ------ TERM EXPORT -------
+
+
+    // ------ GRADE EXPORT -------
+    addGrade,
+    getGrade,
+    deleteGrade,
+    editGrade,
+    updateGrade,
+    // ------ GRADE EXPORT -------
+
+
+
+    // ------ JCE EXPORT -------
+    addJCE,
+    getJCE,
+    deleteJCE,
+    editJCE,
+    updateJCE,
+    // ------ JCE EXPORT -------
+
+
+
+
+    // ------ MSCE EXPORT -------
+    addMSCE,
+    getMSCE,
+    deleteMSCE,
+    editMSCE,
+    updateMSCE,
+    // ------ MSCE EXPORT -------
 };

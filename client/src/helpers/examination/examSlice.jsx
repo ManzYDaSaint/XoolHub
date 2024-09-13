@@ -27,6 +27,32 @@ const ExamSlice = createSlice({
       schoolEmail: '',
       schoolPassword: '',
     },
+    classFormData: {
+      denom: '',
+      className: '',
+    },
+    termFormData: {
+      termName: '',
+    },
+    gradeFormData: {
+      denom: '',
+      roof: '',
+      floor: '',
+      grade: '',
+      remark: '',
+    },
+    jceFormData: {
+      denom: 'JCE',
+      roof: '',
+      floor: '',
+      remark: '',
+    },
+    msceFormData: {
+      denom: 'MSCE',
+      roof: '',
+      floor: '',
+      remark: '',
+    },
   },
   reducers: {
     setIsEditMode: (state, action) => {
@@ -50,8 +76,36 @@ const ExamSlice = createSlice({
     setYearFormData: (state, action) => {
       state.yearFormData = action.payload;
     },
+    setClassFormData: (state, action) => {
+      state.classFormData = action.payload;
+    },
+    setTermFormData: (state, action) => {
+      state.termFormData = action.payload;
+    },
+    setGradeFormData: (state, action) => {
+      state.gradeFormData = action.payload;
+    },
+    setJCEFormData: (state, action) => {
+      state.jceFormData = action.payload;
+    },
+    setMSCEFormData: (state, action) => {
+      state.msceFormData = action.payload;
+    },
   },
 });
 
-export const { setIsEditMode, setEditItemId, setFormData, setSubjectFormData, setRegisterData, setLoginData, setYearFormData } = ExamSlice.actions;
+export const { 
+  setIsEditMode, 
+  setEditItemId, 
+  setFormData, 
+  setSubjectFormData, 
+  setRegisterData, 
+  setLoginData, 
+  setYearFormData, 
+  setClassFormData,
+  setTermFormData,
+  setGradeFormData,
+  setJCEFormData,
+  setMSCEFormData
+} = ExamSlice.actions;
 export default ExamSlice.reducer;

@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import { Icon } from 'semantic-ui-react'
 import Year from './assets/year.png' 
 import YearPro from './assets/yearPro.png' 
 import Subject from './assets/subject.png'
@@ -14,35 +13,26 @@ import Grading from './assets/grading.png'
 import GradingPro from './assets/gradingPro.png'
 import Exam from './assets/exam.png'
 import ExamPro from './assets/examPro.png'
-import FormButton from './input/formButton'
-import ExamTable from '../helpers/examination/examTable.jsx'
-import ExamForm from '../helpers/examination/examForm.jsx'
-import YearForm from '../helpers/year/yearForm.jsx'
-import YearTable from '../helpers/year/yearTable.jsx'
-import SubjectForm from '../helpers/subject/subjectForm.jsx'
-import SubjectTable from '../helpers/subject/subjectTable.jsx'
+import YearData from '../helpers/year/yearData.jsx'
+import SubjectData from '../helpers/subject/subjectData.jsx'
+import ClassData from '../helpers/class/classData.jsx'
+import TermData from '../helpers/term/termData.jsx'
+import RemarkData from '../helpers/remark/remarkData.jsx'
+import GradingData from '../helpers/grading/gradingData.jsx'
+import ExamData from '../helpers/examination/examData.jsx'
 
 
 const Tabs = () => {
   // Closing and Opening Tabs and Divs
   const [selectedTab, setSelectedTab] = useState(0);
   const [active, setActive] = useState(0);
-  const [showType, setShowType] = useState(false);
-  const [showYear, setShowYear] = useState(false);
-  const [showSubject, setShowSubject] = useState(false);
-  
-  const handleOpen = () => { setShowType(true); };
-  const handleYearOpen = () => { setShowYear(true); };
-  const handleSubjectOpen = () => { setShowSubject(true); };
-  
-  const handleClose = () => { setShowType(false); };
-  const handleYearClose = () => { setShowYear(false); };
-  const handleSubjectClose = () => { setShowSubject(false); };
   
   const handleTabClick = (index) => {
     setSelectedTab(index);
     setActive(!active);
   };
+
+
   // Closing and Opening Tabs and Divs
   
   return (
@@ -67,24 +57,7 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="examination__container mt-4">
-                <div className="div" style={{ display: showType ? 'none' : 'block' }}>
-                  <button type="button" onClick={handleOpen} 
-                    class="add__rows__btn">
-                    <Icon name='plus' className='plus' />
-                    Add
-                  </button>
-                </div>
-                <div className="toggleDiv" style={{ display: showType ? 'block' : 'none' }}>
-                  <ExamForm />
-                  <FormButton 
-                    label={'Close'}
-                    id={'closeBtn'}
-                    onClick={handleClose}
-                  />
-                </div>
-                <div className="tableContainer">
-                  <ExamTable setShowType={setShowType} />
-                </div>
+                <ExamData />
               </div>
             </div>
           </div>
@@ -102,13 +75,7 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="examination__container mt-4">
-                <button type="button" onclick="document.getElementById('grading__modal').style.display='block'" 
-                class="add__rows__btn">
-                  <Icon name='plus' className='plus' />
-                  Add</button>
-                <table class="custom__table table-hover mt-3" id="grade__table">
-                  
-                </table>
+                <GradingData />
               </div>
             </div>
           </div>
@@ -126,28 +93,7 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="examination__container mt-4">
-                <div class="tablo">
-                  <button class="tablinko" onclick="HoriTabs(event, 'JCE')">JCE </button>
-                  <button class="tablinko" onclick="HoriTabs(event, 'MSCE')">MSCE </button>
-                </div>
-                <div id="JCE" class="tabcontento animate-bottom mt-4">
-                  <button type="button" onclick="document.getElementById('jce_remark__modal').style.display='block'" 
-                  class="add__rows__btn">
-                    <Icon name='plus' className='plus' />
-                    Add</button>
-                  <table class="custom__table table-hover mt-3" id="JCE__remark__table">
-                    
-                  </table>
-                </div>
-                <div id="MSCE" class="tabcontento animate-bottom mt-4">
-                  <button type="button" onclick="document.getElementById('msce_remark__modal').style.display='block'" 
-                  class="add__rows__btn">
-                    <Icon name='plus' className='plus' />
-                    Add</button>
-                  <table class="custom__table table-hover mt-3" id="MSCE__remark__table">
-                    
-                  </table>
-                </div>
+                <RemarkData />
               </div>
             </div>
           </div>
@@ -165,15 +111,7 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="term__container mt-4">
-              <button type="button" 
-                onclick="document.getElementById('term__modal').style.display='block'" 
-                class="add__rows__btn">
-                  <Icon name='plus' className='plus' />
-                  Add
-              </button>
-                <table class="custom__table table-hover mt-3" id="term__table">
-                  
-                </table>
+                <TermData />
               </div>
             </div>
           </div>
@@ -191,15 +129,7 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="class__container mt-4">
-                <button type="button" 
-                  onclick="document.getElementById('class__modal').style.display='block'" 
-                  class="add__rows__btn">
-                    <Icon name='plus' className='plus' />
-                    Add
-                </button>
-                <table class="custom__table table-hover mt-4" id="class__table">
-                  
-                </table>
+                <ClassData />
               </div>
             </div>
           </div>
@@ -218,24 +148,7 @@ const Tabs = () => {
               </div>
               <div class="col-lg-12">
                 <div class="subject__container mt-4">
-                  <div className="div" style={{ display: showSubject ? 'none' : 'block' }}>
-                    <button type="button" onClick={handleSubjectOpen} 
-                      class="add__rows__btn">
-                      <Icon name='plus' className='plus' />
-                      Add
-                    </button>
-                  </div>
-                  <div className="toggleDiv" style={{ display: showSubject ? 'block' : 'none' }}>
-                    <SubjectForm />
-                    <FormButton 
-                      label={'Close'}
-                      id={'closeBtn'}
-                      onClick={handleSubjectClose}
-                    />
-                  </div>
-                  <table class="custom__table table-hover mt-3" id="subject__table">
-                    <SubjectTable setShowSubject={setShowSubject} />
-                  </table>
+                  <SubjectData />
                 </div>
               </div>
             </div>
@@ -253,24 +166,7 @@ const Tabs = () => {
             </div>
             <div class="col-lg-12">
               <div class="year__container mt-4">
-                <div className="div" style={{ display: showYear ? 'none' : 'block' }}>
-                  <button type="button" onClick={handleYearOpen} 
-                    class="add__rows__btn">
-                    <Icon name='plus' className='plus' />
-                    Add
-                  </button>
-                </div>
-                <div className="toggleDiv" style={{ display: showYear ? 'block' : 'none' }}>
-                  <YearForm />
-                  <FormButton 
-                    label={'Close'}
-                    id={'closeBtn'}
-                    onClick={handleYearClose}
-                  />
-                </div>
-                <table className="custom__table table-hover mt-3" id="year__table">
-                  <YearTable setShowYear={setShowYear} />
-                </table>
+                <YearData />
               </div>
             </div>
           </div>

@@ -20,7 +20,37 @@ const {
     editSubject, 
     updateSubject, 
     checkSchool, 
-    insertSchool 
+    insertSchool, 
+    checkClass,
+    insertClass,
+    getClass,
+    deleteClass,
+    editClass,
+    updateClass,
+    checkTerm,
+    insertTerm,
+    getTerm,
+    deleteTerm,
+    editTerm,
+    updateTerm,
+    checkGrade,
+    insertGrade,
+    getGrade,
+    deleteGrade,
+    editGrade,
+    updateGrade,
+    checkJCE,
+    insertJCE,
+    getJCE,
+    deleteJCE,
+    editJCE,
+    updateJCE,
+    updateMSCE,
+    checkMSCE,
+    editMSCE,
+    deleteMSCE,
+    getMSCE,
+    insertMSCE
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -297,9 +327,9 @@ const addExam = async (req, res) => {
         }
 
         // Check if exam exists
-        const checker = await checkExam(namer);
+        const checker = await checkExam(id, namer);
         if(checker) {
-            res.json({
+            return res.json({
                 success: false,
                 message: "Exam already exists..."
             });
@@ -308,7 +338,7 @@ const addExam = async (req, res) => {
             // Add new exam
             const newExam = await insertExam(id, namer, percentage);
             if(newExam) {
-                res.json({ 
+                return res.json({ 
                     success: true,
                     message: "Exam added successfully",
                     newExam,
@@ -330,16 +360,19 @@ const addExam = async (req, res) => {
 }
 
 const getExams = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
     try {
-        const exam = await getExam();
+        const exam = await getExam(sid);
         if(exam) {
-            res.json({
+            return res.json({
                 success: true,
                 exam,
             });
         }
         else {
-            res.json({
+            return res.json({
                 success: false,
             })
         }
@@ -402,11 +435,14 @@ const editExams = async(req, res) => {
 const updateExams = async(req, res) => {
     const { id } = req.params;
     const { namer, percentage } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkExam(namer);
+        const checker = await checkExam(sid, namer);
         if(checker) {
             res.json({
                 success: false,
@@ -459,7 +495,7 @@ const addYear = async (req, res) => {
         }
 
         // Check if exam exists
-        const checker = await checkYear(yearName);
+        const checker = await checkYear(id, yearName);
         if(checker) {
             res.json({
                 success: false,
@@ -492,8 +528,11 @@ const addYear = async (req, res) => {
 }
 
 const getYears = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
     try {
-        const year = await getYear();
+        const year = await getYear(sid);
         if(year) {
             res.json({
                 success: true,
@@ -564,11 +603,14 @@ const editYears = async(req, res) => {
 const updateYears = async(req, res) => {
     const { id } = req.params;
     const { yearName } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkYear(yearName);
+        const checker = await checkYear(sid, yearName);
         if(checker) {
             res.json({
                 success: false,
@@ -621,7 +663,7 @@ const addSubject = async (req, res) => {
         }
 
         // Check if subject exists
-        const checker = await checkSubject(subjectName);
+        const checker = await checkSubject(id, subjectName);
         if(checker) {
             res.json({
                 success: false,
@@ -654,8 +696,11 @@ const addSubject = async (req, res) => {
 }
 
 const getSubjects = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
     try {
-        const subject = await getSubject();
+        const subject = await getSubject(sid);
         if(subject) {
             res.json({
                 success: true,
@@ -726,11 +771,14 @@ const editSubjects = async(req, res) => {
 const updateSubjects = async(req, res) => {
     const { id } = req.params;
     const { subjectName, code } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkSubject(subjectName);
+        const checker = await checkSubject(sid, subjectName);
         if(checker) {
             res.json({
                 success: false,
@@ -761,6 +809,853 @@ const updateSubjects = async(req, res) => {
 }
 
 // ----------------------- SUBJECT CONTROLLER -----------------------
+
+
+
+
+
+// ----------------------- CLASS CONTROLLER -----------------------
+
+const addClass = async (req, res) => {
+    const { className, denom } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!className || !denom) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkClass(id, className)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Class already exists..."
+            });
+        }
+        else {
+            // Add new subject
+            const newClass = await insertClass(id, className, denom);
+            if(newClass) {
+                res.json({ 
+                    success: true,
+                    message: "Class added successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Class adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getClasses = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const classs = await getClass(sid);
+        if(classs) {
+            res.json({
+                success: true,
+                classs,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteClasses = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteClass(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Class deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Class deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editClasses = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editClass(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving class data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateClasses = async(req, res) => {
+    const { id } = req.params;
+    const { className, denom } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkClass(sid, className);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Class already exists..."
+            });
+        }
+        else {
+            const update = await updateClass(id, className, denom, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Class updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Class updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- CLASS CONTROLLER -----------------------
+
+
+
+
+
+// ----------------------- TERM CONTROLLER -----------------------
+
+const addTerm = async (req, res) => {
+    const { termName } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!termName) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkTerm(id, termName)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Term already exists..."
+            });
+        }
+        else {
+            // Add new subject
+            const newTerm = await insertTerm(id, termName);
+            if(newTerm) {
+                res.json({ 
+                    success: true,
+                    message: "Term added successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Term adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getTerms = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const term = await getTerm(sid);
+        if(term) {
+            res.json({
+                success: true,
+                term,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteTerms = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteTerm(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Term deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Term deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editTerms = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editTerm(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving term data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateTerms = async(req, res) => {
+    const { id } = req.params;
+    const { termName } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkTerm(sid, termName);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Term already exists..."
+            });
+        }
+        else {
+            const update = await updateTerm(id, termName, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Term updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Term updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- TERM CONTROLLER -----------------------
+
+
+
+
+
+
+// ----------------------- GRADE CONTROLLER -----------------------
+
+const addGrade = async (req, res) => {
+    const { denom, roof, floor, grade, remark } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!denom || !roof || !floor || !grade || !remark) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkGrade(id, denom, grade)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Grade already exists..."
+            });
+        }
+        else {
+            // Add new grade
+            const newGrade = await insertGrade(id, denom, roof, floor, grade, remark);
+            if(newGrade) {
+                res.json({ 
+                    success: true,
+                    message: "Grade added successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Grade adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getGrades = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const grade = await getGrade(sid);
+        if(grade) {
+            res.json({
+                success: true,
+                grade,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteGrades = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteGrade(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Grade deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Grade deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editGrades = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editGrade(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving grade data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateGrades = async(req, res) => {
+    const { id } = req.params;
+    const { denom, roof, floor, grade, remark } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkGrade(sid, denom, grade);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Grade already exists..."
+            });
+        }
+        else {
+            const update = await updateGrade(id, denom, roof, floor, grade, remark, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Grade updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Grade updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- GRADE CONTROLLER -----------------------
+
+
+
+
+
+
+
+// ----------------------- JCE CONTROLLER -----------------------
+
+const addJCE = async (req, res) => {
+    const { denom, roof, floor, remark } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!denom || !roof || !floor || !remark) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkJCE(id, denom, roof, floor)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Remark already exists..."
+            });
+        }
+        else {
+            // Add new grade
+            const newJCE = await insertJCE(id, denom, roof, floor, remark);
+            if(newJCE) {
+                res.json({ 
+                    success: true,
+                    message: "Remark added successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Remark adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getJCEs = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const jce = await getJCE(sid);
+        if(jce) {
+            res.json({
+                success: true,
+                jce,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteJCEs = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteJCE(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Remark deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Remark deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editJCEs = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editJCE(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving remark data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateJCEs = async(req, res) => {
+    const { id } = req.params;
+    const { denom, roof, floor, remark } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkJCE(sid, denom, roof, floor);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Remark already exists..."
+            });
+        }
+        else {
+            const update = await updateJCE(id, denom, roof, floor, remark, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Remark updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Remark updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- JCE CONTROLLER -----------------------
+
+
+
+
+
+// ----------------------- MSCE CONTROLLER -----------------------
+
+const addMSCE = async (req, res) => {
+    const { denom, roof, floor, remark } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!denom || !roof || !floor || !remark) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkMSCE(id, denom, roof, floor)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Remark already exists..."
+            });
+        }
+        else {
+            // Add new grade
+            const newMSCE = await insertMSCE(id, denom, roof, floor, remark);
+            if(newMSCE) {
+                res.json({ 
+                    success: true,
+                    message: "Remark added successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Remark adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getMSCEs = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const msce = await getMSCE(sid);
+        if(msce) {
+            res.json({
+                success: true,
+                msce,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteMSCEs = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteMSCE(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Remark deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Remark deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editMSCEs = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editMSCE(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving remark data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateMSCEs = async(req, res) => {
+    const { id } = req.params;
+    const { denom, roof, floor, remark } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkMSCE(sid, denom, roof, floor);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Remark already exists..."
+            });
+        }
+        else {
+            const update = await updateMSCE(id, denom, roof, floor, remark, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Remark updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Remark updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- MSCE CONTROLLER -----------------------
+
 
 
 
@@ -807,4 +1702,56 @@ module.exports = {
     editSubjects,
     updateSubjects,
     // ----- SUBJECT EXPORTS ------
+
+
+
+    // ----- CLASS EXPORTS ------
+    addClass,
+    getClasses,
+    deleteClasses,
+    editClasses,
+    updateClasses,
+    // ----- CLASS EXPORTS ------
+
+
+    // ----- TERM EXPORTS ------
+    addTerm,
+    getTerms,
+    deleteTerms,
+    editTerms,
+    updateTerms,
+    // ----- TERM EXPORTS ------
+
+
+
+    // ----- GRADE EXPORTS ------
+    addGrade,
+    getGrades,
+    deleteGrades,
+    editGrades,
+    updateGrades,
+    // ----- GRADE EXPORTS ------
+
+
+
+
+    // ----- JCE EXPORTS ------
+    addJCE,
+    getJCEs,
+    deleteJCEs,
+    editJCEs,
+    updateJCEs,
+    // ----- JCE EXPORTS ------
+
+
+
+
+
+    // ----- MSCE EXPORTS ------
+    addMSCE,
+    getMSCEs,
+    deleteMSCEs,
+    editMSCEs,
+    updateMSCEs,
+    // ----- MSCE EXPORTS ------
 };

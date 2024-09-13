@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setSubjectFormData } from '../examination/examSlice.jsx';
 
 
-const SubjectForm = () => {
+const SubjectForm = ({ fetchData }) => {
     const subjectFormData = useSelector((state) => state.exam.subjectFormData);
     const dispatch = useDispatch();
     const isEditMode = useSelector((state) => state.exam.isEditMode);
@@ -18,16 +18,20 @@ const SubjectForm = () => {
         if(isEditMode) {
           const res = await api.updateSubject(editItemId, data);
           if(res.data.success === true) {
+            fetchData();
             toast.success(res.data.message);
           }
           else {
             toast.error(res.data.message);
           }
+          dispatch(setIsEditMode(false));
+          dispatch(setEditItemId(null));
         }
         else {
             try {
               const res = await api.addSubject({ data });
               if (res.data.success === true) {
+                fetchData();
                 toast.success(res.data.message);
               } 
               else {
@@ -41,8 +45,8 @@ const SubjectForm = () => {
             subjectName: '',
             code: '',
           }));
-          setIsEditMode(false);
-          setEditItemId(null);
+          dispatch(setIsEditMode(false));
+          dispatch(setEditItemId(null));
       };
   const handleChange = (e) => {
     const { name, value } = e.target;

@@ -428,9 +428,21 @@
     width: 7rem;
     margin-right: 1rem;
 }
-.examination__container, .year__container, .subject__container {
+.examination__container, .year__container, .subject__container, .class__container, .term__container {
     display: flex;
     flex-direction: column;
+}
+.outSide {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+.inSide {
+    width: 100%;
+    display: flex;
+    margin-bottom: 1rem;
+    justify-content: left;
+    align-items: center;
 }
 .add__rows__btn {
     background-color: #C6E1FE;
@@ -509,7 +521,15 @@
     font-size: 0.9rem;
     padding: 0.3rem 1rem;
 }
-.inputContainer input::placeholder {
+.inputContainer select {
+    border: none;
+    outline: none;
+    background-color: transparent;
+    font-size: 0.9rem;
+    padding: 0.3rem 1rem;
+    width: 18.6rem;
+}
+.inputContainer input::placeholder, .inputContainer select option {
     font-size: 0.9rem;
     font-style: italic;
     color: #6e6b6b;
@@ -558,5 +578,46 @@
 }
 .sr_width {
     width: 100px !important;
+}
+
+.tablo {
+    float: right;
+    border-bottom: 3px solid #E8ECEF;
+    width: 100%;
+    box-shadow: 0px 0px 0px 0px #fff !important;
+}
+
+.tabcontento {
+    padding-left: 10px;
+    width: 100%;
+    border-left: none;
+    height: 100%;
+	margin-top: 5px;
+}
+.tablinko {
+    background-color: inherit;
+    color: #6e6b6b;
+    padding: 10px;
+    width: 7%;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    transition: 0.2s;
+	/* margin-bottom: 10px; */
+	font-weight: 600;
+	font-size: 0.9rem;
+}
+.tablinko:hover {
+	border-bottom: 3px solid #007BFE;
+	color: #007BFE;
+}
+.tablinko.active {
+    background: none;
+	border-bottom: 3px solid #007BFE;
+	color: #007BFE;
+    box-shadow: 0px 0px 0px 0px #fff !important;
+}
+.customo__table {
+    width: 100%;
 }
 /* Settings ends here */

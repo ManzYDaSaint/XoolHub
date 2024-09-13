@@ -25,6 +25,31 @@ const {
     updateSubjects,
     verify,
     Logout,
+    addClass,
+    getClasses,
+    deleteClasses,
+    editClasses,
+    updateClasses,
+    addTerm,
+    getTerms,
+    deleteTerms,
+    editTerms,
+    updateTerms,
+    addGrade,
+    getGrades,
+    deleteGrades,
+    editGrades,
+    updateGrades,
+    addJCE,
+    getJCEs,
+    deleteJCEs,
+    editJCEs,
+    updateJCEs,
+    addMSCE,
+    getMSCEs,
+    deleteMSCEs,
+    editMSCEs,
+    updateMSCEs,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -99,6 +124,69 @@ router.route('/editsubject/:id').get(editSubjects);
 router.route('/updatsubject/:id').put(updateSubjects);
 
 // ------- SUBJECT ROUTES ----------- 
+
+
+
+
+// ------- CLASS ROUTES -----------
+
+router.route('/addclass').post(addClass);
+router.route('/getclass').get(getClasses);
+router.route('/deletclass/:id').delete(deleteClasses);
+router.route('/editclass/:id').get(editClasses);
+router.route('/updatclass/:id').put(updateClasses);
+
+// ------- CLASS ROUTES ----------- 
+
+
+
+// ------- TERM ROUTES -----------
+
+router.route('/addterm').post(addTerm);
+router.route('/getterm').get(getTerms);
+router.route('/deletterm/:id').delete(deleteTerms);
+router.route('/editterm/:id').get(editTerms);
+router.route('/updatterm/:id').put(updateTerms);
+
+// ------- TERM ROUTES ----------- 
+
+
+
+// ------- GRADE ROUTES -----------
+
+router.route('/addgrade').post(addGrade);
+router.route('/getgrade').get(getGrades);
+router.route('/deletgrade/:id').delete(deleteGrades);
+router.route('/editgrade/:id').get(editGrades);
+router.route('/updatgrade/:id').put(updateGrades);
+
+// ------- GRADE ROUTES ----------- 
+
+
+
+
+// ------- JCE ROUTES -----------
+
+router.route('/addjce').post(addJCE);
+router.route('/getjce').get(getJCEs);
+router.route('/deletjce/:id').delete(deleteJCEs);
+router.route('/editjce/:id').get(editJCEs);
+router.route('/updatjce/:id').put(updateJCEs);
+
+// ------- JCE ROUTES ----------- 
+
+
+
+
+// ------- MSCE ROUTES -----------
+
+router.route('/addmsce').post(addMSCE);
+router.route('/getmsce').get(getMSCEs);
+router.route('/deletmsce/:id').delete(deleteMSCEs);
+router.route('/editmsce/:id').get(editMSCEs);
+router.route('/updatmsce/:id').put(updateMSCEs);
+
+// ------- MSCE ROUTES ----------- 
 
 
 module.exports = router;

@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setFormData } from './examSlice.jsx';
 
 
-const ExamForm = () => {
+const ExamForm = ({ fetchData }) => {
     const formData = useSelector((state) => state.exam.formData);
     const dispatch = useDispatch();
     const isEditMode = useSelector((state) => state.exam.isEditMode);
@@ -18,6 +18,7 @@ const ExamForm = () => {
         if(isEditMode) {
           const res = await api.updateExam(editItemId, data);
           if(res.data.success === true) {
+            fetchData();
             toast.success(res.data.message);
           }
           else {
@@ -28,6 +29,7 @@ const ExamForm = () => {
             try {
               const res = await api.addExam({ data });
               if (res.data.success === true) {
+                fetchData();
                 toast.success(res.data.message);
               } 
               else {
@@ -41,8 +43,8 @@ const ExamForm = () => {
             namer: '',
             percentage: '',
           }));
-          setIsEditMode(false);
-          setEditItemId(null);
+          dispatch(setIsEditMode(false));
+          dispatch(setEditItemId(null));
       };
   const handleChange = (e) => {
     const { name, value } = e.target;

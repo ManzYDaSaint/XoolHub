@@ -3,9 +3,9 @@ import Auth0 from '../../hooks/auth'
 import { Toaster } from 'react-hot-toast'
 import Sidebar from '../../components/input/sidebar'
 import Navbar from '../../components/input/top'
-import FormButton from '../../components/input/formButton.jsx'
+import TeacherTabs from '../../components/teachers/add/teachers.jsx'
 
-const Teachers = () => {
+const TeacherDashboard = () => {
   return (
     <Auth0>
     <div className='dashboard__container'>
@@ -18,14 +18,7 @@ const Teachers = () => {
             <div className="headerTitle">
               <h4>TEACHER DASHBOARD</h4>
             </div>
-            <div className="settingContent">
-                <div className="splitter">
-                    <div></div>
-                    <FormButton 
-                        
-                    />
-                </div>
-            </div>
+            <TeacherTabs />
           </div>
         </div>
       </div>
@@ -34,4 +27,4 @@ const Teachers = () => {
   )
 }
 
-export default Teachers
+export default TeacherDashboard
