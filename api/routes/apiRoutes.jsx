@@ -50,6 +50,17 @@ const {
     deleteMSCEs,
     editMSCEs,
     updateMSCEs,
+    addTeacher,
+    getTeachers,
+    deleteTeachers,
+    editTeachers,
+    updateTeachers,
+    addAssignTeacher,
+    getAssignTeachers,
+    deleteAssignTeachers,
+    addClassTeacher,
+    getClassTeachers,
+    deleteClassTeachers,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -187,6 +198,40 @@ router.route('/editmsce/:id').get(editMSCEs);
 router.route('/updatmsce/:id').put(updateMSCEs);
 
 // ------- MSCE ROUTES ----------- 
+
+
+
+
+// ------- TEACHER ROUTES -----------
+
+router.route('/addteacher').post(addTeacher);
+router.route('/getteacher').get(getTeachers);
+router.route('/deletteacher/:id').delete(deleteTeachers);
+router.route('/editteacher/:id').get(editTeachers);
+router.route('/updatteacher/:id').put(updateTeachers);
+
+// ------- TEACHER ROUTES ----------- 
+
+
+
+// ------- ASSIGN TEACHER ROUTES -----------
+
+router.route('/addassignteacher').post(addAssignTeacher);
+router.route('/getassignteacher').get(getAssignTeachers);
+router.route('/deletassignteacher/:id').delete(deleteAssignTeachers);
+
+// ------- ASSIGN TEACHER ROUTES ----------- 
+
+
+
+
+// ------- CLASS TEACHER ROUTES -----------
+
+router.route('/addclassteacher').post(addClassTeacher);
+router.route('/getclassteacher').get(getClassTeachers);
+router.route('/deletclassteacher/:id').delete(deleteClassTeachers);
+
+// ------- CLASS TEACHER ROUTES ----------- 
 
 
 module.exports = router;

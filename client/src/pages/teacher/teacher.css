@@ -1,0 +1,8 @@
+.teacher_container {
+    width: 100%;
+}
+.splitter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}

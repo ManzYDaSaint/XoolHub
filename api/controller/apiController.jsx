@@ -50,11 +50,39 @@ const {
     editMSCE,
     deleteMSCE,
     getMSCE,
-    insertMSCE
+    insertMSCE,
+    checkTeacher,
+    insertTeacher,
+    getTeacher,
+    deleteTeacher,
+    editTeacher,
+    updateTeacher,
+    checkAssignTeacher,
+    insertAssignTeacher,
+    getAssignTeacher,
+    deleteAssignTeacher,
+    checkClassTeacher,
+    insertClassTeacher,
+    getClassTeacher,
+    deleteClassTeacher,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
 require('dotenv').config()
+
+
+
+// ----------------------- RANDOM PASSWORD CONTROLLER -----------------------
+function generatePassword(length = 8) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let password = '';
+    for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * chars.length);
+        password += chars[randomIndex];
+    }
+    return password;
+}
+// ----------------------- RANDOM PASSWORD CONTROLLER -----------------------
 
 
 
@@ -1659,6 +1687,389 @@ const updateMSCEs = async(req, res) => {
 
 
 
+
+
+
+// ----------------------- TEACHER CONTROLLER -----------------------
+
+const addTeacher = async (req, res) => {
+    const { name, contact, email, address } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+
+    const password = generatePassword();
+    
+    try {
+        if(!name || !contact || !email || !address) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkTeacher(id, email, contact)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Teacher already exists..."
+            });
+        }
+        else {
+            // Add new grade
+            const newTeacher = await insertTeacher(id, name, contact, email, address, password);
+            if(newTeacher) {
+                res.json({ 
+                    success: true,
+                    message: "Teacher added successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Teacher adding failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getTeachers = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const teacher = await getTeacher(sid);
+        if(teacher) {
+            res.json({
+                success: true,
+                teacher,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteTeachers = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteTeacher(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Teacher deleted successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Teacher deletion failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editTeachers = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editTeacher(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving teacher data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateTeachers = async(req, res) => {
+    const { id } = req.params;
+    const { name, contact, email, address } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        // Check if exam exists
+        const checker = await checkTeacher(sid, email, contact);
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Teacher already exists..."
+            });
+        }
+        else {
+            const update = await updateTeacher(id, name, contact, email, address, updateAt);
+            if(update) {
+                res.json({
+                    success: true,
+                    message: "Teacher updated successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Teacher updating failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- TEACHER CONTROLLER -----------------------
+
+
+
+
+
+
+// ----------------------- ASSIGN TEACHER CONTROLLER -----------------------
+
+const addAssignTeacher = async (req, res) => {
+    const { teacherid, classid, subjectid } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!teacherid || !classid || !subjectid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkAssignTeacher(id, classid, subjectid)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Teacher already assigned..."
+            });
+        }
+        else {
+            // Add new grade
+            const newTeacher = await insertAssignTeacher(id, teacherid, classid, subjectid);
+            if(newTeacher) {
+                res.json({ 
+                    success: true,
+                    message: "Teacher assigned successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Teacher assigning failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getAssignTeachers = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const assign = await getAssignTeacher(sid);
+        if(assign) {
+            res.json({
+                success: true,
+                assign,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteAssignTeachers = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteAssignTeacher(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Teacher unassigned successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Teacher unassigning failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- ASSIGN TEACHER CONTROLLER -----------------------
+
+
+
+
+
+
+// ----------------------- CLASS TEACHER CONTROLLER -----------------------
+
+const addClassTeacher = async (req, res) => {
+    const { teacherid, classid } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+    
+    try {
+        if(!teacherid || !classid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+
+        }
+
+        // Check if class exists
+        const checker = await checkClassTeacher(id, classid)
+        if(checker) {
+            res.json({
+                success: false,
+                message: "Teacher already assigned..."
+            });
+        }
+        else {
+            // Add new grade
+            const newTeacher = await insertClassTeacher(id, teacherid, classid);
+            if(newTeacher) {
+                res.json({ 
+                    success: true,
+                    message: "Teacher assigned successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Teacher assigning failed..",
+                });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getClassTeachers = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const classt = await getClassTeacher(sid);
+        if(classt) {
+            res.json({
+                success: true,
+                classt,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteClassTeachers = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteClassTeacher(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Teacher unassigned successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Teacher unassigning failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- CLASS TEACHER CONTROLLER -----------------------
+
+
+
+
 module.exports = { 
     // ----- LOGIN EXPORTS ------
     login, 
@@ -1754,4 +2165,34 @@ module.exports = {
     editMSCEs,
     updateMSCEs,
     // ----- MSCE EXPORTS ------
+
+
+
+
+     // ----- TEACHER EXPORTS ------
+     addTeacher,
+     getTeachers,
+     deleteTeachers,
+     editTeachers,
+     updateTeachers,
+     // ----- TEACHER EXPORTS ------
+
+
+
+
+    // ----- ASSIGN TEACHER EXPORTS ------
+    addAssignTeacher,
+    getAssignTeachers,
+    deleteAssignTeachers,
+    // ----- ASSIGN TEACHER EXPORTS ------
+
+
+
+
+
+    // ----- CLASS TEACHER EXPORTS ------
+    addClassTeacher,
+    getClassTeachers,
+    deleteClassTeachers,
+    // ----- CLASS TEACHER EXPORTS ------
 };

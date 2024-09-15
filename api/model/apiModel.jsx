@@ -510,6 +510,166 @@ const editMSCE = async(id) => {
 
 
 
+
+// --------------------------------------- TEACHER CRUD ------------------------------------------------
+
+// Check if object exists
+const checkTeacher = async(sid, email, contact) => {
+    const query = "SELECT sid, email, contact FROM teachers WHERE sid = $1 AND email = $2 AND contact = $3";
+    const value = [sid, email, contact];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// Add new object
+const insertTeacher = async(sid, name, contact, email, address, password) => {
+    const query = "INSERT INTO teachers(sid, name, contact, email, address, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const values = [sid, name, contact, email, address, password];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+// Get all object
+const getTeacher = async(sid) => {
+    const query = "SELECT * FROM teachers WHERE sid = $1";
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+
+// Delete object
+const deleteTeacher = async(id) => {
+    const query = "DELETE FROM teachers WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+// Updating object
+const updateTeacher = async(id, name, contact, email, address, update) => {
+    const query = "UPDATE teachers SET name = $1, contact = $2, email = $3, address = $4, updated_at = $5 WHERE id = $6";
+    const values = [name, contact, email, address, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+// Get Single object
+const editTeacher = async(id) => {
+    const query = "SELECT * FROM teachers WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+
+// --------------------------------------- TEACHER CRUD ------------------------------------------------
+
+
+
+
+
+
+
+
+// --------------------------------------- ASSIGN TEACHER CRUD ------------------------------------------------
+
+// Check if object exists
+const checkAssignTeacher = async(sid, classid, subjectid) => {
+    const query = "SELECT sid, classid, subjectid FROM assignteacher WHERE sid = $1 AND classid = $2 AND subjectid = $3";
+    const value = [sid, classid, subjectid];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// Add new object
+const insertAssignTeacher = async(sid, teacherid, classid, subjectid) => {
+    const query = "INSERT INTO assignteacher(sid, teacherid, classid, subjectid) VALUES ($1, $2, $3, $4) RETURNING *";
+    const values = [sid, teacherid, classid, subjectid];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+// Get all object
+const getAssignTeacher = async(sid) => {
+    const query = `SELECT assignteacher.id, teachers.name AS teacher, class.name AS classs, subject.name AS subject FROM assignteacher
+    INNER JOIN teachers ON teachers.id=assignteacher.teacherid
+    INNER JOIN class ON class.id=assignteacher.classid
+    INNER JOIN subject ON subject.id=assignteacher.subjectid
+    WHERE assignteacher.sid = $1`;
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+
+// Delete object
+const deleteAssignTeacher = async(id) => {
+    const query = "DELETE FROM assignteacher WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+
+// --------------------------------------- ASSIGN TEACHER CRUD ------------------------------------------------
+
+
+
+
+
+
+
+
+
+// --------------------------------------- CLASS TEACHER CRUD ------------------------------------------------
+
+// Check if object exists
+const checkClassTeacher = async(sid, classid) => {
+    const query = "SELECT sid, classid FROM classteacher WHERE sid = $1 AND classid = $2";
+    const value = [sid, classid];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// Add new object
+const insertClassTeacher = async(sid, teacherid, classid) => {
+    const query = "INSERT INTO classteacher(sid, teacherid, classid) VALUES ($1, $2, $3) RETURNING *";
+    const values = [sid, teacherid, classid];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+// Get all object
+const getClassTeacher = async(sid) => {
+    const query = `SELECT classteacher.id, teachers.name AS teacher, class.name AS classs FROM classteacher
+    INNER JOIN teachers ON teachers.id=classteacher.teacherid
+    INNER JOIN class ON class.id=classteacher.classid
+    WHERE classteacher.sid = $1`;
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+
+// Delete object
+const deleteClassTeacher = async(id) => {
+    const query = "DELETE FROM classteacher WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+
+// --------------------------------------- CLASS TEACHER CRUD ------------------------------------------------
+
+
+
+
+
+
+
+
 module.exports = {
     // ----- REGISTER SECTION -----
     checkSchool,
@@ -605,4 +765,39 @@ module.exports = {
     updateMSCE,
     editMSCE,
     // ----- MSCE SECTION -----
+
+
+
+
+    // ----- TEACHER SECTION -----
+    checkTeacher,
+    insertTeacher,
+    getTeacher,
+    deleteTeacher,
+    updateTeacher,
+    editTeacher,
+    // ----- TEACHER SECTION -----
+
+
+
+
+
+    // ----- ASSIGN TEACHER SECTION -----
+    checkAssignTeacher,
+    insertAssignTeacher,
+    getAssignTeacher,
+    deleteAssignTeacher,
+    // ----- ASSIGN TEACHER SECTION -----
+
+
+
+
+
+
+    // ----- CLASS TEACHER SECTION -----
+    checkClassTeacher,
+    insertClassTeacher,
+    getClassTeacher,
+    deleteClassTeacher,
+    // ----- CLASS TEACHER SECTION -----
 };

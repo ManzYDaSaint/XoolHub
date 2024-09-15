@@ -5,7 +5,6 @@ import Authenticate from './pages/password/authenticate';
 import Forgot from './pages/password/forgot_password';
 import Reset from './pages/password/reset_password';
 import Register from './pages/register/register';
-import TeacherDashboard from './pages/teacher/dasboard.jsx'
 import AdminDashboard from './pages/administrator/dashboard.jsx'
 import Report from './pages/administrator/report.jsx'
 import General from './pages/administrator/general.jsx'
@@ -17,6 +16,7 @@ import Teachers from './pages/administrator/teachers.jsx';
 import { Provider } from 'react-redux';
 import Store from './helpers/examination/examStore.jsx';
 import InactivityHandler from './hooks/activity.jsx';
+import Config from './pages/teacher/config.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -43,10 +43,6 @@ function App() {
     {
       path: '/authenticate',
       element: <Authenticate />
-    },
-    {
-      path: '/teacher',
-      element: <TeacherDashboard />
     },
     {
       path: '/administrator',
@@ -101,6 +97,14 @@ function App() {
       element: (
           <InactivityHandler>
           <Teachers />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/config',
+      element: (
+          <InactivityHandler>
+            <Config />
           </InactivityHandler>
         )
     },

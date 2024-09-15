@@ -3,9 +3,10 @@ import Auth0 from '../../hooks/auth'
 import { Toaster } from 'react-hot-toast'
 import Sidebar from '../../components/input/sidebar'
 import Navbar from '../../components/input/top'
-import TeacherTabs from '../../components/teachers/add/teachers.jsx'
+import Tabs from './components/tabs'
 
-const TeacherDashboard = () => {
+const Config = () => {
+
   return (
     <Auth0>
     <div className='dashboard__container'>
@@ -16,9 +17,9 @@ const TeacherDashboard = () => {
           <Navbar />
           <div className="settingContainer">
             <div className="headerTitle">
-              <h4>TEACHER DASHBOARD</h4>
+              <h4>TEACHER CONFIGURATION</h4>
             </div>
-            <TeacherTabs />
+            <Tabs />
           </div>
         </div>
       </div>
@@ -27,4 +28,4 @@ const TeacherDashboard = () => {
   )
 }
 
-export default TeacherDashboard
+export default Config

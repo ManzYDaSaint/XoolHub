@@ -127,6 +127,39 @@ const updateMSCE = (id, data) => axios.put(API + '/updatmsce/' + id, data);
 
 
 
+// --------- TEACHER AXIOS -----------
+
+const addTeacher = (data) => axios.post(API + '/addteacher', data);
+const getTeacher = () => axios.get(API + '/getteacher');
+const deleteTeacher = (id) => axios.delete(API + '/deletteacher/' + id);
+const editTeacher = (id) => axios.get(API + '/editteacher/' + id);
+const updateTeacher = (id, data) => axios.put(API + '/updatteacher/' + id, data);
+
+// --------- TEACHER AXIOS -----------
+
+
+
+// --------- ASSIGN TEACHER AXIOS -----------
+
+const addAssignTeacher = (data) => axios.post(API + '/addassignteacher', data);
+const getAssignTeacher = () => axios.get(API + '/getassignteacher');
+const deleteAssignTeacher = (id) => axios.delete(API + '/deletassignteacher/' + id);
+
+// --------- ASSIGN TEACHER AXIOS -----------
+
+
+
+// --------- CLASS TEACHER AXIOS -----------
+
+const addClassTeacher = (data) => axios.post(API + '/addclassteacher', data);
+const getClassTeacher = () => axios.get(API + '/getclassteacher');
+const deleteClassTeacher = (id) => axios.delete(API + '/deletclassteacher/' + id);
+
+// --------- CLASS TEACHER AXIOS -----------
+
+
+
+
 // eslint-disable-next-line
 export default {
   // ------ REGISTER EXPORT -------
@@ -213,4 +246,33 @@ export default {
     editMSCE,
     updateMSCE,
     // ------ MSCE EXPORT -------
+
+
+
+
+
+      // ------ TEACHER EXPORT -------
+      addTeacher,
+      getTeacher,
+      deleteTeacher,
+      editTeacher,
+      updateTeacher,
+      // ------ TEACHER EXPORT -------
+
+
+
+
+      // ------ ASSIGN TEACHER EXPORT -------
+      addAssignTeacher,
+      getAssignTeacher,
+      deleteAssignTeacher,
+      // ------ ASSIGN TEACHER EXPORT -------
+
+
+
+      // ------ CLASS TEACHER EXPORT -------
+      addClassTeacher,
+      getClassTeacher,
+      deleteClassTeacher,
+      // ------ CLASS TEACHER EXPORT -------
 };

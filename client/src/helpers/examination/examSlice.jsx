@@ -53,6 +53,21 @@ const ExamSlice = createSlice({
       floor: '',
       remark: '',
     },
+    teacherFormData: {
+      name: '',
+      contact: '',
+      email: '',
+      address: '',
+    },
+    assignTeacherFormData: {
+      teacherid: '',
+      classid: '',
+      subjectid: '',
+    },
+    classTeacherFormData: {
+      teacherid: '',
+      classid: '',
+    },
   },
   reducers: {
     setIsEditMode: (state, action) => {
@@ -91,6 +106,15 @@ const ExamSlice = createSlice({
     setMSCEFormData: (state, action) => {
       state.msceFormData = action.payload;
     },
+    setTeacherFormData: (state, action) => {
+      state.teacherFormData = action.payload;
+    },
+    setAssignTeacherFormData: (state, action) => {
+      state.assignTeacherFormData = action.payload;
+    },
+    setClassTeacherFormData: (state, action) => {
+      state.classTeacherFormData = action.payload;
+    },
   },
 });
 
@@ -106,6 +130,9 @@ export const {
   setTermFormData,
   setGradeFormData,
   setJCEFormData,
-  setMSCEFormData
+  setMSCEFormData,
+  setTeacherFormData,
+  setAssignTeacherFormData,
+  setClassTeacherFormData
 } = ExamSlice.actions;
 export default ExamSlice.reducer;
