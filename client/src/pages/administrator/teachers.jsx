@@ -28,7 +28,6 @@ const Teachers = () => {
             </div>
             <div className="settingContent">
               <div className="teacher_container">
-
                 <div className="splitter">
                     <div></div>
                     <FormButton 
@@ -39,7 +38,7 @@ const Teachers = () => {
                         />
                 </div>
                 <div className="teacher_dashboard">
-                  Dashboard starts here....
+                  Dashboard under construction....
                 </div>
               </div>
             </div>

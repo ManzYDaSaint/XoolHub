@@ -17,6 +17,8 @@ import { Provider } from 'react-redux';
 import Store from './helpers/examination/examStore.jsx';
 import InactivityHandler from './hooks/activity.jsx';
 import Config from './pages/teacher/config.jsx';
+import TeacherProfile from './pages/teacher/teacherProfile.jsx';
+import AddStudents from './pages/students/config.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -105,6 +107,22 @@ function App() {
       element: (
           <InactivityHandler>
             <Config />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/addstudents',
+      element: (
+          <InactivityHandler>
+            <AddStudents />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/teacher_profile/:id',
+      element: (
+          <InactivityHandler>
+            <TeacherProfile />
           </InactivityHandler>
         )
     },

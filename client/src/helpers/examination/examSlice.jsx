@@ -59,6 +59,11 @@ const ExamSlice = createSlice({
       email: '',
       address: '',
     },
+    studentFormData: {
+      studentNames: '',
+      yearid: '',
+      classid: '',
+    },
     assignTeacherFormData: {
       teacherid: '',
       classid: '',
@@ -109,6 +114,9 @@ const ExamSlice = createSlice({
     setTeacherFormData: (state, action) => {
       state.teacherFormData = action.payload;
     },
+    setStudentFormData: (state, action) => {
+      state.studentFormData = action.payload;
+    },
     setAssignTeacherFormData: (state, action) => {
       state.assignTeacherFormData = action.payload;
     },
@@ -133,6 +141,7 @@ export const {
   setMSCEFormData,
   setTeacherFormData,
   setAssignTeacherFormData,
-  setClassTeacherFormData
+  setClassTeacherFormData,
+  setStudentFormData
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

@@ -65,6 +65,13 @@ const {
     insertClassTeacher,
     getClassTeacher,
     deleteClassTeacher,
+    getSingleTeacher,
+    getTeacherClass,
+    getTeacherSubject,
+    checkStudent,
+    insertStudent,
+    getStudent,
+    checkThenInsert,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -1766,6 +1773,91 @@ const getTeachers = async (req, res) => {
     }
 }
 
+
+const getSingleTeachers = async (req, res) => {
+    const { id } = req.params;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const teacherid = await getSingleTeacher(sid, id);
+        if(teacherid) {
+            res.json({
+                success: true,
+                teacherid,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+
+
+const getTeacherClasses = async (req, res) => {
+    const { id } = req.params;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const classes = await getTeacherClass(sid, id);
+        if(classes) {
+            res.json({
+                success: true,
+                classes,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+
+
+const getTeacherSubjects = async (req, res) => {
+    const { id } = req.params;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const subs = await getTeacherSubject(sid, id);
+        if(subs) {
+            res.json({
+                success: true,
+                subs,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+
+
 const deleteTeachers = async(req, res) => {
     const { id } = req.params;
     try {
@@ -2070,6 +2162,151 @@ const deleteClassTeachers = async(req, res) => {
 
 
 
+
+
+// ----------------------- STUDENT CONTROLLER -----------------------
+
+// Test 1,2,3
+const trial = async(req, res) => {
+    const { studentNames, classid, yearid } = req.body.data;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+
+    try {
+        
+        // Validate the inputs
+        if (!Array.isArray(studentNames) ||studentNames.length === 0 || !classid || !yearid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields",
+            });
+        }
+        const newStudent = await checkThenInsert(classid, yearid, id, studentNames)
+        if (newStudent) {
+            return res.json({
+                success: true,
+                message: "Data inserted successfully",
+            });
+        } else {
+            return res.json({
+                success: false,
+                message: "Data already exists...",
+            });
+        }
+
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const addStudent = async (req, res) => {
+    const { studentNames, classid, yearid } = req.body.data;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const id = decoded.id;
+
+    try {
+        // Validate the inputs
+        if (!Array.isArray(studentNames) ||studentNames.length === 0 || !classid || !yearid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields",
+            });
+        }
+
+        // Call the function
+        const result = await checkStudent(id, classid, yearid, studentNames);
+
+        // Check the result
+        if (result) {  // Assuming the database returns a boolean under 'exists'
+            return res.json({
+                success: false,
+                message: `Students are already in the database...`,
+            });
+        } else {
+            // Insert the new students into the database
+            const newStudent = await insertStudent(id, studentNames, yearid, classid);
+            
+            if (newStudent) {
+                return res.json({
+                    success: true,
+                    message: "Students inserted successfully",
+                });
+            } else {
+                return res.json({
+                    success: false,
+                    message: "Error inserting data",
+                });
+            }
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+};
+
+const getStudents = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const student = await getStudent(sid);
+        if(student) {
+            res.json({
+                success: true,
+                student,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const deleteStudents = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteClassTeacher(id);
+        if(del) {
+            res.json({ 
+                success: true,
+                message: "Teacher unassigned successfully",
+            });
+        }
+        else {
+            res.json({
+                successs: false,
+                message: "Teacher unassigning failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- STUDENT CONTROLLER -----------------------
+
+
+
+
 module.exports = { 
     // ----- LOGIN EXPORTS ------
     login, 
@@ -2172,6 +2409,9 @@ module.exports = {
      // ----- TEACHER EXPORTS ------
      addTeacher,
      getTeachers,
+     getSingleTeachers,
+     getTeacherClasses,
+     getTeacherSubjects,
      deleteTeachers,
      editTeachers,
      updateTeachers,
@@ -2195,4 +2435,13 @@ module.exports = {
     getClassTeachers,
     deleteClassTeachers,
     // ----- CLASS TEACHER EXPORTS ------
+
+
+
+    // ----- STUDENT EXPORTS ------
+    addStudent,
+    getStudents,
+    deleteClassTeachers,
+    trial,
+    // ----- STUDENT EXPORTS ------
 };

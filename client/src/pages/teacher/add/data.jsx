@@ -7,8 +7,10 @@ import { setIsEditMode, setEditItemId, setTeacherFormData } from '../../../helpe
 import { toast } from 'react-hot-toast';
 import AddForm from './form.jsx';
 import AddTable from './table.jsx';
+import { useNavigate } from 'react-router-dom';
 
 const Data = () => {
+    const navigate = useNavigate();
   const dispatch = useDispatch();
   const [teacherData, setTeacherData] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
@@ -43,7 +45,7 @@ const fetchData = async () => {
           <div>
           <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
           <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
-          <button onClick={() => handleView(item.id)} className='action_icon'><Icon name='eye' className='action_view' /></button>
+          {/* <button onClick={() => handleView(item.id)} className='action_icon'><Icon name='eye' className='action_view' /></button> */}
           </div>
       ),
       }));
@@ -55,9 +57,10 @@ useEffect(() => {
     fetchData();
 }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-const handleView = async(id) => {
-    console.log('Viewing this ID:', id)
-}
+
+//   const handleView = (id) => {
+//     navigate(`/teacher_profile/${id}`);
+//   };
 
 
   // Get One exam

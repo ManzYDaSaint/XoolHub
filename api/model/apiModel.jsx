@@ -1,4 +1,5 @@
 const kneX = require('../database/db.jsx');
+// const conn = require('../database/mysql.jsx');
 
 // --------------------------------------- REGISTER CRUD ------------------------------------------------
 
@@ -537,13 +538,38 @@ const getTeacher = async(sid) => {
     return res.rows;
 }
 
+const getSingleTeacher = async(sid, id) => {
+    const query = "SELECT * FROM teachers WHERE sid = $1 AND id=$2";
+    const value = [sid, id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+const getTeacherClass = async(sid, id) => {
+    const query = `SELECT class.name FROM assignteacher 
+    INNER JOIN class ON class.id=assignteacher.classid
+    WHERE assignteacher.sid = $1 AND assignteacher.id=$2`;
+    const value = [sid, id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+const getTeacherSubject = async(sid, id) => {
+    const query = `SELECT subject.name FROM assignteacher 
+    INNER JOIN subject ON subject.id=assignteacher.subjectid
+    WHERE assignteacher.sid = $1 AND assignteacher.id=$2`;
+    const value = [sid, id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
 
 // Delete object
 const deleteTeacher = async(id) => {
     const query = "DELETE FROM teachers WHERE id = $1";
     const value = [id];
     const res = await kneX.query(query, value);
-    return res.rows.length < 1;
+    return res.rows;
 }
 
 // Updating object
@@ -670,6 +696,83 @@ const deleteClassTeacher = async(id) => {
 
 
 
+
+
+// --------------------------------------- STUDENT CRUD ------------------------------------------------
+
+// All in One
+const checkThenInsert = async(classid, yearid, sid, students) => {
+    const query = `
+    INSERT INTO students(sid, name, classid, yearid) VALUES ($1, $2, $3, $4)
+    WHERE NOT EXISTS (SELECT 1 FROM students WHERE classid = $1 AND yearid = $2 AND sid = $3 AND name = ANY($4))`;
+    const value = [classid, yearid, sid, students];
+    const res = await kneX.query(query, value);
+    return res.rows.length > 0;
+}
+
+
+// Check if object exists
+const checkStudent = async(sid, classid, yearid, students) => {
+    const query = `SELECT EXISTS (
+        SELECT 1 FROM students
+        WHERE classid = $1 AND yearid = $2 AND sid = $3 AND name = ANY ($4::text[]))`;
+    const value = [classid, yearid, sid, students];
+    const res = await kneX.query(query, value);
+    if (res.rows && res.rows[0]) {
+        const exists = res.rows[0].exists;  // Get the boolean value
+        return exists;
+    } else {
+        throw new Error("No result returned from query.");
+    }
+    
+}
+
+
+// Add new object
+const insertStudent = async(sid, studentNames, classid, yearid) => {
+    const insertedStudents = [];
+    const query = "INSERT INTO students(sid, name, classid, yearid) VALUES ($1, $2, $3, $4) RETURNING *";
+
+
+    // Insert each student one by one
+    for (const name of studentNames) {
+        const result = await kneX.query(query, [sid, name, classid, yearid]);
+        insertedStudents.push(result.rows[0]);
+    }
+
+    return insertedStudents.length > 0;
+}
+
+// Get all object
+const getStudent = async(sid) => {
+    const query = `SELECT students.*, acyear.name AS year, class.name AS class FROM students
+    INNER JOIN acyear ON acyear.yearid=students.yearid
+    INNER JOIN class ON class.classid=students.classid
+    WHERE students.sid = $1`;
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+
+// Delete object
+const deleteStudent = async(id) => {
+    const query = "DELETE FROM classteacher WHERE id = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+
+// --------------------------------------- STUDENT TEACHER CRUD ------------------------------------------------
+
+
+
+
+
+
+
+
 module.exports = {
     // ----- REGISTER SECTION -----
     checkSchool,
@@ -773,6 +876,9 @@ module.exports = {
     checkTeacher,
     insertTeacher,
     getTeacher,
+    getSingleTeacher,
+    getTeacherClass,
+    getTeacherSubject,
     deleteTeacher,
     updateTeacher,
     editTeacher,
@@ -800,4 +906,15 @@ module.exports = {
     getClassTeacher,
     deleteClassTeacher,
     // ----- CLASS TEACHER SECTION -----
+
+
+
+
+    // ----- STUDENT SECTION -----
+    checkStudent,
+    insertStudent,
+    getStudent,
+    deleteStudent,
+    checkThenInsert,
+    // ----- STUDENT SECTION -----
 };

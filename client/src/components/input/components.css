@@ -563,8 +563,18 @@
     border: 2px solid #007BFE;
     background-color: #C6E1FE;
 }
+#dangerButton {
+    color: #FF0000;
+    border: 2px solid #FF0000;
+    background-color: #FFE2E2;
+    margin-bottom: 1rem;
+}
 #tyepButton:hover {
     background-color: #007BFE;
+    color: #fff;
+}
+#dangerButton:hover {
+    background-color: #FF0000;
     color: #fff;
 }
 #closeBtn {
@@ -572,8 +582,26 @@
     border: 2px solid #FFCD43;
     background-color: #FFF9EA;
 }
+#nextButton {
+    color: #6e6b6b;
+    border: 2px solid #6e6b6b;
+    background-color: #EEEEEE;
+}
+#rowButton {
+    color: #008000;
+    border: 2px solid #008000;
+    background-color: #E2F0E2;
+}
+#rowButton:hover {
+    background-color: #008000;
+    color: #fff;
+}
 #closeBtn:hover {
     background-color: #FFCD43;
+    color: #fff;
+}
+#nextButton:hover {
+    background-color: #6e6b6b;
     color: #fff;
 }
 .action_icon {

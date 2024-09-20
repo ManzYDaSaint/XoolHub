@@ -61,6 +61,12 @@ const {
     addClassTeacher,
     getClassTeachers,
     deleteClassTeachers,
+    getSingleTeachers,
+    getTeacherClasses,
+    getTeacherSubjects,
+    addStudent,
+    getStudents,
+    trial,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -206,6 +212,9 @@ router.route('/updatmsce/:id').put(updateMSCEs);
 
 router.route('/addteacher').post(addTeacher);
 router.route('/getteacher').get(getTeachers);
+router.route('/getsingleteacher/:id').get(getSingleTeachers);
+router.route('/getteacherclasses/:id').get(getTeacherClasses);
+router.route('/getteachersubjects/:id').get(getTeacherSubjects);
 router.route('/deletteacher/:id').delete(deleteTeachers);
 router.route('/editteacher/:id').get(editTeachers);
 router.route('/updatteacher/:id').put(updateTeachers);
@@ -232,6 +241,18 @@ router.route('/getclassteacher').get(getClassTeachers);
 router.route('/deletclassteacher/:id').delete(deleteClassTeachers);
 
 // ------- CLASS TEACHER ROUTES ----------- 
+
+
+
+
+// ------- STUDENT ROUTES -----------
+
+router.route('/addstudent').post(addStudent);
+router.route('/addnew').post(trial);
+router.route('/getstudent').get(getStudents);
+router.route('/deletclassteacher/:id').delete(deleteClassTeachers);
+
+// ------- STUDENT ROUTES ----------- 
 
 
 module.exports = router;

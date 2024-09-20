@@ -131,6 +131,9 @@ const updateMSCE = (id, data) => axios.put(API + '/updatmsce/' + id, data);
 
 const addTeacher = (data) => axios.post(API + '/addteacher', data);
 const getTeacher = () => axios.get(API + '/getteacher');
+const getSingleTeacher = (id) => axios.get(API + '/getsingleteacher/' + id);
+const getTeacherClasses = (id) => axios.get(API + '/getteacherclasses/' + id);
+const getTeacherSubjects = (id) => axios.get(API + '/getteachersubjects/' + id);
 const deleteTeacher = (id) => axios.delete(API + '/deletteacher/' + id);
 const editTeacher = (id) => axios.get(API + '/editteacher/' + id);
 const updateTeacher = (id, data) => axios.put(API + '/updatteacher/' + id, data);
@@ -156,6 +159,18 @@ const getClassTeacher = () => axios.get(API + '/getclassteacher');
 const deleteClassTeacher = (id) => axios.delete(API + '/deletclassteacher/' + id);
 
 // --------- CLASS TEACHER AXIOS -----------
+
+
+
+
+// --------- STUDENT AXIOS -----------
+
+const addStudent = (data) => axios.post(API + '/addstudent', data);
+const addNew = (data) => axios.post(API + '/addnew', data);
+const getStudent = () => axios.get(API + '/getstudent');
+// const deleteStudent = (id) => axios.delete(API + '/deletclassteacher/' + id);
+
+// --------- STUDENT AXIOS -----------
 
 
 
@@ -254,6 +269,9 @@ export default {
       // ------ TEACHER EXPORT -------
       addTeacher,
       getTeacher,
+      getSingleTeacher,
+      getTeacherClasses,
+      getTeacherSubjects,
       deleteTeacher,
       editTeacher,
       updateTeacher,
@@ -275,4 +293,14 @@ export default {
       getClassTeacher,
       deleteClassTeacher,
       // ------ CLASS TEACHER EXPORT -------
+
+
+
+
+      // ------ STUDENT EXPORT -------
+      addStudent,
+      getStudent,
+      addNew,
+      // deleteClassTeacher,
+      // ------ STUDENT EXPORT -------
 };
