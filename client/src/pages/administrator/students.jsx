@@ -23,15 +23,14 @@ const Students = () => {
         <div className="dashboard">
           <Navbar />
           <div className="settingContainer">
-            <div className="headerTitle">
-              <h4>STUDENT DASHBOARD</h4>
-            </div>
             <div className="settingContent">
               <div className="student_container">
                 <div className="splitter">
-                    <div></div>
+                    <div className="headerTitle">
+                      <h5>Student Management</h5>
+                    </div>
                     <FormButton 
-                        label={'Add Students'}
+                        label={'Create'}
                         id={'tyepButton'}
                         icon={'plus'}
                         onClick={handleRedirect}

@@ -22,7 +22,9 @@ const createSchool = (data) => axios.post(API + '/signup', data);
 
 const Logon = (data) => axios.post(API + '/login', data);
 const Verify = () => axios.post(API + '/verify');
-const Logout = () => axios.post(API + '/logout');
+const tVerify = () => axios.post(API + '/tverify');
+const Logout = () => axios.post(API + '/tlogout');
+const tLogout = () => axios.post(API + '/logout');
 
 // --------- LOGIN AXIOS -----------
 
@@ -166,11 +168,41 @@ const deleteClassTeacher = (id) => axios.delete(API + '/deletclassteacher/' + id
 // --------- STUDENT AXIOS -----------
 
 const addStudent = (data) => axios.post(API + '/addstudent', data);
-const addNew = (data) => axios.post(API + '/addnew', data);
 const getStudent = () => axios.get(API + '/getstudent');
-// const deleteStudent = (id) => axios.delete(API + '/deletclassteacher/' + id);
+const getSingleStudent = (id) => axios.get(API + '/getsinglestudent/' + id);
+const deleteStudent = (id) => axios.delete(API + '/deletstudent/' + id);
+const updateStudent = (id, data) => axios.put(API + '/updatstudent/' + id, data);
 
 // --------- STUDENT AXIOS -----------
+
+
+
+
+
+// --------- FEE AXIOS -----------
+
+const addFee = (data) => axios.post(API + '/addfee', data);
+const getFee = () => axios.get(API + '/getfee');
+const deleteFee = (id) => axios.delete(API + '/deletfee/' + id);
+const editFee = (id) => axios.get(API + '/editfee/' + id);
+const updateFee = (id, data) => axios.put(API + '/updatfee/' + id, data);
+
+// --------- FEE AXIOS -----------
+
+
+
+
+
+// --------- PAYMENT AXIOS -----------
+
+const getPay = () => axios.get(API + '/getpay');
+const getPayee = (id) => axios.get(API + '/getpayee/' + id);
+const addPay = (data) => axios.post(API + '/addpay', data);
+const editPay = (id) => axios.get(API + '/editpay/' + id);
+const updatePay = (id, data) => axios.put(API + '/updatpay/' + id, data);
+const deletePay = (id) => axios.delete(API + '/deletpay/' + id);
+
+// --------- PAYMENT AXIOS -----------
 
 
 
@@ -184,8 +216,10 @@ export default {
 
   // ------ LOGIN EXPORT -------
   Verify,
+  tVerify,
   Logon,
   Logout,
+  tLogout,
   // ------ LOGIN EXPORT -------
   
   // ------ EXAM EXPORT -------
@@ -300,7 +334,31 @@ export default {
       // ------ STUDENT EXPORT -------
       addStudent,
       getStudent,
-      addNew,
-      // deleteClassTeacher,
+      getSingleStudent,
+      deleteStudent,
+      updateStudent,
       // ------ STUDENT EXPORT -------
+
+
+
+
+       // ------ FEE EXPORT -------
+       addFee,
+       getFee,
+       deleteFee,
+       editFee,
+       updateFee,
+       // ------ FEE EXPORT -------
+
+
+
+
+       // ------ PAYMENT EXPORT -------
+       getPay,
+       getPayee,
+       addPay,
+       editPay,
+       updatePay,
+       deletePay,
+       // ------ PAYMENT EXPORT -------
 };

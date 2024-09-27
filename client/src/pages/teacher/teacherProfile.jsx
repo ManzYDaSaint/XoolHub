@@ -71,10 +71,6 @@ const TeacherProfile = () => {
         fetchSData();
     }, [id]);
 
-    // const classes = [
-    //     teacherClass.name,
-    // ]
-
     const handleRedirect = () => {
         navigate('/config')
     }

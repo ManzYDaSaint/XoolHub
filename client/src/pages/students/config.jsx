@@ -15,9 +15,6 @@ const AddStudents = () => {
                     <div className="dashboard">
                         <Navbar />
                         <div className="settingContainer">
-                            <div className="headerTitle">
-                                <h4>STUDENTS</h4>
-                            </div>
                             <div className="settingContent">
                                 <div className="student_containo">
                                     <StudentData />

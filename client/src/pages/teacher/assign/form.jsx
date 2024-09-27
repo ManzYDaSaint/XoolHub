@@ -6,7 +6,7 @@ import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setAssignTeacherFormData } from '../../../helpers/examination/examSlice.jsx';
 import TeacherSelectInput from '../components/teacherSelect.jsx';
-import ClassSelectInput from '../components/classSelect.jsx';
+import ClassSelectInput from '../components/aclassSelect.jsx';
 import SubjectSelectInput from '../components/subjectSelect.jsx';
 
 
@@ -14,7 +14,7 @@ const AssignForm = ({ fetchData }) => {
     const assignTeacherFormData = useSelector((state) => state.exam.assignTeacherFormData);
     const dispatch = useDispatch();
     const isEditMode = useSelector((state) => state.exam.isEditMode);
-    const editItemId = useSelector((state) => state.exam.editItemId);
+    // const editItemId = useSelector((state) => state.exam.editItemId);
 
       // Handle submit
       const handleSubmit = async(data) => {
@@ -32,7 +32,7 @@ const AssignForm = ({ fetchData }) => {
           }
           dispatch(setAssignTeacherFormData({
             teacherid: '',
-            classid: '',
+            classidi: '',
             subjectid: '',
           }));
           dispatch(setIsEditMode(false));
@@ -64,8 +64,8 @@ const AssignForm = ({ fetchData }) => {
         <ClassSelectInput
           label={'Class'}
           handleChange={handleChange}
-          name={'classid'}
-          value={assignTeacherFormData.classid}
+          name={'classidi'}
+          value={assignTeacherFormData.classidi}
         />
         <SubjectSelectInput
           label={'Subject'}

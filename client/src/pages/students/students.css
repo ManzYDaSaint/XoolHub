@@ -20,3 +20,12 @@
     color: #fff;
     border-radius: 0.3rem;
 }
+.tabeIcon {
+    width: 2rem;
+}
+.personalContainer {
+    padding: 0 2rem;
+}
+.profileUpdate p {
+    color: #6e6b6b;
+}

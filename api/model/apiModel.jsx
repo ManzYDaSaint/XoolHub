@@ -38,6 +38,13 @@ const checkMail = async(email) => {
     return res.rows[0];
 }
 
+const checkTeacherMail = async(email) => {
+    const query = 'SELECT * FROM teachers WHERE email = $1';
+    const values = [email];
+    const res = await kneX.query(query, values);
+    return res.rows[0];
+}
+
 // --------------------------------------- LOGIN ------------------------------------------------
 
 
@@ -129,7 +136,7 @@ const getYear = async(id) => {
 
 // Delete academic year
 const deleteYear = async(id) => {
-    const query = "DELETE FROM acyear WHERE id = $1";
+    const query = "DELETE FROM acyear WHERE yearid = $1";
     const value = [id];
     const res = await kneX.query(query, value);
     return res.rows.length < 1;
@@ -137,7 +144,7 @@ const deleteYear = async(id) => {
 
 // Updating academic year
 const updateYear = async(id, name, update) => {
-    const query = "UPDATE acyear SET name = $1, updated_at = $2 WHERE id = $3";
+    const query = "UPDATE acyear SET name = $1, updated_at = $2 WHERE yearid = $3";
     const values = [name, update, id]
     const res = await kneX.query(query, values);
     return res.rows;
@@ -145,7 +152,7 @@ const updateYear = async(id, name, update) => {
 
 // Get Single academic year
 const editYear = async(id) => {
-    const query = "SELECT id, name FROM acyear WHERE id = $1";
+    const query = "SELECT yearid, name FROM acyear WHERE yearid = $1";
     const value = [id];
     const res = await kneX.query(query, value);
     return res.rows[0];
@@ -242,7 +249,7 @@ const getClass = async(id) => {
 
 // Delete object
 const deleteClass = async(id) => {
-    const query = "DELETE FROM class WHERE id = $1";
+    const query = "DELETE FROM class WHERE classid = $1";
     const value = [id];
     const res = await kneX.query(query, value);
     return res.rows.length < 1;
@@ -250,7 +257,7 @@ const deleteClass = async(id) => {
 
 // Updating object
 const updateClass = async(id, name, denom, update) => {
-    const query = "UPDATE class SET name = $1, denom = $2, updated_at = $3 WHERE id = $4";
+    const query = "UPDATE class SET name = $1, denom = $2, updated_at = $3 WHERE classid = $4";
     const values = [name, denom, update, id]
     const res = await kneX.query(query, values);
     return res.rows;
@@ -258,7 +265,7 @@ const updateClass = async(id, name, denom, update) => {
 
 // Get Single object
 const editClass = async(id) => {
-    const query = "SELECT id, name FROM class WHERE id = $1";
+    const query = "SELECT classid, name FROM class WHERE classid = $1";
     const value = [id];
     const res = await kneX.query(query, value);
     return res.rows[0];
@@ -620,7 +627,7 @@ const insertAssignTeacher = async(sid, teacherid, classid, subjectid) => {
 const getAssignTeacher = async(sid) => {
     const query = `SELECT assignteacher.id, teachers.name AS teacher, class.name AS classs, subject.name AS subject FROM assignteacher
     INNER JOIN teachers ON teachers.id=assignteacher.teacherid
-    INNER JOIN class ON class.id=assignteacher.classid
+    INNER JOIN class ON class.classid=assignteacher.classid
     INNER JOIN subject ON subject.id=assignteacher.subjectid
     WHERE assignteacher.sid = $1`;
     const value = [sid];
@@ -670,7 +677,7 @@ const insertClassTeacher = async(sid, teacherid, classid) => {
 const getClassTeacher = async(sid) => {
     const query = `SELECT classteacher.id, teachers.name AS teacher, class.name AS classs FROM classteacher
     INNER JOIN teachers ON teachers.id=classteacher.teacherid
-    INNER JOIN class ON class.id=classteacher.classid
+    INNER JOIN class ON class.classid=classteacher.classid
     WHERE classteacher.sid = $1`;
     const value = [sid];
     const res = await kneX.query(query, value);
@@ -699,17 +706,6 @@ const deleteClassTeacher = async(id) => {
 
 
 // --------------------------------------- STUDENT CRUD ------------------------------------------------
-
-// All in One
-const checkThenInsert = async(classid, yearid, sid, students) => {
-    const query = `
-    INSERT INTO students(sid, name, classid, yearid) VALUES ($1, $2, $3, $4)
-    WHERE NOT EXISTS (SELECT 1 FROM students WHERE classid = $1 AND yearid = $2 AND sid = $3 AND name = ANY($4))`;
-    const value = [classid, yearid, sid, students];
-    const res = await kneX.query(query, value);
-    return res.rows.length > 0;
-}
-
 
 // Check if object exists
 const checkStudent = async(sid, classid, yearid, students) => {
@@ -755,16 +751,183 @@ const getStudent = async(sid) => {
 }
 
 
+// Get single object
+const getSingleStudent = async(sid, id) => {
+    const query = `SELECT students.*, class.name AS class FROM students
+    INNER JOIN class ON class.classid=students.classid
+    WHERE students.sid = $1 AND students.id = $2`;
+    const value = [sid, id];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+
 // Delete object
 const deleteStudent = async(id) => {
-    const query = "DELETE FROM classteacher WHERE id = $1";
+    const query = "DELETE FROM students WHERE id = $1";
     const value = [id];
     const res = await kneX.query(query, value);
     return res.rows.length < 1;
 }
 
 
+
+// Updating object
+const updateStudent = async(id, name, contact, email, address, gender, dob, update) => {
+    const query = "UPDATE students SET name = $1, contact = $2, email = $3, address = $4, gender = $5, dob = $6, updated_at = $7 WHERE id = $8";
+    const values = [name, contact, email, address, gender, dob, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+
 // --------------------------------------- STUDENT TEACHER CRUD ------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+// --------------------------------------- FEES CRUD ------------------------------------------------
+
+// Check if object exists
+const checkFee = async(sid, name) => {
+    const query = `SELECT name FROM fees WHERE sid = $1 AND name = $2`;
+    const value = [sid, name];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+    
+}
+
+
+// Add new object
+const insertFee = async(sid, name, amount, description, start, end) => {
+    const query = "INSERT INTO fees(sid, name, amount,description, startDate, endDate) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const values = [sid, name, amount, description, start, end];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+// Get all object
+const getFee = async(sid) => {
+    const query = `SELECT * FROM fees WHERE sid = $1`;
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+
+// Delete object
+const deleteFee = async(id) => {
+    const query = "DELETE FROM fees WHERE feeid = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+
+// Get Single object
+const editFee = async(id) => {
+    const query = "SELECT * FROM fees WHERE feeid = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+
+// Updating object
+const updateFee = async(id, name, amount, description, start, end, update) => {
+    const query = "UPDATE fees SET name = $1, amount = $2, description = $3, startDate = $4, endDate = $5, updated_at = $6 WHERE feeid = $7";
+    const values = [name, amount, description, start, end, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+
+// --------------------------------------- FEES CRUD ------------------------------------------------
+
+
+
+
+
+
+
+// --------------------------------------- PAYMENT CRUD ------------------------------------------------
+
+// Get all object
+const getPay = async(sid) => {
+    const query = `SELECT pid, payment.paid, payment.updated_at, students.id, students.name AS student, class.name as class, 
+                    fees.name AS fee, payment.status
+                    FROM payment
+                    INNER JOIN students ON payment.id = students.id
+                    INNER JOIN fees ON fees.feeid = payment.feeid
+                    INNER JOIN class ON students.classid = class.classid
+                    WHERE payment.sid = $1`;
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getPayee = async(sid, id) => {
+    const query = `SELECT payment.pid, payment.updated_at, fees.name, fees.amount, payment.paid, payment.balance
+                    FROM payment
+                    INNER JOIN fees ON fees.feeid = payment.feeid
+                    WHERE payment.sid =  $1 AND id = $2`;
+    const value = [sid, id];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const insertPay = async(sid, id, feeid, paid, balance, status) => {
+    const query = "INSERT INTO payment(sid, id, feeid, paid, balance, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const values = [sid, id, feeid, paid, balance, status];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+const checkPay = async(sid, feeid, id) => {
+    const query = `SELECT * FROM payment WHERE sid = $1 AND feeid = $2 AND id = $3`;
+    const value = [sid, feeid, id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+    
+}
+
+// Get Single object
+const editPay = async(id) => {
+    const query = `SELECT payment.*, fees.amount 
+                    FROM payment 
+                    INNER JOIN fees ON fees.feeid = payment.feeid
+                    WHERE pid = $1`;
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// Updating object
+const updatePay = async(id, paid, balance, status, update) => {
+    const query = "UPDATE payment SET paid = $1, balance = $2, status = $3, updated_at = $4 WHERE pid = $5";
+    const values = [paid, balance, status, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+// Delete object
+const deletePay = async(id) => {
+    const query = "DELETE FROM payment WHERE pid = $1";
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows.length < 1;
+}
+
+// --------------------------------------- PAYMENT CRUD ------------------------------------------------
+
 
 
 
@@ -781,6 +944,7 @@ module.exports = {
     // ----- REGISTER SECTION -----
 
     checkMail,
+    checkTeacherMail,
 
 
     // ----- EXAM SECTION -----
@@ -914,7 +1078,33 @@ module.exports = {
     checkStudent,
     insertStudent,
     getStudent,
+    getSingleStudent,
     deleteStudent,
-    checkThenInsert,
+    updateStudent,
     // ----- STUDENT SECTION -----
+
+
+
+
+    // ----- FEE SECTION -----
+    checkFee,
+    insertFee,
+    getFee,
+    deleteFee,
+    updateFee,
+    editFee,
+    // ----- FEE SECTION -----
+
+
+
+
+    // ----- PAYMENT SECTION -----
+    getPay,
+    getPayee,
+    insertPay,
+    checkPay,
+    editPay,
+    updatePay,
+    deletePay,
+    // ----- PAYMENT SECTION -----
 };

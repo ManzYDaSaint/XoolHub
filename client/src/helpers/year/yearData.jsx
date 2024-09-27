@@ -33,8 +33,8 @@ const YearData = () => {
         name: item.name,
         actions: (
             <div>
-            <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-            <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleEdit(item.yearid)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
+            <button onClick={() => handleDelete(item.yearid)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
             </div>
         ),
         }));
@@ -54,7 +54,7 @@ const YearData = () => {
             yearName: res.data.edit.name,
         }));
         dispatch(setIsEditMode(true));
-        dispatch(setEditItemId(res.data.edit.id));
+        dispatch(setEditItemId(res.data.edit.yearid));
     };
       
     //   Handle Delete

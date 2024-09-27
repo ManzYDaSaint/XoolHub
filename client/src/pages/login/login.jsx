@@ -29,8 +29,19 @@ const Login = () => {
                   }, 2000);
                 
             }
+            else if(res.data.tsuccess === true) {
+                toast.success(res.data.tmessage);
+
+                // Redirecting to dashboard after successful login
+                setTimeout(() => {
+                    navigate('/tdashboard');
+                  }, 2000);
+            }
+            else if(res.data.message) {
+                toast.error(res.data.message);
+            }
             else {
-            toast.error(res.data.message);
+                toast.error(res.data.tmessage);
             }
             dispatch(setLoginData({
                 schoolEmail: '',

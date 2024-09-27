@@ -66,7 +66,22 @@ const {
     getTeacherSubjects,
     addStudent,
     getStudents,
-    trial,
+    deleteStudents,
+    getSingleStudents,
+    updateStudents,
+    addFee,
+    getFees,
+    deleteFees,
+    editFees,
+    updateFees,
+    getPays,
+    getPayees,
+    addPay,
+    editPays,
+    updatePays,
+    deletePays,
+    tverify,
+    tLogout,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -101,6 +116,8 @@ router.route('/signup').post(signup)
 
 router.route('/login').post(login);
 router.route('/verify').post(verify);
+router.route('/tverify').post(tverify);
+router.route('/tlogout').post(tLogout);
 router.route('/logout').post(Logout);
 
 // ------- LOGIN ROUTES -----------
@@ -248,11 +265,44 @@ router.route('/deletclassteacher/:id').delete(deleteClassTeachers);
 // ------- STUDENT ROUTES -----------
 
 router.route('/addstudent').post(addStudent);
-router.route('/addnew').post(trial);
 router.route('/getstudent').get(getStudents);
-router.route('/deletclassteacher/:id').delete(deleteClassTeachers);
+router.route('/getsinglestudent/:id').get(getSingleStudents);
+router.route('/deletstudent/:id').delete(deleteStudents);
+router.route('/updatstudent/:id').put(updateStudents);
 
 // ------- STUDENT ROUTES ----------- 
+
+
+
+
+
+// ------- FEE ROUTES -----------
+
+router.route('/addfee').post(addFee);
+router.route('/getfee').get(getFees);
+router.route('/deletfee/:id').delete(deleteFees);
+router.route('/editfee/:id').get(editFees);
+router.route('/updatfee/:id').put(updateFees);
+
+// ------- FEE ROUTES ----------- 
+
+
+
+
+// ------- PAYMENT ROUTES ----------- 
+
+router.route('/getpay').get(getPays);
+router.route('/getpayee/:id').get(getPayees);
+router.route('/addpay').post(addPay);
+router.route('/editpay/:id').get(editPays);
+router.route('/updatpay/:id').put(updatePays);
+router.route('/deletpay/:id').delete(deletePays);
+
+// ------- PAYMENT ROUTES ----------- 
+
+
+
+
 
 
 module.exports = router;

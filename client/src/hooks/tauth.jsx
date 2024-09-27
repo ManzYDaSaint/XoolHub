@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { InfinitySpin } from 'react-loader-spinner';
-import api from '../services/apiServices';
+import api from '../services/apiServices.jsx';
 
-function Auth0({ children }) {
+function AuthT({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -12,7 +12,7 @@ function Auth0({ children }) {
     const checkAuthentication = async () => {
       try {
         // Make a request to your authentication endpoint
-        const response = await api.Verify();
+        const response = await api.tVerify();
         if (response.data.success === true) {
           setIsAuthenticated(true);
         }
@@ -41,4 +41,4 @@ function Auth0({ children }) {
   return children;
 }
 
-export default Auth0;
+export default AuthT;

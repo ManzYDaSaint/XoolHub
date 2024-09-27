@@ -19,6 +19,13 @@ import InactivityHandler from './hooks/activity.jsx';
 import Config from './pages/teacher/config.jsx';
 import TeacherProfile from './pages/teacher/teacherProfile.jsx';
 import AddStudents from './pages/students/config.jsx';
+import StudentProfile from './pages/students/studentProfile.jsx';
+import FeesSetting from './pages/fees/setting.jsx';
+import Payment from './pages/fees/payment.jsx';
+import TeacherDashboard from './teacher-service/dashboard.jsx';
+import TStudent from './teacher-service/pages/student.jsx';
+import Entry from './teacher-service/pages/entry.jsx';
+import TReports from './teacher-service/pages/reports.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -95,6 +102,22 @@ function App() {
         )
     },
     {
+      path: '/fees_setting',
+      element: (
+          <InactivityHandler>
+          <FeesSetting />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/payment',
+      element: (
+          <InactivityHandler>
+          <Payment />
+          </InactivityHandler>
+        )
+    },
+    {
       path: '/teachers',
       element: (
           <InactivityHandler>
@@ -126,6 +149,52 @@ function App() {
           </InactivityHandler>
         )
     },
+    {
+      path: '/student_profile/:id',
+      element: (
+          <InactivityHandler>
+            <StudentProfile />
+          </InactivityHandler>
+        )
+    },
+
+
+    // Teacher Portal Routes
+    
+    {
+      path: '/tdashboard/',
+      element: (
+          <InactivityHandler>
+            <TeacherDashboard />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/tstudent/',
+      element: (
+          <InactivityHandler>
+            <TStudent />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/entry/',
+      element: (
+          <InactivityHandler>
+            <Entry />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/reports/',
+      element: (
+          <InactivityHandler>
+            <TReports />
+          </InactivityHandler>
+        )
+    },
+
+    // Teacher Portal Routes 
   ])
 
   return (

@@ -31,6 +31,7 @@ const StudentForm = ({ fetchData }) => {
     dispatch(setStudentFormData({
       yearid: '',
       classid: '',
+      students: '',
     }));
   };
 
@@ -125,7 +126,7 @@ const StudentForm = ({ fetchData }) => {
               icon={'plus'}
               type={'button'}
             />
-            <FormButton label={'Add Students'} id="submitButton" />
+            <FormButton label={'Add Students'} id="tyepButton" />
           </div>
         )}
       </form>

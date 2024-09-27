@@ -64,14 +64,34 @@ const ExamSlice = createSlice({
       yearid: '',
       classid: '',
     },
+    studentUpdateFormData: {
+      student: '',
+      class: '',
+      email: '',
+      contact: '',
+      gender: '',
+      address: '',
+      dob: '',
+    },
     assignTeacherFormData: {
       teacherid: '',
-      classid: '',
+      classidi: '',
       subjectid: '',
     },
     classTeacherFormData: {
       teacherid: '',
       classid: '',
+    },
+    feesFormData: {
+      name: '',
+      amount: '',
+      description: '',
+      start: '',
+      end: '',
+    },
+    payFormData: {
+      paid: '',
+      amount: ''
     },
   },
   reducers: {
@@ -117,11 +137,20 @@ const ExamSlice = createSlice({
     setStudentFormData: (state, action) => {
       state.studentFormData = action.payload;
     },
+    setStudentUpdateFormData: (state, action) => {
+      state.studentUpdateFormData = action.payload;
+    },
     setAssignTeacherFormData: (state, action) => {
       state.assignTeacherFormData = action.payload;
     },
     setClassTeacherFormData: (state, action) => {
       state.classTeacherFormData = action.payload;
+    },
+    setFeesFormData: (state, action) => {
+      state.feesFormData = action.payload;
+    },
+    setPayFormData: (state, action) => {
+      state.payFormData = action.payload;
     },
   },
 });
@@ -142,6 +171,9 @@ export const {
   setTeacherFormData,
   setAssignTeacherFormData,
   setClassTeacherFormData,
-  setStudentFormData
+  setStudentFormData,
+  setStudentUpdateFormData,
+  setFeesFormData,
+  setPayFormData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

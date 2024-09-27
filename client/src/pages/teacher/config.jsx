@@ -16,9 +16,6 @@ const Config = () => {
         <div className="dashboard">
           <Navbar />
           <div className="settingContainer">
-            <div className="headerTitle">
-              <h4>TEACHER CONFIGURATION</h4>
-            </div>
             <Tabs />
           </div>
         </div>

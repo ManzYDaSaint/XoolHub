@@ -1,29 +1,26 @@
 import React, { useState, useEffect } from 'react'
 import { Icon } from 'semantic-ui-react'
 import FormButton from '../../components/input/formButton.jsx'
-import api from '../../services/apiServices.jsx';
-// import { useDispatch } from 'react-redux';
-// import { setStudentFormData } from '../../helpers/examination/examSlice.jsx';
-import { toast } from 'react-hot-toast';
+import api from '../../services/apiServices.jsx'
+import { toast } from 'react-hot-toast'
 import StudentForm from './studentForm.jsx'
 import StudentTable from './studentTable.jsx'
+import { useNavigate } from 'react-router-dom'
 
 const StudentData = () => {
-    // const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [studentData, setStudentData] = useState([]);
     const [showStudent, setShowStudent] = useState(false);
     const handleStudentOpen = () => { setShowStudent(true); };
     const handleStudentClose = () => { setShowStudent(false); };
 
-      // Fetch all the exams
+    // Fetch all the exams
   const fetchData = async () => {
     const res = await api.getStudent();
     const data = res.data.student;
-    console.log(res);
     if(data.length < 0) {
         const studentData = data.map((item, index) => ({
         sr: "",
-        admission: "",
         name: "No records found...",
         class: "",
         dob: "",
@@ -33,10 +30,9 @@ const StudentData = () => {
         }));
         setStudentData(studentData);
     }
-    else {
+    else {        
         const studentData = data.map((item, index) => ({
         sr: index + 1,
-        admission: item.admission,
         name: item.name,
         class: item.class,
         dob: item.dob,
@@ -44,8 +40,8 @@ const StudentData = () => {
         address: item.address,
         actions: (
             <div>
-            {/* <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button> */}
             <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleView(item.id)} className='action_icon'><Icon name='eye' className='action_view' /></button>
             </div>
         ),
         }));
@@ -70,6 +66,11 @@ const StudentData = () => {
         } catch (error) {
             toast.error('An error occurred. Please try again.');
         }
+    };
+
+
+    const handleView = (id) => {
+        navigate(`/student_profile/${id}`);
     };
 
   return (

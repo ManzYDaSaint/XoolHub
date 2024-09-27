@@ -543,10 +543,14 @@
     padding: 0.3rem 1rem;
     width: 18.6rem;
 }
-.inputContainer input::placeholder, .inputContainer select option {
+.inputContainer select option {
+    font-family: "Poppins", sans-serif !important;
     font-size: 0.9rem;
-    font-style: italic;
+}
+.inputContainer input::placeholder {
+    font-size: 0.9rem;
     color: #6e6b6b;
+    font-style: italic;
 }
 .formButton {
     border: none;
