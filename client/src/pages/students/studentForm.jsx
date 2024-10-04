@@ -83,7 +83,7 @@ const StudentForm = ({ fetchData }) => {
             <h3><span>Step 1:</span> Select Year and Class</h3>
             <div className="formGroup">
               <ClassSelectInput
-                onChange={handleChange}
+                handleChange={handleChange}
                 label={'Class'}
                 name={'classid'}
                 value={studentFormData.classid}

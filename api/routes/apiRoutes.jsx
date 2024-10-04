@@ -82,6 +82,13 @@ const {
     deletePays,
     tverify,
     tLogout,
+    getClassesTeacher,
+    getSubjectsTeacher,
+    getExamsTeacher,
+    getTermsTeacher,
+    getYearsTeacher,
+    getStudentFilter,
+    insertResults,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -299,6 +306,19 @@ router.route('/updatpay/:id').put(updatePays);
 router.route('/deletpay/:id').delete(deletePays);
 
 // ------- PAYMENT ROUTES ----------- 
+
+
+
+
+// ------- ENTRY ROUTES ----------- 
+router.route('/getassignedclass').get(getClassesTeacher);
+router.route('/getassignedsubject/:id').get(getSubjectsTeacher);
+router.route('/getassignedexam').get(getExamsTeacher);
+router.route('/getassignedterm').get(getTermsTeacher);
+router.route('/getassignedyear').get(getYearsTeacher);
+router.route('/getstudentfilter').post(getStudentFilter);
+router.route('/insertresults').post(insertResults);
+// ------- ENTRY ROUTES -----------
 
 
 

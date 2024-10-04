@@ -1,3 +1,148 @@
 .teacher-container {
     margin: 0 1rem;
 }
+.teacherContent {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+.righter {
+    width: 70%;
+}
+.lefter {
+    width: 30%;
+}
+.ui.modal {
+    top: 60% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    overflow: hidden !important;
+    height: 80% !important;
+}
+.ui.modal > .content {
+    margin: 0 !important;
+}
+.ui.modal > .actions {
+    text-align: center !important;
+}
+.lefter {
+    padding: 1rem;
+    background-color: #E8ECEF;
+    border-radius: 0.7rem;
+}
+.lefter button {
+    border: none;
+    background: none;
+    outline: none;
+    color: #6e6b6b;
+    display: flex;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: 0.5s ease-in-out;
+    margin-top: 1rem;
+}
+.lefter button:hover {
+    color: red;
+}
+.teacherInfo {
+    text-align: center;
+}
+.headerIcon {
+    font-size: 4rem !important;
+    color: #6e6b6b;
+    position: relative;
+}
+.headerIcon::after {
+    content: '';
+    position: absolute;
+    right: 0.3rem;
+    top: 1.3rem;
+    z-index: 10;
+    background-color: #007BFE;
+    width: 1.2rem;
+    height: 1.2rem;
+    border-radius: 50%;
+    border: 3px solid #E8ECEF;
+    animation: blink 1.5s infinite;
+}
+@keyframes blink {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 123, 254, 0.7);
+    }
+    70% {
+      transform: scale(1.2);
+      box-shadow: 0 0 0 10px rgba(0, 123, 254, 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(0, 123, 254, 0);
+    }
+  }
+  .teacherDeto ul li {
+    border-left: 3px solid #007BFE;
+    margin-bottom: 0.7rem;
+    list-style: none;
+    text-align: left;
+    padding: 0.5rem;
+}
+.teacherDeto p {
+  margin: 0;
+  color: #6e6b6b;
+}
+.teacherDeto ul li p {
+    padding: 0;
+    margin: 0 1rem;
+    font-size: 0.9rem;
+  }
+  .classes {
+    font-weight: 500;
+  }
+  .subject {
+    color: #6e6b6b;
+  }
+  .classTeacher {
+    padding: 1rem;
+    background-color: #C6E1FE;
+    border-radius: 0.7rem;
+    text-align: left;
+    font-size: 0.9rem;
+    display: flex;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+.classTeacher h6 {
+    font-size: 1rem;
+    color: #007BFE;
+    margin: 0;
+  }
+  .classTeacher p {
+    font-size: 0.9rem;
+    color: #6e6b6b;
+    /* margin-left: 1.5rem; */
+  }
+  .classtIcon {
+    font-size: 1.5rem !important;
+    color: #6e6b6b;
+    margin-right: 1rem !important;
+  }
+  .scoreInput {
+    border: 2px solid #C6E1FE;
+    outline: none;
+    padding: 0.1rem 1rem;
+    border-radius: 0.3rem;
+  }
+  .loki {
+    background-color: #E8ECEF;
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50%;
+    position: absolute;
+    top: 20%;
+    left: 25%;
+    margin: auto 5%;
+    border-radius: 0.5rem;
+}

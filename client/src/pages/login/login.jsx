@@ -27,7 +27,7 @@ const Login = () => {
                 setTimeout(() => {
                     navigate('/administrator');
                   }, 2000);
-                
+                return;
             }
             else if(res.data.tsuccess === true) {
                 toast.success(res.data.tmessage);
@@ -36,6 +36,7 @@ const Login = () => {
                 setTimeout(() => {
                     navigate('/tdashboard');
                   }, 2000);
+                  return;
             }
             else if(res.data.message) {
                 toast.error(res.data.message);

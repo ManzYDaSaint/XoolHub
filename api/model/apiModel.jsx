@@ -715,7 +715,7 @@ const checkStudent = async(sid, classid, yearid, students) => {
     const value = [classid, yearid, sid, students];
     const res = await kneX.query(query, value);
     if (res.rows && res.rows[0]) {
-        const exists = res.rows[0].exists;  // Get the boolean value
+        const exists = res.rows[0].exists;
         return exists;
     } else {
         throw new Error("No result returned from query.");
@@ -934,6 +934,84 @@ const deletePay = async(id) => {
 
 
 
+// --------------------------------------- ENTRY CRUD ------------------------------------------------
+
+const getYearByTeacherID = async(id) => {
+    const query = "SELECT * FROM acyear WHERE sid = $1";
+    const value = [id]
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getTermByTeacherID = async(sid) => {
+    const query = "SELECT * FROM term WHERE sid = $1";
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getExamByTeacherID = async(id) => {
+    const query = "SELECT * FROM exam WHERE sid = $1";
+    const value = [id]
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getClassByTeacherID = async(sid, id) => {
+    const query = `SELECT DISTINCT(class.name), class.classid FROM assignteacher
+                    INNER JOIN class ON  class.classid = assignteacher.classid
+                    WHERE assignteacher.sid = $1 AND assignteacher.teacherid = $2`;
+    const value = [sid, id];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getSubjectByTeacherID = async(sid, id, classid) => {
+    const query = `SELECT DISTINCT(subject.name), subject.id as subjectid FROM assignteacher
+                    INNER JOIN subject ON  subject.id = assignteacher.subjectid
+                    WHERE assignteacher.sid = $1 AND assignteacher.teacherid = $2 AND assignteacher.classid = $3`;
+    const value = [sid, id, classid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getStudentForEntry = async(sid, yearid, classid) => {
+    const query = `SELECT id, name FROM students WHERE sid = $1 AND yearid = $2 AND classid = $3 ORDER BY name ASC`;
+    const values = [sid, yearid, classid];
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+
+const checkResult = async(sid, data) => {
+    const query = `SELECT EXISTS (
+        SELECT 1 FROM results
+        WHERE classid = $1 AND yearid = $2 AND sid = $3 AND termid = $4 AND typeid = $5 AND studentid = $6 AND subjectid = $7)`;
+    const values = [data.selectedClass, data.yearid, sid, data.termid, data.typeid, data.id, data.selectedSubject]; // Updated classid to selectedClass
+    try {
+        const res = await kneX.query(query, values);
+        return res.rows[0].exists;
+    } catch (error) {
+        console.error('Error checking record existence:', error);
+    }
+}
+
+const insertResult = async(sid, data) => {
+    const query = `INSERT INTO results(sid, studentid, yearid, termid, typeid, classid, subjectid, score) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
+    const values = [sid, data.id, data.yearid, data.termid, data.typeid, data.selectedClass, data.selectedSubject, data.score];
+    const res = await kneX.query(query, values);
+    return res.rows.length > 0;
+}
+
+// --------------------------------------- ENTRY CRUD ------------------------------------------------
+
+
+
+
+
+
+
 
 
 module.exports = {
@@ -1107,4 +1185,18 @@ module.exports = {
     updatePay,
     deletePay,
     // ----- PAYMENT SECTION -----
+
+
+
+
+    // ----- ENTRY SECTION -----
+    getClassByTeacherID,
+    getSubjectByTeacherID,
+    getYearByTeacherID,
+    getTermByTeacherID,
+    getExamByTeacherID,
+    getStudentForEntry,
+    checkResult,
+    insertResult,
+    // ----- ENTRY SECTION -----
 };

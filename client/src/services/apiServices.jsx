@@ -23,8 +23,8 @@ const createSchool = (data) => axios.post(API + '/signup', data);
 const Logon = (data) => axios.post(API + '/login', data);
 const Verify = () => axios.post(API + '/verify');
 const tVerify = () => axios.post(API + '/tverify');
-const Logout = () => axios.post(API + '/tlogout');
-const tLogout = () => axios.post(API + '/logout');
+const tLogout = () => axios.post(API + '/tlogout');
+const Logout = () => axios.post(API + '/logout');
 
 // --------- LOGIN AXIOS -----------
 
@@ -207,6 +207,20 @@ const deletePay = (id) => axios.delete(API + '/deletpay/' + id);
 
 
 
+
+// --------- ENTRY AXIOS -----------
+const getAssignClass = () => axios.get(API + '/getassignedclass');
+const getAssignSubject = (id) => axios.get(API + '/getassignedsubject/' + id);
+const getAssignExam = () => axios.get(API + '/getassignedexam');
+const getAssignTerm = () => axios.get(API + '/getassignedterm');
+const getAssignYear = () => axios.get(API + '/getassignedyear');
+const getFilter = (data) => axios.post(API + '/getstudentfilter', data);
+const insertResult = (data) => axios.post(API + '/insertresults', data);
+// --------- ENTRY AXIOS -----------
+
+
+
+
 // eslint-disable-next-line
 export default {
   // ------ REGISTER EXPORT -------
@@ -361,4 +375,17 @@ export default {
        updatePay,
        deletePay,
        // ------ PAYMENT EXPORT -------
+
+
+
+
+       // ------ ENTRY EXPORT -------
+       getAssignClass,
+       getAssignSubject,
+       getAssignExam,
+       getAssignTerm,
+       getAssignYear,
+       getFilter,
+       insertResult,
+       // ------ ENTRY EXPORT -------
 };

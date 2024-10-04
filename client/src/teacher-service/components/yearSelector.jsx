@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import api from '../../../services/apiServices';
+import api from '../../services/apiServices';
 
-const ClassSelectInput = ({ label, handleChange, name, value }) => {
+const YearSelector = ({ label, onChange, name, value }) => {
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.getClass();
-        const data = response.data.classs;
+        const response = await api.getAssignYear();
+        const data = response.data.yt;
         setOptions(data);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
-    fetchData(); // Call the fetch function when component mounts
+    fetchData();
   }, []);
 
   return (
       <div className="formInputContainer">
         {label && <label htmlFor={''}>{label}</label>}
         <div className="inputContainer">
-          <select name={name} value={value} onChange={handleChange}>
+          <select name={name} value={value} onChange={onChange}>
             <option value="" selected disabled>Select an option</option>
             {options.map((option) => (
-              <option key={option.classid} value={option.classid}>
+              <option key={option.yearid} value={option.yearid}>
                 {option.name}
               </option>
             ))}
@@ -35,4 +35,4 @@ const ClassSelectInput = ({ label, handleChange, name, value }) => {
   );
 };
 
-export default ClassSelectInput;
+export default YearSelector;

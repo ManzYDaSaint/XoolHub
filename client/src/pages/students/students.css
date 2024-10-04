@@ -8,6 +8,9 @@
 #student__table {
     width: 100%;
 }
+.multi_step {
+    position: relative;
+}
 .multi_step h3 {
     padding: 0.5rem 0;
     font-size: 1rem;

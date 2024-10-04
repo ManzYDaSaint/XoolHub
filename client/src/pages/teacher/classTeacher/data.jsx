@@ -16,7 +16,7 @@ const ClassTData = () => {
 const fetchData = async () => {
   const res = await api.getClassTeacher();
   const data = res.data.classt;
-  if(data.length < 1) {
+  if(data.length === 0) {
       const classTeacherData = data.map((item, index) => ({
       sr: "",
       teacher: "No records found...",
