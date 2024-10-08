@@ -78,7 +78,18 @@ const EntryForm = () => {
     } catch (error) {
       toast.error('An error occurred. Please try again.');
     } finally {
+      prevStep();
       setLoading(false);
+      dispatch(setFilterFormData({
+        yearid: '',
+        typeid: '',
+        termid: ''
+      }));
+      setYearid('')
+      setTermid('')
+      setTypeid('')
+      setSelectedClass('')
+      setSelectedSubject('')
     }
   }
 
@@ -102,6 +113,11 @@ const EntryForm = () => {
   // Proceed to the next step
   const nextStep = () => {
     setStep(step + 1);
+  };
+
+  // Proceed to the next step
+  const prevStep = () => {
+    setStep(step - 1);
   };
 
   // Dependent Selection
@@ -133,7 +149,7 @@ const EntryForm = () => {
       <form onSubmit={handleFilter}>
         {step === 1 && (
           <div className="multi_step">
-            <h3><span>Step 1:</span> Filter the students</h3>
+            <h3><span className='m-3'>Step 1:</span> Specify students to add results.</h3>
             <div className="formGroup">
                 <YearSelector 
                     onChange={handleChange}
@@ -169,7 +185,7 @@ const EntryForm = () => {
                 />
             </div>
             <FormButton
-              label={'Filter'}
+              label={'Specify'}
               icon={'arrow right'}
               id={'nextButton'}
             />
@@ -178,8 +194,8 @@ const EntryForm = () => {
       </form>
       <form onSubmit={onSubmit}>
         {step === 2 && (
-          <div className="multi_step">
-            <h3><span>Step 2:</span> Enter Examination Scores</h3>
+          <div className="multi_step mt-3">
+            <h3><span className='m-3'>Step 2:</span> Enter Examination Scores</h3>
               <div>
                 <table className="table customisedTable">
                   <thead>

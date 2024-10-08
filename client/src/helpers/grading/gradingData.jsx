@@ -20,7 +20,7 @@ const GradingData = () => {
     const fetchData = async () => {
       const res = await api.getGrade();
       const data = res.data.grade;
-      if(data.length < 0) {
+      if(data.length === 0) {
           const gradeData = data.map((item, index) => ({
           sr: "",
           denom: "",
@@ -62,11 +62,11 @@ const GradingData = () => {
       setShowGrade(true);
       const res = await api.editGrade(id);
       dispatch(setGradeFormData({
-        denom: res.data.edit.denom,
-        roof: res.data.edit.roof,
-        floor: res.data.edit.floor,
-        grade: res.data.edit.grade,
-        remark: res.data.edit.remark,
+        denom: res.data.edit.denom || '',
+        roof: res.data.edit.roof || '',
+        floor: res.data.edit.floor || '',
+        grade: res.data.edit.grade || '',
+        remark: res.data.edit.remark || '',
       }));
       dispatch(setIsEditMode(true));
       dispatch(setEditItemId(res.data.edit.id));

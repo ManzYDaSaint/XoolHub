@@ -38,12 +38,6 @@ const NavBar = () => {
             <p>Entry</p>
           </li>
         </Link>
-        <Link to={'/reports'} className='Links'>
-          <li className={location.pathname === "/reports" ? "sideItem active" : "sideItem"}>
-            <Icon name='file alternate' className='sideIcons' />
-            <p>Reports</p>
-          </li>
-        </Link>
       </ul>
     </div>
   )

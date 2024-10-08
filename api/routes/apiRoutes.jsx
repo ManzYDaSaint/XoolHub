@@ -89,6 +89,9 @@ const {
     getYearsTeacher,
     getStudentFilter,
     insertResults,
+    getXs,
+    getScores,
+    updateScores,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -319,6 +322,16 @@ router.route('/getassignedyear').get(getYearsTeacher);
 router.route('/getstudentfilter').post(getStudentFilter);
 router.route('/insertresults').post(insertResults);
 // ------- ENTRY ROUTES -----------
+
+
+
+
+// ------- FILTER ROUTES -----------
+router.route('/getx').post(getXs);
+router.route('/getscore/:id').get(getScores);
+router.route('/getscore/:id').get(getScores);
+router.route('/updatscore/:id').put(updateScores);
+// ------- FILTER ROUTES -----------
 
 
 

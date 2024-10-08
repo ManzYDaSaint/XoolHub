@@ -73,8 +73,8 @@ const GradeForm = ({ fetchData }) => {
             <FormSelect 
               label={'Denom'}
               name={'denom'}
-              value={gradeFormData.denom}
               onChange={handleChange}
+              value={gradeFormData.denom}
             />
             <FormInput
               label={'Roof'}

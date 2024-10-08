@@ -77,6 +77,12 @@ const ExamSlice = createSlice({
       typeid: '',
       selectedClass: '',
     },
+    xFormData: {
+      yearid: '',
+      termid: '',
+      typeid: '',
+      selectedClass: '',
+    },
     studentUpdateFormData: {
       student: '',
       class: '',
@@ -105,6 +111,9 @@ const ExamSlice = createSlice({
     payFormData: {
       paid: '',
       amount: ''
+    },
+    scoreFormData: {
+      score: '',
     },
   },
   reducers: {
@@ -171,6 +180,12 @@ const ExamSlice = createSlice({
     setFilterFormData: (state, action) => {
       state.filterFormData = action.payload;
     },
+    setXFormData: (state, action) => {
+      state.xFormData = action.payload;
+    },
+    setScoreFormData: (state, action) => {
+      state.scoreFormData = action.payload;
+    },
   },
 });
 
@@ -196,5 +211,7 @@ export const {
   setPayFormData,
   setEntryFormData,
   setFilterFormData,
+  setXFormData,
+  setScoreFormData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

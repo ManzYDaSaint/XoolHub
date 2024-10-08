@@ -483,6 +483,16 @@
     border-radius: 4rem;
     font-size: 0.7rem;
 }
+.add__rows__btn .filter {
+    background-color: #007BFE;
+    color: #fff;
+    padding: 0.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4rem;
+    font-size: 0.7rem;
+}
 .tableContainer {
     margin-top: 2rem;
 }

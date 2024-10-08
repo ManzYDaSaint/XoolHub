@@ -96,6 +96,11 @@ const {
     getStudentForEntry,
     checkResult,
     insertResult,
+    getClassById,
+    getGradeByDenom,
+    getX,
+    getScore,
+    updateScore,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -1078,7 +1083,7 @@ const updateClasses = async(req, res) => {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkClass(sid, className);
+        const checker = await checkClass(sid, className, denom);
         if(checker) {
             res.json({
                 success: false,
@@ -1298,6 +1303,24 @@ const addGrade = async (req, res) => {
                 message: "Please fill up all the fields"
             });
 
+        }
+        else if(isNaN(roof) || isNaN(floor)) {
+            return res.json({
+                success: false,
+                message: "'Roof' or 'Floor' must be a number"
+            });
+        }
+        else if(Number(roof) < Number(floor)) {
+            return res.json({
+                success: false,
+                message: "'Roof' must be a higher value than 'Floor'"
+            });
+        }
+        else if(Number(roof) > 100 || Number(floor) > 100) {
+            return res.json({
+                success: false,
+                message: "'Roof' or 'Floor' must not be over 100"
+            });
         }
 
         // Check if class exists
@@ -2960,6 +2983,12 @@ const getStudentFilter = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
     try {
+        if(!yearid || !selectedClass) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
         const filter = await getStudentForEntry(sid, yearid, selectedClass);
         if(filter) {
             if(filter.length === 0) {
@@ -2995,42 +3024,313 @@ const insertResults = async(req, res) => {
     let allResults = [];
     try {
         for (const entry of studentData) {
-
-            const check = await checkResult(sid, entry);
-            if(check) {
-                allResults.push({
+            if(!entry.selectedClass || !entry.yearid || !entry.termid || !entry.typeid || !entry.id || !entry.selectedSubject) {
+                return res.json({
                     success: false,
-                    message: `Result for student ${entry.id} already exists.`,
+                    message: "Please fill up all the fields"
+                });
+            }
+            else if(Number(entry.score) > 100) {
+                return res.json({
+                    success: false,
+                    message: "Score can not be over 100.."
                 });
             }
             else {
-                const add = await insertResult(sid, entry);
-                if(add) {
+                const check = await checkResult(sid, entry);
+                if(check) {
                     allResults.push({
-                        success: true,
-                        message: `Result for student ${entry.id} inserted successfully.`,
+                        success: false,
+                        message: `Result for student ${entry.id} already exists.`,
                     });
                 }
                 else {
-                    allResults.push({
-                        success: false,
-                        message: `Failed to insert result for student ${entry.id}.`,
-                    });
+                    const venom = 'JCE';
+                    const carnage = 'MSCE';
+                    const getClass = await getClassById(sid, entry.selectedClass);
+                    if(getClass) {
+                        if(getClass.denom === venom) {
+                            const getDenom = await getGradeByDenom(sid, venom);
+                            if(getDenom) {
+                                let grade = '';  // Declare grade and remarks outside the loop
+                                let remarks = '';
+
+                                for(const gr of getDenom) {
+                                    if(Number(entry.score) >= gr.floor && Number(entry.score) <= gr.roof) {
+                                        grade = gr.grade;  // Assign values to grade and remarks
+                                        remarks = gr.remark;
+                                        break;  // Break the loop once the grade is found
+                                    }
+                                }
+
+                                if (grade && remarks) {
+                                    // Insert Results
+                                    const add = await insertResult(sid, grade, remarks, entry);
+                                    if(add) {
+                                        allResults.push({
+                                            success: true,
+                                            message: `Result for student ${entry.id} inserted successfully.`,
+                                        });
+                                    }
+                                    else {
+                                        allResults.push({
+                                            success: false,
+                                            message: `Failed to insert result for student ${entry.id}.`,
+                                        });
+                                    }
+                                } else {
+                                    allResults.push({
+                                        success: false,
+                                        message: `No valid grade found for score of student ${entry.id}.`,
+                                    });
+                                }
+                            }
+                        }
+                        else {
+                            const getDenom = await getGradeByDenom(sid, carnage);
+                            if(getDenom) {
+                                let grade = '';  // Declare grade and remarks outside the loop
+                                let remarks = '';
+
+                                for(const gr of getDenom) {
+                                    if(Number(entry.score) >= gr.floor && Number(entry.score) <= gr.roof) {
+                                        grade = gr.grade;  // Assign values to grade and remarks
+                                        remarks = gr.remark;
+                                        break;  // Break the loop once the grade is found
+                                    }
+                                }
+
+                                if (grade && remarks) {
+                                    // Insert Results
+                                    const add = await insertResult(sid, grade, remarks, entry);
+                                    if(add) {
+                                        allResults.push({
+                                            success: true,
+                                            message: `Result for student ${entry.id} inserted successfully.`,
+                                        });
+                                    }
+                                    else {
+                                        allResults.push({
+                                            success: false,
+                                            message: `Failed to insert result for student ${entry.id}.`,
+                                        });
+                                    }
+                                } else {
+                                    allResults.push({
+                                        success: false,
+                                        message: `No valid grade found for score of student ${entry.id}.`,
+                                    });
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
-        console.log()
-        if(allResults[0].success === true) {
+
+        if (allResults.length > 0) {
+            const anySuccess = allResults.some(result => result.success === true);
+
+            if (anySuccess) {
+                return res.json({
+                    success: true,
+                    message: `Results for ${allResults.length} students inserted successfully.`,
+                });
+            } else {
+                return res.json({
+                    success: false,
+                    message: `Results for ${allResults.length} students already exist or failed.`,
+                });
+            }
+        } else {
+            // If no entries were processed
             return res.json({
+                success: false,
+                message: "No results were processed.",
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+
+}
+
+// ----------------------- ENTRY CONTROLLER -----------------------
+
+
+
+
+// ----------------------- FILTER CONTROLLER -----------------------
+
+const getXs = async(req, res) => {
+    const { yearid, termid, typeid, selectedClass, selectedSubject } = req.body;
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    try {
+        if(!yearid || !termid || !typeid || !selectedSubject || !selectedClass) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+        const x = await getX(sid, yearid, termid, typeid, selectedClass, selectedSubject);
+        if(x) {
+            if(x.length === 0) {
+                return res.json({
+                    success: false,
+                    message: 'Students not found!'
+                });
+            }
+            res.json({
                 success: true,
-                message: `Results for ${allResults.length} students inserted successfully.`,
+                x,
             });
         }
         else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getScores = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await getScore(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving score data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateScores = async(req, res) => {
+    const { id } = req.params;
+    const { score } = req.body.data;
+    const { classID } = req.body;
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    const now = new Date();
+    const updateAt = now.toLocaleString();
+
+    try {
+        if(!score) {
             return res.json({
                 success: false,
-                message: `Results for ${allResults.length} students already exists.`,
+                message: "Please fill up all the fields"
             });
+        }
+        else if(Number(score) > 100) {
+            return res.json({
+                success: false,
+                message: "Score can not be over 100.."
+            });
+        }
+        else {
+            const venom = 'JCE';
+            const carnage = 'MSCE';
+            const getClass = await getClassById(sid, classID);
+            if(getClass) {
+                if(getClass.denom === venom) {
+                    const getDenom = await getGradeByDenom(sid, venom);
+                    if(getDenom) {
+                        let grade = ''; 
+                        let remarks = '';
+
+                        for(const gr of getDenom) {
+                            if(Number(score) >= gr.floor && Number(score) <= gr.roof) {
+                                grade = gr.grade;
+                                remarks = gr.remark;
+                                break;
+                            }
+                        }
+
+                        if (grade && remarks) {
+                            // Insert Results
+                            const add = await updateScore(id, score, grade, remarks, updateAt);
+                            if(add) {
+                                return res.json({
+                                    success: true,
+                                    message: `Result for student update successfully.`,
+                                });
+                            }
+                            else {
+                                return res.json({
+                                    success: false,
+                                    message: `Failed to update result for student.`,
+                                });
+                            }
+                        } else {
+                            return res.json({
+                                success: false,
+                                message: `No valid grade found for score of student.`,
+                            });
+                        }
+                    }
+                }
+                else {
+                    const getDenom = await getGradeByDenom(sid, carnage);
+                    if(getDenom) {
+                        let grade = '';
+                        let remarks = '';
+
+                        for(const gr of getDenom) {
+                            if(Number(score) >= gr.floor && Number(score) <= gr.roof) {
+                                grade = gr.grade;  // Assign values to grade and remarks
+                                remarks = gr.remark;
+                                break;  // Break the loop once the grade is found
+                            }
+                        }
+
+                        if (grade && remarks) {
+                            // Insert Results
+                            const add = await updateScore(sid, score, grade, remarks, updateAt);
+                            if(add) {
+                                return res.json({
+                                    success: true,
+                                    message: `Result for student update successfully.`,
+                                });
+                            }
+                            else {
+                                return res.json({
+                                    success: false,
+                                    message: `Failed to update result for student .`,
+                                });
+                            }
+                        } else {
+                            return res.json({
+                                success: false,
+                                message: `No valid grade found for score of student ${id}.`,
+                            });
+                        }
+                    }
+                }
+            }
         }
     } catch (error) {
         return res.status(500).json({
@@ -3040,7 +3340,7 @@ const insertResults = async(req, res) => {
     }
 }
 
-// ----------------------- ENTRY CONTROLLER -----------------------
+// ----------------------- FILTER CONTROLLER -----------------------
 
 
 
@@ -3222,4 +3522,13 @@ module.exports = {
     getYearsTeacher,
     insertResults,
     // ----- ENTRY EXPORTS ------
+
+
+
+
+    // ----- FILTER EXPORTS ------
+    getXs,
+    getScores,
+    updateScores,
+    // ----- FILTER EXPORTS ------
 };

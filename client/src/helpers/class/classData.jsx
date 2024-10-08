@@ -20,7 +20,7 @@ const ClassData = () => {
     const fetchData = async () => {
       const res = await api.getClass();
       const data = res.data.classs;
-      if(data.length < 1) {
+      if(data.length === 0) {
           const classData = data.map((item, index) => ({
           sr: "",
           denom: "",
@@ -56,11 +56,11 @@ const ClassData = () => {
       setShowClass(true);
       const res = await api.editClass(id);
       dispatch(setClassFormData({
-        denom: res.data.edit.denom,
-        className: res.data.edit.name,
+        denom: res.data.edit.denom || '',
+        className: res.data.edit.name || '',
       }));
       dispatch(setIsEditMode(true));
-      dispatch(setEditItemId(res.data.edit.classid));
+      dispatch(setEditItemId(res.data.edit.classid || ''));
     };
     
       //   Handle Delete

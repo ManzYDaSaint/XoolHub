@@ -221,6 +221,16 @@ const insertResult = (data) => axios.post(API + '/insertresults', data);
 
 
 
+
+// --------- FILTER AXIOS -----------
+const getX = (data) => axios.post(API + '/getx', data);
+const getScore = (id) => axios.get(API + '/getscore/' + id);
+const updateScore = (id, data) => axios.put(API + '/updatscore/' + id, data);
+// --------- FILTER AXIOS -----------
+
+
+
+
 // eslint-disable-next-line
 export default {
   // ------ REGISTER EXPORT -------
@@ -388,4 +398,13 @@ export default {
        getFilter,
        insertResult,
        // ------ ENTRY EXPORT -------
+
+
+
+
+       // ------ FILTER EXPORT -------
+       getX,
+       getScore,
+       updateScore,
+       // ------ FILTER EXPORT -------
 };

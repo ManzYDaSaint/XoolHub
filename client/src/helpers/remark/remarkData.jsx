@@ -33,7 +33,7 @@ const RemarkData = () => {
     const fetchJCE = async () => {
       const res = await api.getJCE();
       const data = res.data.jce;
-      if(data.length < 0) {
+      if(data.length === 0) {
           const jceData = data.map((item, index) => ({
           sr: "",
           denom: "",

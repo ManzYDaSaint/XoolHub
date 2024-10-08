@@ -76,7 +76,6 @@ const getExam = async(id) => {
     return res.rows;
 }
 
-
 // Delete Examination Type
 const deleteExam = async(id) => {
     const query = "DELETE FROM exam WHERE id = $1";
@@ -223,9 +222,9 @@ const editSubject = async(id) => {
 // --------------------------------------- CLASS CRUD ------------------------------------------------
 
 // Check if object exists
-const checkClass = async(id, name) => {
-    const query = "SELECT name FROM class WHERE name = $1 AND sid = $2";
-    const value = [name, id];
+const checkClass = async(id, name, denom) => {
+    const query = "SELECT name FROM class WHERE name = $1 AND sid = $2 AND denom = $3";
+    const value = [name, id, denom];
     const res = await kneX.query(query, value);
     return res.rows[0];
 }
@@ -246,7 +245,6 @@ const getClass = async(id) => {
     return res.rows;
 }
 
-
 // Delete object
 const deleteClass = async(id) => {
     const query = "DELETE FROM class WHERE classid = $1";
@@ -265,7 +263,7 @@ const updateClass = async(id, name, denom, update) => {
 
 // Get Single object
 const editClass = async(id) => {
-    const query = "SELECT classid, name FROM class WHERE classid = $1";
+    const query = "SELECT classid, denom, name FROM class WHERE classid = $1";
     const value = [id];
     const res = await kneX.query(query, value);
     return res.rows[0];
@@ -996,15 +994,68 @@ const checkResult = async(sid, data) => {
     }
 }
 
-const insertResult = async(sid, data) => {
-    const query = `INSERT INTO results(sid, studentid, yearid, termid, typeid, classid, subjectid, score) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`;
-    const values = [sid, data.id, data.yearid, data.termid, data.typeid, data.selectedClass, data.selectedSubject, data.score];
+const insertResult = async(sid, grade, remarks, data) => {
+    const query = `INSERT INTO results(sid, studentid, yearid, termid, typeid, classid, subjectid, score, remarks, grade) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
+    const values = [sid, data.id, data.yearid, data.termid, data.typeid, data.selectedClass, data.selectedSubject, data.score, remarks, grade];
     const res = await kneX.query(query, values);
     return res.rows.length > 0;
 }
 
+const getClassById = async(sid, data) => {
+    const query = "SELECT denom FROM class WHERE classid = $1 AND sid = $2";
+    const value = [data, sid];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+const getGradeByDenom = async(sid, denom) => {
+    const query = "SELECT * FROM grading WHERE sid = $1 AND denom = $2";
+    const value = [sid, denom];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
 // --------------------------------------- ENTRY CRUD ------------------------------------------------
+
+
+
+
+
+
+// --------------------------------------- FILTER CRUD ------------------------------------------------
+
+const getX = async(sid, yearid, termid, typeid, classid, subjectid) => {
+    const query = `SELECT results.id as resultid, students.name as student, class.name as class, subject.name as subject, results.score, results.grade, results.remarks
+        FROM results
+        INNER JOIN students ON students.id = results.studentid
+        INNER JOIN class ON class.classid = results.classid
+        INNER JOIN subject ON subject.id = results.subjectid
+        WHERE results.yearid = $1 AND results.termid = $2 AND results.typeid = $3
+        AND results.classid = $4 AND results.subjectid = $5 AND results.sid = $6`;
+    const value = [yearid, termid, typeid, classid, subjectid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getScore = async(id) => {
+    const query = `SELECT *
+        FROM results
+        WHERE id = $1`;
+    const value = [id];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// Updating object
+const updateScore = async(id, score, grade, remark, update) => {
+    const query = "UPDATE results SET score = $1, grade = $2, remarks = $3, updated_at = $4 WHERE id = $5";
+    const values = [score, grade, remark, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+// --------------------------------------- FILTER CRUD ------------------------------------------------
 
 
 
@@ -1198,5 +1249,16 @@ module.exports = {
     getStudentForEntry,
     checkResult,
     insertResult,
+    getClassById,
+    getGradeByDenom,
     // ----- ENTRY SECTION -----
+
+
+
+
+    // ----- FILTER SECTION -----
+    getX,
+    getScore,
+    updateScore,
+    // ----- FILTER SECTION -----
 };

@@ -25,7 +25,6 @@ import Payment from './pages/fees/payment.jsx';
 import TeacherDashboard from './teacher-service/dashboard.jsx';
 import TStudent from './teacher-service/pages/student.jsx';
 import Entry from './teacher-service/pages/entry.jsx';
-import TReports from './teacher-service/pages/reports.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -184,15 +183,7 @@ function App() {
             <Entry />
           </InactivityHandler>
         )
-    },
-    {
-      path: '/reports/',
-      element: (
-          <InactivityHandler>
-            <TReports />
-          </InactivityHandler>
-        )
-    },
+    }
 
     // Teacher Portal Routes 
   ])
