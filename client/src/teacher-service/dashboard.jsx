@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast'
 import AuthT from '../hooks/tauth.jsx'
 import './teacher-service.css'
 import LogOutModal from './components/modal.jsx'
-import { Icon } from 'semantic-ui-react'
+import Info from './components/info.jsx'
 
 const TeacherDashboard = () => {
     const [open, setOpen] = useState(false);
@@ -48,36 +48,7 @@ const TeacherDashboard = () => {
                                 </div>
                             </div>
                             <div className="lefter">
-                                <button onClick={() => setOpen(true)}>
-                                    <Icon name='shutdown' />
-                                    Log Out
-                                </button>
-                                <div className="teacherInfo">
-                                    <Icon name='user circle outline' className='headerIcon mt-3'/>
-                                    <div className="teacherDeto mt-4">
-                                        <h6>Emmanuel Nyangazi</h6>
-                                        <p>ManzyN@outlook.com</p>
-                                        <p>0993533315</p>
-                                        <p>Tembwe</p>
-                                        <ul className='mt-5'>
-                                            <li>
-                                                <p className="classes">Form One</p>
-                                                <p className="subject">Mathematics</p>
-                                            </li>
-                                            <li>
-                                                <p className="classes">Form One</p>
-                                                <p className="subject">Mathematics</p>
-                                            </li>
-                                        </ul>
-                                        <div className="classTeacher">
-                                            <Icon name='universal access' className='classtIcon' />
-                                            <div className="splitLeft">
-                                                <h6>Class Teacher:</h6>
-                                                <p>Form Four</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                <Info setOpen={setOpen} />
                             </div>
                         </div>
                     </div>

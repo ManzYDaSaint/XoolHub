@@ -146,19 +146,26 @@
     margin: auto 5%;
     border-radius: 0.5rem;
 }
-.reportContainer h5{
+.reportContainer h5, .studentContainer h5{
   color: #6e6b6b;
   font-size: 1rem;
   text-transform: uppercase;
   font-weight: 600;
 }
-.reportContainer p {
+.reportContainer p, .studentContainer p {
   font-size: 0.9rem;
   font-weight: 500;
 }
 .reportContainer {
   padding: 2rem 0;
   width: 100%;
+}
+.studentContainer {
+  width: 100%;
+  margin: auto 5%;
+  padding: 2rem 1rem;
+  background-color: #E8ECEF;
+  border-radius: 1rem;
 }
 .entrySplitter {
   display: flex;
@@ -175,4 +182,85 @@
   display: flex !important;
   align-items: center;
   justify-content: center;
+}
+.studentContainer header {
+  position: relative;
+  background-color: #4677BC;
+  border-radius: 0.8rem;
+  padding: 1rem 3rem;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.studentIcon {
+  width: 6rem;
+  border: 7px double #fff ;
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+.studentContainer .info {
+  padding: 0;
+  margin-top: 0.1rem;
+  margin-left: 1rem;
+  color: #fff;
+}
+.studentContainer .info h4 {
+  margin: 0;
+}
+.cap {
+  position: absolute;
+  right: -1rem;
+  width: 15rem;
+  transform:rotate(-25deg);
+  opacity: 0.4;
+}
+.studentContainer section {
+  border-radius: 0.8rem;
+  padding: 1rem 3rem;
+  background-color: #fff;
+  margin-top: 2rem;
+}
+.baso, .his {
+  font-size: 1.1rem;
+  color: #4677BC;
+}
+.chunk h6 {
+  font-size: 0.9rem;
+}
+.chunk p {
+  font-size: 1rem;
+}
+.history {
+  border-radius: 0.8rem;
+  padding: 1rem 3rem;
+  background-color: #fff;
+  margin-top: 2rem;
+  display: flex;
+}
+.insideHistory {
+  width: 100% !important;
+  margin-top: 2rem;
+}
+.ui.menu .active.item {
+  background-color: #4677BC;
+  color: #fff;
+  font-family: "Poppins", sans-serif !important;
+}
+.ui.menu .item {
+  font-family: "Poppins", sans-serif !important;
+}
+.ui.menu .item:hover {
+  background-color: #4677BC !important;
+  color: #fff !important;
+}
+.ui.pointing.menu .item::after {
+  background-color: #4677BC !important;
+}
+.ui.segment {
+  width: 100% !important;
+  height: 100% !important;
+}
+.iconLucide {
+  margin-top: -0.3rem !important;
+  margin-right: 0.15rem !important;
 }

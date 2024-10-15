@@ -92,6 +92,12 @@ const {
     getXs,
     getScores,
     updateScores,
+    getClassStudents,
+    getSingleStud,
+    getFinancial,
+    getSingleTeacher4Dashboard,
+    getClassNSubjects,
+    dashboardClassTeachers,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -332,6 +338,24 @@ router.route('/getscore/:id').get(getScores);
 router.route('/getscore/:id').get(getScores);
 router.route('/updatscore/:id').put(updateScores);
 // ------- FILTER ROUTES -----------
+
+
+
+
+// ------- TEACHER STUDENNT ROUTES -----------
+router.route('/getcs').get(getClassStudents);
+router.route('/getsinglestud/:id').get(getSingleStud);
+router.route('/getfin/:id').get(getFinancial);
+// ------- TEACHER STUDENNT ROUTES -----------
+
+
+
+// ------- TEACHER DASHBOARD ROUTES -----------
+router.route('/getstd').get(getSingleTeacher4Dashboard);
+router.route('/getcns').get(getClassNSubjects);
+router.route('/getdct').get(dashboardClassTeachers);
+// ------- TEACHER DASHBOARD ROUTES -----------
+
 
 
 

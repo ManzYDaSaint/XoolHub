@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
 import PayTable from './components.jsx/payTable.jsx';
 import api from '../../services/apiServices.jsx';
+import { Timer, CircleCheckBig } from 'lucide-react';
 
 const Payment = () => {
     const navigate = useNavigate();
@@ -45,7 +46,21 @@ const Payment = () => {
             class: item.class,
             fee: item.fee,
             amount: item.paid,
-            status: item.status,
+            status: (
+                <>
+                    {item.status === 'ongoing' ? (
+                        <>
+                            <Timer size={16} className='iconLucide' color='orange' /> Ongoing
+                        </>
+                    ) : item.status === 'complete' ? (
+                        <>
+                            <CircleCheckBig size={15} className='iconLucide' color='green' /> Complete
+                        </>
+                    ) : (
+                        item.status
+                    )}
+                </>
+              ),
             actions: (
                 <div>
                     <button onClick={() => handleView(item.id)} className='action_icon'><Icon name='eye' className='action_view' /></button>

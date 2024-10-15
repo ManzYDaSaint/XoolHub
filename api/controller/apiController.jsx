@@ -101,6 +101,9 @@ const {
     getX,
     getScore,
     updateScore,
+    getClassStudent,
+    getClassNSubject,
+    dashboardClassTeacher,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -3345,6 +3348,186 @@ const updateScores = async(req, res) => {
 
 
 
+
+
+// ----------------------- TEACHER CLASS CONTROLLER -----------------------
+const getClassStudents = async(req, res) => {
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const teacherid = decoded.id;
+    try {
+        const cs = await getClassStudent(sid, teacherid)
+        if(cs) {
+            if(cs.length === 0) {
+                return res.json({
+                    success: false,
+                    message: 'Students not found!'
+                });
+            }
+            res.json({
+                success: true,
+                cs,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getSingleStud = async (req, res) => {
+    const { id } = req.params;
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    try {
+        const studentid = await getSingleStudent(sid, id);
+        if(studentid) {
+            res.json({
+                success: true,
+                studentid,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getFinancial = async (req, res) => {
+    const { id } = req.params;
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    try {
+        const payee = await getPayee(sid, id);
+        if(payee) {
+            res.json({
+                success: true,
+                payee,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+// ----------------------- TEACHER CLASS CONTROLLER -----------------------
+
+
+
+
+
+
+// ----------------------- TEACHER DASHBOARD CONTROLLER -----------------------
+const getSingleTeacher4Dashboard = async (req, res) => {
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const id = decoded.id;
+    try {
+        const teacher = await getSingleTeacher(sid, id);
+        if(teacher) {
+            res.json({
+                success: true,
+                teacher,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getClassNSubjects = async (req, res) => {
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const id = decoded.id;
+    try {
+        const CnS = await getClassNSubject(sid, id);
+        if(CnS) {
+            res.json({
+                success: true,
+                CnS,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const dashboardClassTeachers = async (req, res) => {
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const id = decoded.id;
+    try {
+        const dct = await dashboardClassTeacher(sid, id);
+        if(dct) {
+            res.json({
+                success: true,
+                dct,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+// ----------------------- TEACHER DASHBOARD CONTROLLER -----------------------
+
+
+
+
 module.exports = { 
     // ----- LOGIN EXPORTS ------
     login, 
@@ -3531,4 +3714,20 @@ module.exports = {
     getScores,
     updateScores,
     // ----- FILTER EXPORTS ------
+
+
+
+    // ----- TEACHER STUDENT EXPORTS ------
+    getClassStudents,
+    getSingleStud,
+    getFinancial,
+    // ----- TEACHER STUDENT EXPORTS ------
+
+
+
+    // ----- TEACHER DASHBOARD EXPORTS ------
+    getSingleTeacher4Dashboard,
+    getClassNSubjects,
+    dashboardClassTeachers,
+    // ----- TEACHER DASHBOARD EXPORTS ------
 };

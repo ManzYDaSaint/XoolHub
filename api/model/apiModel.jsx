@@ -751,7 +751,7 @@ const getStudent = async(sid) => {
 
 // Get single object
 const getSingleStudent = async(sid, id) => {
-    const query = `SELECT students.*, class.name AS class FROM students
+    const query = `SELECT students.*, TO_CHAR(students.created_at, 'Month DD, YYYY') AS admission, class.name AS class FROM students
     INNER JOIN class ON class.classid=students.classid
     WHERE students.sid = $1 AND students.id = $2`;
     const value = [sid, id];
@@ -873,7 +873,7 @@ const getPay = async(sid) => {
 }
 
 const getPayee = async(sid, id) => {
-    const query = `SELECT payment.pid, payment.updated_at, fees.name, fees.amount, payment.paid, payment.balance
+    const query = `SELECT payment.pid, TO_CHAR(payment.updated_at, 'Month DD, YYYY') AS date, fees.name, fees.amount, payment.paid, payment.balance, payment.status
                     FROM payment
                     INNER JOIN fees ON fees.feeid = payment.feeid
                     WHERE payment.sid =  $1 AND id = $2`;
@@ -1056,6 +1056,45 @@ const updateScore = async(id, score, grade, remark, update) => {
 }
 
 // --------------------------------------- FILTER CRUD ------------------------------------------------
+
+
+
+
+
+
+// --------------------------------------- TEACHER STUDENR CRUD ------------------------------------------------
+
+const getClassStudent = async(sid, teacherid) => {
+    const query = `SELECT students.id, students.name, EXTRACT(YEAR FROM AGE(CAST(students.dob AS DATE))) AS age, class.name as class, students.gender, students.address, students.contact
+        FROM classteacher
+        INNER JOIN students ON students.classid = classteacher.classid
+        INNER JOIN class ON class.classid = classteacher.classid
+        WHERE classteacher.sid = $1 AND classteacher.teacherid = $2`;
+    const value = [sid, teacherid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getClassNSubject = async(sid, teacherid) => {
+    const query = `SELECT class.name AS class, subject.name AS subject FROM assignteacher
+        INNER JOIN class ON class.classid = assignteacher.classid
+        INNER JOIN subject ON subject.id = assignteacher.subjectid
+        WHERE assignteacher.sid = $1 AND assignteacher.teacherid = $2`;
+    const value = [sid, teacherid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const dashboardClassTeacher = async(sid, teacherid) => {
+    const query = `SELECT class.name AS class FROM classteacher
+        INNER JOIN class ON class.classid = classteacher.classid
+        WHERE classteacher.sid = $1 AND classteacher.teacherid = $2`;
+    const value = [sid, teacherid];
+    const res = await kneX.query(query, value);
+    return res.rows[0];
+}
+
+// --------------------------------------- TEACHER STUDENR CRUD ------------------------------------------------
 
 
 
@@ -1261,4 +1300,13 @@ module.exports = {
     getScore,
     updateScore,
     // ----- FILTER SECTION -----
+    
+    
+    
+    
+    // ----- TEACHER CLASS SECTION -----
+    getClassStudent,
+    getClassNSubject,
+    dashboardClassTeacher,
+    // ----- TEACHER CLASS SECTION -----
 };

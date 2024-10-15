@@ -2,14 +2,11 @@ import React, { useState, useEffect } from 'react'
 import { Icon } from 'semantic-ui-react'
 import FormButton from '../../../components/input/formButton.jsx'
 import api from '../../../services/apiServices.jsx'
-import { useDispatch } from 'react-redux';
-import { setIsEditMode, setEditItemId, setAssignTeacherFormData } from '../../../helpers/examination/examSlice.jsx'
 import { toast } from 'react-hot-toast';
 import AssignForm from './form.jsx';
 import AssignTable from './table.jsx';
 
 const AssignData = () => {
-  const dispatch = useDispatch();
   const [assignTeacherData, setAssignTeacherData] = useState([]);
   const [showAssign, setShowAssign] = useState(false);
   const handleAssignOpen = () => { setShowAssign(true); };

@@ -231,6 +231,24 @@ const updateScore = (id, data) => axios.put(API + '/updatscore/' + id, data);
 
 
 
+
+// --------- TEACHER STUDENTS AXIOS -----------
+const getCS = () => axios.get(API + '/getcs');
+const getSingleStud = (id) => axios.get(API + '/getsinglestud/' + id);
+const getFinancial = (id) => axios.get(API + '/getfin/' + id);
+// --------- TEACHER STUDENTS AXIOS -----------
+
+
+
+// --------- TEACHER DASHBOARD AXIOS -----------
+const getTeacher4Dashboard = () => axios.get(API + '/getstd');
+const getClassNSubject = () => axios.get(API + '/getcns');
+const dashboardAssignClass = () => axios.get(API + '/getdct');
+// --------- TEACHER DASHBOARD AXIOS -----------
+
+
+
+
 // eslint-disable-next-line
 export default {
   // ------ REGISTER EXPORT -------
@@ -407,4 +425,20 @@ export default {
        getScore,
        updateScore,
        // ------ FILTER EXPORT -------
+
+
+
+       // ------ TEACHER STUDENT EXPORT -------
+       getCS,
+       getSingleStud,
+       getFinancial,
+       // ------ TEACHER STUDENT EXPORT -------
+
+
+
+       // ------ TEACHER DASHBOARD EXPORT -------
+       getTeacher4Dashboard,
+       getClassNSubject,
+       dashboardAssignClass,
+       // ------ TEACHER DASHBOARD EXPORT -------
 };

@@ -37,7 +37,7 @@ const PfData = () => {
     else {
         const payData = data.map((item, index) => ({
         sr: index + 1,
-        date: item.updated_at.slice(0, 10),
+        date: item.date,
         fee: item.name,
         amount: item.amount,
         paid: item.paid,
