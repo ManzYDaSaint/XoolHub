@@ -25,7 +25,6 @@ const StudentData = () => {
                     'actions': "",
                 }
             ];
-            console.log(data)
             const studData = data.map((item, index) => ({
             sr: '',
             student: item.student,

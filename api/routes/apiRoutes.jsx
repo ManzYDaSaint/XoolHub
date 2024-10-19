@@ -98,6 +98,10 @@ const {
     getSingleTeacher4Dashboard,
     getClassNSubjects,
     dashboardClassTeachers,
+    getGenderPieTeacher,
+    getTopStudents,
+    getAverageScoreBySubject,
+    countStudentByTeacher,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -355,6 +359,16 @@ router.route('/getstd').get(getSingleTeacher4Dashboard);
 router.route('/getcns').get(getClassNSubjects);
 router.route('/getdct').get(dashboardClassTeachers);
 // ------- TEACHER DASHBOARD ROUTES -----------
+
+
+
+
+// ------- CHART ROUTES -----------
+router.route('/getstudentgender/:id').get(getGenderPieTeacher);
+router.route('/gettopstudent').get(getTopStudents);
+router.route('/getavesubject').get(getAverageScoreBySubject);
+router.route('/countstudentteacher').get(countStudentByTeacher);
+// ------- CHART ROUTES -----------
 
 
 

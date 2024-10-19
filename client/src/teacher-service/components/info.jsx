@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Icon } from 'semantic-ui-react'
-import api from '../../services/apiServices';
+import api from '../../services/apiServices'
+import GenderPieChart from './genderPieChart.jsx'
 
 const Info = ({setOpen}) => {
     const [teacher, setTeacher] = useState('')
@@ -77,8 +78,13 @@ const Info = ({setOpen}) => {
                 <ul className='mt-5'>
                     {cns.map((item, index) => (
                     <li key={index}>
-                        <p className="classes">{item.class}</p>
-                        <p className="subject">{item.subject}</p>
+                        <div className="classList">
+                            <p className="classes">{item.class}</p>
+                            <p className="subject">{item.subject}</p>
+                        </div>
+                        <div className="classPie">
+                            <GenderPieChart id={item.classid} />
+                        </div>
                     </li>
                     ))}
                 </ul>

@@ -248,6 +248,15 @@ const dashboardAssignClass = () => axios.get(API + '/getdct');
 
 
 
+// --------- CHART AXIOS -----------
+const getStudentByGender = (id) => axios.get(API + '/getstudentgender/' + id);
+const getTopStudent = () => axios.get(API + '/gettopstudent');
+const getAveSubject = () => axios.get(API + '/getavesubject');
+const countStudentByTeacher = () => axios.get(API + '/countstudentteacher');
+// --------- CHART AXIOS -----------
+
+
+
 
 // eslint-disable-next-line
 export default {
@@ -441,4 +450,13 @@ export default {
        getClassNSubject,
        dashboardAssignClass,
        // ------ TEACHER DASHBOARD EXPORT -------
+
+
+
+       // ------ CHART EXPORT -------
+       getStudentByGender,
+       getTopStudent,
+       getAveSubject,
+       countStudentByTeacher,
+       // ------ CHART EXPORT -------
 };

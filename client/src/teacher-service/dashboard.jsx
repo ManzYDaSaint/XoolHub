@@ -5,6 +5,8 @@ import AuthT from '../hooks/tauth.jsx'
 import './teacher-service.css'
 import LogOutModal from './components/modal.jsx'
 import Info from './components/info.jsx'
+import Welcome from './components/welcome.jsx'
+import Cards from './components/cards.jsx'
 
 const TeacherDashboard = () => {
     const [open, setOpen] = useState(false);
@@ -22,29 +24,8 @@ const TeacherDashboard = () => {
                         <div className="teacherContent">
                             <div className="righter">
                                 <div className="headerr">
-                                    <h4>Welcome back, Emmanuel Nyangazi</h4>
-                                    <p>Here's the updates you might wanna catch up <br/> while being away</p>
-                                    <div className="cards">
-                                        <div className="container-fluid">
-                                            <div className="row">
-                                                <div className="col-sm-4">
-                                                    <div className="card">
-                                                        One
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <div className="card">
-                                                        Two
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-4">
-                                                    <div className="card">
-                                                        Three
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <Welcome />
+                                    <Cards />
                                 </div>
                             </div>
                             <div className="lefter">

@@ -86,6 +86,9 @@
     list-style: none;
     text-align: left;
     padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 .teacherDeto p {
   margin: 0;
@@ -264,3 +267,182 @@
   margin-top: -0.3rem !important;
   margin-right: 0.15rem !important;
 }
+.dateContainer {
+  display: flex;
+  align-items: center;
+}
+.dateContainer h3 {
+  font-size: 2rem;
+  padding: 0.2rem 0.5rem;
+  border: 2px solid #007BFE;
+  border-radius: 0.5rem;
+  border-top: 0.6rem solid #007BFE;
+  color: #007BFE;
+  font-weight: 600;
+}
+.dateContainer p {
+  padding: 0;
+  margin: 0;
+}
+.dateSection {
+  margin-left: 0.5rem;
+  margin-top: -0.3rem;
+  border-right: 2px solid #6e6b6b;
+  padding-right: 2rem;
+}
+.dateSection p {
+  line-height: 1;
+}
+.dateSection p:nth-child(1) {
+  color: #6e6b6b;
+}
+.dateSection p:nth-child(2) {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+.welcomeContainer {
+  display: flex;
+  align-items: center;
+}
+.tasker {
+  margin-top: -1.3rem;
+  margin-left: 3rem;
+}
+.cardContainer {
+  background-color: #E8ECEF;
+  border-radius: 1rem;
+}
+.cardTop {
+  display: flex;
+  padding: 1.5rem 2rem;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 1rem;
+}
+.dicon {
+  background-color: #fff;
+  padding: 0.5rem;
+  border-radius: 0.7rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.note {
+  padding: 0.5rem 2rem;
+  font-size: 0.8rem;
+}
+#stCard {
+  background-color: #87C54C;
+}
+#stIcon {
+  color: #87C54C;
+}
+#ndCard {
+  background-color: #6E51F8;
+}
+#ndIcon {
+  color: #6E51F8;
+}
+#rdCard {
+  background-color: #6B6868;
+}
+#rdIcon {
+  color: #6B6868;
+}
+.cardHeader h5 {
+  margin: 0;
+  padding: 0;
+  font-weight: 700;
+}
+.cardHeader p {
+  color: #fff;
+}
+.cardsContainer {
+  margin-right: 1rem;
+  border-radius: 1rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  border: 3px solid #E8ECEF;
+}
+.classPie {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  text-align: right;
+  justify-content: right;
+}
+.recharts-tooltip-wrapper {
+  font-size: 0.9rem;
+  padding: 0; 
+  margin: 0;
+}
+.noticeContainer {
+  margin: 6% auto;
+}
+.noticeHeader {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+.noticeHeader h6 {
+  margin-left: 0.4rem;
+}
+.ui.styled.accordion .active.title {
+  box-shadow: 0 0 0 1px #E8ECEF;
+}
+.ui.accordion .accordion .active.content, .ui.accordion .active.content {
+  box-shadow: 0 0 0 1px #E8ECEF;
+  border-radius: 0;
+  width: 100%;
+  text-align: left;
+  padding: 1rem;
+  font-size: 0.95rem;
+}
+.ui.styled.accordion .title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif !important;
+}
+.dashPie {
+  /* height: 70%; */
+  display: flex;
+  align-items: center;
+  background-color: red;
+  position: relative;
+}
+.dashActualPie {
+  position: absolute !important;
+  top: -3rem;
+  right: -4rem;
+}
+.cutter {
+  border-top: 3px solid #E8ECEF;
+  margin-top: 2rem;
+}
+
+
+/* Top Students */
+.top_UL ul li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  background-color: #C6E1FE;
+  padding: 0.3rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.topStudentDetails {
+  margin-left: 1rem;
+}
+.topStudentDetails h6 {
+  margin: 0;
+  padding: 0;
+  font-size: 0.9rem;
+}
+.topStudentDetails p {
+  color: #6B6868;
+  font-size: 0.9rem;
+}
+.carder {
+  padding: 3rem 0 0.5rem 2rem;
+}
+/* Top Students */

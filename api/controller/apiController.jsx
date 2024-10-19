@@ -104,6 +104,10 @@ const {
     getClassStudent,
     getClassNSubject,
     dashboardClassTeacher,
+    getStudentByGender,
+    getTopStudent,
+    getAggScoreBySUbject,
+    countStudentByAssign,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -3528,6 +3532,162 @@ const dashboardClassTeachers = async (req, res) => {
 
 
 
+
+// ----------------------- CHART CONTROLLER -----------------------
+
+const getGenderPieTeacher = async (req, res) => {
+    const {id} = req.params;
+    const token = req.cookies.teacherToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    try {
+        const gender = await getStudentByGender(sid, id);
+        if(gender) {
+            res.json({
+                success: true,
+                gender,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getTopStudents = async (req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const teacherid = decoded.id;
+
+    try {
+        const CnS = await getClassNSubject(sid, teacherid);
+        const topStudents = []; // Collect top students here
+        
+        if (CnS) {
+            for (const item of CnS) {
+                const classid = item.classid;
+                const top = await getTopStudent(sid, teacherid, classid); // Make sure to await if it's async
+                
+                topStudents.push({
+                    top: top || 'No top student' // Handle no top student case
+                });
+            }
+
+            // Send the response once after collecting all data
+            res.json({
+                success: true,
+                topStudents
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "No classes or subjects found"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        });
+    }
+};
+
+const getAverageScoreBySubject = async (req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const teacherid = decoded.id;
+
+    try {
+        const CnS = await getClassNSubject(sid, teacherid);
+        const topSubject = [];
+        
+        if (CnS) {
+            for (const item of CnS) {
+                const classid = item.classid;
+                const subject = await getAggScoreBySUbject(sid, teacherid, classid); // Make sure to await if it's async
+                
+                topSubject.push({
+                    subject: subject || 'No subject found' // Handle no top student case
+                });
+            }
+
+            // Send the response once after collecting all data
+            res.json({
+                success: true,
+                topSubject
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "No classes or subjects found"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        });
+    }
+}
+
+const countStudentByTeacher = async (req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const teacherid = decoded.id;
+
+    try {
+        const CnS = await getClassNSubject(sid, teacherid);
+        const counter = [];
+        
+        if (CnS) {
+            for (const item of CnS) {
+                const classid = item.classid;
+                const count = await countStudentByAssign(sid, teacherid, classid); // Make sure to await if it's async
+                
+                counter.push({
+                    count: count || 'No subject found' // Handle no top student case
+                });
+            }
+
+            // Send the response once after collecting all data
+            res.json({
+                success: true,
+                counter
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "No classes or subjects found"
+            });
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        });
+    }
+}
+
+
+// ----------------------- CHART CONTROLLER -----------------------
+
+
+
+
 module.exports = { 
     // ----- LOGIN EXPORTS ------
     login, 
@@ -3730,4 +3890,12 @@ module.exports = {
     getClassNSubjects,
     dashboardClassTeachers,
     // ----- TEACHER DASHBOARD EXPORTS ------
+
+
+    // ----- CHART EXPORTS ------
+    getGenderPieTeacher,
+    getTopStudents,
+    getAverageScoreBySubject,
+    countStudentByTeacher,
+    // ----- CHART EXPORTS ------
 };

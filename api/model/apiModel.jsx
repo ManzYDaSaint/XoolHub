@@ -1076,7 +1076,7 @@ const getClassStudent = async(sid, teacherid) => {
 }
 
 const getClassNSubject = async(sid, teacherid) => {
-    const query = `SELECT class.name AS class, subject.name AS subject FROM assignteacher
+    const query = `SELECT class.classid, class.name AS class, subject.name AS subject FROM assignteacher
         INNER JOIN class ON class.classid = assignteacher.classid
         INNER JOIN subject ON subject.id = assignteacher.subjectid
         WHERE assignteacher.sid = $1 AND assignteacher.teacherid = $2`;
@@ -1095,6 +1095,66 @@ const dashboardClassTeacher = async(sid, teacherid) => {
 }
 
 // --------------------------------------- TEACHER STUDENR CRUD ------------------------------------------------
+
+
+
+
+
+
+// --------------------------------------- CHART CRUD ------------------------------------------------
+
+const getStudentByGender = async(sid, classid) => {
+    const query = `SELECT COALESCE(gender, 'Other') as gender, COUNT(*) as count
+      FROM students
+	  WHERE classid = $1 AND sid = $2
+      GROUP BY COALESCE(gender, 'Other')`;
+    const values = [classid, sid];
+    const res = await kneX.query(query, values);
+    return res.rows;
+}
+
+const getTopStudent = async(sid, teacherid, classid) => {
+    const query = `SELECT DISTINCT ON (classid, subjectid) 
+	    students.name, subject.name AS subject, score, results.classid, results.subjectid
+        FROM results
+        INNER JOIN students ON students.id = results.studentid
+        INNER JOIN subject ON subject.id = results.subjectid
+        INNER JOIN assignteacher ON assignteacher.classid = results.classid
+        WHERE assignteacher.classid = $1 AND assignteacher.teacherid = $2 AND assignteacher.sid = $3
+        ORDER BY classid, subjectid, score DESC, results.created_at DESC`;
+    const value = [classid, teacherid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getAggScoreBySUbject = async(sid, teacherid, classid) => {
+    const query = `SELECT subject.name AS subject, ROUND(AVG(CAST(score AS BIGINT))) AS average, acyear.name AS year, term.name AS term, exam.name AS exam, class.name AS class
+        FROM results
+        INNER JOIN subject ON subject.id = results.subjectid
+        INNER JOIN acyear ON acyear.yearid = results.yearid
+        INNER JOIN term ON term.id = results.termid
+        INNER JOIN exam ON exam.id = results.typeid
+        INNER JOIN class ON class.classid = results.classid
+        INNER JOIN assignteacher ON assignteacher.classid = results.classid
+        WHERE assignteacher.classid = $1 AND assignteacher.teacherid = $2 AND results.sid = $3
+        GROUP BY subject.name, acyear.name, term.name, exam.name, class.name
+        ORDER BY average DESC`;
+    const value = [classid, teacherid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const countStudentByAssign = async(sid, teacherid, classid) => {
+    const query = `SELECT COUNT(DISTINCT(students.id))
+        FROM students
+        INNER JOIN assignteacher ON assignteacher.classid = students.classid
+        WHERE assignteacher.classid = $1 AND assignteacher.teacherid = $2 AND students.sid = $3`;
+    const value = [classid, teacherid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+// --------------------------------------- CHART CRUD ------------------------------------------------
 
 
 
@@ -1309,4 +1369,13 @@ module.exports = {
     getClassNSubject,
     dashboardClassTeacher,
     // ----- TEACHER CLASS SECTION -----
+
+
+
+    // ----- CHART SECTION -----
+    getStudentByGender,
+    getTopStudent,
+    getAggScoreBySUbject,
+    countStudentByAssign,
+    // ----- CHART SECTION -----
 };
