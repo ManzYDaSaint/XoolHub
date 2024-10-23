@@ -2,8 +2,10 @@ const express = require('express');
 const api = require('./routes/apiRoutes.jsx')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const fileUpload = require('express-fileupload');
 
 const app = express();
+app.use(fileUpload());
 app.use(cookieParser());
 
 const corsOptions = {

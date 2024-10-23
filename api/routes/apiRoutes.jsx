@@ -3,7 +3,6 @@ const {
     signup, 
     getAllSchools, 
     login, 
-    updateSchool, 
     generateOTP, 
     verifyOTP, 
     createResetSession, 
@@ -102,6 +101,8 @@ const {
     getTopStudents,
     getAverageScoreBySubject,
     countStudentByTeacher,
+    getSchool,
+    updateSchools,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -119,14 +120,13 @@ router.route('/createResetSession').get(createResetSession);
 
 
 // ***** PUT Methods
-router.route('/updateschool').put(updateSchool);
 router.route('/resetPassword').put(resetPassword);
 
 
 
 // ------- REGISTER ROUTES -----------
 router.route('/signup').post(signup)
-
+router.route('/updateschool').put(updateSchools);
 // ------- REGISTER ROUTES -----------
 
 
@@ -369,6 +369,14 @@ router.route('/gettopstudent').get(getTopStudents);
 router.route('/getavesubject').get(getAverageScoreBySubject);
 router.route('/countstudentteacher').get(countStudentByTeacher);
 // ------- CHART ROUTES -----------
+
+
+
+
+
+// ------- ADMIN PROFILE ROUTES -----------
+router.route('/admindet').get(getSchool);
+// ------- ADMIN PROFILE ROUTES -----------
 
 
 

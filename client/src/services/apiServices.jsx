@@ -5,13 +5,11 @@ const API = 'http://localhost:5000/api';
 
 // const getSchools = () => axios.get(API_RL);
 // const getSchool = (id) => axios.get(`${API_URL}${id}`);
-// const updateSchool = (id, data) => axios.put(`${API_URL}${id}`, data);
 // const deleteSchool = (id) => axios.delete(`${API_URL}${id}`);
 
 // --------- REGISTER AXIOS -----------
-
 const createSchool = (data) => axios.post(API + '/signup', data);
-
+const updateSchool = (data) => axios.put(API + '/updateschool', data);
 // --------- REGISTER AXIOS -----------
 
 
@@ -258,10 +256,18 @@ const countStudentByTeacher = () => axios.get(API + '/countstudentteacher');
 
 
 
+// --------- ADMIN PROFILE AXIOS -----------
+const getSchool = () => axios.get(API + '/admindet');
+// --------- ADMIN PROFILE AXIOS -----------
+
+
+
+
 // eslint-disable-next-line
 export default {
   // ------ REGISTER EXPORT -------
   createSchool,
+  updateSchool,
   // ------ REGISTER EXPORT -------
 
 
@@ -459,4 +465,10 @@ export default {
        getAveSubject,
        countStudentByTeacher,
        // ------ CHART EXPORT -------
+
+
+
+       // ------ ADMIN PROFILE EXPORT -------
+       getSchool,
+       // ------ ADMIN PROFILE EXPORT -------
 };

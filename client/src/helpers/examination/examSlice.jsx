@@ -9,6 +9,15 @@ const ExamSlice = createSlice({
       namer: '',
       percentage: '',
     },
+    adminFormData: {
+      name: '',
+      address: '',
+      city: '',
+      country: '',
+      email: '',
+      contact: '',
+      logo: ''
+    },
     yearFormData: {
       yearName: '',
     },
@@ -17,15 +26,13 @@ const ExamSlice = createSlice({
       code: '',
     },
     registerData: {
-      schoolName: '',
       schoolEmail: '',
-      schoolContact: '',
       schoolPassword: '',
       confirm: '',
     },
     loginData: {
-      schoolEmail: '',
-      schoolPassword: '',
+      schoolEmail: "",
+      schoolPassword: "",
     },
     classFormData: {
       denom: '',
@@ -186,6 +193,9 @@ const ExamSlice = createSlice({
     setScoreFormData: (state, action) => {
       state.scoreFormData = action.payload;
     },
+    setAdminFormData: (state, action) => {
+      state.adminFormData = action.payload;
+    },
   },
 });
 
@@ -213,5 +223,6 @@ export const {
   setFilterFormData,
   setXFormData,
   setScoreFormData,
+  setAdminFormData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

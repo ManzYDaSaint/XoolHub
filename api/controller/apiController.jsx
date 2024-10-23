@@ -108,12 +108,18 @@ const {
     getTopStudent,
     getAggScoreBySUbject,
     countStudentByAssign,
+    editSchool,
+    updateSchool,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
 require('dotenv').config()
 
-
+// Supabase Configuration
+const { createClient } = require('@supabase/supabase-js');
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 // ----------------------- RANDOM PASSWORD CONTROLLER -----------------------
 function generatePassword(length = 8) {
@@ -134,9 +140,9 @@ function generatePassword(length = 8) {
 
 
 const signup = async (req, res) => {
-    const { schoolName, schoolEmail, schoolContact, schoolPassword, confirm } = req.body;
+    const { schoolEmail, schoolPassword, confirm } = req.body;
         try {
-            if(!schoolName || !schoolEmail || !schoolContact || !schoolPassword || !confirm) {
+            if(!schoolEmail || !schoolPassword || !confirm) {
                 return res.json({
                     success: false,
                     message: "Please fill up all the fields",
@@ -150,7 +156,7 @@ const signup = async (req, res) => {
             }
 
             // Check if the school already exists
-            const exist = await checkSchool(schoolName);
+            const exist = await checkSchool(schoolEmail);
             if (exist) {
                 return res.json({
                     success: false,
@@ -162,7 +168,7 @@ const signup = async (req, res) => {
                 const hashedPassword = await bcrypt.hash(schoolPassword, 10);
 
                 // Add the new school
-                const newSchool = await insertSchool( schoolName, schoolEmail, schoolContact, hashedPassword );
+                const newSchool = await insertSchool( schoolEmail, hashedPassword );
                 if(newSchool) {
                     res.json({
                         success: true,
@@ -184,6 +190,92 @@ const signup = async (req, res) => {
         }
 };
 
+const getSchool = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const details = await editSchool(sid);
+        if(details) {
+            res.json({
+                success: true,
+                details,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const updateSchools = async(req, res) => {
+    const { name, address, city, country, email, contact } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    // Check if an image file is provided
+    const logo = req.files.logo;
+
+    try {
+        const mimeType = logo.type;
+        console.log(mimeType)
+        // Upload image to Supabase storage
+        // const { data, error } = await supabase.storage.from('schoollogos').upload(
+        //     `public/${logo.name}`,
+        //     logo,
+        //     {
+        //         cacheControl: '3600', // Set cache control (optional)
+        //         contentType: mimeType, // Set content type (optional)
+        //     }
+        // );
+    
+        // if (error) {
+        //     console.error('Error image:', error);
+        //     return;
+        // }
+    
+        // console.log('Image uploaded successfully:', data);
+    } catch (error) {
+        console.error('Error uploading image:', error.message);
+        res.status(500).send('Internal Server Error');
+    }
+    
+    // const { logoURL } = supabase.storage.from('schoollogos').getPublicUrl(data.path);
+
+    // try {
+    //     const now = new Date();
+    //     const updateAt = now.toLocaleString();
+
+    //     const update = await updateSchool(sid, name, address, city, country, email, contact, logoURL, updateAt);
+    //     if(update) {
+    //         console.log(update);
+    //         res.json({
+    //             success: true,
+    //             message: "School updated successfully",
+    //         });
+    //     }
+    //     else {
+    //         res.json({
+    //             success: false,
+    //             message: "School updating failed..",
+    //         });
+    //     }
+    // } catch (error) {
+    //     res.json({
+    //         message: "Internal Server Error. Please try again later.",
+    //         error: error.message,
+    //     });
+    // }
+}
 
 // ----------------------- REGISTER CONTROLLER -----------------------
 
@@ -222,6 +314,14 @@ const login = async(req, res) => {
                 });
             }
 
+            const get = editSchool(teacher.sid);
+            if(get.status === "Deactivated") {
+                return res.json({
+                    success: false,
+                    message: "Please consult your admin to activate your system.",
+                });
+            }
+
             // Create a JWT
             const token = jwt.sign(
                 { 
@@ -251,6 +351,12 @@ const login = async(req, res) => {
             return res.json({
                 success: false,
                 message: "Invalid email or password",
+            });
+        }
+        else if(school.status === 'Deactivated') {
+            return res.json({
+                success: false,
+                message: "Please activate your account first.",
             });
         }
 
@@ -409,11 +515,6 @@ const getAllSchools = async (req, res, next) => {
             error: error.message
         })
     }
-}
-
-// Update individual school at localhost:5000/api/auth/updateschool
-const updateSchool = async (req, res, next) => {
-    res.json('Update school');
 }
 
 // Generate OTP at localhost:5000/api/auth/generateOTP
@@ -3688,6 +3789,14 @@ const countStudentByTeacher = async (req, res) => {
 
 
 
+
+// ----------------------- ADMIN PROFILE CONTROLLER -----------------------
+
+// ----------------------- ADMIN PROFILE CONTROLLER -----------------------
+
+
+
+
 module.exports = { 
     // ----- LOGIN EXPORTS ------
     login, 
@@ -3700,12 +3809,13 @@ module.exports = {
     // ----- REGISTER EXPORTS ------
     signup, 
     getAllSchools, 
-    updateSchool, 
     generateOTP, 
     verifyOTP, 
     createResetSession, 
     resetPassword, 
     verifyUser,
+    updateSchools,
+    // ----- REGISTER EXPORTS ------
 
     // ----- EXAM EXPORTS ------
     addExam,
@@ -3898,4 +4008,9 @@ module.exports = {
     getAverageScoreBySubject,
     countStudentByTeacher,
     // ----- CHART EXPORTS ------
+ 
+ 
+    // ----- ADMIN PROFILE EXPORTS ------
+    getSchool,
+    // ----- ADMIN PROFILE EXPORTS ------
 };

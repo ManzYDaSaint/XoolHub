@@ -1,27 +1,23 @@
 .notFound {
-    padding: 3rem;
-    margin: 15% auto;
-    position: relative;
-    overflow: hidden !important;
-    width: 100% !important;
-    height: 100vh !important;
+    display: grid;
+    place-content: center;
+    width: 100%;
+    height: 100vh;
 }
-.container {
+.notContainer {
     display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
+    margin: 0 auto;
 }
-.container img {
-    width: 25rem;
+.notContainer h6 {
+    line-height: 0;
+    margin: 0;
+    padding: 0 2rem;
+    font-size: 1.5rem;
+    color: #007BFE;
 }
-.conter {
-    margin-left: 7rem;
-}
-.conter h3 {
-    font-family: "Pacifico", system-ui;
-    font-size: 5rem;
-}
-.conter p {
-    font-size: 1.3rem;
+.notContainer p {
+    border-left: 4px solid #007BFE;
+    padding: 0.5rem 2rem;
 }

@@ -31,7 +31,14 @@ const StudentCard = () => {
                     dico={'stIcon'}
                 />
             ) : (
-                <p>No data found.</p>
+                <DashboardCard
+                    label={'Students'}
+                    figure={0}
+                    icon={'student'}
+                    note={'Total number of students'}
+                    cardTop={'stCard'}
+                    dico={'stIcon'}
+                />
             )}
         </>
     );

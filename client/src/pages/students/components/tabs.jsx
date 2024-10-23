@@ -36,7 +36,7 @@ const Tabs = () => {
     }
     {selectedTab === 2 && <div id="Financial" class="tabcontent animate-bottom">
         <Financial />
-    </div> 
+    </div>
     }
     {selectedTab === 3 && <div id="Miscellaneous" class="tabcontent animate-bottom">
         <Miscellaneous />

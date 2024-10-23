@@ -4,24 +4,31 @@ const kneX = require('../database/db.jsx');
 // --------------------------------------- REGISTER CRUD ------------------------------------------------
 
 const checkSchool = async(name) => {
-    const query = "SELECT name FROM schools WHERE name = $1";
+    const query = "SELECT email FROM schools WHERE email = $1";
     const value = [name];
     const res = await kneX.query(query, value);
     return res.rows[0];
 }
 
-const insertSchool = async(name, email, contact, password) => {
-    const query = "INSERT INTO schools(name, email, contact, password) VALUES ($1, $2, $3, $4) RETURNING *";
-    const values = [name, email, contact, password];
+const insertSchool = async(email, password) => {
+    const query = "INSERT INTO schools(email, password) VALUES ($1, $2) RETURNING *";
+    const values = [email, password];
     const res = await kneX.query(query, values);
     return res.rows.length > 0;
 }
 
 const editSchool = async(id) => {
-    const query = "SELECT * FROM Schools WHERE id = $1";
+    const query = "SELECT * FROM schools WHERE sid = $1";
     const value = [id];
     const res = await kneX.query(query, value);
     return res.rows[0];
+}
+
+const updateSchool = async(id, name, address, city, country, email, contact, logo, update) => {
+    const query = "UPDATE schools SET name = $1, address = $2, city = $3, country = $4, email = $5, contact = $6, logo = $7, updated_at = $8 WHERE sid = $9";
+    const values = [name, address, city, country, email, contact, logo, update, id]
+    const res = await kneX.query(query, values);
+    return res.rows;
 }
 
 // --------------------------------------- REGISTER CRUD ------------------------------------------------
@@ -1169,6 +1176,7 @@ module.exports = {
     checkSchool,
     insertSchool,
     editSchool,
+    updateSchool,
     // ----- REGISTER SECTION -----
 
     checkMail,

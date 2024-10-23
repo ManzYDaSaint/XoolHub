@@ -8,8 +8,9 @@ const AveData = () => {
     // Fetch all the exams
     const fetchData = async () => {
         const res = await api.getAveSubject();
+        const data = res.data.topSubject;
 
-        if(res.data.length === 0) {
+        if(data.length === 0) {
             const data = [
                 {
                     'sr': "",

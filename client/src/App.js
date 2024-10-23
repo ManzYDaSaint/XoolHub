@@ -26,6 +26,7 @@ import TeacherDashboard from './teacher-service/dashboard.jsx';
 import TStudent from './teacher-service/pages/student.jsx';
 import Entry from './teacher-service/pages/entry.jsx';
 import StudentDetail from './teacher-service/pages/studentDetail.jsx';
+import AdminProfile from './pages/dashboard/adminProfile.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -60,6 +61,14 @@ function App() {
             <AdminDashboard />
           </InactivityHandler>
       )
+    },
+    {
+      path: '/profile',
+      element: (
+          <InactivityHandler>
+          <AdminProfile />
+          </InactivityHandler>
+        )
     },
     {
       path: '/report',
