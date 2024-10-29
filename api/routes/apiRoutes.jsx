@@ -103,6 +103,8 @@ const {
     countStudentByTeacher,
     getSchool,
     updateSchools,
+    getReport,
+    getCodes,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -377,6 +379,13 @@ router.route('/countstudentteacher').get(countStudentByTeacher);
 // ------- ADMIN PROFILE ROUTES -----------
 router.route('/admindet').get(getSchool);
 // ------- ADMIN PROFILE ROUTES -----------
+
+
+
+// ------- REPORT ROUTES -----------
+router.route('/getreport').post(getReport);
+router.route('/getcode').post(getCodes);
+// ------- REPORT ROUTES -----------
 
 
 

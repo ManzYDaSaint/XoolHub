@@ -262,6 +262,13 @@ const getSchool = () => axios.get(API + '/admindet');
 
 
 
+// --------- REPORT AXIOS -----------
+const getReport = (data) => axios.post(API + '/getreport', data);
+const getCode = (data) => axios.post(API + '/getcode', data);
+// --------- REPORT AXIOS -----------
+
+
+
 
 // eslint-disable-next-line
 export default {
@@ -471,4 +478,11 @@ export default {
        // ------ ADMIN PROFILE EXPORT -------
        getSchool,
        // ------ ADMIN PROFILE EXPORT -------
+
+
+
+       // ------ REPORT EXPORT -------
+       getReport,
+       getCode,
+       // ------ REPORT EXPORT -------
 };

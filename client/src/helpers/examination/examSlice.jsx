@@ -78,6 +78,12 @@ const ExamSlice = createSlice({
       typeid: '',
       classid: '',
     },
+    reportFormData: {
+      yearid: '',
+      termid: '',
+      typeid: '',
+      classid: '',
+    },
     filterFormData: {
       yearid: '',
       termid: '',
@@ -196,6 +202,9 @@ const ExamSlice = createSlice({
     setAdminFormData: (state, action) => {
       state.adminFormData = action.payload;
     },
+    setReportFormData: (state, action) => {
+      state.reportFormData = action.payload;
+    },
   },
 });
 
@@ -224,5 +233,6 @@ export const {
   setXFormData,
   setScoreFormData,
   setAdminFormData,
+  setReportFormData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

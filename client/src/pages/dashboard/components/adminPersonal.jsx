@@ -12,7 +12,7 @@ const AdminPersonal = () => {
     const dispatch = useDispatch();
     const adminFormData = useSelector((state) => state.exam.adminFormData);
     const [loading, setLoading] = useState(false);
-    const [logoFile, setLogoFile] = useState(null); // Handle file separately
+    const [logoFile, setLogoFile] = useState(null);
 
     const fetchData = async () => {
         try {
@@ -54,7 +54,6 @@ const AdminPersonal = () => {
     };
 
     const handleSubmit = async (data) => {
-        // console.log(data)
         try {
             const formData = new FormData();
             formData.append('name', data.name);
@@ -97,8 +96,29 @@ const AdminPersonal = () => {
             <div className="profileUpdate">
                 <h5><strong>Administrator Information</strong></h5>
                 <p>Here you can edit information about yourself. <br /> The changes will be displayed and effective once updated.</p>
+                <div className="imgContainer mt-3 mb-4">
+                    {logoFile && (
+                        <img
+                            // Check if logoFile is a File object or a URL
+                            src={logoFile instanceof File ? URL.createObjectURL(logoFile) : logoFile}
+                            alt="Logo Preview"
+                            style={{ width: '80px', height: '80px', objectFit: 'cover', marginTop: '10px' }}
+                        />
+                    )}
+                </div>
                 <form onSubmit={onSubmit} autoComplete='off'>
                     <Grid divided='vertically'>
+                        <GridRow columns={1}>
+                            <GridColumn>
+                                <label>Select Logo: </label>
+                                <input
+                                    type="file"
+                                    name="logo"
+                                    accept="image/jpeg, image/png, image/gif, image/jpg"
+                                    onChange={handleFileChange}
+                                />
+                            </GridColumn>
+                        </GridRow>
                         <GridRow columns={2}>
                             <GridColumn>
                                 <FormInput
@@ -165,25 +185,6 @@ const AdminPersonal = () => {
                                     onChange={handleChange}
                                     value={adminFormData.contact}
                                 />
-                            </GridColumn>
-                        </GridRow>
-                        <GridRow columns={1}>
-                            <GridColumn>
-                                <label>Logo</label>
-                                <input
-                                    type="file"
-                                    name="logo"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
-                                {logoFile && (
-                                    <img
-                                        // Check if logoFile is a File object or a URL
-                                        src={logoFile instanceof File ? URL.createObjectURL(logoFile) : logoFile}
-                                        alt="Logo Preview"
-                                        style={{ width: '150px', height: '150px', objectFit: 'cover', marginTop: '10px' }}
-                                    />
-                                )}
                             </GridColumn>
                         </GridRow>
                     </Grid>

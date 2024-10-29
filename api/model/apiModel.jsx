@@ -246,7 +246,7 @@ const insertClass = async(sid, name, denom) => {
 
 // Get all object
 const getClass = async(id) => {
-    const query = "SELECT * FROM class WHERE sid = $1";
+    const query = "SELECT * FROM class WHERE sid = $1 ORDER BY name ASC";
     const value = [id]
     const res = await kneX.query(query, value);
     return res.rows;
@@ -1167,6 +1167,61 @@ const countStudentByAssign = async(sid, teacherid, classid) => {
 
 
 
+// --------------------------------------- REPORT CRUD ------------------------------------------------
+
+const getReportByStudent = async(sid, yearid, termid, typeid, classid) => {
+    const query = `WITH student_scores AS (
+            SELECT 
+                studentid,
+                classid,
+                SUM(CAST(score AS BIGINT)) AS total_score
+            FROM results
+            WHERE results.yearid = $1 AND results.termid = $2 AND results.typeid = $3
+            AND results.classid = $4 AND results.sid = $5
+            GROUP BY studentid, classid
+        ),
+        ranked_students AS (
+            SELECT 
+                studentid, 
+                classid, 
+                total_score,
+                RANK() OVER (PARTITION BY classid ORDER BY total_score DESC) AS rank
+            FROM student_scores
+        )
+        SELECT 
+            DISTINCT(r.studentid),
+            rs.rank, 
+            st.name AS studentname,  
+            rs.total_score AS aggregate,
+            r.classid
+        FROM ranked_students rs
+        JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
+        JOIN students st ON st.id = r.studentid
+        JOIN subject sub ON sub.id = r.subjectid
+        ORDER BY r.classid, rs.rank, st.name`;
+    const value = [yearid, termid, typeid, classid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getCode = async(sid, yearid, termid, typeid, classid) => {
+    const query = `subject.name AS subject
+        FROM results
+        INNER JOIN subject ON subject.id = results.subjectid
+        WHERE results.yearid = $1 AND results.termid = $2 AND results.typeid = $3
+        AND results.classid = $4 AND results.sid = $5
+        ORDER BY score DESC`;
+    const value = [yearid, termid, typeid, classid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+// --------------------------------------- REPORT CRUD ------------------------------------------------
+
+
+
+
+
 
 
 
@@ -1386,4 +1441,11 @@ module.exports = {
     getAggScoreBySUbject,
     countStudentByAssign,
     // ----- CHART SECTION -----
+
+
+
+    // ----- REPORT SECTION -----
+    getReportByStudent,
+    getCode,
+    // ----- REPORT SECTION -----
 };

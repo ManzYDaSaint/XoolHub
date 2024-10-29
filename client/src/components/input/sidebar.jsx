@@ -1,21 +1,48 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Logo from '../../logo.png'
 import { Link } from 'react-router-dom'
 import { Icon } from 'semantic-ui-react'
 import { useLocation } from 'react-router-dom'
+import api from '../../services/apiServices'
 
 const Sidebar = () => {
   const location = useLocation();
   const [closeMenu, setCloseMenu] = useState(true)
+  const [logoFile, setLogoFile] = useState(null);
 
   const handleCloseMenu = () => {
     setCloseMenu(!closeMenu);
   }
 
+  const fetchData = async () => {
+    try {
+        const res = await api.getSchool();
+        const data = res.data.details;
+
+        // If the logo is retrieved as a URL, display it
+        if (data.logo) {
+            setLogoFile(data.logo); // URL to show the image
+        }
+    } catch (error) {
+        console.error('Error fetching individual:', error);
+    }
+  };
+
+  useEffect(() => {
+      fetchData(); // eslint-disable-next-line
+  }, []);
+
   return (
     <div className={closeMenu === false ? "sidebarMenu" : "sidebarMenu active"}>
       <div className="logoContainer">
-        <img src={Logo} alt="logo" className='schoolLogo' />
+        {logoFile ? (
+            <img 
+            src={logoFile} 
+            alt="Logo Preview" 
+            className='schoolLogo' />
+        ) : (
+            <img src={Logo} alt="logo" className='schoolLogo' />
+        )}
       </div>
       <div className="burgerTrigger" onClick={handleCloseMenu}></div>
       <div className="burgerMenu"></div>
