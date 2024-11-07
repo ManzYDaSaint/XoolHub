@@ -24,7 +24,6 @@ const Payment = () => {
     const fetchData = async () => {
         const res = await api.getPay();
         const data = res.data.pay;
-        console.log(data)
         if(data.length < 1) {
             const payData = data.map((item, index) => ({
             sr: "",

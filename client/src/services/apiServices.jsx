@@ -264,7 +264,6 @@ const getSchool = () => axios.get(API + '/admindet');
 
 // --------- REPORT AXIOS -----------
 const getReport = (data) => axios.post(API + '/getreport', data);
-const getCode = (data) => axios.post(API + '/getcode', data);
 // --------- REPORT AXIOS -----------
 
 
@@ -483,6 +482,5 @@ export default {
 
        // ------ REPORT EXPORT -------
        getReport,
-       getCode,
        // ------ REPORT EXPORT -------
 };

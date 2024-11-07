@@ -113,6 +113,7 @@ const {
     getReportByStudent,
     getReportScore,
     getCode,
+    getCodeScore,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -902,7 +903,7 @@ const addSubject = async (req, res) => {
         }
 
         // Check if subject exists
-        const checker = await checkSubject(id, subjectName);
+        const checker = await checkSubject(id, subjectName, code);
         if(checker) {
             res.json({
                 success: false,
@@ -3805,49 +3806,41 @@ const getReport = async (req, res) => {
         const getClass = await getClassById(sid, classid);
         if(getClass) {
             if(getClass.denom === venom) {
-                const students = await getReportByStudent(sid, yearid, termid, typeid, classid);
-                if(students) {
-                    return res.json({
-                        success: true,
-                        students,
+                const codes = await getReportByStudent(sid, yearid, termid, typeid, classid);
+                if(codes) {
+                    // Transform data to be used in frontend
+                    const subjectsSet = new Set();
+                    const studentsMap = new Map();
+
+                    codes.forEach(row => {
+                        // Collect unique subjects
+                        subjectsSet.add(row.subject_name);
+
+                        // Collect student data with scores
+                        if (!studentsMap.has(row.studentid)) {
+                            studentsMap.set(row.studentid, {
+                                student_id: row.studentid,
+                                rank: row.rank,
+                                agg: row.aggregate,
+                                student_name: row.studentname,
+                                score: {},
+                            });
+                        }
+                        studentsMap.get(row.studentid).score[row.subject_name] = row.score;
                     });
+
+                    const subjects = Array.from(subjectsSet); // Convert to array for easier use on frontend
+                    const students = Array.from(studentsMap.values());
+
+                    return res.json({ subjects, students });
                 }
+                return res.json({
+                    success: false,
+                    message: 'No records found'
+                });
             }
         }
         
-        return res.json({
-            success: false,
-            message: 'No records found'
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Internal Server Error. Please try again later.",
-            error: error.message,
-        });
-    }
-}
-
- const getCodes = async (req, res) => {
-    const { yearid, termid, typeid, classid} = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
-
-    if(!yearid || !termid || !typeid || !classid) {
-        return res.json({
-            success: false,
-            message: "Please fill up all the fields"
-        });
-    }
-
-    try {
-        const codes = await getCode(sid, yearid, termid, typeid, classid);
-        if(codes) {
-            return res.json({
-                success: true,
-                codes
-            });
-        }
         return res.json({
             success: false,
             message: 'No records found'
@@ -4086,6 +4079,5 @@ module.exports = {
 
     // ----- REPORT EXPORTS ------
     getReport,
-    getCodes,
     // ----- REPORT EXPORTS ------
 };

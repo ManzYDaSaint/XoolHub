@@ -172,9 +172,9 @@ const editYear = async(id) => {
 // --------------------------------------- SUBJECT CRUD ------------------------------------------------
 
 // Check if subject exists
-const checkSubject = async(id, name) => {
-    const query = "SELECT name FROM subject WHERE name = $1 AND sid = $2";
-    const value = [name, id ];
+const checkSubject = async(id, name, code) => {
+    const query = "SELECT name FROM subject WHERE name = $1 AND code = $2 AND sid = $3";
+    const value = [name, code, id ];
     const res = await kneX.query(query, value);
     return res.rows[0];
 }
@@ -1171,46 +1171,51 @@ const countStudentByAssign = async(sid, teacherid, classid) => {
 
 const getReportByStudent = async(sid, yearid, termid, typeid, classid) => {
     const query = `WITH student_scores AS (
-            SELECT 
-                studentid,
-                classid,
-                SUM(CAST(score AS BIGINT)) AS total_score
-            FROM results
-            WHERE results.yearid = $1 AND results.termid = $2 AND results.typeid = $3
-            AND results.classid = $4 AND results.sid = $5
-            GROUP BY studentid, classid
-        ),
-        ranked_students AS (
-            SELECT 
-                studentid, 
-                classid, 
-                total_score,
-                RANK() OVER (PARTITION BY classid ORDER BY total_score DESC) AS rank
-            FROM student_scores
-        )
-        SELECT 
-            DISTINCT(r.studentid),
-            rs.rank, 
-            st.name AS studentname,  
-            rs.total_score AS aggregate,
-            r.classid
-        FROM ranked_students rs
-        JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
-        JOIN students st ON st.id = r.studentid
-        JOIN subject sub ON sub.id = r.subjectid
-        ORDER BY r.classid, rs.rank, st.name`;
-    const value = [yearid, termid, typeid, classid, sid];
-    const res = await kneX.query(query, value);
-    return res.rows;
-}
-
-const getCode = async(sid, yearid, termid, typeid, classid) => {
-    const query = `subject.name AS subject
-        FROM results
-        INNER JOIN subject ON subject.id = results.subjectid
-        WHERE results.yearid = $1 AND results.termid = $2 AND results.typeid = $3
-        AND results.classid = $4 AND results.sid = $5
-        ORDER BY score DESC`;
+    SELECT 
+        studentid,
+        classid,
+        subjectid,
+        CAST(score AS BIGINT) AS score,
+        ROW_NUMBER() OVER (PARTITION BY studentid, classid ORDER BY CAST(score AS BIGINT) DESC) AS subject_rank
+    FROM results
+    WHERE results.yearid = $1
+        AND results.termid = $2
+        AND results.typeid = $3
+        AND results.classid = $4 
+        AND results.sid = $5
+),
+top_6_subjects AS (
+    SELECT 
+        studentid,
+        classid,
+        SUM(score) AS total_score
+    FROM student_scores
+    WHERE subject_rank <= 6  -- Only consider the top 6 subjects
+    GROUP BY studentid, classid
+),
+ranked_students AS (
+    SELECT 
+        studentid, 
+        classid, 
+        total_score,
+        RANK() OVER (PARTITION BY classid ORDER BY total_score DESC) AS rank
+    FROM top_6_subjects
+)
+SELECT 
+    DISTINCT r.studentid,
+    rs.rank, 
+    st.name AS studentname,  
+    rs.total_score AS aggregate,
+    r.classid,
+    subject.id AS subject_id, 
+    subject.code AS subject_name, 
+    r.score
+FROM ranked_students rs
+JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
+JOIN students st ON st.id = r.studentid
+LEFT JOIN subject ON subject.id = r.subjectid
+ORDER BY r.classid, rs.rank, st.name;
+`;
     const value = [yearid, termid, typeid, classid, sid];
     const res = await kneX.query(query, value);
     return res.rows;
@@ -1446,6 +1451,5 @@ module.exports = {
 
     // ----- REPORT SECTION -----
     getReportByStudent,
-    getCode,
     // ----- REPORT SECTION -----
 };

@@ -74,8 +74,7 @@ const TeacherProfile = () => {
     const handleRedirect = () => {
         navigate('/config')
     }
-
-    console.log(teacherClass.name)
+    
     return (
         <Auth0>
             <div className='dashboard__container'>

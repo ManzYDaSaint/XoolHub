@@ -105,6 +105,7 @@ const {
     updateSchools,
     getReport,
     getCodes,
+    getCodeScores,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -384,7 +385,6 @@ router.route('/admindet').get(getSchool);
 
 // ------- REPORT ROUTES -----------
 router.route('/getreport').post(getReport);
-router.route('/getcode').post(getCodes);
 // ------- REPORT ROUTES -----------
 
 

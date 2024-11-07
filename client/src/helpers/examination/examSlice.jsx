@@ -5,6 +5,7 @@ const ExamSlice = createSlice({
   initialState: {
     isEditMode: false,
     editItemId: null,
+    studentIDs: [],
     formData: {
       namer: '',
       percentage: '',
@@ -136,6 +137,9 @@ const ExamSlice = createSlice({
     setEditItemId: (state, action) => {
       state.editItemId = action.payload;
     },
+    setStudentIDs: (state, action) => {
+      state.studentIDs = action.payload;
+    },
     setFormData: (state, action) => {
       state.formData = action.payload;
     },
@@ -211,6 +215,7 @@ const ExamSlice = createSlice({
 export const { 
   setIsEditMode, 
   setEditItemId, 
+  setStudentIDs,
   setFormData, 
   setSubjectFormData, 
   setRegisterData, 
