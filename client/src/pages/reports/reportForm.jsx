@@ -9,6 +9,7 @@ import TermSelector from './components/termSelector.jsx';
 import ClassSelector from './components/classSelector.jsx';
 import ExamSelector from './components/typeSelector.jsx';
 import { Printer } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const ReportForm = () => {
   const reportFormData = useSelector((state) => state.exam.reportFormData);
@@ -16,7 +17,7 @@ const ReportForm = () => {
   const [subjects, setSubjects] = useState([]);
   const [students, setStudents] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const navigate = useNavigate();
 
 
   const handleSubmit = async (data) => {
@@ -31,7 +32,7 @@ const ReportForm = () => {
     } finally {
       setIsLoading(false);
     }
-    dispatch(setReportFormData({ yearid: '', termid: '', typeid: '', classid: '' }));
+    // dispatch(setReportFormData({ yearid: '', termid: '', typeid: '', classid: '' }));
   };
 
 
@@ -48,7 +49,7 @@ const ReportForm = () => {
   };
 
   const handleAcademics = (id) => {
-    console.log('Viewing academics for id:', id);
+    navigate(`/student-report/${id}`);
   };
 
   return (

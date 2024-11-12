@@ -106,6 +106,11 @@ const {
     getReport,
     getCodes,
     getCodeScores,
+    getStudentReport,
+    getCT4Report,
+    getCount,
+    getSubjectPos,
+    realPosition,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -384,7 +389,14 @@ router.route('/admindet').get(getSchool);
 
 
 // ------- REPORT ROUTES -----------
+// JCE
 router.route('/getreport').post(getReport);
+router.route('/getstudentreport').post(getStudentReport);
+router.route('/getctreport').post(getCT4Report);
+router.route('/countreport').post(getCount);
+router.route('/subjectpos').post(getSubjectPos);
+router.route('/realpos').post(realPosition);
+// JCE
 // ------- REPORT ROUTES -----------
 
 

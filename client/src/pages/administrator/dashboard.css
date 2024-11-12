@@ -30,3 +30,28 @@
     font-weight: 500;
     margin-top: 1.7rem;
 }
+
+/* Student Card */
+.detail {
+    padding: 0.5rem 1rem 0.5rem 1rem;
+    font-size: 0.9rem;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+}
+.studentInfo {
+    display: flex;
+    align-items: center;
+}
+.studentInfo .left {
+    margin-left: 10rem;
+}
+.panel-body table thead tr th {
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+.panel-body table tbody tr td {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #6B6868;
+}
+/* Student Card */

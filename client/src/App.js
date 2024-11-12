@@ -27,6 +27,7 @@ import TStudent from './teacher-service/pages/student.jsx';
 import Entry from './teacher-service/pages/entry.jsx';
 import StudentDetail from './teacher-service/pages/studentDetail.jsx';
 import AdminProfile from './pages/dashboard/adminProfile.jsx';
+import StudentReport from './pages/reports/studentReport.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -163,6 +164,14 @@ function App() {
       element: (
           <InactivityHandler>
             <StudentProfile />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/student-report/:id',
+      element: (
+          <InactivityHandler>
+            <StudentReport />
           </InactivityHandler>
         )
     },

@@ -114,6 +114,11 @@ const {
     getReportScore,
     getCode,
     getCodeScore,
+    getStudentCard,
+    getClassTeacher4Report,
+    countResult,
+    getSubjectPosition,
+    realPos,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -3823,6 +3828,8 @@ const getReport = async (req, res) => {
                                 rank: row.rank,
                                 agg: row.aggregate,
                                 student_name: row.studentname,
+                                grade: row.grade,
+                                remarks: row.remarks,
                                 score: {},
                             });
                         }
@@ -3845,6 +3852,186 @@ const getReport = async (req, res) => {
             success: false,
             message: 'No records found'
         });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getStudentReport = async (req, res) => {
+    const { yearid, termid, typeid, classid, id} = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!yearid || !termid || !typeid || !classid || !id) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+
+        // Fecthing data
+        const studentInfo = await getStudentCard(sid, yearid, termid, typeid, classid, id);
+        if(studentInfo) {
+            return res.json({
+                success: true,
+                studentInfo
+            });
+        }
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getCount = async (req, res) => {
+    const { yearid, termid, typeid, classid} = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!yearid || !termid || !typeid || !classid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+
+        // Fecthing data
+        const count = await countResult(sid, yearid, termid, typeid, classid);
+        if(count) {
+            return res.json({
+                success: true,
+                count
+            });
+        }
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getCT4Report = async (req, res) => {
+    const { classid} = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!classid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+
+        // Fecthing data
+        const ct = await getClassTeacher4Report(classid, sid);
+        if(ct) {
+            return res.json({
+                success: true,
+                ct
+            });
+        }
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getSubjectPos = async (req, res) => {
+    const { yearid, termid, typeid, classid, id } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!yearid || !termid || !typeid || !classid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+
+        // Fecthing data
+        const pos = await getSubjectPosition(yearid, termid, typeid, classid, sid, id);
+        if(pos) {
+            return res.json({
+                success: true,
+                pos
+            });
+        }
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+    } catch (error) {
+        res.status(500).json({    
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const realPosition = async (req, res) => {
+    const { yearid, termid, typeid, classid, id } = req.body;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if (!yearid || !termid || !typeid || !classid) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+
+        // Fetch data for each subjectid
+        const positions = await Promise.all(
+            id.map(async (subjectId) => {
+                const result = await realPos(yearid, termid, typeid, classid, sid, subjectId);
+                return result;
+            })
+        );
+
+        const validPositions = positions.filter(Boolean);
+
+        if (validPositions.length > 0) {
+            return res.json({
+                success: true,
+                position: validPositions
+            });
+        }
+
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error. Please try again later.",
@@ -4079,5 +4266,10 @@ module.exports = {
 
     // ----- REPORT EXPORTS ------
     getReport,
+    getStudentReport,
+    getCT4Report,
+    getCount,
+    getSubjectPos,
+    realPosition,
     // ----- REPORT EXPORTS ------
 };
