@@ -51,14 +51,19 @@ Finishinig Date:    13 September 2024
 }
 .formInput .Input {
     margin-bottom: 0.7rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #E8ECEF;
+    padding: 0.4rem 1rem;
+    border-radius: 0.5rem;
 }
 .formInput .Input input {
-    padding: 0.4rem 1rem;
+    margin-left: 1rem;
     outline: none;
-    border: 2px solid #E8ECEF;
     width: 100%;
-    border-radius: 0.5rem;
     font-size: 0.9rem;
+    border: none;
 }
 .loginButton {
     outline: none;

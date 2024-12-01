@@ -111,6 +111,10 @@ const {
     getCount,
     getSubjectPos,
     realPosition,
+    getTByS,
+    getRemarksByClassID,
+    getJCEGrades,
+    getMSCEGrades,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -218,6 +222,8 @@ router.route('/updatterm/:id').put(updateTerms);
 
 router.route('/addgrade').post(addGrade);
 router.route('/getgrade').get(getGrades);
+router.route('/getjcegrade').get(getJCEGrades);
+router.route('/getmscegrade').get(getMSCEGrades);
 router.route('/deletgrade/:id').delete(deleteGrades);
 router.route('/editgrade/:id').get(editGrades);
 router.route('/updatgrade/:id').put(updateGrades);
@@ -396,6 +402,8 @@ router.route('/getctreport').post(getCT4Report);
 router.route('/countreport').post(getCount);
 router.route('/subjectpos').post(getSubjectPos);
 router.route('/realpos').post(realPosition);
+router.route('/gettbs').post(getTByS);
+router.route('/getremarkbyclass').post(getRemarksByClassID);
 // JCE
 // ------- REPORT ROUTES -----------
 

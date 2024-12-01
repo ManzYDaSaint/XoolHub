@@ -9,7 +9,7 @@ import api from '../../services/apiServices.jsx'
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoginData } from '../../helpers/examination/examSlice.jsx';
-import { Shield } from 'lucide-react'
+import { Shield, Mail, Lock } from 'lucide-react'
 import { InfinitySpin } from 'react-loader-spinner';
 
 
@@ -76,11 +76,6 @@ const Login = () => {
         <div className="notFound">
             <div className='logContainer'>
                 <Toaster />
-                {loading && (
-                    <div className='loki'>
-                        <InfinitySpin width='200' color="#007BFE" />
-                    </div>
-                )}
                 <div className="shieldContainer">
                     <Shield size={110} className='shield' />
                 </div>
@@ -96,6 +91,7 @@ const Login = () => {
                             value={loginData.schoolEmail}
                             onChange={handleChange}
                             autoComplete={'off'}
+                            icon={Mail}
                         />
                         <Input
                             type="password"
@@ -104,9 +100,10 @@ const Login = () => {
                             value={loginData.schoolPassword}
                             onChange={handleChange}
                             autoComplete={'off'}
+                            icon={Lock}
                         />
                         <Link className="forgot" to={'./forgot'}>Forgot Password?</Link>
-                        <button className='loginButton signin'>Sign In</button>
+                        <button className='loginButton signin'>{loading ? <InfinitySpin width='80' color='#4274BA' /> : 'Sign In'}</button>
                         <p className="cont">Or Continue</p>
                         <Link to={'/register'} className='linka'><button className='loginButton regIn'>Register</button></Link>
                         <p className='mt-4 termspolicy'>By clicking continue, you agree to our <Link to={''}>Terms <br />of Service</Link> and <Link to={''}>Privacy Policy</Link></p>

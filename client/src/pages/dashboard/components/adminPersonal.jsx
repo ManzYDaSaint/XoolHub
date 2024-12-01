@@ -26,6 +26,11 @@ const AdminPersonal = () => {
                 country: data.country || '',
                 email: data.email || '',
                 contact: data.contact || '',
+                slogan: data.slogan || '',
+                option1: data.option1 || '',
+                option2: data.option2 || '',
+                option3: data.option3 || '',
+                option4: data.option4 || '',
             }));
 
             // If the logo is retrieved as a URL, display it
@@ -62,6 +67,11 @@ const AdminPersonal = () => {
             formData.append('country', data.country);
             formData.append('email', data.email);
             formData.append('contact', data.contact);
+            formData.append('slogan', data.slogan);
+            formData.append('option1', data.option1);
+            formData.append('option2', data.option2);
+            formData.append('option3', data.option3);
+            formData.append('option4', data.option4);
             if (logoFile) {
                 formData.append('logo', logoFile); // Append logo file
             }
@@ -175,7 +185,7 @@ const AdminPersonal = () => {
                                 />
                             </GridColumn>
                         </GridRow>
-                        <GridRow columns={2}>
+                        <GridRow columns={3}>
                             <GridColumn>
                                 <FormInput
                                     label={'Contact'}
@@ -184,6 +194,58 @@ const AdminPersonal = () => {
                                     placeholder={'Type here..'}
                                     onChange={handleChange}
                                     value={adminFormData.contact}
+                                />
+                            </GridColumn>
+                            <GridColumn>
+                                <FormInput
+                                    label={'Slogan'}
+                                    type={'text'}
+                                    name={'slogan'}
+                                    placeholder={'Type here..'}
+                                    onChange={handleChange}
+                                    value={adminFormData.slogan}
+                                />
+                            </GridColumn>
+                            <GridColumn>
+                                <FormInput
+                                    label={'Option 1'}
+                                    type={'text'}
+                                    name={'option1'}
+                                    placeholder={'Type here..'}
+                                    onChange={handleChange}
+                                    value={adminFormData.option1}
+                                />
+                            </GridColumn>
+                        </GridRow>
+                        <GridRow columns={3}>
+                            <GridColumn>
+                                <FormInput
+                                    label={'Option 2'}
+                                    type={'text'}
+                                    name={'option2'}
+                                    placeholder={'Type here..'}
+                                    onChange={handleChange}
+                                    value={adminFormData.option2}
+                                />
+                            </GridColumn>
+                            <GridColumn>
+                                <FormInput
+                                    label={'Option 3'}
+                                    type={'text'}
+                                    name={'option3'}
+                                    placeholder={'Type here..'}
+                                    onChange={handleChange}
+                                    value={adminFormData.option3}
+                                />
+                            </GridColumn>
+                            <GridColumn>
+                                <FormInput
+                                    label={'Option 4'}
+                                    type={'text'}
+                                    name={'option4'}
+                                    placeholder={'Type here..'}
+                                    onChange={handleChange}
+                                    value={adminFormData.option4}
                                 />
                             </GridColumn>
                         </GridRow>

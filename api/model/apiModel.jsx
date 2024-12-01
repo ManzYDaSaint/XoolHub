@@ -24,9 +24,9 @@ const editSchool = async(id) => {
     return res.rows[0];
 }
 
-const updateSchool = async(id, name, address, city, country, email, contact, logo, update) => {
-    const query = "UPDATE schools SET name = $1, address = $2, city = $3, country = $4, email = $5, contact = $6, logo = $7, updated_at = $8 WHERE sid = $9";
-    const values = [name, address, city, country, email, contact, logo, update, id]
+const updateSchool = async(id, name, address, city, country, email, contact, logo, slogan, option1, option2, option3, option4, update) => {
+    const query = "UPDATE schools SET name = $1, address = $2, city = $3, country = $4, email = $5, contact = $6, logo = $7, updated_at = $8, slogan = $9, option1 = $10, option2 = $11, option3 = $12, option4 = $13 WHERE sid = $14";
+    const values = [name, address, city, country, email, contact, logo, update, slogan, option1, option2, option3, option4, id]
     const res = await kneX.query(query, values);
     return res.rows;
 }
@@ -366,6 +366,20 @@ const insertGrade = async(sid, denom, roof, floor, grade, remark) => {
 // Get all object
 const getGrade = async(sid) => {
     const query = "SELECT * FROM grading WHERE sid = $1";
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getMSCEGrade = async(sid) => {
+    const query = "SELECT * FROM grading WHERE sid = $1 AND denom = 'MSCE'";
+    const value = [sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
+const getJCEGrade = async(sid) => {
+    const query = "SELECT * FROM grading WHERE sid = $1 AND denom = 'JCE'";
     const value = [sid];
     const res = await kneX.query(query, value);
     return res.rows;
@@ -1259,7 +1273,8 @@ SELECT
 	ac.name AS year,
 	t.name AS term,
 	e.name AS exam,
-	c.name AS class
+	c.name AS class,
+    c.classid
 FROM ranked_students rs
 JOIN results r ON r.studentid = rs.studentid
 JOIN students st ON st.id = r.studentid
@@ -1345,7 +1360,25 @@ const realPos = async(yearid, termid, typeid, classid, sid, subjectid) => {
     const res = await kneX.query(query, value);
     return res.rows;
 }
+
+const getTeacherBySubject = async(subjectid, sid) => {
+    const query = `SELECT subjectid, teachers.name 
+        FROM assignteacher
+        INNER JOIN teachers ON teachers.id = assignteacher.teacherid
+        WHERE assignteacher.subjectid = $1 AND assignteacher.sid = $2`;
+    const value = [subjectid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
 // Class Teacher
+
+
+const getRemarks = async(denom, sid) => {
+    const query = `SELECT * FROM remarks WHERE denom = $1 AND sid = $2`;
+    const value = [denom, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
 
 // --------------------------------------- REPORT CRUD ------------------------------------------------
 
@@ -1429,6 +1462,8 @@ module.exports = {
     deleteGrade,
     updateGrade,
     editGrade,
+    getMSCEGrade,
+    getJCEGrade,
     // ----- GRADE SECTION -----
 
 
@@ -1582,5 +1617,7 @@ module.exports = {
     countResult,
     getSubjectPosition,
     realPos,
+    getTeacherBySubject,
+    getRemarks,
     // ----- REPORT SECTION -----
 };

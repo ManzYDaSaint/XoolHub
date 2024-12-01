@@ -8,8 +8,10 @@ import YearSelector from './components/yearSelector.jsx';
 import TermSelector from './components/termSelector.jsx';
 import ClassSelector from './components/classSelector.jsx';
 import ExamSelector from './components/typeSelector.jsx';
-import { Printer } from 'lucide-react';
+import { View } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Auth0 from '../../hooks/auth.jsx';
+import { InfinitySpin } from 'react-loader-spinner';
 
 const ReportForm = () => {
   const reportFormData = useSelector((state) => state.exam.reportFormData);
@@ -53,6 +55,7 @@ const ReportForm = () => {
   };
 
   return (
+    <Auth0>
     <>
       <form onSubmit={onSubmit} autoComplete="off">
         <div className="formGroup">
@@ -81,13 +84,16 @@ const ReportForm = () => {
             value={reportFormData.classid}
           />
         </div>
-        <FormButton label={isLoading ? 'Filtering..' : 'Filter'} id="tyepButton" />
+        <FormButton 
+          label={isLoading ? 
+          'Filtering...'
+          : 'Filter'} id="tyepButton" />
       </form>
       <table className="table customisedTable mt-3 w-100" id="fees__table">
         <thead>
           <tr>
             <th>Sr</th>
-            <th>Print</th>
+            <th>Action</th>
             <th>Aggregate</th>
             <th>Student Name</th>
             {subjects.map((subject, index) => (
@@ -99,7 +105,9 @@ const ReportForm = () => {
           {students.map((item, index) => (
             <tr key={index}>
               <td>{item.rank}</td>
-              <td><button onClick={() => handleAcademics(item.student_id)} className='action_icon'><Printer size={18} /></button></td>
+              <td>
+                <button onClick={() => handleAcademics(item.student_id)} className='action_icon'><View size={18} /></button>
+              </td>
               <td>{item.agg}</td>
               <td>{item.student_name}</td>
               {subjects.map((subject, index) => (
@@ -112,6 +120,7 @@ const ReportForm = () => {
         </tbody>
       </table>
     </>
+    </Auth0>
   );
 };
 

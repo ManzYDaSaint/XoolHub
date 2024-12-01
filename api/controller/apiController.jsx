@@ -119,6 +119,10 @@ const {
     countResult,
     getSubjectPosition,
     realPos,
+    getTeacherBySubject,
+    getRemarks,
+    getMSCEGrade,
+    getJCEGrade,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -225,57 +229,84 @@ const getSchool = async (req, res) => {
     }
 }
 
-const updateSchools = async(req, res) => {
-    const { name, address, city, country, email, contact } = req.body;
-    const token = req.cookies.schoolToken
+const updateSchools = async (req, res) => {
+    const { name, address, city, country, email, contact, slogan, option1, option2, option3, option4 } = req.body;
+    const token = req.cookies.schoolToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
-
-    // Check if an image file is provided
-    const logo = req.files.logo;
 
     const now = new Date();
     const updateAt = now.toLocaleString();
 
     try {
-        // Upload image to Supabase storage            
-        const { data, error } = await supabase
-        .storage
-        .from('schoollogos')
-        .upload(`public/${logo.name}`, logo.data, {
-            cacheControl: '3600',
-            upsert: false,
-            contentType: logo.mimetype
-        })
-    
-        if (error) {
-            res.json({
-                success: false,
-                message: error.message,
-            });
-            return;
+        let publicUrl = null;
+
+        // Check if a file is uploaded
+        if (req.files && req.files.logo) {
+            const logo = req.files.logo;
+
+            // Upload image to Supabase storage
+            const { data, error } = await supabase
+                .storage
+                .from('schoollogos')
+                .upload(`public/${logo.name}`, logo.data, {
+                    cacheControl: '3600',
+                    upsert: false,
+                    contentType: logo.mimetype
+                });
+
+            if (error) {
+                res.json({
+                    success: false,
+                    message: error.message,
+                });
+                return;
+            }
+
+            // Get the public URL for the uploaded logo
+            const { publicUrl: url } = supabase
+                .storage
+                .from('schoollogos')
+                .getPublicUrl(data.path).data;
+
+            publicUrl = url;
         }
 
-        const { publicUrl  } = supabase.storage.from('schoollogos').getPublicUrl(data.path).data;
+        // Call the update function with or without the logo URL
+        const update = await updateSchool(
+            sid,
+            name,
+            address,
+            city,
+            country,
+            email,
+            contact,
+            publicUrl, // Can be null if no logo is provided
+            slogan,
+            option1,
+            option2,
+            option3,
+            option4,
+            updateAt
+        );
 
-        const update = await updateSchool(sid, name, address, city, country, email, contact, publicUrl, updateAt);
-        if(update) {
+        if (update) {
             res.json({
                 success: true,
                 message: "School updated successfully",
             });
-        }
-        else {
+        } else {
             res.json({
                 success: false,
                 message: "School updating failed..",
             });
         }
     } catch (error) {
-        console.error('Error uploading image:', error.message);
+        console.error('Error:', error.message);
         res.status(500).send('Internal Server Error');
     }
-}
+};
+
 
 // ----------------------- REGISTER CONTROLLER -----------------------
 
@@ -1469,6 +1500,56 @@ const getGrades = async (req, res) => {
     const sid = decoded.id;
     try {
         const grade = await getGrade(sid);
+        if(grade) {
+            res.json({
+                success: true,
+                grade,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getMSCEGrades = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const grade = await getMSCEGrade(sid);
+        if(grade) {
+            res.json({
+                success: true,
+                grade,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getJCEGrades = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const grade = await getJCEGrade(sid);
         if(grade) {
             res.json({
                 success: true,
@@ -4040,6 +4121,84 @@ const realPosition = async (req, res) => {
     }
 }
 
+const getTByS = async (req, res) => {
+    const { id } = req.body;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+
+        // Fetch data for each subjectid
+        const teacher = await Promise.all(
+            id.map(async (subjectId) => {
+                const result = await getTeacherBySubject(subjectId, sid);
+                return result;
+            })
+        );
+
+        const teacherName = teacher.filter(Boolean);
+
+        if (teacherName.length > 0) {
+            return res.json({
+                success: true,
+                info: teacherName
+            });
+        }
+
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+
+const getRemarksByClassID = async (req, res) => {
+    const { id } = req.body;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    const classid = Number(id);
+    try {
+        if(!id) {
+            return res.json({        
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+
+        // Fecthing data
+        const getDenom = await getClassById(sid, classid);
+        if(getDenom) {
+            const denom = getDenom.denom;
+            const remarks = await getRemarks(denom, sid);
+            if(remarks) {
+                return res.json({
+                    success: true,
+                    remarks
+                });
+            }
+            return res.json({
+                success: false,
+                message: 'No records found'
+            });
+        }
+    } catch (error) {
+        res.status(500).json({    
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
 // ----------------------- REPORT CONTROLLER -----------------------
 
 
@@ -4119,6 +4278,8 @@ module.exports = {
     deleteGrades,
     editGrades,
     updateGrades,
+    getJCEGrades,
+    getMSCEGrades,
     // ----- GRADE EXPORTS ------
 
 
@@ -4271,5 +4432,7 @@ module.exports = {
     getCount,
     getSubjectPos,
     realPosition,
+    getTByS,
+    getRemarksByClassID,
     // ----- REPORT EXPORTS ------
 };

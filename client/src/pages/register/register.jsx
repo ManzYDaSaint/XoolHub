@@ -7,8 +7,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRegisterData } from '../../helpers/examination/examSlice.jsx';
-import { ShieldEllipsis } from 'lucide-react'
-import { InfinitySpin } from 'react-loader-spinner';
+import { Check, CircleCheck, Lock, Mail, ShieldEllipsis } from 'lucide-react'
 
 
 const Register = () => {
@@ -56,11 +55,6 @@ const Register = () => {
         <div className="notFound">
             <div className='logContainer'>
                 <Toaster />
-                {loading && (
-                    <div className='loki'>
-                        <InfinitySpin width='200' color="#007BFE" />
-                    </div>
-                )}
                 <div className="shieldContainer">
                     <ShieldEllipsis size={110} className='shield' />
                 </div>
@@ -76,6 +70,7 @@ const Register = () => {
                             value={registerData.schoolEmail}
                             onChange={handleChange}
                             autoComplete={'off'}
+                            icon={Mail}
                         />
                         <Input
                             type="password"
@@ -84,6 +79,7 @@ const Register = () => {
                             value={registerData.schoolPassword}
                             onChange={handleChange}
                             autoComplete={'off'}
+                            icon={Lock}
                         />
                         <Input
                             type="password"
@@ -92,8 +88,9 @@ const Register = () => {
                             value={registerData.confirm}
                             onChange={handleChange}
                             autoComplete={'off'}
+                            icon={CircleCheck}
                         />
-                        <button className='loginButton signin'>Register</button>
+                        <button className='loginButton signin'>{loading ? 'Registering...' : 'Register'}</button>
                         <p className="cont">Or Continue</p>
                         <Link to={'/'} className='linka'><button className='loginButton regIn'>Log In</button></Link>
                         <p className='mt-4 termspolicy'>By clicking continue, you agree to our <Link to={''}>Terms <br />of Service</Link> and <Link to={''}>Privacy Policy</Link></p>

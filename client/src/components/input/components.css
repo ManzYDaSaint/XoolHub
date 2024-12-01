@@ -316,6 +316,16 @@
     flex-direction: row;
     align-items: center;
 }
+.topRight button {
+    padding: 0;
+    outline: none;
+    border: none;
+    font-size: 1.4rem;
+    color: red;
+    transition: 0.3s ease-in-out;
+    background-color: transparent;
+    margin-left: 1.5rem;
+}
 .notifyLink {
     padding: 1rem;
     text-decoration: none;
@@ -512,6 +522,25 @@
     border-bottom: 2px solid #C6E1FE;
     font-size: 0.9rem;
 }
+.pagination button {
+    margin: 0 4px;
+    padding: 0.2rem 0.8rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+  
+.pagination .active-page {
+    background-color: #007bff;
+    color: white;
+}
+  
 .toggleDiv {
     padding: 1rem 2rem;
     width: 100%;
@@ -622,7 +651,7 @@
     border: none;
     outline: none;
     padding: 0rem;
-    margin-left: 0.6rem;
+    margin-left: 1rem;
     font-size: 1rem;
     background-color: transparent;
 }

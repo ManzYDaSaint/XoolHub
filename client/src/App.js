@@ -28,6 +28,7 @@ import Entry from './teacher-service/pages/entry.jsx';
 import StudentDetail from './teacher-service/pages/studentDetail.jsx';
 import AdminProfile from './pages/dashboard/adminProfile.jsx';
 import StudentReport from './pages/reports/studentReport.jsx';
+import Landing from './pages/landing/front.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -37,6 +38,10 @@ function App() {
     },
     {
       path: '/',
+      element: <Landing />
+    },
+    {
+      path: '/login',
       element: <Login />
     },
     {

@@ -1,10 +1,11 @@
 import React from 'react'
 import './components.css'
 
-const Input = ({name, type, placeholder, value, onChange, autoComplete}) => {
+const Input = ({name, type, placeholder, value, onChange, autoComplete, icon: Icon}) => {
   return (
     <div className="formInput">
         <div className="Input">
+            {Icon && <Icon size={18} className="lucideIcon" />}
             <input
               type={type}
               placeholder={placeholder}

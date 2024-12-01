@@ -1,11 +1,15 @@
-import React from 'react'
+import React, {useState} from 'react'
 import Searchbar from './searchbar'
 import { Link } from 'react-router-dom'
 import { Icon } from 'semantic-ui-react'
+import LogOut from '../../pages/logout'
 
 const Navbar = () => {
+    const [open, setOpen] = useState(false);
+
   return (
-    <div className='navbarContainer'>
+      <div className='navbarContainer'>
+        <LogOut open={open} setOpen={setOpen} />
         <div className="searchBar">
             <Searchbar 
             icon={'search'}
@@ -30,6 +34,10 @@ const Navbar = () => {
                 <div className="profileContainer">
                     <Link to={'/profile'} className='profileLink'><Icon name='user circle' className='profilePicture' /></Link> 
                 </div>
+                <button onClick={() => setOpen(true)}>
+                    <Icon name='shutdown' />
+                    
+                </button>
             </div>
         </div>
     </div>

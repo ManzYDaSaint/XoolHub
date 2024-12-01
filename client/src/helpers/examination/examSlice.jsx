@@ -17,7 +17,12 @@ const ExamSlice = createSlice({
       country: '',
       email: '',
       contact: '',
-      logo: ''
+      logo: '',
+      slogan: '',
+      option1: '',
+      option2: '',
+      option3: '',
+      option4: '',
     },
     yearFormData: {
       yearName: '',

@@ -92,6 +92,8 @@ const updateTerm = (id, data) => axios.put(API + '/updatterm/' + id, data);
 
 const addGrade = (data) => axios.post(API + '/addgrade', data);
 const getGrade = () => axios.get(API + '/getgrade');
+const getJCEGrade = () => axios.get(API + '/getjcegrade');
+const getMSCEGrade = () => axios.get(API + '/getmscegrade');
 const deleteGrade = (id) => axios.delete(API + '/deletgrade/' + id);
 const editGrade = (id) => axios.get(API + '/editgrade/' + id);
 const updateGrade = (id, data) => axios.put(API + '/updatgrade/' + id, data);
@@ -269,6 +271,8 @@ const getCTReport = (data) => axios.post(API + '/getctreport', data);
 const countResult = (data) => axios.post(API + '/countreport', data);
 const getSubjectPos = (data) => axios.post(API + '/subjectpos', data);
 const realPos = (data) => axios.post(API + '/realpos', data);
+const getTBySubject = (data) => axios.post(API + '/gettbs', data);
+const getRemarks = (data) => axios.post(API + '/getremarkbyclass', data);
 // --------- REPORT AXIOS -----------
 
 
@@ -341,6 +345,8 @@ export default {
     deleteGrade,
     editGrade,
     updateGrade,
+    getJCEGrade,
+    getMSCEGrade,
     // ------ GRADE EXPORT -------
 
 
@@ -492,5 +498,7 @@ export default {
        countResult,
        getSubjectPos,
        realPos,
+       getTBySubject,
+       getRemarks,
        // ------ REPORT EXPORT -------
 };
