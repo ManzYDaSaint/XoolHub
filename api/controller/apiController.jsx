@@ -123,6 +123,8 @@ const {
     getRemarks,
     getMSCEGrade,
     getJCEGrade,
+    deleteReport,
+    deleteResult,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -3416,6 +3418,40 @@ const getScores = async(req, res) => {
     }
 }
 
+const deleteResults = async(req, res) => {
+    const { yearid, termid, typeid, selectedClass, selectedSubject } = req.body;
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    try {
+        if(!yearid || !termid || !typeid || !selectedClass || !selectedSubject) {
+            return res.json({
+                success: false,
+                message: "Please filter first then delete the result"
+            });
+        }
+
+        // Fecthing data
+        const deleteRep = await deleteResult(yearid, termid, typeid, selectedClass, selectedSubject, sid);
+        if(deleteRep) {
+            return res.json({
+                success: true,
+                message: 'Result deleted successfully'
+            });
+        }
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
 const updateScores = async(req, res) => {
     const { id } = req.params;
     const { score } = req.body.data;
@@ -3890,6 +3926,7 @@ const getReport = async (req, res) => {
         const venom = 'JCE';
         const carnage = 'MSCE';
         const getClass = await getClassById(sid, classid);
+
         if(getClass) {
             if(getClass.denom === venom) {
                 const codes = await getReportByStudent(sid, yearid, termid, typeid, classid);
@@ -4199,6 +4236,40 @@ const getRemarksByClassID = async (req, res) => {
     }
 }
 
+const deleteReports = async(req, res) => {
+    const { yearid, termid, typeid, classid } = req.body;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!yearid || !termid || !typeid || !classid) {
+            return res.json({
+                success: false,
+                message: "Please filter first then delete the report"
+            });
+        }
+
+        // Fecthing data
+        const deleteRep = await deleteReport(yearid, termid, typeid, classid, sid);
+        if(deleteRep) {
+            return res.json({
+                success: true,
+                message: 'Report deleted successfully'
+            });
+        }
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
 // ----------------------- REPORT CONTROLLER -----------------------
 
 
@@ -4392,6 +4463,7 @@ module.exports = {
     getXs,
     getScores,
     updateScores,
+    deleteResults,
     // ----- FILTER EXPORTS ------
 
 
@@ -4434,5 +4506,6 @@ module.exports = {
     realPosition,
     getTByS,
     getRemarksByClassID,
+    deleteReports,
     // ----- REPORT EXPORTS ------
 };

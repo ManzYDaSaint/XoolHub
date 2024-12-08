@@ -224,6 +224,7 @@ const insertResult = (data) => axios.post(API + '/insertresults', data);
 
 // --------- FILTER AXIOS -----------
 const getX = (data) => axios.post(API + '/getx', data);
+const deleteResult = (data) => axios.delete(API + '/deleteresult', data);
 const getScore = (id) => axios.get(API + '/getscore/' + id);
 const updateScore = (id, data) => axios.put(API + '/updatscore/' + id, data);
 // --------- FILTER AXIOS -----------
@@ -273,6 +274,7 @@ const getSubjectPos = (data) => axios.post(API + '/subjectpos', data);
 const realPos = (data) => axios.post(API + '/realpos', data);
 const getTBySubject = (data) => axios.post(API + '/gettbs', data);
 const getRemarks = (data) => axios.post(API + '/getremarkbyclass', data);
+const deleteReport = (data) => axios.delete(API + '/deletereport', data);
 // --------- REPORT AXIOS -----------
 
 
@@ -456,6 +458,7 @@ export default {
        getX,
        getScore,
        updateScore,
+       deleteResult,
        // ------ FILTER EXPORT -------
 
 
@@ -500,5 +503,6 @@ export default {
        realPos,
        getTBySubject,
        getRemarks,
+       deleteReport,
        // ------ REPORT EXPORT -------
 };

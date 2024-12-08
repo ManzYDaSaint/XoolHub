@@ -7,6 +7,7 @@ import FormButton from '../../components/input/formButton.jsx'
 import { useNavigate } from 'react-router-dom'
 import '../fees/fees.css'
 import { Icon } from 'semantic-ui-react'
+import FeesDashboard from '../fees/dashboard/fees-dashboard.jsx'
 
 const Fees = () => {
   const navigate = useNavigate();
@@ -50,7 +51,7 @@ const Fees = () => {
                     
                 </div>
                 <div className="student_dashboard">
-                  Dashboard under construction....
+                  <FeesDashboard />
                 </div>
               </div>
             </div>

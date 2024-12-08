@@ -115,6 +115,8 @@ const {
     getRemarksByClassID,
     getJCEGrades,
     getMSCEGrades,
+    deleteReports,
+    deleteResults,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -352,6 +354,7 @@ router.route('/insertresults').post(insertResults);
 
 // ------- FILTER ROUTES -----------
 router.route('/getx').post(getXs);
+router.route('/deleteresult').delete(deleteResults);
 router.route('/getscore/:id').get(getScores);
 router.route('/getscore/:id').get(getScores);
 router.route('/updatscore/:id').put(updateScores);
@@ -404,6 +407,7 @@ router.route('/subjectpos').post(getSubjectPos);
 router.route('/realpos').post(realPosition);
 router.route('/gettbs').post(getTByS);
 router.route('/getremarkbyclass').post(getRemarksByClassID);
+router.route('/deletereport').delete(deleteReports);
 // JCE
 // ------- REPORT ROUTES -----------
 

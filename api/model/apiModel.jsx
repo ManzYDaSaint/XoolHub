@@ -1059,6 +1059,13 @@ const getX = async(sid, yearid, termid, typeid, classid, subjectid) => {
     return res.rows;
 }
 
+const deleteResult = async(yearid, termid, typeid, classid, subjectid, sid) => {
+    const query = "DELETE FROM results WHERE yearid = $1 AND termid = $2 AND typeid = $3 AND classid = $4 AND subjectid = $5 AND sid = $6";
+    const value = [yearid, termid, typeid, classid, subjectid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
 const getScore = async(id) => {
     const query = `SELECT *
         FROM results
@@ -1380,6 +1387,14 @@ const getRemarks = async(denom, sid) => {
     return res.rows;
 }
 
+
+const deleteReport = async(yearid, termid, typeid, classid, sid) => {
+    const query = `DELETE FROM results WHERE yearid = $1 AND termid = $2 AND typeid = $3 AND classid = $4 AND sid = $5`;
+    const value = [yearid, termid, typeid, classid, sid];
+    const res = await kneX.query(query, value);
+    return res.rows;
+}
+
 // --------------------------------------- REPORT CRUD ------------------------------------------------
 
 
@@ -1588,6 +1603,7 @@ module.exports = {
     getX,
     getScore,
     updateScore,
+    deleteResult,
     // ----- FILTER SECTION -----
     
     
@@ -1619,5 +1635,6 @@ module.exports = {
     realPos,
     getTeacherBySubject,
     getRemarks,
+    deleteReport,
     // ----- REPORT SECTION -----
 };

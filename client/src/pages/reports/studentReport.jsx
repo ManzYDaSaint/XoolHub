@@ -388,10 +388,6 @@ const StudentReport = () => {
                             <td>
                               <button
                                 onClick={handleDownload}
-                                style={{
-                                  padding: "10px 20px",
-                                  fontSize: "16px",
-                                }}
                               >
                                 Download PDF
                               </button>

@@ -8,7 +8,6 @@ import TypeSelector from '../components/examTypeSelector.jsx';
 import ClassSelector from '../components/classSelector.jsx';
 import TermSelector from '../components/termSelector.jsx';
 import api from '../../services/apiServices.jsx';
-import { InfinitySpin } from 'react-loader-spinner';
 
 const EntryForm = () => {
   const filterFormData = useSelector((state) => state.exam.filterFormData);
@@ -231,11 +230,6 @@ const EntryForm = () => {
               disabled={loading} 
 
             />
-            {loading && (
-              <div className='loki'>
-                <InfinitySpin width='200' color="#007BFE" />
-              </div>
-            )}
           </div>
         )}
       </form>

@@ -6,6 +6,7 @@ import Navbar from '../../components/input/top'
 import FormButton from '../../components/input/formButton.jsx'
 import { useNavigate } from 'react-router-dom'
 import '../students/students.css'
+import StudentDashboard from '../students/dashboard/student-dashboard.jsx'
 
 const Students = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Students = () => {
                         />
                 </div>
                 <div className="student_dashboard">
-                  Dashboard under construction....
+                  <StudentDashboard />
                 </div>
               </div>
             </div>

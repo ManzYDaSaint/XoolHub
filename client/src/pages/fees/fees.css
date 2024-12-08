@@ -10,3 +10,11 @@
     cursor: pointer;
     margin-top: 0.8rem !important;
 }
+
+.overview-section {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 2rem;
+    gap: 2rem;
+}
+  

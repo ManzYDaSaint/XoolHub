@@ -6,6 +6,7 @@ import Navbar from '../../components/input/top'
 import { Icon } from 'semantic-ui-react'
 import { useNavigate } from 'react-router-dom'
 import '../teacher/teacher.css'
+import TeacherBoard from '../teacher/dashboard/teacher-dashboard'
 
 const Teachers = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Teachers = () => {
                     />
                 </div>
                 <div className="teacher_dashboard">
-                  Dashboard under construction....
+                  <TeacherBoard />
                 </div>
               </div>
             </div>
