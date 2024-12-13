@@ -1,3 +1,13 @@
 .adminIcon {
     margin-left: 0.7rem !important;
 }
+.master_container {
+    margin-top: 7rem;
+    margin-left: 1.5rem;
+    padding: 2rem 4rem;
+    background-color: #F4F6F7;
+    border-radius: 0.5rem;
+}
+.master_cards {
+    border-top: 4px solid #C6E1FE;
+}

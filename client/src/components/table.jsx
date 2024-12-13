@@ -85,6 +85,7 @@ function UniversalTable({ columns, data }) {
 
   return (
     <div className="helperDiv">
+      <p className='table_note'>Note: <span className='highlight'>Click on any of the column name to sort in <br /> both <strong>ascending</strong> and <strong>descending</strong> order. Default is unsorted.</span></p>
       <Searchbar 
         icon={'search'}
         type={'text'}

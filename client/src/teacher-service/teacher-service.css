@@ -270,13 +270,36 @@
 .dateContainer {
   display: flex;
   align-items: center;
+  position: relative;
+}
+.dateContainer::after {
+  position: absolute;
+  content: "";
+  width: 0.4rem;
+  height: 1.3rem;
+  background-color: #007BFE;
+  top: -0.5rem;
+  left: 0.7rem;
+  border: 2px solid #fff;
+  border-radius: 0.3rem;
+}
+.dateContainer::before {
+  position: absolute;
+  content: "";
+  width: 0.4rem;
+  height: 1.3rem;
+  background-color: #007BFE;
+  top: -0.5rem;
+  left: 2.4rem;
+  border: 2px solid #fff;
+  border-radius: 0.3rem;
 }
 .dateContainer h3 {
   font-size: 2rem;
   padding: 0.2rem 0.5rem;
   border: 2px solid #007BFE;
   border-radius: 0.5rem;
-  border-top: 0.6rem solid #007BFE;
+  border-top: 1rem solid #007BFE;
   color: #007BFE;
   font-weight: 600;
 }

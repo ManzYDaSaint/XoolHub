@@ -1,34 +1,48 @@
 import React from "react";
+import FeeCollectionBarChart from "./feeCollectionChart";
 
 const PaymentTracking = () => {
-  const payments = [
-    { id: 1, student: "John Doe", amount: "$500", date: "2024-12-01", method: "Mobile Money" },
-    { id: 2, student: "Jane Smith", amount: "$300", date: "2024-12-03", method: "Bank Transfer" },
+  const data = [
+    { day: "Monday", amount: 20 },
+    { day: "Tuesday", amount: 25 },
+    { day: "Wednesday", amount: 18 },
+    { day: "Thursday", amount: 58 },
+    { day: "Friday", amount: 49 },
   ];
 
   return (
-    <div className="payment-tracking">
-      <h3>Payment History</h3>
-      <table>
-        <th>
-          <tr>
-            <td>Student</td>
-            <td>Amount</td>
-            <td>Date</td>
-            <td>Payment Method</td>
-          </tr>
-        </th>
-        <tbody>
-          {payments.map((payment) => (
-            <tr key={payment.id}>
-              <td>{payment.student}</td>
-              <td>{payment.amount}</td>
-              <td>{payment.date}</td>
-              <td>{payment.method}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+    <div className="fees_graph_card">
+      <div className="chart-container">
+        <h3>Payment Tracking</h3>
+        <FeeCollectionBarChart data={data} />
+      </div>
+      <div className="fees_by_class">
+        <h3>Fees Distribution By Class</h3>
+        <div className="fees_progress_container">
+          <p>Form 1</p>
+          <div className="fee_progress">
+            <div className="inner_progress"></div>
+          </div>
+        </div>
+        <div className="fees_progress_container">
+          <p>Form 1</p>
+          <div className="fee_progress">
+            <div className="inner_progress"></div>
+          </div>
+        </div>
+        <div className="fees_progress_container">
+          <p>Form 1</p>
+          <div className="fee_progress">
+            <div className="inner_progress"></div>
+          </div>
+        </div>
+        <div className="fees_progress_container">
+          <p>Form 1</p>
+          <div className="fee_progress">
+            <div className="inner_progress"></div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

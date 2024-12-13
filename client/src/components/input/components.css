@@ -503,6 +503,16 @@
     border-radius: 4rem;
     font-size: 0.7rem;
 }
+.table_note {
+    font-size: 0.9rem;
+    padding: 1rem 0;
+    margin: 0;
+    font-weight: bold;
+}
+.highlight {
+    font-style: italic;
+    font-weight: 500;
+}
 .tableContainer {
     margin-top: 2rem;
 }

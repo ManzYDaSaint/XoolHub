@@ -73,4 +73,55 @@
     gap: 1.5rem;
     margin-top: -3rem;
 }
+
+.custom_card_container {
+    background-color: #E8ECEF;
+    padding: 0 1rem;
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    flex: 1;
+}
+
+.custom_card_icon {
+    color: #87C54C;
+    background-color: #F1F8EB;
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+}
+
+.custom_card_detail h4 {
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    padding: 0;
+    margin: 0.5rem 0;
+}
+.custom_card_detail p {
+    padding: 0;
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+}
+.ui.progress {
+    margin: 0 !important;
+    height: 0.5rem;
+    width: 100% !important;
+}
+
+.average_container {
+    background-color: #E8ECEF;
+    padding: 2rem;
+}
+
+.average_header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+
+.average_header h5 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+}
 /* REport Card */

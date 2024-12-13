@@ -1,34 +1,39 @@
-import React from 'react'
-import Sidebar from '../../components/input/sidebar'
-import './dashboard.css'
-import Navbar from '../../components/input/top'
-import ReportData from '../reports/reportData'
+import React from "react";
+import Sidebar from "../../components/input/sidebar";
+import "./dashboard.css";
+import Navbar from "../../components/input/top";
+import ReportData from "../reports/reportData";
+import Auth0 from "../../hooks/auth";
+import ReportDashboard from "../reports/dashboard/report-dashboard";
 
 const Report = () => {
   return (
-    <div className='dashboard__container'>
-      <div className="dashboard__content">
-        <Sidebar />
-        <div className="dashboard">
-          <Navbar />
-          <div className="settingContainer">
-            <div className="settingContent">
-              <div className="student_container">
-                <div className="splitter">
+    <Auth0>
+      <div className="dashboard__container">
+        <div className="dashboard__content">
+          <Sidebar />
+          <div className="dashboard">
+            <Navbar />
+            <div className="settingContainer">
+              <div className="settingContent">
+                <div className="student_container">
+                  <div className="splitter">
                     <div className="headerTitle">
                       <h5>Reports Management</h5>
-                    </div>                    
-                </div>
-                <div className="student_dashboard">
-                  <ReportData />
+                    </div>
+                  </div>
+                  <div className="student_dashboard">
+                    <ReportData />
+                    <ReportDashboard />
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
+    </Auth0>
+  );
+};
 
-export default Report
+export default Report;

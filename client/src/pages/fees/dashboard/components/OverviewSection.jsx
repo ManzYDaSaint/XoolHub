@@ -1,35 +1,36 @@
 import React from "react";
 import Card from "../../../students/dashboard/components/card";
-import { Receipt } from 'lucide-react'
+import { DollarSign, Scale, TrendingUpDown, HandCoins } from 'lucide-react'
 
 const OverviewSection = () => {
 
   return (
     <div className="overview-section">
       <Card 
-        icon={Receipt}
+        icon={DollarSign}
         title="5,000"
         small={'MK'}
         description="Total Fees Collected"
       />
       <Card 
-        icon={Receipt}
+        icon={HandCoins}
+        title= "5,000"
+        small={'MK'}
+        description="Fees Collected this month"
+      />
+      <Card 
+        icon={TrendingUpDown}
         title="1,250"
         small={'MK'}
         description="Pending Payments"
       />
       <Card 
-        icon={Receipt}
+        icon={Scale}
         title="5,000"
         small={'MK'}
         description="Outstanding Dues"
       />
-      <Card 
-        icon={Receipt}
-        title= "5,000"
-        small={'MK'}
-        description="Total Fees Collected"
-      />
+      
     </div>
   );
 };
