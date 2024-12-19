@@ -1,28 +1,36 @@
 import React from 'react';
 import {
-  BarChart,
+  LineChart,
   XAxis,
   YAxis,
-  Bar,
+  Line,
   CartesianGrid,
   Tooltip,
   Legend,
   ResponsiveContainer,
 } from 'recharts';
 
-const FeeCollectionBarChart = ({ data }) => {
+const FeeCollectionLineChart = () => {
+  const data = [
+    { day: "Monday", amount: 20 },
+    { day: "Tuesday", amount: 25 },
+    { day: "Wednesday", amount: 18 },
+    { day: "Thursday", amount: 58 },
+    { day: "Friday", amount: 49 },
+  ]; 
+
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data}>
+      <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="day" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="amount" fill="#007BFE" name="Fee Collected" />
-      </BarChart>
+        <Line type="monotone" dataKey="amount" stroke="#007BFE" name="Fee Collected" />
+      </LineChart>
     </ResponsiveContainer>
   );
 };
 
-export default FeeCollectionBarChart;
+export default FeeCollectionLineChart;

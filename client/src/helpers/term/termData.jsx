@@ -33,6 +33,8 @@ const TermData = () => {
           const termData = data.map((item, index) => ({
           sr: index + 1,
           name: item.name,
+          start: item.start_date,
+          end: item.end_date,
           actions: (
               <div>
               <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
@@ -56,6 +58,8 @@ const TermData = () => {
       const res = await api.editTerm(id);
       dispatch(setTermFormData({
         termName: res.data.edit.name,
+        startDate: res.data.edit.start_date,
+        endDate: res.data.edit.end_date,
       }));
       dispatch(setIsEditMode(true));
       dispatch(setEditItemId(res.data.edit.id));

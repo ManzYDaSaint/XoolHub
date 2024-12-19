@@ -11,3 +11,31 @@
 .master_cards {
     border-top: 4px solid #C6E1FE;
 }
+
+.fees_deatils_container {
+    padding: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    /* align-items: center; */
+}
+
+.fees_deatils_container h4 {
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    margin: 2rem 0;
+}
+
+.line_chart {
+    flex: 2;
+    background-color: #E8ECEF;
+    padding: 1rem;
+}
+.pie_chart {
+    flex: 1;
+    background-color: #E8ECEF;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

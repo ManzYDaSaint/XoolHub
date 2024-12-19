@@ -45,6 +45,8 @@ const TermForm = ({ fetchData }) => {
           }
           dispatch(setTermFormData({
             termName: '',
+            startDate: '',
+            endDate: '',
           }));
           setIsEditMode(false);
           setEditItemId(null);
@@ -71,6 +73,22 @@ const TermForm = ({ fetchData }) => {
           type={'text'}
           name='termName'
           value={termFormData.termName}
+          onChange={handleChange}
+          placeholder={'Type here...'}
+        />
+        <FormInput
+          label={'Start Date'}
+          type={'date'}
+          name='startDate'
+          value={termFormData.startDate}
+          onChange={handleChange}
+          placeholder={'Type here...'}
+        />
+        <FormInput
+          label={'End Date'}
+          type={'date'}
+          name='endDate'
+          value={termFormData.endDate}
           onChange={handleChange}
           placeholder={'Type here...'}
         />

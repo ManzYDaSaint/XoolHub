@@ -43,6 +43,8 @@ const YearForm = ({ fetchData }) => {
           }
           dispatch(setYearFormData({
             yearName: '',
+            startDate: '',
+            endDate: '',
           }));
           dispatch(setIsEditMode(false));
           dispatch(setEditItemId(null));
@@ -69,6 +71,22 @@ const YearForm = ({ fetchData }) => {
           type={'text'}
           name='yearName'
           value={yearFormData.yearName}
+          onChange={handleChange}
+          placeholder={'Type here...'}
+        />
+        <FormInput
+          label={'Start Date'}
+          type={'date'}
+          name='startDate'
+          value={yearFormData.startDate}
+          onChange={handleChange}
+          placeholder={'Type here...'}
+        />
+        <FormInput
+          label={'End Date'}
+          type={'date'}
+          name='endDate'
+          value={yearFormData.endDate}
           onChange={handleChange}
           placeholder={'Type here...'}
         />

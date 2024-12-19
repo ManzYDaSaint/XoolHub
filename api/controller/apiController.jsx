@@ -125,6 +125,7 @@ const {
     getJCEGrade,
     deleteReport,
     deleteResult,
+    insertStudentHistory,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -758,13 +759,13 @@ const updateExams = async(req, res) => {
 // ----------------------- YEAR CONTROLLER -----------------------
 
 const addYear = async (req, res) => {
-    const { yearName } = req.body.data;
+    const { yearName, startDate, endDate } = req.body.data;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const id = decoded.id;
 
     try {
-        if(!yearName) {
+        if(!yearName || !startDate || !endDate) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
@@ -773,7 +774,7 @@ const addYear = async (req, res) => {
         }
 
         // Check if exam exists
-        const checker = await checkYear(id, yearName);
+        const checker = await checkYear(id, yearName, startDate, endDate);
         if(checker) {
             res.json({
                 success: false,
@@ -782,7 +783,7 @@ const addYear = async (req, res) => {
         }
         else {
             // Add new exam
-            const newYear = await insertYear(id, yearName);
+            const newYear = await insertYear(id, yearName, startDate, endDate);
             if(newYear) {
                 res.json({ 
                     success: true,
@@ -880,7 +881,7 @@ const editYears = async(req, res) => {
 
 const updateYears = async(req, res) => {
     const { id } = req.params;
-    const { yearName } = req.body;
+    const { yearName, startDate, endDate } = req.body;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
@@ -888,7 +889,7 @@ const updateYears = async(req, res) => {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkYear(sid, yearName);
+        const checker = await checkYear(sid, yearName, startDate, endDate);
         if(checker) {
             res.json({
                 success: false,
@@ -896,7 +897,7 @@ const updateYears = async(req, res) => {
             });
         }
         else {
-            const update = await updateYear(id, yearName, updateAt);
+            const update = await updateYear(id, yearName, startDate, endDate, updateAt);
             if(update) {
                 res.json({
                     success: true,
@@ -1263,13 +1264,13 @@ const updateClasses = async(req, res) => {
 // ----------------------- TERM CONTROLLER -----------------------
 
 const addTerm = async (req, res) => {
-    const { termName } = req.body.data;
+    const { termName, startDate, endDate } = req.body.data;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const id = decoded.id;
     
     try {
-        if(!termName) {
+        if(!termName || !startDate || !endDate) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
@@ -1278,7 +1279,7 @@ const addTerm = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkTerm(id, termName)
+        const checker = await checkTerm(id, termName, startDate, endDate)
         if(checker) {
             res.json({
                 success: false,
@@ -1287,7 +1288,7 @@ const addTerm = async (req, res) => {
         }
         else {
             // Add new subject
-            const newTerm = await insertTerm(id, termName);
+            const newTerm = await insertTerm(id, termName, startDate, endDate);
             if(newTerm) {
                 res.json({ 
                     success: true,
@@ -1384,7 +1385,7 @@ const editTerms = async(req, res) => {
 
 const updateTerms = async(req, res) => {
     const { id } = req.params;
-    const { termName } = req.body;
+    const { termName, startDate, endDate } = req.body;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
@@ -1400,7 +1401,7 @@ const updateTerms = async(req, res) => {
             });
         }
         else {
-            const update = await updateTerm(id, termName, updateAt);
+            const update = await updateTerm(id, termName, startDate, endDate, updateAt);
             if(update) {
                 res.json({
                     success: true,
@@ -2486,28 +2487,30 @@ const addStudent = async (req, res) => {
         }
         
         // Call the function
-        const result = await checkStudent(id, classid, yearid, studentNames);
-        
+        const result = await checkStudent(id, studentNames);
+
         // Check the result
-        if (result) {  // Assuming the database returns a boolean under 'exists'
+        if (result[0] === true) {
             return res.json({
                 success: false,
                 message: `Students are already in the database...`,
             });
         } else {
-            // Insert the new students into the database
-            const newStudent = await insertStudent(id, studentNames, classid, yearid);
-            
-            if (newStudent) {
+            // Insert into Student table
+            const newStudent = await insertStudent(id, studentNames);
+            if(newStudent) {
+                const newHistory = await insertStudentHistory(id, yearid, classid, newStudent);
                 return res.json({
                     success: true,
-                    message: "Students inserted successfully",
-                });
-            } else {
+                    message: 'Students added succesfully...!',
+                    newHistory,
+                })
+            }
+            else {
                 return res.json({
                     success: false,
-                    message: "Error inserting data",
-                });
+                    message: 'An unknown error occurred...'
+                })
             }
         }
     } catch (error) {

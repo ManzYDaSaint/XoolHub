@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  BarChart,
+  LineChart,
   XAxis,
   YAxis,
-  Bar,
+  Line,
   CartesianGrid,
   Tooltip,
   Legend,
@@ -13,14 +13,14 @@ import {
 const SubjectChart = ({ data }) => {
   return (
     <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={data}>
+      <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="subject" />
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="average" fill="#66DA81" name="Average Score Per Subject" />
-      </BarChart>
+        <Line type="monotone" dataKey="average" stroke="#66DA81" name="Average Score Per Subject" />
+      </LineChart>
     </ResponsiveContainer>
   );
 };

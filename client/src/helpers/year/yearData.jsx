@@ -31,6 +31,8 @@ const YearData = () => {
         const yearData = data.map((item, index) => ({
         sr: index + 1,
         name: item.name,
+        start: item.start_date,
+        end: item.end_date,
         actions: (
             <div>
             <button onClick={() => handleEdit(item.yearid)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
@@ -52,6 +54,8 @@ const YearData = () => {
         const res = await api.editYear(id);
         dispatch(setYearFormData({
             yearName: res.data.edit.name,
+            startDate: res.data.edit.start_date,
+            endDate: res.data.edit.end_date,
         }));
         dispatch(setIsEditMode(true));
         dispatch(setEditItemId(res.data.edit.yearid));

@@ -7,7 +7,6 @@ import Reset from './pages/password/reset_password';
 import Register from './pages/register/register';
 import AdminDashboard from './pages/administrator/dashboard.jsx'
 import Report from './pages/administrator/report.jsx'
-import General from './pages/administrator/general.jsx'
 import Setting from './pages/administrator/setting.jsx'
 import NotFound from './pages/nopage/nopage.jsx'
 import Students from './pages/administrator/students.jsx';
@@ -29,6 +28,9 @@ import StudentDetail from './teacher-service/pages/studentDetail.jsx';
 import AdminProfile from './pages/dashboard/adminProfile.jsx';
 import StudentReport from './pages/reports/studentReport.jsx';
 import Landing from './pages/landing/front.jsx';
+import Events from './pages/events/events.jsx';
+import Communication from './pages/communication/communication.jsx';
+import Attendance from './pages/attendance/attendance.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -85,10 +87,26 @@ function App() {
         )
     },
     {
-      path: '/general',
+      path: '/events',
       element: (
         <InactivityHandler>
-        <General />
+        <Events />
+        </InactivityHandler>
+      )
+    },
+    {
+      path: '/communication',
+      element: (
+        <InactivityHandler>
+        <Communication />
+        </InactivityHandler>
+      )
+    },
+    {
+      path: '/attendance',
+      element: (
+        <InactivityHandler>
+        <Attendance />
         </InactivityHandler>
       )
     },

@@ -26,6 +26,8 @@ const ExamSlice = createSlice({
     },
     yearFormData: {
       yearName: '',
+      startDate: '',
+      endDate: '',
     },
     subjectFormData: {
       subjectName: '',
@@ -46,6 +48,8 @@ const ExamSlice = createSlice({
     },
     termFormData: {
       termName: '',
+      startDate: '',
+      endDate: '',
     },
     gradeFormData: {
       denom: '',
