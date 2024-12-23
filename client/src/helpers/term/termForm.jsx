@@ -5,6 +5,7 @@ import FormButton from '../../components/input/formButton.jsx'
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setTermFormData } from '../examination/examSlice.jsx';
+import YearSelectInput from '../../pages/students/components/yearSelect.jsx';
 
 
 const TermForm = ({ fetchData }) => {
@@ -45,6 +46,7 @@ const TermForm = ({ fetchData }) => {
           }
           dispatch(setTermFormData({
             termName: '',
+            year: '',
             startDate: '',
             endDate: '',
           }));
@@ -76,6 +78,14 @@ const TermForm = ({ fetchData }) => {
           onChange={handleChange}
           placeholder={'Type here...'}
         />
+        <YearSelectInput 
+          label={'Academic Year'}
+          name='year'
+          value={termFormData.year}
+          onChange={handleChange}
+        />
+        </div>
+        <div className='formGroup mt-4'>
         <FormInput
           label={'Start Date'}
           type={'date'}

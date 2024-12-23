@@ -25,8 +25,6 @@ const FeesData = () => {
         name: "No records found...",
         amount: "",
         description: "",
-        start: "",
-        end: "",
         actions: ""
         }));
         setFeesData(feesData);
@@ -37,8 +35,6 @@ const FeesData = () => {
         name: item.name,
         amount: item.amount,
         description: item.description,
-        start: item.startdate,
-        end: item.enddate,
         actions: (
             <div>
             <button onClick={() => handleEdit(item.feeid)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
@@ -62,8 +58,6 @@ const FeesData = () => {
             name: res.data.edit.name,
             amount: res.data.edit.amount,
             description: res.data.edit.description,
-            start: res.data.edit.startdate,
-            end: res.data.edit.enddate,
         }));
         dispatch(setIsEditMode(true));
         dispatch(setEditItemId(res.data.edit.feeid));

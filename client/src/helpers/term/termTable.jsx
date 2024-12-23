@@ -4,11 +4,12 @@ import UniversalTable from '../../components/table.jsx'
 const TermTable = ({ termData }) => {
 
   const termColumn = [
-    { key: 'sr', label: 'SR', width: '10%' },
-    { key: 'name', label: 'Name', width: '40%' },
+    { key: 'sr', label: 'SR', width: '5%' },
+    { key: 'name', label: 'Name', width: '25%' },
+    { key: 'year', label: 'Academic Year', width: '30%' },
     { key: 'start', label: 'Start Date', width: '15%' },
     { key: 'end', label: 'End Date', width: '15%' },
-    { key: 'actions', label: 'Actions', width: '20%' }
+    { key: 'actions', label: 'Actions', width: '10%' }
   ];
 
 

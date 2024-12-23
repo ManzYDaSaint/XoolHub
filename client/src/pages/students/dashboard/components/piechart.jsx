@@ -1,16 +1,8 @@
-import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
+import api from '../../../../services/apiServices';
 
-// Sample Data
-const data = [
-  { name: 'Male', value: 60 },
-  { name: 'Female', value: 40 },
-];
 
-// Colors for each gender
-const COLORS = ['#0088FE', '#FF69B4'];
-
-// Customized Label Function
 const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, name }) => {
   const RADIAN = Math.PI / 180;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -24,26 +16,56 @@ const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, per
   );
 };
 
+const COLORS = ['#0088FE', '#FF69B4'];
+
 const GenderPieChart = () => {
+  const [data, setData] = useState([]);
+
+  const fetchPie = async () => {
+    try {
+      const res = await api.genderPercentage();
+      const data = res.data.counter.map(item => ({
+        ...item,
+        percentage: Number(item.percentage),
+      }));
+      setData(data);
+    } catch (error) {
+      console.error("Error fetching student count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPie();
+  }, []);
+
   return (
-    <ResponsiveContainer width="100%" height={300}>
-      <PieChart>
-        <Pie
-          data={data}
-          cx="50%"
-          cy="50%"
-          labelLine={false}
-          label={renderCustomizedLabel}
-          outerRadius={100}
-          fill="#8884d8"
-          dataKey="value"
-        >
-          {data.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-          ))}
-        </Pie>
-      </PieChart>
-    </ResponsiveContainer>
+    <div className="chart-container" style={{ width: '100%', height: '350px' }}>
+      <ResponsiveContainer>
+        {data.length > 0 ? (
+          <PieChart>
+            <Pie
+              data={data}
+              dataKey="percentage"
+              nameKey="gender"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              fill="#8884d8"
+              labelLine={false}
+              label={renderCustomizedLabel}
+            >
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend />
+          </PieChart>
+        ) : (
+          <p>Loading...</p>
+        )}
+      </ResponsiveContainer>
+    </div>
   );
 };
 

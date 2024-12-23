@@ -27,8 +27,8 @@
 .headerTitle h5 {
     color: #6e6b6b;
     font-size: 1.2rem;
-    font-weight: 500;
     margin-top: 1.7rem;
+    font-family: 'Poppins', sans-serif !important;
 }
 
 /* Student Card */
@@ -82,6 +82,7 @@
     gap: 1rem;
     align-items: center;
     flex: 1;
+    width: 100%;
 }
 
 .custom_card_icon {
@@ -89,6 +90,13 @@
     background-color: #F1F8EB;
     padding: 0.2rem;
     border-radius: 0.5rem;
+}
+.percenta {
+    /* padding: 0.3rem 0.5rem; */
+    border-top: 2px solid #87C54C;
+}
+.custom_card_detail {
+    width: 70%;
 }
 
 .custom_card_detail h4 {

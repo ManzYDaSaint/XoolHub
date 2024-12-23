@@ -4,13 +4,14 @@ import UniversalTable from '../../../components/table.jsx'
 const PfTable = ({ payData }) => {
 
   const pfColumn = [
-    { key: 'sr', label: 'SR', width: '10%' },
-    { key: 'date', label: 'Date', width: '10%' },
-    { key: 'fee', label: 'Fee', width: '30%' },
+    { key: 'sr', label: 'SR', width: '5%' },
+    { key: 'date', label: 'Date', width: '15%' },
+    { key: 'fee', label: 'Fee', width: '15%' },
+    { key: 'term', label: 'Term', width: '20%' },
     { key: 'amount', label: 'Amount', width: '10%' },
     { key: 'paid', label: 'Paid', width: '10%' },
     { key: 'balance', label: 'Balance', width: '10%' },
-    { key: 'actions', label: 'Actions', width: '20%' },
+    { key: 'actions', label: 'Actions', width: '15%' },
   ];
 
 

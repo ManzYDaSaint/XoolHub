@@ -46,8 +46,6 @@ const FeesForm = ({ fetchData }) => {
             name: '',
             amount: '',
             description: '',
-            start: '',
-            end: '',
           }));
           dispatch(setIsEditMode(false));
           dispatch(setEditItemId(null));
@@ -97,28 +95,6 @@ const FeesForm = ({ fetchData }) => {
                 type={'text'}
                 name='description'
                 value={feesFormData.description}
-                onChange={handleChange}
-                placeholder={'Type here...'}
-              />
-            </GridColumn>
-          </GridRow>
-          <GridRow columns={3}>
-            <GridColumn>
-              <FormInput
-                label={'Start Date'}
-                type={'date'}
-                name='start'
-                value={feesFormData.start}
-                onChange={handleChange}
-                placeholder={'Type here...'}
-              />
-            </GridColumn>
-            <GridColumn>
-              <FormInput
-                label={'End Date'}
-                type={'date'}
-                name='end'
-                value={feesFormData.end}
                 onChange={handleChange}
                 placeholder={'Type here...'}
               />

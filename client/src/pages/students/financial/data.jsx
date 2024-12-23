@@ -27,6 +27,7 @@ const PfData = () => {
         sr: "",
         date: "",
         fee: "No records found...",
+        term: "",
         amount: "",
         paid: "",
         balance: "",
@@ -39,6 +40,7 @@ const PfData = () => {
         sr: index + 1,
         date: item.date,
         fee: item.name,
+        term: item.term + " (" + item.year + ")",
         amount: item.amount,
         paid: item.paid,
         balance: item.balance,
@@ -64,6 +66,7 @@ const PfData = () => {
         dispatch(setPayFormData({
             paid: res.data.edit.paid,
             amount: res.data.edit.amount,
+            term: res.data.edit.termid,
         }));
         dispatch(setIsEditMode(true));
         dispatch(setEditItemId(res.data.edit.pid));

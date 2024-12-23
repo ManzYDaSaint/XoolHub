@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setPayFormData } from '../../../helpers/examination/examSlice.jsx';
 import FeesSelectInput from '../components/feesSelect.jsx';
+import TermSelector from '../components/termSelector.jsx';
 
 
 const PfForm = ({ fetchData }) => {
@@ -54,6 +55,7 @@ const PfForm = ({ fetchData }) => {
           }
           dispatch(setPayFormData({
             paid: '',
+            term: '',
           }));
           dispatch(setIsEditMode(false));
           dispatch(setEditItemId(null));
@@ -86,6 +88,14 @@ const PfForm = ({ fetchData }) => {
           value={payFormData.paid}
           onChange={handleChange}
           placeholder={'Type here...'}
+        />
+      </div>
+      <div className='formGroup mt-4'>
+        <TermSelector 
+          label={'Term'}
+          onChange={handleChange}
+          name='term'
+          value={payFormData.term}
         />
       </div>
       <FormButton label={isEditMode ? 'Update Pay' : 'Pay'} id="tyepButton" />

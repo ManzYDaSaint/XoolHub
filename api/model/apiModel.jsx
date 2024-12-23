@@ -314,17 +314,20 @@ const checkTerm = async (id, name, startDate, endDate) => {
 };
 
 // Add new object
-const insertTerm = async (sid, name, startDate, endDate) => {
+const insertTerm = async (sid, name, year, startDate, endDate) => {
   const query =
-    "INSERT INTO term(sid, name, start_date, end_date) VALUES ($1, $2, $3, $4) RETURNING *";
-  const values = [sid, name, startDate, endDate];
+    "INSERT INTO term(sid, name, yearid, start_date, end_date) VALUES ($1, $2, $3, $4, $5) RETURNING *";
+  const values = [sid, name, year, startDate, endDate];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all object
 const getTerm = async (sid) => {
-  const query = "SELECT * FROM term WHERE sid = $1";
+  const query = `SELECT term.*, acyear.name AS year
+FROM term 
+INNER JOIN acyear ON acyear.yearid = term.yearid
+WHERE term.sid = $1`;
   const value = [sid];
   const res = await kneX.query(query, value);
   return res.rows;
@@ -339,17 +342,17 @@ const deleteTerm = async (id) => {
 };
 
 // Updating object
-const updateTerm = async (id, name, startDate, endDate, update) => {
+const updateTerm = async (id, name, year, startDate, endDate, update) => {
   const query =
-    "UPDATE term SET name = $1, start_date = $2, end_date = $3, updated_at = $4 WHERE id = $5";
-  const values = [name, startDate, endDate, update, id];
+    "UPDATE term SET name = $1, year = $2, start_date = $3, end_date = $4, updated_at = $5 WHERE id = $6";
+  const values = [name, year, startDate, endDate, update, id];
   const res = await kneX.query(query, values);
   return res.rows;
 };
 
 // Get Single object
 const editTerm = async (id) => {
-  const query = "SELECT id, name, start_date, end_date FROM term WHERE id = $1";
+  const query = "SELECT id, name, yearid, start_date, end_date FROM term WHERE id = $1";
   const value = [id];
   const res = await kneX.query(query, value);
   return res.rows[0];
@@ -548,10 +551,10 @@ const checkTeacher = async (sid, email, contact) => {
 };
 
 // Add new object
-const insertTeacher = async (sid, name, contact, email, address, password) => {
+const insertTeacher = async (sid, name, contact, email, address, gender, password) => {
   const query =
-    "INSERT INTO teachers(sid, name, contact, email, address, password) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
-  const values = [sid, name, contact, email, address, password];
+    "INSERT INTO teachers(sid, name, contact, email, address, gender, password) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+  const values = [sid, name, contact, email, address, gender, password];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
@@ -598,10 +601,10 @@ const deleteTeacher = async (id) => {
 };
 
 // Updating object
-const updateTeacher = async (id, name, contact, email, address, update) => {
+const updateTeacher = async (id, name, contact, email, address, gender, update) => {
   const query =
-    "UPDATE teachers SET name = $1, contact = $2, email = $3, address = $4, updated_at = $5 WHERE id = $6";
-  const values = [name, contact, email, address, update, id];
+    "UPDATE teachers SET name = $1, contact = $2, email = $3, address = $4, gender = $5, updated_at = $6 WHERE id = $7";
+  const values = [name, contact, email, address, gender, update, id];
   const res = await kneX.query(query, values);
   return res.rows;
 };
@@ -613,6 +616,49 @@ const editTeacher = async (id) => {
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
+
+const countTeachers = async (sid) => {
+  const query = "SELECT COUNT(*) as Count FROM teachers WHERE sid = $1";
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+
+const countMaleTeachers = async (sid) => {
+  const query = `SELECT COUNT(*) as Count
+    FROM teachers 
+    WHERE sid = $1 AND gender = 'Male'`;
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const countFemaleTeachers = async (sid) => {
+  const query = `SELECT COUNT(*) as Count
+    FROM teachers 
+    WHERE sid = $1 AND gender = 'Female'`;
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const teacherGenderPercentage = async (sid) => {
+  const query = `SELECT 
+    gender,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 0) AS percentage
+FROM 
+    teachers
+WHERE sid = $1
+GROUP BY 
+    gender
+ORDER BY 
+    gender;
+`;
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
 
 // --------------------------------------- TEACHER CRUD ------------------------------------------------
 
@@ -746,10 +792,10 @@ const insertStudentHistory = async (sid, yearid, classid, studentIDs) => {
 // Get all object
 const getStudent = async (sid) => {
   const query = `SELECT s.id, s.name, class.name AS class, s.dob, s.gender, s.address FROM history
-INNER JOIN students AS s ON s.id = history.studentid
+    INNER JOIN students AS s ON s.id = history.studentid
     INNER JOIN acyear ON acyear.yearid=history.yearid
     INNER JOIN class ON class.classid=history.classid
-    WHERE s.sid = $1`;
+    WHERE s.sid = $1 AND status != 'Graduated'`;
   const value = [sid];
   const res = await kneX.query(query, value);
   return res.rows;
@@ -793,7 +839,73 @@ const updateStudent = async (
   return res.rows;
 };
 
-// --------------------------------------- STUDENT TEACHER CRUD ------------------------------------------------
+const countStudents = async (sid) => {
+  const query = "SELECT COUNT(*) as Count FROM history WHERE sid = $1 AND status != 'Graduated'";
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+
+const countMale = async (sid) => {
+  const query = `SELECT COUNT(*) as Count
+    FROM history 
+    INNER JOIN students s ON s.id = history.studentid
+    WHERE history.sid = $1 AND status != 'Graduated' AND s.gender = 'Male'`;
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const countFemale = async (sid) => {
+  const query = `SELECT COUNT(*) as Count
+    FROM history 
+    INNER JOIN students s ON s.id = history.studentid
+    WHERE history.sid = $1 AND status != 'Graduated' AND s.gender = 'Female'`;
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+
+const countGenderAndClass = async (sid) => {
+  const query = `SELECT 
+    c.name as class,
+    s.gender,
+    COUNT(*) AS count
+FROM 
+    history
+INNER JOIN students s ON s.id = history.studentid
+INNER JOIN class c ON c.classid = history.classid
+WHERE s.sid = $1 and status != 'Graduated'
+GROUP BY 
+    c.name, s.gender
+ORDER BY 
+    c.name, s.gender`;
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
+
+const genderPercentage = async (sid) => {
+  const query = `SELECT 
+    s.gender,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 0) AS percentage
+FROM 
+    history
+INNER JOIN students s ON s.id = history.studentid
+WHERE s.sid = $1 AND status != 'Graduated'
+GROUP BY 
+    s.gender
+ORDER BY 
+    s.gender;
+`;
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
+
+// --------------------------------------- STUDENT CRUD ------------------------------------------------
 
 // --------------------------------------- FEES CRUD ------------------------------------------------
 
@@ -806,10 +918,10 @@ const checkFee = async (sid, name) => {
 };
 
 // Add new object
-const insertFee = async (sid, name, amount, description, start, end) => {
+const insertFee = async (sid, name, amount, description) => {
   const query =
-    "INSERT INTO fees(sid, name, amount,description, startDate, endDate) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
-  const values = [sid, name, amount, description, start, end];
+    "INSERT INTO fees(sid, name, amount,description) VALUES ($1, $2, $3, $4) RETURNING *";
+  const values = [sid, name, amount, description];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
@@ -839,10 +951,10 @@ const editFee = async (id) => {
 };
 
 // Updating object
-const updateFee = async (id, name, amount, description, start, end, update) => {
+const updateFee = async (id, name, amount, description, update) => {
   const query =
-    "UPDATE fees SET name = $1, amount = $2, description = $3, startDate = $4, endDate = $5, updated_at = $6 WHERE feeid = $7";
-  const values = [name, amount, description, start, end, update, id];
+    "UPDATE fees SET name = $1, amount = $2, description = $3, updated_at = $4 WHERE feeid = $5";
+  const values = [name, amount, description, update, id];
   const res = await kneX.query(query, values);
   return res.rows;
 };
@@ -853,12 +965,16 @@ const updateFee = async (id, name, amount, description, start, end, update) => {
 
 // Get all object
 const getPay = async (sid) => {
-  const query = `SELECT pid, payment.paid, payment.updated_at, students.id, students.name AS student, class.name as class, 
-                    fees.name AS fee, payment.status
-                    FROM payment
-                    INNER JOIN students ON payment.id = students.id
-                    INNER JOIN fees ON fees.feeid = payment.feeid
-                    INNER JOIN class ON students.classid = class.classid
+  const query = `SELECT pid, payment.paid, payment.updated_at, students.id, 
+students.name AS student, class.name as class, 
+fees.name AS fee, payment.status, term.name AS term, acyear.name AS year
+FROM payment
+INNER JOIN students ON payment.id = students.id
+INNER JOIN history ON students.id = history.studentid
+INNER JOIN fees ON fees.feeid = payment.feeid
+INNER JOIN term ON term.id = payment.termid
+INNER JOIN acyear ON acyear.yearid = term.yearid
+INNER JOIN class ON history.classid = class.classid
                     WHERE payment.sid = $1`;
   const value = [sid];
   const res = await kneX.query(query, value);
@@ -866,26 +982,29 @@ const getPay = async (sid) => {
 };
 
 const getPayee = async (sid, id) => {
-  const query = `SELECT payment.pid, TO_CHAR(payment.updated_at, 'Month DD, YYYY') AS date, fees.name, fees.amount, payment.paid, payment.balance, payment.status
-                    FROM payment
-                    INNER JOIN fees ON fees.feeid = payment.feeid
-                    WHERE payment.sid =  $1 AND id = $2`;
+  const query = `SELECT payment.pid, TO_CHAR(payment.updated_at, 'Month DD, YYYY') AS date, fees.name, 
+fees.amount, payment.paid, payment.balance, payment.status, term.name AS term, acyear.name AS year
+FROM payment
+INNER JOIN fees ON fees.feeid = payment.feeid
+INNER JOIN term ON term.id = payment.termid
+INNER JOIN acyear ON acyear.yearid = term.yearid
+                    WHERE payment.sid =  $1 AND payment.id = $2`;
   const value = [sid, id];
   const res = await kneX.query(query, value);
   return res.rows;
 };
 
-const insertPay = async (sid, id, feeid, paid, balance, status) => {
+const insertPay = async (sid, id, feeid, paid, balance, status, term) => {
   const query =
-    "INSERT INTO payment(sid, id, feeid, paid, balance, status) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
-  const values = [sid, id, feeid, paid, balance, status];
+    "INSERT INTO payment(sid, id, feeid, paid, balance, status, termid) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *";
+  const values = [sid, id, feeid, paid, balance, status, term];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
-const checkPay = async (sid, feeid, id) => {
-  const query = `SELECT * FROM payment WHERE sid = $1 AND feeid = $2 AND id = $3`;
-  const value = [sid, feeid, id];
+const checkPay = async (sid, feeid, id, term) => {
+  const query = `SELECT * FROM payment WHERE sid = $1 AND feeid = $2 AND id = $3 AND termid = $4`;
+  const value = [sid, feeid, id, term];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
@@ -902,10 +1021,10 @@ const editPay = async (id) => {
 };
 
 // Updating object
-const updatePay = async (id, paid, balance, status, update) => {
+const updatePay = async (id, paid, balance, status, update, term) => {
   const query =
-    "UPDATE payment SET paid = $1, balance = $2, status = $3, updated_at = $4 WHERE pid = $5";
-  const values = [paid, balance, status, update, id];
+    "UPDATE payment SET paid = $1, balance = $2, status = $3, updated_at = $4, termid = $5 WHERE pid = $6";
+  const values = [paid, balance, status, update, term, id];
   const res = await kneX.query(query, values);
   return res.rows;
 };
@@ -917,6 +1036,156 @@ const deletePay = async (id) => {
   const res = await kneX.query(query, value);
   return res.rows.length < 1;
 };
+
+const sumPayment = async (id) => {
+  const query = `WITH CurrentTerm AS (
+        SELECT 
+            id AS termid
+        FROM 
+            term
+        WHERE 
+            CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+    )
+    SELECT 
+        COALESCE(SUM(paid::NUMERIC), 0) AS count
+    FROM 
+        payment
+    WHERE 
+        termid = (SELECT termid FROM CurrentTerm) AND payment.sid = $1`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const sumPaymentThisMonth = async (id) => {
+  const query = `WITH CurrentTerm AS (
+    SELECT 
+        id AS termid
+    FROM 
+        term
+    WHERE 
+        CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+)
+SELECT 
+    COALESCE(SUM(paid::NUMERIC), 0) AS count
+FROM 
+    payment
+WHERE 
+    termid = (SELECT termid FROM CurrentTerm)
+    AND DATE_PART('month', payment.created_at::DATE) = DATE_PART('month', CURRENT_DATE)
+    AND DATE_PART('year', payment.created_at::DATE) = DATE_PART('year', CURRENT_DATE)
+ AND payment.sid = $1`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const getTuition = async(id) => {
+  const query = `SELECT amount 
+  FROM fees
+  WHERE sid = $1`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const getOutstanding = async(id) => {
+  const query = `WITH CurrentTerm AS (
+        SELECT 
+            id AS termid
+        FROM 
+            term
+        WHERE 
+            CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+    )
+    SELECT 
+        COUNT(*) AS count
+    FROM 
+        payment
+    WHERE 
+        termid = (SELECT termid FROM CurrentTerm) AND payment.sid = $1`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const PaidByDays = async(id) => {
+  const query = `WITH CurrentTerm AS (
+    SELECT 
+        id AS termid
+    FROM 
+        term
+    WHERE 
+        CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+)
+SELECT 
+    TO_CHAR(created_at::DATE, 'Day') AS day,
+    COALESCE(SUM(paid::NUMERIC), 0) AS amount
+FROM 
+    payment
+WHERE 
+    termid = (SELECT termid FROM CurrentTerm) AND payment.sid = $1
+GROUP BY 
+    TO_CHAR(created_at::DATE, 'Day')
+ORDER BY 
+    TO_CHAR(created_at::DATE, 'Day') DESC`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
+
+const PaidByClass = async(id) => {
+  const query = `WITH CurrentTerm AS (
+    SELECT 
+        id AS termid
+    FROM 
+        term
+    WHERE 
+        CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+),
+ClassPaymentStats AS (
+    SELECT 
+       	history.classid,
+        COUNT(DISTINCT fp.id) AS StudentsPaid
+    FROM 
+        payment fp
+	INNER JOIN history ON history.studentid=fp.id
+    WHERE 
+        fp.termid = (SELECT termid FROM CurrentTerm)
+    GROUP BY 
+        history.classid
+),
+ClassTotals AS (
+    SELECT 
+        c.classid, c.name AS class,
+        COUNT(s.studentid) AS TotalStudents
+    FROM 
+        class c
+    LEFT JOIN 
+        history s ON c.classid = s.classid
+	WHERE c.sid = $1
+    GROUP BY 
+        c.classid
+)
+SELECT 
+    ct.classid, ct.class,
+    COALESCE(cp.StudentsPaid, 0) AS StudentsPaid,
+    ct.TotalStudents,
+    CASE 
+        WHEN ct.TotalStudents > 0 THEN ROUND((cp.StudentsPaid::NUMERIC / ct.TotalStudents) * 100, 0)
+        ELSE 0
+    END AS Percentage
+FROM 
+    ClassTotals ct
+LEFT JOIN 
+    ClassPaymentStats cp ON ct.classid = cp.classid
+ORDER BY 
+    Percentage DESC
+`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
 
 // --------------------------------------- PAYMENT CRUD ------------------------------------------------
 
@@ -1478,6 +1747,10 @@ module.exports = {
   deleteTeacher,
   updateTeacher,
   editTeacher,
+  countTeachers,
+  countMaleTeachers,
+  countFemaleTeachers,
+  teacherGenderPercentage,
   // ----- TEACHER SECTION -----
 
   // ----- ASSIGN TEACHER SECTION -----
@@ -1502,6 +1775,11 @@ module.exports = {
   deleteStudent,
   updateStudent,
   insertStudentHistory,
+  countStudents,
+  countMale,
+  countFemale,
+  countGenderAndClass,
+  genderPercentage,
   // ----- STUDENT SECTION -----
 
   // ----- FEE SECTION -----
@@ -1521,8 +1799,16 @@ module.exports = {
   editPay,
   updatePay,
   deletePay,
+  sumPayment,
+  sumPaymentThisMonth,
+  getTuition,
+  getOutstanding,
+  PaidByDays,
+  PaidByClass,
   // ----- PAYMENT SECTION -----
 
+
+  
   // ----- ENTRY SECTION -----
   getClassByTeacherID,
   getSubjectByTeacherID,

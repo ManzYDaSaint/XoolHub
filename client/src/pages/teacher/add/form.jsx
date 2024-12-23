@@ -6,6 +6,7 @@ import FormButton from '../../../components/input/formButton.jsx'
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setTeacherFormData } from '../../../helpers/examination/examSlice.jsx';
+import GenderSelect from '../../students/components/genderSelect.jsx';
 
 
 const AddForm = ({ fetchData }) => {
@@ -45,6 +46,7 @@ const AddForm = ({ fetchData }) => {
             contact: '',
             email: '',
             address: '',
+            gender: '',
           }));
           dispatch(setIsEditMode(false));
           dispatch(setEditItemId(null));
@@ -90,13 +92,23 @@ const AddForm = ({ fetchData }) => {
           onChange={handleChange}
           placeholder={'Type here...'}
         />
-        <FormInput
+        
+      </div>
+      <div className="formGroup mt-4">
+      <FormInput
           label={'Address'}
           type={'text'}
           name={'address'}
           value={teacherFormData.address}
           onChange={handleChange}
           placeholder={'Type here...'}
+        />
+        <GenderSelect 
+          label={'Gender'}
+          type={'text'}
+          name={'gender'}
+          value={teacherFormData.gender}
+          onChange={handleChange}
         />
       </div>
       <FormButton label={isEditMode ? 'Update Teacher' : 'Add Teacher'} id="tyepButton" />

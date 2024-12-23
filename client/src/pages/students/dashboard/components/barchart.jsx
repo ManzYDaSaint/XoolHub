@@ -15,7 +15,7 @@ const StudentBarChart = ({ data }) => {
     <ResponsiveContainer width="100%" height={300}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
+        <XAxis dataKey="class" />
         <YAxis />
         <Tooltip />
         <Legend />

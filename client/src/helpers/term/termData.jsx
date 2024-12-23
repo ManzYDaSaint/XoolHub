@@ -25,6 +25,7 @@ const TermData = () => {
           const termData = data.map((item, index) => ({
           sr: "",
           name: "No records found...",
+          year: '',
           actions: ""
           }));
           setTermData(termData);
@@ -33,6 +34,7 @@ const TermData = () => {
           const termData = data.map((item, index) => ({
           sr: index + 1,
           name: item.name,
+          year: item.year,
           start: item.start_date,
           end: item.end_date,
           actions: (
@@ -58,6 +60,7 @@ const TermData = () => {
       const res = await api.editTerm(id);
       dispatch(setTermFormData({
         termName: res.data.edit.name,
+        year: res.data.edit.yearid,
         startDate: res.data.edit.start_date,
         endDate: res.data.edit.end_date,
       }));

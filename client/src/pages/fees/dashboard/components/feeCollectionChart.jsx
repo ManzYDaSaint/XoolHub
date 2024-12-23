@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   LineChart,
   XAxis,
@@ -9,15 +9,24 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import api from '../../../../services/apiServices';
 
 const FeeCollectionLineChart = () => {
-  const data = [
-    { day: "Monday", amount: 20 },
-    { day: "Tuesday", amount: 25 },
-    { day: "Wednesday", amount: 18 },
-    { day: "Thursday", amount: 58 },
-    { day: "Friday", amount: 49 },
-  ]; 
+  const [data, setData] = useState([]);
+
+  const fetchOutstand = async () => {
+      try {
+        const res = await api.paymentDays();
+        const data = res.data.paid;
+        setData(data);
+      } catch (error) {
+        console.error("Error fetching student count:", error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchOutstand();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <ResponsiveContainer width="100%" height={300}>

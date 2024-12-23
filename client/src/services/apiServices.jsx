@@ -139,6 +139,10 @@ const getTeacherSubjects = (id) => axios.get(API + '/getteachersubjects/' + id);
 const deleteTeacher = (id) => axios.delete(API + '/deletteacher/' + id);
 const editTeacher = (id) => axios.get(API + '/editteacher/' + id);
 const updateTeacher = (id, data) => axios.put(API + '/updatteacher/' + id, data);
+const countTeachers = () => axios.get(API + '/count-teachers');
+const countMaleTeachers = () => axios.get(API + '/count-male-teachers');
+const countFemaleTeachers = () => axios.get(API + '/count-female-teachers');
+const teacherGenderPercentage = () => axios.get(API + '/gender-percentage-teachers');
 
 // --------- TEACHER AXIOS -----------
 
@@ -169,6 +173,11 @@ const deleteClassTeacher = (id) => axios.delete(API + '/deletclassteacher/' + id
 
 const addStudent = (data) => axios.post(API + '/addstudent', data);
 const getStudent = () => axios.get(API + '/getstudent');
+const countStudent = () => axios.get(API + '/count-student');
+const countMale = () => axios.get(API + '/count-male');
+const countFemale = () => axios.get(API + '/count-female');
+const countGenderByClass = () => axios.get(API + '/count-gender-class');
+const genderPercentage = () => axios.get(API + '/gender-percentage');
 const getSingleStudent = (id) => axios.get(API + '/getsinglestudent/' + id);
 const deleteStudent = (id) => axios.delete(API + '/deletstudent/' + id);
 const updateStudent = (id, data) => axios.put(API + '/updatstudent/' + id, data);
@@ -196,6 +205,12 @@ const updateFee = (id, data) => axios.put(API + '/updatfee/' + id, data);
 // --------- PAYMENT AXIOS -----------
 
 const getPay = () => axios.get(API + '/getpay');
+const sumPay = () => axios.get(API + '/count-payments');
+const sumPaymentMonth = () => axios.get(API + '/count-payment-month');
+const getTuition = () => axios.get(API + '/get-tuition');
+const getOutstanding = () => axios.get(API + '/get-outstanding');
+const paymentDays = () => axios.get(API + '/payment-days');
+const paidByClass = () => axios.get(API + '/payment-classes');
 const getPayee = (id) => axios.get(API + '/getpayee/' + id);
 const addPay = (data) => axios.post(API + '/addpay', data);
 const editPay = (id) => axios.get(API + '/editpay/' + id);
@@ -385,6 +400,10 @@ export default {
       deleteTeacher,
       editTeacher,
       updateTeacher,
+      countTeachers,
+      countMaleTeachers,
+      countFemaleTeachers,
+      teacherGenderPercentage,
       // ------ TEACHER EXPORT -------
 
 
@@ -413,6 +432,11 @@ export default {
       getSingleStudent,
       deleteStudent,
       updateStudent,
+      countStudent,
+      countMale,
+      countFemale,
+      countGenderByClass,
+      genderPercentage,
       // ------ STUDENT EXPORT -------
 
 
@@ -436,6 +460,12 @@ export default {
        editPay,
        updatePay,
        deletePay,
+       sumPay,
+       sumPaymentMonth,
+       getTuition,
+       getOutstanding,
+       paymentDays,
+       paidByClass,
        // ------ PAYMENT EXPORT -------
 
 

@@ -104,8 +104,6 @@ const {
     getSchool,
     updateSchools,
     getReport,
-    getCodes,
-    getCodeScores,
     getStudentReport,
     getCT4Report,
     getCount,
@@ -117,6 +115,21 @@ const {
     getMSCEGrades,
     deleteReports,
     deleteResults,
+    StudentCounter,
+    countMales,
+    countFemales,
+    countGenderForClass,
+    genderByPercentage,
+    TeacherCounter,
+    countMalesTeacher,
+    countFemalesTeacher,
+    genderTeacherPercentage,
+    sumPayments,
+    sumPayDisMonth,
+    getTuitions,
+    getOutstandings,
+    PaidByDaysPerTerm,
+    PaidByClasses,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -271,6 +284,10 @@ router.route('/getteachersubjects/:id').get(getTeacherSubjects);
 router.route('/deletteacher/:id').delete(deleteTeachers);
 router.route('/editteacher/:id').get(editTeachers);
 router.route('/updatteacher/:id').put(updateTeachers);
+router.route('/count-teachers').get(TeacherCounter);
+router.route('/count-male-teachers').get(countMalesTeacher);
+router.route('/count-female-teachers').get(countFemalesTeacher);
+router.route('/gender-percentage-teachers').get(genderTeacherPercentage);
 
 // ------- TEACHER ROUTES ----------- 
 
@@ -302,6 +319,11 @@ router.route('/deletclassteacher/:id').delete(deleteClassTeachers);
 
 router.route('/addstudent').post(addStudent);
 router.route('/getstudent').get(getStudents);
+router.route('/count-student').get(StudentCounter);
+router.route('/count-male').get(countMales);
+router.route('/count-female').get(countFemales);
+router.route('/count-gender-class').get(countGenderForClass);
+router.route('/gender-percentage').get(genderByPercentage);
 router.route('/getsinglestudent/:id').get(getSingleStudents);
 router.route('/deletstudent/:id').delete(deleteStudents);
 router.route('/updatstudent/:id').put(updateStudents);
@@ -333,6 +355,12 @@ router.route('/addpay').post(addPay);
 router.route('/editpay/:id').get(editPays);
 router.route('/updatpay/:id').put(updatePays);
 router.route('/deletpay/:id').delete(deletePays);
+router.route('/count-payments').get(sumPayments);
+router.route('/count-payment-month').get(sumPayDisMonth);
+router.route('/get-tuition').get(getTuitions);
+router.route('/get-outstanding').get(getOutstandings);
+router.route('/payment-days').get(PaidByDaysPerTerm);
+router.route('/payment-classes').get(PaidByClasses);
 
 // ------- PAYMENT ROUTES ----------- 
 

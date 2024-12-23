@@ -48,6 +48,7 @@ const ExamSlice = createSlice({
     },
     termFormData: {
       termName: '',
+      year: '',
       startDate: '',
       endDate: '',
     },
@@ -75,6 +76,7 @@ const ExamSlice = createSlice({
       contact: '',
       email: '',
       address: '',
+      gender: '',
     },
     studentFormData: {
       studentNames: '',
@@ -128,12 +130,11 @@ const ExamSlice = createSlice({
       name: '',
       amount: '',
       description: '',
-      start: '',
-      end: '',
     },
     payFormData: {
       paid: '',
-      amount: ''
+      amount: '',
+      term: ''
     },
     scoreFormData: {
       score: '',

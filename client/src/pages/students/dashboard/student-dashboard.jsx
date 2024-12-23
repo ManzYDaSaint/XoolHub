@@ -1,22 +1,89 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./components/card";
 import { GraduationCap, Users, UsersRound } from "lucide-react";
 import StudentBarChart from "./components/barchart";
 import TopPerforming from "./components/topcard";
 import GenderPieChart from "./components/piechart";
+import api from "../../../services/apiServices";
 
 const StudentDashboard = () => {
-  const data = [
-    { name: "Form 1", Male: 20, Female: 15 },
-    { name: "Form 2", Male: 25, Female: 22 },
-    { name: "Form 3", Male: 18, Female: 17 },
-    { name: "Form 4", Male: 58, Female: 81 },
-  ];
+  const [count, setCount] = useState(0);
+  const [male, setMale] = useState(0);
+  const [female, setFemale] = useState(0);
+  const [chart, setChart] = useState([]);
 
-  const piedata = [
-    { name: 'Male', value: 25 },
-    { name: 'Female', value: 30 },
-  ];
+  const fethCount = async () => {
+    try {
+      const res = await api.countStudent();
+      const data = res.data.counter;
+      setCount(data.count);
+    } catch (error) {
+      console.error("Error fetching student count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fethCount();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fetchMale = async () => {
+    try {
+      const res = await api.countMale();
+      const data = res.data.counter;
+      setMale(data.count);
+    } catch (error) {
+      console.error("Error fetching student count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchMale();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const fetchFemale = async () => {
+      try {
+        const res = await api.countFemale();
+        const data = res.data.counter;
+        setFemale(data.count);
+      } catch (error) {
+        console.error("Error fetching student count:", error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchFemale();
+      }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+    const fetchGenderClass = async () => {
+      try {
+        const res = await api.countGenderByClass();
+        const data = res.data.counter;
+        setChart(data);
+      } catch (error) {
+        console.error("Error fetching student count:", error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchGenderClass();
+      }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+      // Reshape Data
+      const reshapedData = chart.reduce((acc, item) => {
+        const existingClass = acc.find((entry) => entry.class === item.class);
+        if (existingClass) {
+          existingClass[item.gender] = parseInt(item.count, 10); // Add gender count to the existing class
+        } else {
+          acc.push({
+            class: item.class,
+            [item.gender]: parseInt(item.count, 10), // Initialize gender count
+          });
+        }
+        return acc;
+      }, []);
+
+      
 
   return (
     <div className="student_section">
@@ -25,7 +92,7 @@ const StudentDashboard = () => {
           <div className="flexer">
             <Card
               icon={UsersRound}
-              title={"981"}
+              title={count}
               description={"Student Count"}
             />
             <div className="card_container">
@@ -33,7 +100,7 @@ const StudentDashboard = () => {
                 <div className="counter">
                   <UsersRound size={30} className="card_icon" />
                   <div className="card_detail">
-                    <h4>120</h4>
+                    <h4>{male}</h4>
                     <p>Male</p>
                   </div>
                 </div>
@@ -41,7 +108,7 @@ const StudentDashboard = () => {
                 <div className="counter">
                   <Users size={30} className="card_icon" />
                   <div className="card_detail">
-                    <h4>670</h4>
+                    <h4>{female}</h4>
                     <p>Female</p>
                   </div>
                 </div>
@@ -50,11 +117,11 @@ const StudentDashboard = () => {
           </div>
           <div className="graph_card mt-5">
             <h4 className="graph_title">Student Count</h4>
-            <StudentBarChart data={data} />
+            <StudentBarChart data={reshapedData} />
           </div>
           <div className="pie_card mt-5">
             <h4 className="pie_title">Gender Distribution</h4>
-            <GenderPieChart piedata={piedata}/>
+            <GenderPieChart />
           </div>
         </div>
         <div className="box">

@@ -25,6 +25,7 @@ const fetchData = async () => {
       const teacherData = data.map((item, index) => ({
       sr: "",
       name: "No records found...",
+      gender: "",
       contact: "",
       email: "",
       address: "",
@@ -37,6 +38,7 @@ const fetchData = async () => {
       const teacherData = data.map((item, index) => ({
       sr: index + 1,
       name: item.name,
+      gender: item.gender,
       contact: item.contact,
       email: item.email,
       address: item.address,

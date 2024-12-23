@@ -5,8 +5,9 @@ const AddTable = ({ teacherData }) => {
 
   const teacherColumn = [
     { key: 'sr', label: 'SR', width: '5%' },
-    { key: 'name', label: 'Name', width: '25%' },
-    { key: 'contact', label: 'Contact', width: '15%' },
+    { key: 'name', label: 'Name', width: '20%' },
+    { key: 'gender', label: 'Gender', width: '10%' },
+    { key: 'contact', label: 'Contact', width: '10%' },
     { key: 'email', label: 'Email', width: '15%' },
     { key: 'address', label: 'Address', width: '15%' },
     { key: 'password', label: 'Password', width: '10%' },

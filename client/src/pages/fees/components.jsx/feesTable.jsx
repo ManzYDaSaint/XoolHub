@@ -8,8 +8,6 @@ const FeesTable = ({ feesData }) => {
     { key: 'name', label: 'Name', width: '30%' },
     { key: 'amount', label: 'Amount', width: '10%' },
     { key: 'description', label: 'Description', width: '20%' },
-    { key: 'start', label: 'Start Date', width: '10%' },
-    { key: 'end', label: 'End Date', width: '10%' },
     { key: 'actions', label: 'Actions', width: '10%' }
   ];
 

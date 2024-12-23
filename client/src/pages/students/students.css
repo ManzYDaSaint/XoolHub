@@ -135,6 +135,15 @@
     margin: 0;
     padding: 0;
     font-weight: 600;
+    font-size: 1.1rem;
+    font-family: 'Poppins', sans-serif;
+}
+
+.student_card_detail p {
+    margin: 0;
+    padding: 0;
+    font-size: 0.9rem;
+    color: #6e6b6b;
 }
 
 .student_card_bottom {
@@ -152,9 +161,9 @@
 }
 
 .top_performing_title, .worst_performing_title {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     font-family: 'Poppins', sans-serif;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
 
 .worst_students {
