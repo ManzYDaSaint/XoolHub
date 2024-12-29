@@ -130,6 +130,8 @@ const {
     getOutstandings,
     PaidByDaysPerTerm,
     PaidByClasses,
+    countTermlyReports,
+    PasswordUpdates,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -154,6 +156,7 @@ router.route('/resetPassword').put(resetPassword);
 // ------- REGISTER ROUTES -----------
 router.route('/signup').post(signup)
 router.route('/updateschool').put(updateSchools);
+router.route('/update-school-password').put(PasswordUpdates);
 // ------- REGISTER ROUTES -----------
 
 
@@ -436,6 +439,7 @@ router.route('/realpos').post(realPosition);
 router.route('/gettbs').post(getTByS);
 router.route('/getremarkbyclass').post(getRemarksByClassID);
 router.route('/deletereport').delete(deleteReports);
+router.route('/count-reports').get(countTermlyReports);
 // JCE
 // ------- REPORT ROUTES -----------
 

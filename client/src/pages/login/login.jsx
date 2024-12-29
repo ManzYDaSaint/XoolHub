@@ -40,6 +40,9 @@ const Login = () => {
                 }, 2000);
                 return;
             }
+            else if(res.data.osuccess === true) {
+                navigate('/authenticate', { state: { email: res.data.email } });
+            }
             else if (res.data.message) {
                 toast.error(res.data.message);
             }
@@ -102,10 +105,10 @@ const Login = () => {
                             autoComplete={'off'}
                             icon={Lock}
                         />
-                        <Link className="forgot" to={'./forgot'}>Forgot Password?</Link>
+                        <Link className="forgot" to={'/forgot'}>Forgot Password?</Link>
                         <button className='loginButton signin'>{loading ? <InfinitySpin width='80' color='#4274BA' /> : 'Sign In'}</button>
                         <p className="cont">Or Continue</p>
-                        <Link to={'/register'} className='linka'><button className='loginButton regIn'>Register</button></Link>
+                        <Link to={'/register'} className='linka'><button className='loginButton regIn' id='nextButton'>Register</button></Link>
                         <p className='mt-4 termspolicy'>By clicking continue, you agree to our <Link to={''}>Terms <br />of Service</Link> and <Link to={''}>Privacy Policy</Link></p>
                     </form>
                 </div>

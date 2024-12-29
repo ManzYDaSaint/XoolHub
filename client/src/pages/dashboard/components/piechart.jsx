@@ -56,8 +56,8 @@ const PieChartComponent = () => {
     }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const data = [
-        { name: 'Fees Collected', value: sum },
-        { name: 'Pending Fees', value: pendingFee },
+        { name: 'Fees Collected', value: sum + "MK"},
+        { name: 'Pending Fees', value: pendingFee + "MK" },
       ];
       
   return (

@@ -138,6 +138,11 @@ const {
     getOutstanding,
     PaidByDays,
     PaidByClass,
+    countReports,
+    OTPGeneration,
+    checkPassword,
+    updatePassword,
+    updateSchoolWithoutLogo,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -245,50 +250,85 @@ const getSchool = async (req, res) => {
 }
 
 const updateSchools = async (req, res) => {
-    const { name, address, city, country, email, contact, slogan, option1, option2, option3, option4 } = req.body;
+    const { name, address, city, country, email, contact, slogan, type } = req.body;
     const token = req.cookies.schoolToken;
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
-
-    const now = new Date();
-    const updateAt = now.toLocaleString();
 
     try {
-        let publicUrl = null;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const sid = decoded.id;
+
+        const now = new Date();
+        const updatedAt = now.toLocaleString();
 
         // Check if a file is uploaded
         if (req.files && req.files.logo) {
             const logo = req.files.logo;
 
-            // Upload image to Supabase storage
-            const { data, error } = await supabase
-                .storage
+            // Retrieve the current logo URL from the database
+            const currentSchool = await editSchool(sid);
+            const currentLogoUrl = currentSchool.logo;
+
+            // Delete the existing logo from Supabase if it exists
+            if (currentLogoUrl) {
+                const filePath = currentLogoUrl.split('/').slice(-2).join('/'); // Extract file path from URL
+                const { error: deleteError } = await supabase.storage
+                    .from('schoollogos')
+                    .remove([filePath]);
+
+                if (deleteError) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Error deleting the old logo: " + deleteError.message,
+                    });
+                }
+            }
+
+            // Upload new logo to Supabase
+            const { data, error } = await supabase.storage
                 .from('schoollogos')
                 .upload(`public/${logo.name}`, logo.data, {
                     cacheControl: '3600',
                     upsert: false,
-                    contentType: logo.mimetype
+                    contentType: logo.mimetype,
                 });
 
             if (error) {
-                res.json({
+                return res.status(400).json({
                     success: false,
-                    message: error.message,
+                    message: "Error uploading the new logo: " + error.message,
                 });
-                return;
             }
 
             // Get the public URL for the uploaded logo
-            const { publicUrl: url } = supabase
+            const { publicUrl } = supabase
                 .storage
                 .from('schoollogos')
                 .getPublicUrl(data.path).data;
 
-            publicUrl = url;
+                console.log(publicUrl);
+            // Update school with the new logo
+            const update = await updateSchool(
+                sid,
+                name,
+                address,
+                city,
+                country,
+                email,
+                contact,
+                publicUrl,
+                slogan,
+                type,
+                updatedAt
+            );
+
+            return res.json({
+                success: true,
+                message: update ? "School updated successfully" : "School updating failed.",
+            });
         }
 
-        // Call the update function with or without the logo URL
-        const update = await updateSchool(
+        // If no logo is uploaded, update the school without a logo
+        const update = await updateSchoolWithoutLogo(
             sid,
             name,
             address,
@@ -296,31 +336,76 @@ const updateSchools = async (req, res) => {
             country,
             email,
             contact,
-            publicUrl, // Can be null if no logo is provided
             slogan,
-            option1,
-            option2,
-            option3,
-            option4,
-            updateAt
+            type,
+            updatedAt
         );
 
-        if (update) {
+        return res.json({
+            success: true,
+            message: update ? "School updated successfully" : "School updating failed.",
+        });
+    } catch (error) {
+        console.error('Error:', error.message);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error: " + error.message,
+        });
+    }
+};
+
+
+
+const PasswordUpdates = async(req, res) => {
+    const { current, newPassword, confirm } = req.body;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!current || !newPassword || !confirm) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields",
+            });
+        }
+        else if(newPassword !== confirm) {
+            return res.json({
+                success: false,
+                message: "Password does not match..",
+            });
+        }
+
+        const checkPass = await checkPassword(sid);
+        const isMatch = await bcrypt.compare(current, checkPass.password);
+        if (!isMatch) {
+            return res.json({
+                success: false,
+                message: "Invalid password..",
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const update = await updatePassword(hashedPassword, sid);
+        if(update) {
             res.json({
                 success: true,
-                message: "School updated successfully",
+                message: "Password updated successfully",
             });
-        } else {
+        }
+        else {
             res.json({
                 success: false,
-                message: "School updating failed..",
+                message: "Password updating failed..",
             });
         }
     } catch (error) {
-        console.error('Error:', error.message);
-        res.status(500).send('Internal Server Error');
+        res.json({
+            success: false,
+            message: "Internal Server Error. Please try again later.",
+        });
     }
-};
+}
 
 
 // ----------------------- REGISTER CONTROLLER -----------------------
@@ -400,10 +485,24 @@ const login = async(req, res) => {
             });
         }
         else if(school.status === 'Deactivated') {
-            return res.json({
-                success: false,
-                message: "Please activate your account first.",
-            });
+            
+            // Generate OTP and save to the database
+            const otpCode = (Math.floor(100000 + Math.random() * 900000)).toString();
+            const otpExpiresAt = new Date(Date.now() + 10 * 60000); // Expires in 10 minutes
+
+            const otpcheck = await OTPGeneration(otpCode, otpExpiresAt, school.email);
+            if(otpcheck) {
+                return res.json({
+                    osuccess: true,
+                    email: school.email
+                });
+            } else {
+                return res.json({
+                    success: false,
+                    message: "Failed to sent your OTP code to activate account.",
+                });
+            }
+            
         }
 
         // Create a JWT
@@ -4661,6 +4760,33 @@ const deleteReports = async(req, res) => {
     }
 }
 
+
+const countTermlyReports = async(req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const counter = await countReports(sid);
+        if(counter) {
+            return res.json({
+                success: true,
+                counter,
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'No records found'
+            })
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
 // ----------------------- REPORT CONTROLLER -----------------------
 
 
@@ -4684,6 +4810,7 @@ module.exports = {
     resetPassword, 
     verifyUser,
     updateSchools,
+    PasswordUpdates,
     // ----- REGISTER EXPORTS ------
 
     // ----- EXAM EXPORTS ------
@@ -4913,5 +5040,6 @@ module.exports = {
     getTByS,
     getRemarksByClassID,
     deleteReports,
+    countTermlyReports,
     // ----- REPORT EXPORTS ------
 };

@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setRegisterData } from '../../helpers/examination/examSlice.jsx';
-import { Check, CircleCheck, Lock, Mail, ShieldEllipsis } from 'lucide-react'
+import { CircleCheck, Lock, Mail, ShieldEllipsis } from 'lucide-react'
 
 
 const Register = () => {
@@ -92,7 +92,7 @@ const Register = () => {
                         />
                         <button className='loginButton signin'>{loading ? 'Registering...' : 'Register'}</button>
                         <p className="cont">Or Continue</p>
-                        <Link to={'/'} className='linka'><button className='loginButton regIn'>Log In</button></Link>
+                        <Link to={'/login'} className='linka'><button className='loginButton regIn' id='nextButton'>Log In</button></Link>
                         <p className='mt-4 termspolicy'>By clicking continue, you agree to our <Link to={''}>Terms <br />of Service</Link> and <Link to={''}>Privacy Policy</Link></p>
                     </form>
                 </div>

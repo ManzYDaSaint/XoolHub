@@ -1,12 +1,12 @@
 import React from "react";
-import ReportOverview from "./components/report-overview";
 import AverageScore from "./components/averagescore";
+import ReportsData from "./components/data/data";
 
 const ReportDashboard = () => {
   return (
     <>
-      <ReportOverview />
       <AverageScore />
+      <ReportsData />
     </>
   );
 };

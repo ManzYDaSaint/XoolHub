@@ -1,15 +1,33 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import Searchbar from './searchbar'
 import { Link } from 'react-router-dom'
-import { Icon } from 'semantic-ui-react'
-import LogOut from '../../pages/logout'
+import { Bell } from 'lucide-react'
+import api from "../../services/apiServices";
+import Logo from "../../logo.png";
 
 const Navbar = () => {
-    const [open, setOpen] = useState(false);
+    const [logoFile, setLogoFile] = useState(null);
+
+    const fetchData = async () => {
+        try {
+          const res = await api.getSchool();
+          const data = res.data.details;
+    
+          // If the logo is retrieved as a URL, display it
+          if (data.logo) {
+            setLogoFile(data.logo); // URL to show the image
+          }
+        } catch (error) {
+          console.error("Error fetching individual:", error);
+        }
+      };
+    
+      useEffect(() => {
+        fetchData(); // eslint-disable-next-line
+      }, []);
 
   return (
       <div className='navbarContainer'>
-        <LogOut open={open} setOpen={setOpen} />
         <div className="searchBar">
             <Searchbar 
             icon={'search'}
@@ -17,29 +35,20 @@ const Navbar = () => {
                 placeholder={'Type here...'}
             />
         </div>
-        <div className="notificationBar">
-            <ul>
-                <Link to={'/contact'} className='topItem'>
-                    <li >Contact US</li>
-                </Link>
-                <Link to={'/support'} className='topItem'>
-                    <li >Support Team</li>
-                </Link>
-            </ul>
             <div className="topRight">
                 <div className="notify">
-                    <Link to={'/messages'} className='notifyLink'><Icon name='mail' className='noteIcon'/></Link>
-                    <Link to={'/notifications'} className='notifyLink'><Icon name='bell' className='noteIcon'/></Link>
+                    <Link to={'/notifications'}><Bell size={23} className={'noteIcon'} /> </Link>
                 </div>
                 <div className="profileContainer">
-                    <Link to={'/profile'} className='profileLink'><Icon name='user circle' className='profilePicture' /></Link> 
+                    <Link to={'/profile'} className='profileLink'>
+                    {logoFile ? (
+                              <img src={logoFile} alt="Logo Preview" className="profilePicture" />
+                            ) : (
+                              <img src={Logo} alt="logo" className="profilePicture" />
+                            )}
+                    </Link> 
                 </div>
-                <button onClick={() => setOpen(true)}>
-                    <Icon name='shutdown' />
-                    
-                </button>
             </div>
-        </div>
     </div>
   )
 }

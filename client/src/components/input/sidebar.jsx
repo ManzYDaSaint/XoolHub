@@ -1,45 +1,20 @@
-import React, { useState, useEffect } from "react";
-import Logo from "../../logo.png";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import api from "../../services/apiServices";
-import { CalendarFold, ChartPie, Cog, DollarSign, File, GraduationCap, House, MessagesSquare, User } from "lucide-react";
+import { Cog, DollarSign, File, GraduationCap, House, User } from "lucide-react";
 
 const Sidebar = () => {
   const location = useLocation();
   const [closeMenu, setCloseMenu] = useState(true);
-  const [logoFile, setLogoFile] = useState(null);
 
   const handleCloseMenu = () => {
     setCloseMenu(!closeMenu);
   };
 
-  const fetchData = async () => {
-    try {
-      const res = await api.getSchool();
-      const data = res.data.details;
-
-      // If the logo is retrieved as a URL, display it
-      if (data.logo) {
-        setLogoFile(data.logo); // URL to show the image
-      }
-    } catch (error) {
-      console.error("Error fetching individual:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData(); // eslint-disable-next-line
-  }, []);
-
   return (
     <div className={closeMenu === false ? "sidebarMenu" : "sidebarMenu active"}>
       <div className="logoContainer">
-        {logoFile ? (
-          <img src={logoFile} alt="Logo Preview" className="schoolLogo" />
-        ) : (
-          <img src={Logo} alt="logo" className="schoolLogo" />
-        )}
+
       </div>
       <div className="burgerTrigger" onClick={handleCloseMenu}></div>
       <div className="burgerMenu"></div>
@@ -86,26 +61,6 @@ const Sidebar = () => {
             <p className="actualP">Fees</p>
           </li>
         </Link>
-        <Link to={"/attendance"} className="Links">
-          <li
-            className={
-              location.pathname === "/attendance" ? "sideItem active" : "sideItem"
-            }
-          >
-            <p className="sideIcons"><ChartPie size={23} /></p>
-            <p className="actualP">Attendance</p>
-          </li>
-        </Link>
-        <Link to={"/events"} className="Links">
-          <li
-            className={
-              location.pathname === "/events" ? "sideItem active" : "sideItem"
-            }
-          >
-            <p className="sideIcons"><CalendarFold size={23} /></p>
-            <p className="actualP">Events</p>
-          </li>
-        </Link>
         <Link to={"/report"} className="Links">
           <li
             className={
@@ -114,18 +69,6 @@ const Sidebar = () => {
           >
             <p className="sideIcons"><File size={23} /></p>
             <p className="actualP">Report</p>
-          </li>
-        </Link>
-        <Link to={"/communication"} className="Links">
-          <li
-            className={
-              location.pathname === "/communication"
-                ? "sideItem active"
-                : "sideItem"
-            }
-          >
-            <p className="sideIcons"><MessagesSquare size={23} /></p>
-            <p className="actualP">Communication</p>
           </li>
         </Link>
         <Link to={"/setting"} className="Links">

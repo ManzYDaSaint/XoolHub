@@ -10,6 +10,7 @@ const API = 'http://localhost:5000/api';
 // --------- REGISTER AXIOS -----------
 const createSchool = (data) => axios.post(API + '/signup', data);
 const updateSchool = (data) => axios.put(API + '/updateschool', data);
+const updatePassword = (data) => axios.put(API + '/update-school-password', data);
 // --------- REGISTER AXIOS -----------
 
 
@@ -290,6 +291,7 @@ const realPos = (data) => axios.post(API + '/realpos', data);
 const getTBySubject = (data) => axios.post(API + '/gettbs', data);
 const getRemarks = (data) => axios.post(API + '/getremarkbyclass', data);
 const deleteReport = (data) => axios.delete(API + '/deletereport', data);
+const countReports = () => axios.get(API + '/count-reports');
 // --------- REPORT AXIOS -----------
 
 
@@ -300,6 +302,7 @@ export default {
   // ------ REGISTER EXPORT -------
   createSchool,
   updateSchool,
+  updatePassword,
   // ------ REGISTER EXPORT -------
 
 
@@ -534,5 +537,6 @@ export default {
        getTBySubject,
        getRemarks,
        deleteReport,
+       countReports,
        // ------ REPORT EXPORT -------
 };

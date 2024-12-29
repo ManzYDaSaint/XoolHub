@@ -1,97 +1,73 @@
-.shadow_container {
-    width: 100%;
-    height: 100vh;
-    overflow: hidden;
+.auth_container {
+  height: 100vh;
+  overflow-y: hidden;
+  width: 100%;
+  padding: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
 }
-.content {
-    margin: 6% auto;
-    width: 70%;
-    background-color: #fff;
-    border-radius: 1rem;
-    padding: 1rem;
-    position: relative;
-    text-align: center;
+.auth_content {
+  width: 40%;
+  max-width: 100%;
+  background-color: #fff;
+  padding: 2rem 5rem;
+  text-align: center;
+  border-radius: 0.5rem;
+  height: 30rem
 }
 .pass__master__icon {
-    width: 12rem;
-    padding: 2rem 0;
+  width: 8rem;
+  margin: 3% auto;
 }
 .dotted h1 {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    font-weight: 600;
+  font-size: 1.2rem;
+  font-family: 'Poppins', sans-serif;
 }
-.body p {
-    color: #6e6b6b;
+.auth_buttons {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
 }
-.codeBase {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+.back {
+  font-size: 0.9rem;
+  text-decoration: none;
 }
-#hols {
-    background-color: transparent !important;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .one_field {
-    margin-right: 1rem;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-    background-color: #323644;
-    padding: 0.4rem 1rem;
-    border-radius: 1rem;
-    width: 100%;
-    transition: 0.3s ease-in-out;
-  }
-  .active {
-    box-shadow: 0px 0px 1px 1px #40A679;
-  }
-  #hola {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-  }
-  .auth_code {
-    width: 3rem;
-    padding: 0.6rem;
-    outline: none;
-    border: 2px solid #007BFE;
-    border-radius: 0.5rem;
-    font-size: 2rem;
-    color: #007BFE;
-    text-align: center;
-    margin-right: 0.9rem;
-  }
-.auth_container {
-    padding: 1rem;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-evenly;
-  }
-  .auth_container p {
-    text-align: left;
-  }
-  .forgot__new .inputs {
-    display: flex;
-    align-items: center;
-    justify-content: start;
-  }
-  .forgot__new .inputs label {
-    display: flex;
-    align-items: start;
-    justify-items: start;
-  }
-  .forgot__new input {
-    width: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
+.backarrow {
+  margin-right: 0.5rem;
+  transition: 0.3s ease-in-out;
+}
+.back:hover .backarrow {
+  transform: translateX(-5px);
+}
+
+.input_right {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+.auth_code {
+  width: 2.5rem;
+  height: 3rem;
+  padding: 0.2rem;
+  border: 2px solid #007BFE;
+  outline: none;
+  font-size: 1.5rem;
+  text-align: center;
+  color: #6B6868;
+  border-radius: 0.5rem;
+  font-weight: 600;
+}
+.auth_page {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+  align-items: center;
+}

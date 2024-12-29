@@ -24,7 +24,7 @@ const Welcome = () => {
           <FormButton
             id={'tyepButton'}
             label={'Show my tasks'}
-            icon={'long arrow alternate right'}
+            icon={'arrow right'}
           />
         </div>
       </div>

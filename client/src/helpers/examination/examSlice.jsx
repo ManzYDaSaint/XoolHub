@@ -19,10 +19,12 @@ const ExamSlice = createSlice({
       contact: '',
       logo: '',
       slogan: '',
-      option1: '',
-      option2: '',
-      option3: '',
-      option4: '',
+      type: '',
+    },
+    passwordFormData: {
+      current: '',
+      newPassword: '',
+      confirm: '',
     },
     yearFormData: {
       yearName: '',
@@ -216,6 +218,9 @@ const ExamSlice = createSlice({
     setAdminFormData: (state, action) => {
       state.adminFormData = action.payload;
     },
+    setPasswordFormData: (state, action) => {
+      state.passwordFormData = action.payload;
+    },
     setReportFormData: (state, action) => {
       state.reportFormData = action.payload;
     },
@@ -248,6 +253,7 @@ export const {
   setXFormData,
   setScoreFormData,
   setAdminFormData,
+  setPasswordFormData,
   setReportFormData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

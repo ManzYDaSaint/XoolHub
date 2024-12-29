@@ -28,9 +28,7 @@ import StudentDetail from './teacher-service/pages/studentDetail.jsx';
 import AdminProfile from './pages/dashboard/adminProfile.jsx';
 import StudentReport from './pages/reports/studentReport.jsx';
 import Landing from './pages/landing/front.jsx';
-import Events from './pages/events/events.jsx';
-import Communication from './pages/communication/communication.jsx';
-import Attendance from './pages/attendance/attendance.jsx';
+import Notifications from './pages/notifications/dashboard.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -87,30 +85,6 @@ function App() {
         )
     },
     {
-      path: '/events',
-      element: (
-        <InactivityHandler>
-        <Events />
-        </InactivityHandler>
-      )
-    },
-    {
-      path: '/communication',
-      element: (
-        <InactivityHandler>
-        <Communication />
-        </InactivityHandler>
-      )
-    },
-    {
-      path: '/attendance',
-      element: (
-        <InactivityHandler>
-        <Attendance />
-        </InactivityHandler>
-      )
-    },
-    {
       path: '/student',
       element: (
           <InactivityHandler>
@@ -131,6 +105,14 @@ function App() {
       element: (
           <InactivityHandler>
           <Fees />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/notifications',
+      element: (
+          <InactivityHandler>
+          <Notifications />
           </InactivityHandler>
         )
     },

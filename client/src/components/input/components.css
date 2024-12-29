@@ -115,7 +115,7 @@
     opacity: 0;
 } 
 .sidebarMenu ul {
-    margin-top: 3.5rem;
+    margin-top: 9rem;
 }
 .sideItem {
     list-style: none;
@@ -165,6 +165,7 @@
 }
 .logoContainer {
     padding: 2.5rem 0;
+    margin-bottom: 3rem;
 }
 .logoContainer::after {
     content: '';
@@ -292,15 +293,6 @@
 .searchInput::placeholder {
     font-style: italic;
 }
-.notificationBar {
-    display: inline-flex;
-    align-content: center;
-    justify-content: center;
-}
-.notificationBar ul {
-    display: flex;
-    align-items: center;
-}
 .topItem {
     text-decoration: none;
     color: #6e6b6b;
@@ -329,21 +321,17 @@
     background-color: transparent;
     margin-left: 1.5rem;
 }
-.notifyLink {
-    padding: 1rem;
-    text-decoration: none;
-}
-.notifyLink .noteIcon {
+.noteIcon {
     color: #007BFE;
-    font-size: 1.3rem;
+    margin-right: 2rem;
 }
 .profileLink {
     text-decoration: none;
     margin-left: 1.5rem;
 }
 .profilePicture {
-    margin-top: -0.5rem !important;
-    font-size: 2.5rem !important;
+    margin-top: -1.5rem;
+    width: 2.7rem;
 }
 .settingContent {
     padding: 1rem 3rem;
@@ -375,24 +363,24 @@
 }
 .tab {
     float: left;
-    border-right: 2px solid #007BFE;
     width: 30%;
     height: 38rem;
+    margin-top: 1rem;
 }
 .tabcontent {
+    border-left: 2px solid #007BFE;
     float: left;
-    padding-left: 10px;
+    padding-top: 2rem;
     width: 70%;
-    border-left: none;
     height: 100%;
-	margin-top: 20px;
     display: block;
+    padding-left: 2rem;
 }
 .setIcon {
 	width: 2rem;
 }
 .tablinks {
-    background-color: inherit;
+    background-color: transparent;
     color: #6e6b6b;
     padding: 10px;
     width: 100%;
@@ -401,9 +389,13 @@
     text-align: right;
     cursor: pointer;
     transition: 0.2s;
-	margin-top: 0.4rem;
+	margin-bottom: 1.5rem;
 	font-weight: 600;
 	font-size: 0.9rem;
+    display:inline-flex;
+    flex-direction: row;
+    align-items:center;
+    justify-content: end;
 }
 .tablinks:hover {
 	border-right: 3px solid #007BFE;
@@ -586,6 +578,7 @@
     background-color: transparent;
     font-size: 0.9rem;
     padding: 0.3rem 1rem;
+    width: 100%;
 }
 .inputContainer select {
     border: none;
@@ -593,7 +586,7 @@
     background-color: transparent;
     font-size: 0.9rem;
     padding: 0.3rem 1rem;
-    width: 18.6rem;
+    width: 100%;
 }
 .inputContainer select option {
     font-family: "Poppins", sans-serif !important;

@@ -29,10 +29,26 @@
 .personalContainer {
     padding: 0 2rem;
 }
+.profileUpdate h5 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 1.6rem;
+}
 .profileUpdate p {
     color: #6e6b6b;
 }
-
+.xoolinfo {
+    font-family: 'Poppins', sans-serif;
+}
+.sides {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+}
+.left, .right {
+    flex: 1;
+}
 
 /* Dashboard */
 .student_section {

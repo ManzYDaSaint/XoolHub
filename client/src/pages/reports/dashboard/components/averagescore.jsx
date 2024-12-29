@@ -17,7 +17,7 @@ const AverageScore = () => {
   ];
 
   return (
-    <div className="average_container">
+    <div className="average_container mt-4">
       <div className="average_header">
         <h5>Average Score By Subject</h5>
         <div className="average_gender">

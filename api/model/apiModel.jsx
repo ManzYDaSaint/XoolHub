@@ -10,6 +10,13 @@ const checkSchool = async (name) => {
   return res.rows[0];
 };
 
+const checkPassword = async (sid) => {
+  const query = "SELECT password FROM schools WHERE sid = $1";
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+};
+
 const insertSchool = async (email, password) => {
   const query =
     "INSERT INTO schools(email, password) VALUES ($1, $2) RETURNING *";
@@ -35,14 +42,11 @@ const updateSchool = async (
   contact,
   logo,
   slogan,
-  option1,
-  option2,
-  option3,
-  option4,
+  type,
   update
 ) => {
   const query =
-    "UPDATE schools SET name = $1, address = $2, city = $3, country = $4, email = $5, contact = $6, logo = $7, updated_at = $8, slogan = $9, option1 = $10, option2 = $11, option3 = $12, option4 = $13 WHERE sid = $14";
+    "UPDATE schools SET name = $1, address = $2, city = $3, country = $4, email = $5, contact = $6, logo = $7, updated_at = $8, slogan = $9, type = $10 WHERE sid = $11";
   const values = [
     name,
     address,
@@ -53,15 +57,56 @@ const updateSchool = async (
     logo,
     update,
     slogan,
-    option1,
-    option2,
-    option3,
-    option4,
+    type,
     id,
   ];
   const res = await kneX.query(query, values);
   return res.rows;
 };
+
+const updateSchoolWithoutLogo = async (
+  id,
+  name,
+  address,
+  city,
+  country,
+  email,
+  contact,
+  slogan,
+  type,
+  update
+) => {
+  const query =
+    "UPDATE schools SET name = $1, address = $2, city = $3, country = $4, email = $5, contact = $6, updated_at = $7, slogan = $8, type = $9 WHERE sid = $10";
+  const values = [
+    name,
+    address,
+    city,
+    country,
+    email,
+    contact,
+    update,
+    slogan,
+    type,
+    id,
+  ];
+  const res = await kneX.query(query, values);
+  return res.rows;
+};
+
+const OTPGeneration = async(otpCode, otpExpire, email) => {
+  const query = "UPDATE schools SET otp_code = $1, otp_expires_at = $2 WHERE email = $3";
+  const value = [otpCode, otpExpire, email];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
+
+const updatePassword = async(newPassword, sid) => {
+  const query = "UPDATE schools SET password = $1 WHERE sid = $2";
+  const value = [newPassword, sid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
 
 // --------------------------------------- REGISTER CRUD ------------------------------------------------
 
@@ -1650,14 +1695,39 @@ const deleteReport = async (yearid, termid, typeid, classid, sid) => {
   return res.rows;
 };
 
+
+const countReports = async (id) => {
+  const query = `WITH CurrentTerm AS (
+      SELECT 
+          id AS termid
+      FROM 
+          term
+      WHERE 
+          CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+  )
+  SELECT 
+      COUNT(*) AS Count
+  FROM 
+      results
+  WHERE 
+      results.termid = (SELECT termid FROM CurrentTerm) AND results.sid = $1`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
 // --------------------------------------- REPORT CRUD ------------------------------------------------
 
 module.exports = {
   // ----- REGISTER SECTION -----
   checkSchool,
+  checkPassword,
   insertSchool,
   editSchool,
   updateSchool,
+  updateSchoolWithoutLogo,
+  OTPGeneration,
+  updatePassword,
   // ----- REGISTER SECTION -----
 
   checkMail,
@@ -1852,5 +1922,6 @@ module.exports = {
   getTeacherBySubject,
   getRemarks,
   deleteReport,
+  countReports,
   // ----- REPORT SECTION -----
 };
