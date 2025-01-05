@@ -305,7 +305,6 @@ const updateSchools = async (req, res) => {
                 .from('schoollogos')
                 .getPublicUrl(data.path).data;
 
-                console.log(publicUrl);
             // Update school with the new logo
             const update = await updateSchool(
                 sid,
@@ -3659,18 +3658,18 @@ const getSubjectsTeacher = async (req, res) => {
 }
 
 const getStudentFilter = async (req, res) => {
-    const { yearid, selectedClass } = req.body;
+    const { selectedClass } = req.body;
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
     try {
-        if(!yearid || !selectedClass) {
+        if(!selectedClass) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
             });
         }
-        const filter = await getStudentForEntry(sid, yearid, selectedClass);
+        const filter = await getStudentForEntry(sid, selectedClass);
         if(filter) {
             if(filter.length === 0) {
                 return res.json({
@@ -4363,7 +4362,7 @@ const countStudentByTeacher = async (req, res) => {
         if (CnS) {
             for (const item of CnS) {
                 const classid = item.classid;
-                const count = await countStudentByAssign(sid, teacherid, classid); // Make sure to await if it's async
+                const count = await countStudentByAssign(sid, teacherid, classid);
                 
                 counter.push({
                     count: count || 'No subject found' // Handle no top student case

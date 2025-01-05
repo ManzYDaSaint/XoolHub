@@ -1275,9 +1275,9 @@ const getSubjectByTeacherID = async (sid, id, classid) => {
   return res.rows;
 };
 
-const getStudentForEntry = async (sid, yearid, classid) => {
-  const query = `SELECT id, name FROM students WHERE sid = $1 AND yearid = $2 AND classid = $3 ORDER BY name ASC`;
-  const values = [sid, yearid, classid];
+const getStudentForEntry = async (sid, classid) => {
+  const query = `SELECT id, name FROM students WHERE sid = $1 AND classid = $2 ORDER BY name ASC`;
+  const values = [sid, classid];
   const res = await kneX.query(query, values);
   return res.rows;
 };
@@ -1285,16 +1285,15 @@ const getStudentForEntry = async (sid, yearid, classid) => {
 const checkResult = async (sid, data) => {
   const query = `SELECT EXISTS (
         SELECT 1 FROM results
-        WHERE classid = $1 AND yearid = $2 AND sid = $3 AND termid = $4 AND typeid = $5 AND studentid = $6 AND subjectid = $7)`;
+        WHERE classid = $1 AND sid = $2 AND typeid = $3 AND studentid = $4 AND subjectid = $5 AND termid = $6)`;
   const values = [
     data.selectedClass,
-    data.yearid,
     sid,
-    data.termid,
     data.typeid,
     data.id,
     data.selectedSubject,
-  ]; // Updated classid to selectedClass
+    data.termid,
+  ];
   try {
     const res = await kneX.query(query, values);
     return res.rows[0].exists;
@@ -1304,12 +1303,11 @@ const checkResult = async (sid, data) => {
 };
 
 const insertResult = async (sid, grade, remarks, data) => {
-  const query = `INSERT INTO results(sid, studentid, yearid, termid, typeid, classid, subjectid, score, remarks, grade) 
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`;
+  const query = `INSERT INTO results(sid, studentid, termid, typeid, classid, subjectid, score, remarks, grade) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
   const values = [
     sid,
     data.id,
-    data.yearid,
     data.termid,
     data.typeid,
     data.selectedClass,
@@ -1340,7 +1338,7 @@ const getGradeByDenom = async (sid, denom) => {
 
 // --------------------------------------- FILTER CRUD ------------------------------------------------
 
-const getX = async (sid, yearid, termid, typeid, classid, subjectid) => {
+const getX = async (sid, termid, typeid, classid, subjectid) => {
   const query = `SELECT results.id as resultid, students.name as student, class.name as class, subject.name as subject, results.score, results.grade, results.remarks
         FROM results
         INNER JOIN students ON students.id = results.studentid
@@ -1348,7 +1346,7 @@ const getX = async (sid, yearid, termid, typeid, classid, subjectid) => {
         INNER JOIN subject ON subject.id = results.subjectid
         WHERE results.yearid = $1 AND results.termid = $2 AND results.typeid = $3
         AND results.classid = $4 AND results.subjectid = $5 AND results.sid = $6`;
-  const value = [yearid, termid, typeid, classid, subjectid, sid];
+  const value = [termid, typeid, classid, subjectid, sid];
   const res = await kneX.query(query, value);
   return res.rows;
 };
@@ -1393,9 +1391,10 @@ const updateScore = async (id, score, grade, remark, update) => {
 const getClassStudent = async (sid, teacherid) => {
   const query = `SELECT students.id, students.name, EXTRACT(YEAR FROM AGE(CAST(students.dob AS DATE))) AS age, class.name as class, students.gender, students.address, students.contact
         FROM classteacher
-        INNER JOIN students ON students.classid = classteacher.classid
+        INNER JOIN history ON history.classid = classteacher.classid
+		INNER JOIN students ON students.id = history.studentid
         INNER JOIN class ON class.classid = classteacher.classid
-        WHERE classteacher.sid = $1 AND classteacher.teacherid = $2`;
+        WHERE classteacher.sid = $1 AND classteacher.teacherid = $2 AND history.status = 'Active'`;
   const value = [sid, teacherid];
   const res = await kneX.query(query, value);
   return res.rows;
@@ -1468,7 +1467,8 @@ const getAggScoreBySUbject = async (sid, teacherid, classid) => {
 const countStudentByAssign = async (sid, teacherid, classid) => {
   const query = `SELECT COUNT(DISTINCT(students.id))
         FROM students
-        INNER JOIN assignteacher ON assignteacher.classid = students.classid
+        INNER JOIN history ON history.studentid = students.id
+		    INNER JOIN assignteacher ON assignteacher.classid = history.classid
         WHERE assignteacher.classid = $1 AND assignteacher.teacherid = $2 AND students.sid = $3`;
   const value = [classid, teacherid, sid];
   const res = await kneX.query(query, value);

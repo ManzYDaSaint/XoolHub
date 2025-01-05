@@ -63,6 +63,7 @@ const Info = ({setOpen}) => {
             Log Out
         </button>
         <div className="teacherInfo">
+            {/* <CircleUserRound size={25} className='headerIcon mt-3' /> */}
             <Icon name='user circle outline' className='headerIcon mt-3'/>
             <div className="teacherDeto mt-4">
                 {teacher ? (

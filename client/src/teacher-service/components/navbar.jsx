@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
-import Logo from '../../logo.png'
 import { Link } from 'react-router-dom'
-import { Icon } from 'semantic-ui-react'
 import { useLocation } from 'react-router-dom'
+import { House, GraduationCap, FilePenLine } from 'lucide-react'
 
 const NavBar = () => {
   const location = useLocation();
@@ -15,29 +14,43 @@ const NavBar = () => {
   return (
     <div className={closeMenu === false ? "sidebarMenu" : "sidebarMenu active"}>
       <div className="logoContainer">
-        <img src={Logo} alt="logo" className='schoolLogo' />
+
       </div>
       <div className="burgerTrigger" onClick={handleCloseMenu}></div>
       <div className="burgerMenu"></div>
       <ul>
-      <Link to={'/tdashboard'} className='Links'>
-          <li className={location.pathname === "/tdashboard" ? "sideItem active" : "sideItem"}>
-            <Icon name='home' className='sideIcons' />
-            <p>Dashboard</p>
+        <Link to={"/tdashboard"} className="Links">
+          <li
+            className={
+              location.pathname === "/tdashboard"
+                ? "sideItem active"
+                : "sideItem"
+            }
+          >
+            <p className="sideIcons"><House size={23} /></p>
+            <p className="actualP">Dashboard</p>
           </li>
         </Link>
-      <Link to={'/tstudent'} className='Links'>
-          <li className={location.pathname === "/tstudent" ? "sideItem active" : "sideItem"}>
-            <Icon name='student' className='sideIcons' />
-            <p>Students</p>
+        <Link to={"/tstudent"} className="Links">
+          <li
+            className={
+              location.pathname === "/tstudent" ? "sideItem active" : "sideItem"
+            }
+          >
+            <p className="sideIcons"><GraduationCap size={23} /></p>
+            <p className="actualP">Students</p>
           </li>
         </Link>
-        <Link to={'/entry'} className='Links'>
-          <li className={location.pathname === "/entry" ? "sideItem active" : "sideItem"}>
-            <Icon name='edit' className='sideIcons' />
-            <p>Entry</p>
-          </li>
-        </Link>
+        <Link to={"/entry"} className="Links">
+                  <li
+                    className={
+                      location.pathname === "/entry" ? "sideItem active" : "sideItem"
+                    }
+                  >
+                    <p className="sideIcons"><FilePenLine size={23} /></p>
+                    <p className="actualP">Entry</p>
+                  </li>
+                </Link>
       </ul>
     </div>
   )

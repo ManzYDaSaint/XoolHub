@@ -125,3 +125,71 @@ Finishinig Date:    13 September 2024
 .termspolicy {
     font-size: 0.9rem;
 }
+
+@media only screen and (max-width: 600px) {
+    .logContainer {
+        border-radius: 1rem;
+        padding: 1rem;
+        width: 100%;
+        background-color: #fff;
+        border-radius: 0;
+        display: block;
+    }
+    .shieldContainer {
+        display: none;
+    }
+    .logSider {
+        padding: 2rem;
+        text-align: center;
+        width: 100%;
+        border: none;
+        background-color: transparent !important;
+    }
+}
+
+@media only screen and (min-width: 600px) {
+    .logContainer {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 2rem 1rem;
+        width: 50rem;
+    }
+    .shieldContainer {
+        display: none;
+    }
+    .logSider {
+        border-left: none;
+        padding: 2rem;
+        text-align: center;
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 992px) {
+    .logContainer {
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+        background-color: #fff;
+        border-radius: 1rem;
+        padding: 2rem 1rem;
+        width: 70rem;
+    }
+    .shield {
+        color: #007BFE;
+    }
+    .shieldContainer {
+        padding: 2rem;
+        margin: 0 4rem;
+        display: block;
+    }
+    .logSider {
+        border-left: 3px solid #E8ECEF;
+        padding: 2rem;
+        text-align: center;
+        width: 50%;
+    }
+}

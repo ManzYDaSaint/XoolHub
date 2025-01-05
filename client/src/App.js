@@ -29,6 +29,7 @@ import AdminProfile from './pages/dashboard/adminProfile.jsx';
 import StudentReport from './pages/reports/studentReport.jsx';
 import Landing from './pages/landing/front.jsx';
 import Notifications from './pages/notifications/dashboard.jsx';
+import Parent_Portal from './parent-portal/pages/dashboard/dashboard.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -218,6 +219,18 @@ function App() {
     },
 
     // Teacher Portal Routes 
+
+
+
+
+    // Parent Portal Routes 
+    {
+      path: '/parent/',
+      element: (
+          <Parent_Portal />
+        )
+    }
+    // Parent Portal Routes 
   ])
 
   return (

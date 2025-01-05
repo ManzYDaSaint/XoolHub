@@ -3,10 +3,8 @@ import FormButton from '../../components/input/formButton.jsx';
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setFilterFormData } from '../../helpers/examination/examSlice.jsx';
-import YearSelector from '../components/yearSelector.jsx';
 import TypeSelector from '../components/examTypeSelector.jsx';
 import ClassSelector from '../components/classSelector.jsx';
-import TermSelector from '../components/termSelector.jsx';
 import api from '../../services/apiServices.jsx';
 
 const EntryForm = () => {
@@ -26,8 +24,6 @@ const EntryForm = () => {
   // Dependant
   const [selectedClass, setSelectedClass] = useState('');
   const [selectedSubject, setSelectedSubject] = useState('');
-  const [yearid, setYearid] = useState('');
-  const [termid, setTermid] = useState('');
   const [typeid, setTypeid] = useState('');
 
   // Handle form submission
@@ -45,12 +41,8 @@ const EntryForm = () => {
       toast.error('An error occurred. Please try again.');
     }
     dispatch(setFilterFormData({
-      yearid: '',
       typeid: '',
-      termid: ''
     }));
-    setYearid(data.yearid)
-    setTermid(data.termid)
     setTypeid(data.typeid)
   };
 
@@ -60,8 +52,6 @@ const EntryForm = () => {
       id: student.id,
       score: studentScores[student.id],
       typeid,
-      termid,
-      yearid,
       selectedClass,
       selectedSubject
     }));
@@ -80,12 +70,8 @@ const EntryForm = () => {
       prevStep();
       setLoading(false);
       dispatch(setFilterFormData({
-        yearid: '',
         typeid: '',
-        termid: ''
       }));
-      setYearid('')
-      setTermid('')
       setTypeid('')
       setSelectedClass('')
       setSelectedSubject('')
@@ -150,26 +136,12 @@ const EntryForm = () => {
           <div className="multi_step">
             <h3><span className='m-3'>Step 1:</span> Specify students to add results.</h3>
             <div className="formGroup">
-                <YearSelector 
-                    onChange={handleChange}
-                    label={'Academic Year'}
-                    name={'yearid'}
-                    value={filterFormData.yearid}
-                />
-                <TermSelector 
-                    onChange={handleChange}
-                    label={'Term'}
-                    name={'termid'}
-                    value={filterFormData.termid}
-                />
                 <TypeSelector 
                     onChange={handleChange}
                     label={'Examination Type'}
                     name={'typeid'}
                     value={filterFormData.typeid}
                 />
-            </div>
-            <div className="formGroup mt-4">
                 <ClassSelector 
                     onChange={handleChange}
                     label={'Class'}
@@ -228,7 +200,6 @@ const EntryForm = () => {
               label={loading ? 'Processing...' : 'Add Results'} 
               id="tyepButton" 
               disabled={loading} 
-
             />
           </div>
         )}

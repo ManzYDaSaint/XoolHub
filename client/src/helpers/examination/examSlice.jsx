@@ -99,8 +99,6 @@ const ExamSlice = createSlice({
       classid: '',
     },
     filterFormData: {
-      yearid: '',
-      termid: '',
       typeid: '',
       selectedClass: '',
     },
