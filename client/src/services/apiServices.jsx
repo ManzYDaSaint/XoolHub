@@ -3,14 +3,27 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 const API = 'http://localhost:5000/api';
 
-// const getSchools = () => axios.get(API_RL);
-// const getSchool = (id) => axios.get(`${API_URL}${id}`);
+const countXuls = () => axios.get(API + '/count-schools');
+const getXuls = () => axios.get(API + '/get-schools');
 // const deleteSchool = (id) => axios.delete(`${API_URL}${id}`);
+
+// --------- SUPER ADMIN AXIOS -----------
+const addSubscription = (data) => axios.post(API + '/add-subscriptions', data);
+const getSubscription = () => axios.get(API + '/get-subscriptions');
+const deletePlan = (id) => axios.delete(API + '/delete-subscriptions/'  + id);
+const editPlan = (id) => axios.get(API + '/edit-subscriptions/'  + id);
+const updatePlan = (id, data) => axios.put(API + '/update-subscriptions/'  + id, data);
+// --------- SUPER ADMIN AXIOS -----------
+
+
+
+
 
 // --------- REGISTER AXIOS -----------
 const createSchool = (data) => axios.post(API + '/signup', data);
 const updateSchool = (data) => axios.put(API + '/updateschool', data);
 const updatePassword = (data) => axios.put(API + '/update-school-password', data);
+const updateSuperPassword = (data) => axios.put(API + '/update-super-password', data);
 // --------- REGISTER AXIOS -----------
 
 
@@ -22,6 +35,8 @@ const updatePassword = (data) => axios.put(API + '/update-school-password', data
 const Logon = (data) => axios.post(API + '/login', data);
 const Verify = () => axios.post(API + '/verify');
 const tVerify = () => axios.post(API + '/tverify');
+const superVerify = () => axios.post(API + '/superverify');
+const superLogout = () => axios.post(API + '/superlogout');
 const tLogout = () => axios.post(API + '/tlogout');
 const Logout = () => axios.post(API + '/logout');
 
@@ -299,9 +314,26 @@ const countReports = () => axios.get(API + '/count-reports');
 
 // eslint-disable-next-line
 export default {
+  // ------ SCHOOL EXPORT -------
+  countXuls,
+  getXuls,
+  // ------ SCHOOL EXPORT -------
+
+
+  // ------ SUPER ADMIN EXPORT -------
+  addSubscription,
+  getSubscription,
+  deletePlan,
+  editPlan,
+  updatePlan,
+  // ------ SUPER ADMIN EXPORT -------
+
+
+
   // ------ REGISTER EXPORT -------
   createSchool,
   updateSchool,
+  updateSuperPassword,
   updatePassword,
   // ------ REGISTER EXPORT -------
 
@@ -309,6 +341,8 @@ export default {
   // ------ LOGIN EXPORT -------
   Verify,
   tVerify,
+  superVerify,
+  superLogout,
   Logon,
   Logout,
   tLogout,

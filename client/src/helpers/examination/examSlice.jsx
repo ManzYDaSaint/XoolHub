@@ -26,6 +26,11 @@ const ExamSlice = createSlice({
       newPassword: '',
       confirm: '',
     },
+    superPassword: {
+      current: '',
+      newPassword: '',
+      confirm: '',
+    },
     yearFormData: {
       yearName: '',
       startDate: '',
@@ -139,6 +144,11 @@ const ExamSlice = createSlice({
     scoreFormData: {
       score: '',
     },
+    subscriptionData: {
+      name: '',
+      price: '',
+      features: '',
+    },
   },
   reducers: {
     setIsEditMode: (state, action) => {
@@ -219,8 +229,14 @@ const ExamSlice = createSlice({
     setPasswordFormData: (state, action) => {
       state.passwordFormData = action.payload;
     },
+    setSuperPassword: (state, action) => {
+      state.superPassword = action.payload;
+    },
     setReportFormData: (state, action) => {
       state.reportFormData = action.payload;
+    },
+    setSubscriptionData: (state, action) => {
+      state.subscriptionData = action.payload;
     },
   },
 });
@@ -253,5 +269,7 @@ export const {
   setAdminFormData,
   setPasswordFormData,
   setReportFormData,
+  setSuperPassword,
+  setSubscriptionData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

@@ -15,6 +15,7 @@ const YearForm = ({ fetchData }) => {
 
       // Handle submit
       const handleSubmit = async(data) => {
+
         if(isEditMode) {
           const res = await api.updateYear(editItemId, data);
           if(res.data.success === true) {

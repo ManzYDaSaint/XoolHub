@@ -132,11 +132,22 @@ const {
     PaidByClasses,
     countTermlyReports,
     PasswordUpdates,
+    superVerify,
+    superLogout,
+    PasswordSuper,
+    countXuls,
+    getXuls,
+    addSubscriptions,
+    gotSubscriptions,
+    deletePlan,
+    editPlans,
+    updatePlans,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
 
-router.route('/schools').get(getAllSchools)
+router.route('/count-schools').get(countXuls);
+router.route('/get-schools').get(getXuls);
 
 // ***** POST Methods
 router.route('/authenticate').post((req, res) => res.end());
@@ -153,10 +164,25 @@ router.route('/resetPassword').put(resetPassword);
 
 
 
+// ------- SUPER ADMIN ROUTES -----------
+
+router.route('/add-subscriptions').post(addSubscriptions);
+router.route('/get-subscriptions').get(gotSubscriptions);
+router.route('/delete-subscriptions/:id').delete(deletePlan);
+router.route('/edit-subscriptions/:id').get(editPlans);
+router.route('/update-subscriptions/:id').put(updatePlans);
+
+// ------- SUPER ADMIN ROUTES -----------
+
+
+
+
+
 // ------- REGISTER ROUTES -----------
 router.route('/signup').post(signup)
 router.route('/updateschool').put(updateSchools);
 router.route('/update-school-password').put(PasswordUpdates);
+router.route('/update-super-password').put(PasswordSuper);
 // ------- REGISTER ROUTES -----------
 
 
@@ -167,6 +193,8 @@ router.route('/update-school-password').put(PasswordUpdates);
 router.route('/login').post(login);
 router.route('/verify').post(verify);
 router.route('/tverify').post(tverify);
+router.route('/superverify').post(superVerify);
+router.route('/superlogout').post(superLogout);
 router.route('/tlogout').post(tLogout);
 router.route('/logout').post(Logout);
 

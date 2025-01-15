@@ -1,6 +1,27 @@
 const kneX = require("../database/db.jsx");
 // const conn = require('../database/mysql.jsx');
 
+
+
+// --------------------------------------- SCHOOL ------------------------------------------------
+
+const countSchools = async () => {
+  const query = "SELECT COUNT(*) as count FROM schools";
+  const res = await kneX.query(query);
+  return res.rows[0];
+}
+
+const getSchools = async () => {
+  const query = "SELECT * FROM schools ORDER BY name ASC";
+  const res = await kneX.query(query);
+  return res.rows;
+}
+
+// --------------------------------------- SCHOOL ------------------------------------------------
+
+
+
+
 // --------------------------------------- REGISTER CRUD ------------------------------------------------
 
 const checkSchool = async (name) => {
@@ -14,6 +35,12 @@ const checkPassword = async (sid) => {
   const query = "SELECT password FROM schools WHERE sid = $1";
   const value = [sid];
   const res = await kneX.query(query, value);
+  return res.rows[0];
+};
+
+const checkSuperPassword = async () => {
+  const query = "SELECT password FROM administrator";
+  const res = await kneX.query(query);
   return res.rows[0];
 };
 
@@ -107,6 +134,12 @@ const updatePassword = async(newPassword, sid) => {
   const res = await kneX.query(query, value);
   return res.rows;
 }
+const updateSuperPassword = async(newPassword) => {
+  const query = "UPDATE administrator SET password = $1";
+  const value = [newPassword];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
 
 // --------------------------------------- REGISTER CRUD ------------------------------------------------
 
@@ -126,32 +159,40 @@ const checkTeacherMail = async (email) => {
   return res.rows[0];
 };
 
+const checkAdminMail = async (email) => {
+  const query = "SELECT * FROM administrator WHERE email = $1";
+  const values = [email];
+  const res = await kneX.query(query, values);
+  return res.rows[0];
+};
+
+
+
 // --------------------------------------- LOGIN ------------------------------------------------
 
 // --------------------------------------- EXAM CRUD ------------------------------------------------
 
 // Check if Examination Type exists
-const checkExam = async (id, name) => {
-  const query = "SELECT name FROM exam WHERE name = $1 AND sid = $2";
-  const value = [name, id];
+const checkExam = async (name) => {
+  const query = "SELECT name FROM exam WHERE name = $1";
+  const value = [name];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new examination type
-const insertExam = async (id, name, percentage) => {
+const insertExam = async (name, percentage) => {
   const query =
-    "INSERT INTO exam(sid, name, percentage) VALUES ($1, $2, $3) RETURNING *";
-  const values = [id, name, percentage];
+    "INSERT INTO exam(name, percentage) VALUES ($1, $2) RETURNING *";
+  const values = [name, percentage];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all examination types
-const getExam = async (id) => {
-  const query = "SELECT * FROM exam WHERE sid = $1";
-  const value = [id];
-  const res = await kneX.query(query, value);
+const getExam = async () => {
+  const query = "SELECT * FROM exam";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -185,28 +226,26 @@ const editExam = async (id) => {
 // --------------------------------------- ACADEMIC YEAR CRUD ------------------------------------------------
 
 // Check if academic year exists
-const checkYear = async (id, name, startDate, endDate) => {
+const checkYear = async (name, startDate, endDate) => {
   const query =
-    "SELECT name FROM acyear WHERE name = $1 AND start_date = $2 AND end_date = $3 AND sid = $4";
-  const value = [name, startDate, endDate, id];
+    "SELECT name FROM acyear WHERE name = $1 AND start_date = $2 AND end_date = $3";
+  const value = [name, startDate, endDate];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new academic year
-const insertYear = async (id, name, startDate, endDate) => {
-  const query =
-    "INSERT INTO acyear(sid, name, start_date, end_date) VALUES ($1, $2, $3, $4) RETURNING *";
-  const values = [id, name, startDate, endDate];
+const insertYear = async (name, startDate, endDate) => {
+  const query = "INSERT INTO acyear(name, start_date, end_date) VALUES ($1, $2, $3) RETURNING *";
+  const values = [name, startDate, endDate];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all academic year
-const getYear = async (id) => {
-  const query = "SELECT * FROM acyear WHERE sid = $1";
-  const value = [id];
-  const res = await kneX.query(query, value);
+const getYear = async () => {
+  const query = "SELECT * FROM acyear";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -240,28 +279,27 @@ const editYear = async (id) => {
 // --------------------------------------- SUBJECT CRUD ------------------------------------------------
 
 // Check if subject exists
-const checkSubject = async (id, name, code) => {
+const checkSubject = async (name, code) => {
   const query =
-    "SELECT name FROM subject WHERE name = $1 AND code = $2 AND sid = $3";
-  const value = [name, code, id];
+    "SELECT name FROM subject WHERE name = $1 AND code = $2";
+  const value = [name, code];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new subject
-const insertSubject = async (sid, name, code) => {
+const insertSubject = async (name, code) => {
   const query =
-    "INSERT INTO subject(sid, name, code) VALUES ($1, $2, $3) RETURNING *";
-  const values = [sid, name, code];
+    "INSERT INTO subject(name, code) VALUES ($1, $2) RETURNING *";
+  const values = [name, code];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all subject
-const getSubject = async (id) => {
-  const query = "SELECT * FROM subject WHERE sid = $1";
-  const value = [id];
-  const res = await kneX.query(query, value);
+const getSubject = async () => {
+  const query = "SELECT * FROM subject";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -295,28 +333,27 @@ const editSubject = async (id) => {
 // --------------------------------------- CLASS CRUD ------------------------------------------------
 
 // Check if object exists
-const checkClass = async (id, name, denom) => {
+const checkClass = async (name, denom) => {
   const query =
-    "SELECT name FROM class WHERE name = $1 AND sid = $2 AND denom = $3";
-  const value = [name, id, denom];
+    "SELECT name FROM class WHERE name = $1 AND denom = $2";
+  const value = [name, denom];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new object
-const insertClass = async (sid, name, denom) => {
+const insertClass = async (name, denom) => {
   const query =
-    "INSERT INTO class(sid, name, denom) VALUES ($1, $2, $3) RETURNING *";
-  const values = [sid, name, denom];
+    "INSERT INTO class(name, denom) VALUES ($1, $2) RETURNING *";
+  const values = [name, denom];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all object
-const getClass = async (id) => {
-  const query = "SELECT * FROM class WHERE sid = $1 ORDER BY name ASC";
-  const value = [id];
-  const res = await kneX.query(query, value);
+const getClass = async () => {
+  const query = "SELECT * FROM class ORDER BY name ASC";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -350,31 +387,29 @@ const editClass = async (id) => {
 // --------------------------------------- TERM CRUD ------------------------------------------------
 
 // Check if object exists
-const checkTerm = async (id, name, startDate, endDate) => {
+const checkTerm = async (name, startDate, endDate) => {
   const query =
-    "SELECT name FROM term WHERE name = $1 AND start_date = $2 AND end_date = $3 AND sid = $4";
-  const value = [name, startDate, endDate, id];
+    "SELECT name FROM term WHERE name = $1 AND start_date = $2 AND end_date = $3";
+  const value = [name, startDate, endDate];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new object
-const insertTerm = async (sid, name, year, startDate, endDate) => {
+const insertTerm = async (name, year, startDate, endDate) => {
   const query =
-    "INSERT INTO term(sid, name, yearid, start_date, end_date) VALUES ($1, $2, $3, $4, $5) RETURNING *";
-  const values = [sid, name, year, startDate, endDate];
+    "INSERT INTO term(name, yearid, start_date, end_date) VALUES ($1, $2, $3, $4) RETURNING *";
+  const values = [name, year, startDate, endDate];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all object
-const getTerm = async (sid) => {
+const getTerm = async () => {
   const query = `SELECT term.*, acyear.name AS year
 FROM term 
-INNER JOIN acyear ON acyear.yearid = term.yearid
-WHERE term.sid = $1`;
-  const value = [sid];
-  const res = await kneX.query(query, value);
+INNER JOIN acyear ON acyear.yearid = term.yearid`;
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -389,7 +424,7 @@ const deleteTerm = async (id) => {
 // Updating object
 const updateTerm = async (id, name, year, startDate, endDate, update) => {
   const query =
-    "UPDATE term SET name = $1, year = $2, start_date = $3, end_date = $4, updated_at = $5 WHERE id = $6";
+    "UPDATE term SET name = $1, yearid = $2, start_date = $3, end_date = $4, updated_at = $5 WHERE id = $6";
   const values = [name, year, startDate, endDate, update, id];
   const res = await kneX.query(query, values);
   return res.rows;
@@ -408,42 +443,39 @@ const editTerm = async (id) => {
 // --------------------------------------- GRADING CRUD ------------------------------------------------
 
 // Check if object exists
-const checkGrade = async (sid, denom, grade) => {
+const checkGrade = async (denom, grade) => {
   const query =
-    "SELECT sid, denom, grade FROM grading WHERE sid = $1 AND denom = $2 AND grade = $3";
-  const value = [sid, denom, grade];
+    "SELECT denom, grade FROM grading WHERE denom = $1 AND grade = $2";
+  const value = [denom, grade];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new object
-const insertGrade = async (sid, denom, roof, floor, grade, remark) => {
+const insertGrade = async (denom, roof, floor, grade, remark) => {
   const query =
-    "INSERT INTO grading(sid, denom, roof, floor, grade, remark) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
-  const values = [sid, denom, roof, floor, grade, remark];
+    "INSERT INTO grading(denom, roof, floor, grade, remark) VALUES ($1, $2, $3, $4, $5) RETURNING *";
+  const values = [denom, roof, floor, grade, remark];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all object
-const getGrade = async (sid) => {
-  const query = "SELECT * FROM grading WHERE sid = $1";
-  const value = [sid];
-  const res = await kneX.query(query, value);
+const getGrade = async () => {
+  const query = "SELECT * FROM grading";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
-const getMSCEGrade = async (sid) => {
-  const query = "SELECT * FROM grading WHERE sid = $1 AND denom = 'MSCE'";
-  const value = [sid];
-  const res = await kneX.query(query, value);
+const getMSCEGrade = async () => {
+  const query = "SELECT * FROM grading WHERE denom = 'MSCE'";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
-const getJCEGrade = async (sid) => {
-  const query = "SELECT * FROM grading WHERE sid = $1 AND denom = 'JCE'";
-  const value = [sid];
-  const res = await kneX.query(query, value);
+const getJCEGrade = async () => {
+  const query = "SELECT * FROM grading WHERE denom = 'JCE'";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -477,28 +509,27 @@ const editGrade = async (id) => {
 // --------------------------------------- JCE CRUD ------------------------------------------------
 
 // Check if object exists
-const checkJCE = async (sid, denom, roof, floor) => {
+const checkJCE = async (denom, roof, floor) => {
   const query =
-    "SELECT sid, denom, roof, floor FROM remarks WHERE sid = $1 AND denom = $2 AND roof = $3 AND floor = $4";
-  const value = [sid, denom, roof, floor];
+    "SELECT denom, roof, floor FROM remarks WHERE denom = $1 AND roof = $2 AND floor = $3";
+  const value = [denom, roof, floor];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new object
-const insertJCE = async (sid, denom, roof, floor, remark) => {
+const insertJCE = async (denom, roof, floor, remark) => {
   const query =
-    "INSERT INTO remarks(sid, denom, roof, floor, remark) VALUES ($1, $2, $3, $4, $5) RETURNING *";
-  const values = [sid, denom, roof, floor, remark];
+    "INSERT INTO remarks(denom, roof, floor, remark) VALUES ($1, $2, $3, $4) RETURNING *";
+  const values = [denom, roof, floor, remark];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all object
-const getJCE = async (sid) => {
-  const query = "SELECT * FROM remarks WHERE sid = $1 AND denom = 'JCE'";
-  const value = [sid];
-  const res = await kneX.query(query, value);
+const getJCE = async () => {
+  const query = "SELECT * FROM remarks WHERE denom = 'JCE'";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -532,28 +563,27 @@ const editJCE = async (id) => {
 // --------------------------------------- MSCE CRUD ------------------------------------------------
 
 // Check if object exists
-const checkMSCE = async (sid, denom, roof, floor) => {
+const checkMSCE = async (denom, roof, floor) => {
   const query =
-    "SELECT sid, denom, roof, floor FROM remarks WHERE sid = $1 AND denom = $2 AND roof = $3 AND floor = $4";
-  const value = [sid, denom, roof, floor];
+    "SELECT denom, roof, floor FROM remarks WHERE denom = $1 AND roof = $2 AND floor = $3";
+  const value = [denom, roof, floor];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
 // Add new object
-const insertMSCE = async (sid, denom, roof, floor, remark) => {
+const insertMSCE = async (denom, roof, floor, remark) => {
   const query =
-    "INSERT INTO remarks(sid, denom, roof, floor, remark) VALUES ($1, $2, $3, $4, $5) RETURNING *";
-  const values = [sid, denom, roof, floor, remark];
+    "INSERT INTO remarks(denom, roof, floor, remark) VALUES ($1, $2, $3, $4) RETURNING *";
+  const values = [denom, roof, floor, remark];
   const res = await kneX.query(query, values);
   return res.rows.length > 0;
 };
 
 // Get all object
-const getMSCE = async (sid) => {
-  const query = "SELECT * FROM remarks WHERE sid = $1 AND denom = 'MSCE'";
-  const value = [sid];
-  const res = await kneX.query(query, value);
+const getMSCE = async () => {
+  const query = "SELECT * FROM remarks WHERE denom = 'MSCE'";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -1718,9 +1748,61 @@ const countReports = async (id) => {
 
 // --------------------------------------- REPORT CRUD ------------------------------------------------
 
+
+
+
+// --------------------------------------- SUPER ADMIN CRUD ------------------------------------------------
+
+const insertFeatures = async (name, price, features) => {
+  const query = `INSERT INTO subscription_plans (name, price, features) 
+             VALUES ($1, $2, $3) RETURNING *`;
+  const value = [name, price, features];
+  const res = await kneX.query(query, value);
+  return res.rows.length > 0;
+}
+
+
+const getSubscriptions = async() => {
+  const query = 'SELECT * FROM subscription_plans ORDER BY name ASC';
+  const res = await kneX.query(query);
+  return res.rows;
+}
+
+const deleteSubscription = async (id) => {
+  const query = `DELETE FROM subscription_plans WHERE id = $1`;
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
+
+const editPlan = async (id) => {
+  const query = "SELECT * FROM subscription_plans WHERE id = $1";
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+};
+
+// Updating object
+const updatePlan = async (id, name, price, features, update) => {
+  const query =
+    "UPDATE subscription_plans SET name = $1, price = $2, features = $3, created_at = $4 WHERE id = $5";
+  const values = [name, price, features, update, id];
+  const res = await kneX.query(query, values);
+  return res.rows;
+};
+
+// --------------------------------------- SUPER ADMIN CRUD ------------------------------------------------
+
 module.exports = {
+  // ----- SCHOOLS SECTION -----
+  countSchools,
+  getSchools,
+  // ----- SCHOOLS SECTION -----
+
+
   // ----- REGISTER SECTION -----
   checkSchool,
+  checkSuperPassword,
   checkPassword,
   insertSchool,
   editSchool,
@@ -1728,10 +1810,12 @@ module.exports = {
   updateSchoolWithoutLogo,
   OTPGeneration,
   updatePassword,
+  updateSuperPassword,
   // ----- REGISTER SECTION -----
 
   checkMail,
   checkTeacherMail,
+  checkAdminMail,
 
   // ----- EXAM SECTION -----
   checkExam,
@@ -1924,4 +2008,15 @@ module.exports = {
   deleteReport,
   countReports,
   // ----- REPORT SECTION -----
+
+
+
+
+  // ----- SUPER ADMIN SECTION -----
+  insertFeatures,
+  getSubscriptions,
+  deleteSubscription,
+  editPlan, 
+  updatePlan,
+  // ----- SUPER ADMIN SECTION -----
 };

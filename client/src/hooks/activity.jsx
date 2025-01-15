@@ -18,7 +18,9 @@ const InactivityHandler = ({ children }) => {
   const handleLogout = async () => {
     try {
       await api.Logout();
-      navigate('/');
+      await api.tLogout();
+      await api.superLogout();
+      navigate('/login');
     } catch (error) {
       console.error('Failed to logout', error);
     }

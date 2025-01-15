@@ -17,7 +17,7 @@ function Auth0({ children }) {
           setIsAuthenticated(true);
         }
         else {
-          <Navigate to={'/'} />
+          <Navigate to={'/login'} />
         }
       } catch (error) {
         console.error('Authentication error:', error);
@@ -36,7 +36,7 @@ function Auth0({ children }) {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to={'/'} />;
+    return <Navigate to={'/login'} />;
   }
   return children;
 }

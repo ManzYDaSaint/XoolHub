@@ -1,19 +1,18 @@
 import React from "react";
 import ParentNavBar from "../../components/navbar";
 import "../index.css";
-import { Bell, NotebookTabs, GraduationCap, Shapes, Megaphone } from "lucide-react";
+import { GraduationCap, Shapes, Megaphone } from "lucide-react";
+import TopNav from "../../components/topnav";
 
-const Parent_Portal = () => {
+const ParentPortal = () => {
   return (
     <div className="parent_container">
       <div className="parent_content">
-        <div className="parent_topbar">
-          <NotebookTabs size={35} className="parent_topbar_icon" />
-          <div className="bell_container">
-            <Bell size={20} className="bell_icon" />
-            <div className="badger"></div>
-          </div>
-        </div>
+        {/* Top Nav */}
+
+        <TopNav />
+
+        {/* Top Nav */}
         <div className="child_container">
           <div className="child_top">
             <GraduationCap size={50} className="child_top_icon" />
@@ -145,4 +144,4 @@ const Parent_Portal = () => {
   );
 };
 
-export default Parent_Portal;
+export default ParentPortal;

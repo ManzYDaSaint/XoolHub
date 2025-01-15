@@ -1,0 +1,40 @@
+.super__cards {
+    padding: 2rem;
+    background-color: #F4F6F7;
+    border-radius: 0.5rem;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 2rem;
+    flex: 1;
+}
+.payment__container {
+    padding: 4rem 2rem;
+    background-color: #F4F6F7;
+    margin-top: 3rem;
+    border-radius: 0.5rem;
+}
+.top__divider {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 2rem;
+}
+.cutter_container h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.selectorInput select {
+    padding: 0.5rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 2px solid #007BFE;
+    background-color: transparent;
+}
+.gift {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6B6868;
+}

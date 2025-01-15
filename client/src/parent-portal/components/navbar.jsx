@@ -10,10 +10,10 @@ const ParentNavBar = () => {
   return (
     <div className={"pNavBar"}>
       <ul>
-        <Link to={"/parent"} className="Links">
+        <Link to={"/parent/dashboard"} className="Links">
           <li
             className={
-              location.pathname === "/parent"
+              location.pathname === "/parent/dashboard"
                 ? "pItem active"
                 : "pItem"
             }
@@ -21,28 +21,28 @@ const ParentNavBar = () => {
             <p className="paIcons"><House size={23} /></p>
           </li>
         </Link>
-        <Link to={"/parent-academic"} className="Links">
+        <Link to={"/parent/academics"} className="Links">
           <li
             className={
-              location.pathname === "/parent-academic" ? "pItem active" : "pItem"
+              location.pathname === "/parent/academics" ? "pItem active" : "pItem"
             }
           >
             <p className="paIcons"><BookOpenCheck size={23} /></p>
           </li>
         </Link>
-        <Link to={"/parent-fees"} className="Links">
+        <Link to={"/parent/fees"} className="Links">
           <li
             className={
-              location.pathname === "/parent-fees" ? "pItem active" : "pItem"
+              location.pathname === "/parent/fees" ? "pItem active" : "pItem"
             }
           >
             <p className="paIcons"><DollarSign size={23} /></p>
           </li>
         </Link>
-        <Link to={"/parent-events"} className="Links">
+        <Link to={"/parent/events"} className="Links">
           <li
             className={
-              location.pathname === "/parent-events" ? "pItem active" : "pItem"
+              location.pathname === "/parent/events" ? "pItem active" : "pItem"
             }
           >
             <p className="paIcons"><CalendarDays size={23} /></p>

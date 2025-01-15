@@ -143,6 +143,16 @@ const {
     checkPassword,
     updatePassword,
     updateSchoolWithoutLogo,
+    checkAdminMail,
+    checkSuperPassword,
+    updateSuperPassword,
+    countSchools,
+    getSchools,
+    insertFeatures,
+    getSubscriptions,
+    deleteSubscription,
+    editPlan,
+    updatePlan,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -165,6 +175,60 @@ function generatePassword(length = 8) {
     return password;
 }
 // ----------------------- RANDOM PASSWORD CONTROLLER -----------------------
+
+
+
+
+// ----------------------- SCHOOL CONTROLLER -----------------------
+
+const countXuls = async (req, res) => {
+    try {
+        const count = await countSchools();
+        if(count) {
+            res.json({
+                success: true,
+                count,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const getXuls = async (req, res) => {
+    try {
+        const school = await getSchools();
+        if(school) {
+            res.json({
+                success: true,
+                school,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+// ----------------------- SCHOOL CONTROLLER -----------------------
+
 
 
 
@@ -248,6 +312,7 @@ const getSchool = async (req, res) => {
         })
     }
 }
+
 
 const updateSchools = async (req, res) => {
     const { name, address, city, country, email, contact, slogan, type } = req.body;
@@ -407,6 +472,55 @@ const PasswordUpdates = async(req, res) => {
 }
 
 
+const PasswordSuper = async(req, res) => {
+    const { current, newPassword, confirm } = req.body;
+
+    try {
+        if(!current || !newPassword || !confirm) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields",
+            });
+        }
+        else if(newPassword !== confirm) {
+            return res.json({
+                success: false,
+                message: "Password does not match..",
+            });
+        }
+
+        const checkPass = await checkSuperPassword();
+        const isMatch = await bcrypt.compare(current, checkPass.password);
+        if (!isMatch) {
+            return res.json({
+                success: false,
+                message: "Invalid password..",
+            });
+        }
+
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        const update = await updateSuperPassword(hashedPassword);
+        if(update) {
+            res.json({
+                success: true,
+                message: "Password updated successfully",
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Password updating failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            success: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+}
+
+
 // ----------------------- REGISTER CONTROLLER -----------------------
 
 
@@ -430,9 +544,43 @@ const login = async(req, res) => {
         if (!school) {
             const teacher = await checkTeacherMail(schoolEmail);
             if(!teacher) {
+                // Getting ADMINISTRATOR
+                const superAdmin = await checkAdminMail(schoolEmail);
+                if(!superAdmin) {
+                    return res.json({
+                        success: false,
+                        message: "Invalid email or password",
+                    });
+                }
+
+                // Compare the password
+                const isMatch = await bcrypt.compare(schoolPassword, superAdmin.password);
+                if (!isMatch) {
+                    return res.json({
+                        success: false,
+                        message: "Invalid email or password here",
+                    });
+                }
+
+                // Create a JWT
+                const superToken = jwt.sign(
+                    { 
+                        aid: superAdmin.aid,
+                    },
+                    process.env.JWT_SECRET,
+                    { expiresIn: '24h' }
+                );
+
+                // Set the token as an HTTP-only cookie
+                res.cookie('administratorToken', superToken, {
+                    httpOnly: true,
+                    sameSite: 'Lax',
+                    maxAge: 60 * 60 * 1000, // 1 hour
+                });
+
                 return res.json({
-                    tsuccess: false,
-                    tmessage: "Invalid email or password",
+                    ssuccess: true,
+                    smessage: "Super administrator access granted...",
                 });
             }
 
@@ -593,6 +741,38 @@ const tverify = (req, res) => {
     }
 };
 
+// Endpoint to verify authentication
+const superVerify = (req, res) => {
+    const token = req.cookies.administratorToken;
+    if (!token) {
+      return res.json({ 
+        success: false,
+        message: 'Not authenticated. Access denied!' });
+    }
+  
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      if(decoded) {
+          res.json({ 
+              success: true,
+              message: 'Authenticated', 
+              administrator: decoded,
+            });
+            return;
+        }
+        res.json({ 
+            success: false,
+            message: 'Access denied', 
+          });
+    } 
+    catch (err) {
+      res.json({ 
+        success: false,
+        message: 'Invalid token' 
+        });
+    }
+};
+
 const Logout = async(req, res) => {
     res.clearCookie('schoolToken');
     res.json({ 
@@ -603,6 +783,14 @@ const Logout = async(req, res) => {
 
 const tLogout = async(req, res) => {
     res.clearCookie('teacherToken');
+    return res.json({ 
+        success: true,
+        message: 'Logged out successfully' 
+    });
+}
+
+const superLogout = async(req, res) => {
+    res.clearCookie('administratorToken');
     return res.json({ 
         success: true,
         message: 'Logged out successfully' 
@@ -642,25 +830,6 @@ const verifyUser = async(req, res) => {
 // Login at localhost:5000/api/auth/login
 
 
-
-
-
-// GET all the schools through localhost:5000/api/auth/schools
-const getAllSchools = async (req, res, next) => {
-    try {
-        const Schools = await getSchools();
-        res.status(201).json({
-            success: true,
-            data: Schools,
-        });
-    } catch (error) {
-        res.status(400).json({
-            status: false,
-            error: error.message
-        })
-    }
-}
-
 // Generate OTP at localhost:5000/api/auth/generateOTP
 const generateOTP = async (req, res, next) => {
     req.app.locals.OTP = OTPgen.generate(6, {lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false});
@@ -697,9 +866,6 @@ const resetPassword = async (req, res, next) => {
 
 const addExam = async (req, res) => {
     const { namer, percentage } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
 
     try {
         if(!namer || !percentage) {
@@ -716,7 +882,7 @@ const addExam = async (req, res) => {
         }
 
         // Check if exam exists
-        const checker = await checkExam(id, namer);
+        const checker = await checkExam(namer);
         if(checker) {
             return res.json({
                 success: false,
@@ -725,7 +891,7 @@ const addExam = async (req, res) => {
         }
         else {
             // Add new exam
-            const newExam = await insertExam(id, namer, percentage);
+            const newExam = await insertExam(namer, percentage);
             if(newExam) {
                 return res.json({ 
                     success: true,
@@ -749,11 +915,8 @@ const addExam = async (req, res) => {
 }
 
 const getExams = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const exam = await getExam(sid);
+        const exam = await getExam();
         if(exam) {
             return res.json({
                 success: true,
@@ -824,14 +987,12 @@ const editExams = async(req, res) => {
 const updateExams = async(req, res) => {
     const { id } = req.params;
     const { namer, percentage } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkExam(sid, namer);
+        const checker = await checkExam(namer);
         if(checker) {
             res.json({
                 success: false,
@@ -870,9 +1031,6 @@ const updateExams = async(req, res) => {
 
 const addYear = async (req, res) => {
     const { yearName, startDate, endDate } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
 
     try {
         if(!yearName || !startDate || !endDate) {
@@ -880,11 +1038,10 @@ const addYear = async (req, res) => {
                 success: false,
                 message: "Please fill up all the fields"
             });
-
         }
 
         // Check if exam exists
-        const checker = await checkYear(id, yearName, startDate, endDate);
+        const checker = await checkYear(yearName, startDate, endDate);
         if(checker) {
             res.json({
                 success: false,
@@ -893,12 +1050,11 @@ const addYear = async (req, res) => {
         }
         else {
             // Add new exam
-            const newYear = await insertYear(id, yearName, startDate, endDate);
+            const newYear = await insertYear(yearName, startDate, endDate);
             if(newYear) {
                 res.json({ 
                     success: true,
                     message: "Academic year added successfully",
-                    newYear,
                 });
             }
             else {
@@ -917,11 +1073,8 @@ const addYear = async (req, res) => {
 }
 
 const getYears = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const year = await getYear(sid);
+        const year = await getYear();
         if(year) {
             res.json({
                 success: true,
@@ -992,14 +1145,12 @@ const editYears = async(req, res) => {
 const updateYears = async(req, res) => {
     const { id } = req.params;
     const { yearName, startDate, endDate } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkYear(sid, yearName, startDate, endDate);
+        const checker = await checkYear(yearName, startDate, endDate);
         if(checker) {
             res.json({
                 success: false,
@@ -1038,9 +1189,6 @@ const updateYears = async(req, res) => {
 
 const addSubject = async (req, res) => {
     const { subjectName, code } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
     
     try {
         if(!subjectName || !code) {
@@ -1052,7 +1200,7 @@ const addSubject = async (req, res) => {
         }
 
         // Check if subject exists
-        const checker = await checkSubject(id, subjectName, code);
+        const checker = await checkSubject(subjectName, code);
         if(checker) {
             res.json({
                 success: false,
@@ -1061,7 +1209,7 @@ const addSubject = async (req, res) => {
         }
         else {
             // Add new subject
-            const newSubject = await insertSubject(id, subjectName, code);
+            const newSubject = await insertSubject(subjectName, code);
             if(newSubject) {
                 res.json({ 
                     success: true,
@@ -1085,11 +1233,8 @@ const addSubject = async (req, res) => {
 }
 
 const getSubjects = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const subject = await getSubject(sid);
+        const subject = await getSubject();
         if(subject) {
             res.json({
                 success: true,
@@ -1160,14 +1305,12 @@ const editSubjects = async(req, res) => {
 const updateSubjects = async(req, res) => {
     const { id } = req.params;
     const { subjectName, code } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkSubject(sid, subjectName);
+        const checker = await checkSubject(subjectName);
         if(checker) {
             res.json({
                 success: false,
@@ -1207,9 +1350,6 @@ const updateSubjects = async(req, res) => {
 
 const addClass = async (req, res) => {
     const { className, denom } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
     
     try {
         if(!className || !denom) {
@@ -1221,7 +1361,7 @@ const addClass = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkClass(id, className)
+        const checker = await checkClass(className, denom)
         if(checker) {
             res.json({
                 success: false,
@@ -1230,7 +1370,7 @@ const addClass = async (req, res) => {
         }
         else {
             // Add new subject
-            const newClass = await insertClass(id, className, denom);
+            const newClass = await insertClass(className, denom);
             if(newClass) {
                 res.json({ 
                     success: true,
@@ -1253,11 +1393,8 @@ const addClass = async (req, res) => {
 }
 
 const getClasses = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const classs = await getClass(sid);
+        const classs = await getClass();
         if(classs) {
             res.json({
                 success: true,
@@ -1328,14 +1465,12 @@ const editClasses = async(req, res) => {
 const updateClasses = async(req, res) => {
     const { id } = req.params;
     const { className, denom } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkClass(sid, className, denom);
+        const checker = await checkClass(className, denom);
         if(checker) {
             res.json({
                 success: false,
@@ -1375,9 +1510,6 @@ const updateClasses = async(req, res) => {
 
 const addTerm = async (req, res) => {
     const { termName, year, startDate, endDate } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
     
     try {
         if(!termName || !year || !startDate || !endDate) {
@@ -1389,7 +1521,7 @@ const addTerm = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkTerm(id, termName, startDate, endDate)
+        const checker = await checkTerm(termName, startDate, endDate)
         if(checker) {
             res.json({
                 success: false,
@@ -1398,7 +1530,7 @@ const addTerm = async (req, res) => {
         }
         else {
             // Add new subject
-            const newTerm = await insertTerm(id, termName, year, startDate, endDate);
+            const newTerm = await insertTerm(termName, year, startDate, endDate);
             if(newTerm) {
                 res.json({ 
                     success: true,
@@ -1421,11 +1553,8 @@ const addTerm = async (req, res) => {
 }
 
 const getTerms = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const term = await getTerm(sid);
+        const term = await getTerm();
         if(term) {
             res.json({
                 success: true,
@@ -1496,14 +1625,12 @@ const editTerms = async(req, res) => {
 const updateTerms = async(req, res) => {
     const { id } = req.params;
     const { termName, year, startDate, endDate } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkTerm(sid, termName);
+        const checker = await checkTerm(termName);
         if(checker) {
             res.json({
                 success: false,
@@ -1544,9 +1671,6 @@ const updateTerms = async(req, res) => {
 
 const addGrade = async (req, res) => {
     const { denom, roof, floor, grade, remark } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
     
     try {
         if(!denom || !roof || !floor || !grade || !remark) {
@@ -1576,7 +1700,7 @@ const addGrade = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkGrade(id, denom, grade)
+        const checker = await checkGrade(denom, grade)
         if(checker) {
             res.json({
                 success: false,
@@ -1585,7 +1709,7 @@ const addGrade = async (req, res) => {
         }
         else {
             // Add new grade
-            const newGrade = await insertGrade(id, denom, roof, floor, grade, remark);
+            const newGrade = await insertGrade(denom, roof, floor, grade, remark);
             if(newGrade) {
                 res.json({ 
                     success: true,
@@ -1608,11 +1732,8 @@ const addGrade = async (req, res) => {
 }
 
 const getGrades = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const grade = await getGrade(sid);
+        const grade = await getGrade();
         if(grade) {
             res.json({
                 success: true,
@@ -1633,11 +1754,8 @@ const getGrades = async (req, res) => {
 }
 
 const getMSCEGrades = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const grade = await getMSCEGrade(sid);
+        const grade = await getMSCEGrade();
         if(grade) {
             res.json({
                 success: true,
@@ -1658,11 +1776,8 @@ const getMSCEGrades = async (req, res) => {
 }
 
 const getJCEGrades = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const grade = await getJCEGrade(sid);
+        const grade = await getJCEGrade();
         if(grade) {
             res.json({
                 success: true,
@@ -1733,15 +1848,12 @@ const editGrades = async(req, res) => {
 const updateGrades = async(req, res) => {
     const { id } = req.params;
     const { denom, roof, floor, grade, remark } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
 
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkGrade(sid, denom, grade);
+        const checker = await checkGrade(denom, grade);
         if(checker) {
             res.json({
                 success: false,
@@ -1783,9 +1895,6 @@ const updateGrades = async(req, res) => {
 
 const addJCE = async (req, res) => {
     const { denom, roof, floor, remark } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
     
     try {
         if(!denom || !roof || !floor || !remark) {
@@ -1797,7 +1906,7 @@ const addJCE = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkJCE(id, denom, roof, floor)
+        const checker = await checkJCE(denom, roof, floor)
         if(checker) {
             res.json({
                 success: false,
@@ -1806,7 +1915,7 @@ const addJCE = async (req, res) => {
         }
         else {
             // Add new grade
-            const newJCE = await insertJCE(id, denom, roof, floor, remark);
+            const newJCE = await insertJCE(denom, roof, floor, remark);
             if(newJCE) {
                 res.json({ 
                     success: true,
@@ -1829,11 +1938,8 @@ const addJCE = async (req, res) => {
 }
 
 const getJCEs = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
     try {
-        const jce = await getJCE(sid);
+        const jce = await getJCE();
         if(jce) {
             res.json({
                 success: true,
@@ -1904,15 +2010,12 @@ const editJCEs = async(req, res) => {
 const updateJCEs = async(req, res) => {
     const { id } = req.params;
     const { denom, roof, floor, remark } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
 
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkJCE(sid, denom, roof, floor);
+        const checker = await checkJCE(denom, roof, floor);
         if(checker) {
             res.json({
                 success: false,
@@ -1952,9 +2055,6 @@ const updateJCEs = async(req, res) => {
 
 const addMSCE = async (req, res) => {
     const { denom, roof, floor, remark } = req.body.data;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
     
     try {
         if(!denom || !roof || !floor || !remark) {
@@ -1966,7 +2066,7 @@ const addMSCE = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkMSCE(id, denom, roof, floor)
+        const checker = await checkMSCE(denom, roof, floor)
         if(checker) {
             res.json({
                 success: false,
@@ -1975,7 +2075,7 @@ const addMSCE = async (req, res) => {
         }
         else {
             // Add new grade
-            const newMSCE = await insertMSCE(id, denom, roof, floor, remark);
+            const newMSCE = await insertMSCE(denom, roof, floor, remark);
             if(newMSCE) {
                 res.json({ 
                     success: true,
@@ -1998,11 +2098,9 @@ const addMSCE = async (req, res) => {
 }
 
 const getMSCEs = async (req, res) => {
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+
     try {
-        const msce = await getMSCE(sid);
+        const msce = await getMSCE();
         if(msce) {
             res.json({
                 success: true,
@@ -2073,15 +2171,12 @@ const editMSCEs = async(req, res) => {
 const updateMSCEs = async(req, res) => {
     const { id } = req.params;
     const { denom, roof, floor, remark } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
 
     try {
         const now = new Date();
         const updateAt = now.toLocaleString();
         // Check if exam exists
-        const checker = await checkMSCE(sid, denom, roof, floor);
+        const checker = await checkMSCE(denom, roof, floor);
         if(checker) {
             res.json({
                 success: false,
@@ -4791,18 +4886,172 @@ const countTermlyReports = async(req, res) => {
 
 
 
+
+
+// ----------------------- SUPER ADMIN CONTROLLER -----------------------
+
+const addSubscriptions = async(req, res) => {
+    const { name, price, features} = req.body;
+
+    try { 
+        if(!name || !price || !features) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields"
+            });
+        }
+
+        const feature = JSON.stringify(features)
+
+        const insert = await insertFeatures(name, price, feature);
+        if(insert) {
+            return res.json({
+                success: true,
+                message: 'Subscription added successfully'
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'Failed to add subscription'
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: 'Internal Server Error. Please try again later.'
+        })
+    }
+}
+
+const gotSubscriptions = async(req, res) => {
+    try {
+        const plan = await getSubscriptions();
+        if(plan) {
+            return res.json({
+                success: true,
+                plan,
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'No records found'
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: 'Internal Server Error. Please try again later.'
+        })
+    }
+}
+
+const deletePlan = async(req, res) => {
+    const { id } = req.params;
+
+    try {
+        const del = await deleteSubscription(id);
+        if(del) {
+            res.json({
+                success: true,
+                message: 'Subscription deleted successfully'
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Deletion failed'
+            });
+        }
+    }
+    catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editPlans = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editPlan(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving subscription data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updatePlans = async(req, res) => {
+    const { id } = req.params;
+    const { name, price, features } = req.body;
+
+    try {
+        const now = new Date();
+        const updateAt = now.toLocaleString();
+        
+        const feature = JSON.stringify(features)
+        console.log(feature);
+
+        const update = await updatePlan(id, name, price, feature, updateAt);
+        if(update) {
+            res.json({
+                success: true,
+                message: "Subscription Plan updated successfully",
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Subscription plan updating failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- SUPER ADMIN CONTROLLER -----------------------
+
+
+
+
 module.exports = { 
+    // ----- SCHOOL EXPORTS ------
+    countXuls,
+    getXuls,
+    // ----- SCHOOL EXPORTS ------
+
     // ----- LOGIN EXPORTS ------
     login, 
     verify,
     tverify,
+    superVerify,
     tLogout,
+    superLogout,
     Logout,
     // ----- LOGIN EXPORTS ------
 
     // ----- REGISTER EXPORTS ------
     signup, 
-    getAllSchools, 
     generateOTP, 
     verifyOTP, 
     createResetSession, 
@@ -4810,6 +5059,7 @@ module.exports = {
     verifyUser,
     updateSchools,
     PasswordUpdates,
+    PasswordSuper,
     // ----- REGISTER EXPORTS ------
 
     // ----- EXAM EXPORTS ------
@@ -5041,4 +5291,14 @@ module.exports = {
     deleteReports,
     countTermlyReports,
     // ----- REPORT EXPORTS ------
+
+
+
+    // ----- SUPER ADMIN EXPORTS ------
+    addSubscriptions,
+    gotSubscriptions,
+    deletePlan,
+    editPlans,
+    updatePlans,
+    // ----- SUPER ADMIN EXPORTS ------
 };

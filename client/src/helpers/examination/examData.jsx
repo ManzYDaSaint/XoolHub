@@ -20,8 +20,8 @@ const ExamData = () => {
     const fetchData = async () => {
       const res = await api.getExam();
       const data = res.data.exam;
-      if(data.length < 1) {
-          const examData = data.map((item, index) => ({
+      if(data.length === 0) {
+          const examData = data.map(() => ({
           sr: "",
           name: "No records found...",
           percentage: "",

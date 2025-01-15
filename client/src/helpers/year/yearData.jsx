@@ -19,7 +19,7 @@ const YearData = () => {
   const fetchData = async () => {
     const res = await api.getYear();
     const data = res.data.year;
-    if(data.length < 1) {
+    if(data.length === 0) {
         const yearData = data.map((item, index) => ({
         sr: "",
         name: "No records found...",

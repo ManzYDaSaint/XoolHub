@@ -40,6 +40,15 @@ const Login = () => {
                 }, 2000);
                 return;
             }
+            else if (res.data.ssuccess === true) {
+                toast.success(res.data.smessage);
+
+                // Redirecting to dashboard after successful login
+                setTimeout(() => {
+                    navigate('/super');
+                }, 2000);
+                return;
+            }
             else if(res.data.osuccess === true) {
                 navigate('/authenticate', { state: { email: res.data.email } });
             }

@@ -7,7 +7,6 @@ import Reset from './pages/password/reset_password';
 import Register from './pages/register/register';
 import AdminDashboard from './pages/administrator/dashboard.jsx'
 import Report from './pages/administrator/report.jsx'
-import Setting from './pages/administrator/setting.jsx'
 import NotFound from './pages/nopage/nopage.jsx'
 import Students from './pages/administrator/students.jsx';
 import Fees from './pages/administrator/fees.jsx';
@@ -29,7 +28,16 @@ import AdminProfile from './pages/dashboard/adminProfile.jsx';
 import StudentReport from './pages/reports/studentReport.jsx';
 import Landing from './pages/landing/front.jsx';
 import Notifications from './pages/notifications/dashboard.jsx';
-import Parent_Portal from './parent-portal/pages/dashboard/dashboard.jsx';
+import ParentFees from './parent-portal/pages/fees/parent-fees.jsx';
+import AcademicHistory from './parent-portal/pages/academics/parent-academics.jsx';
+import ParentEvents from './parent-portal/pages/events/parent-events.jsx';
+import Setting from './super-admin/pages/settings/settings.jsx';
+import SuperDashboard from './super-admin/pages/dashboard/dasboard.jsx';
+import ParentPortal from './parent-portal/pages/dashboard/dashboard.jsx';
+import ProfileSuper from './super-admin/pages/profile/profiles.jsx';
+import Schools from './super-admin/pages/schools/school.jsx';
+import Subsciptions from './super-admin/pages/subscriptions/subscription.jsx';
+import AddSubsciptions from './super-admin/pages/subscriptions/components/add.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -91,14 +99,6 @@ function App() {
           <InactivityHandler>
           <Students />
           </InactivityHandler>
-      )
-    },
-    {
-      path: '/setting',
-      element: (
-        <InactivityHandler>
-          <Setting />
-        </InactivityHandler>
       )
     },
     {
@@ -225,12 +225,86 @@ function App() {
 
     // Parent Portal Routes 
     {
-      path: '/parent/',
+      path: '/parent/dashboard/',
       element: (
-          <Parent_Portal />
+          <ParentPortal />
         )
-    }
+    },
+    {
+      path: '/parent/fees/',
+      element: (
+          <ParentFees />
+        )
+    },
+    {
+      path: '/parent/academics/',
+      element: (
+          <AcademicHistory />
+        )
+    },
+    {
+      path: '/parent/events/',
+      element: (
+          <ParentEvents />
+        )
+    },
     // Parent Portal Routes 
+
+
+
+
+    // Super Administrator Portal Routes 
+
+    {
+      path: '/super',
+      element: (
+        <InactivityHandler>
+          <SuperDashboard />
+        </InactivityHandler>
+        )
+    },
+    {
+      path: '/setting',
+      element: (
+        <InactivityHandler>
+          <Setting />
+        </InactivityHandler>
+      )
+    },
+    {
+      path: '/suprofile',
+      element: (
+        <InactivityHandler>
+          <ProfileSuper />
+        </InactivityHandler>
+      )
+    },
+    {
+      path: '/schools',
+      element: (
+        <InactivityHandler>
+          <Schools />
+        </InactivityHandler>
+      )
+    },
+    {
+      path: '/subscriptions',
+      element: (
+        <InactivityHandler>
+          <Subsciptions />
+        </InactivityHandler>
+      )
+    },
+    {
+      path: '/add-subscriptions',
+      element: (
+        <InactivityHandler>
+          <AddSubsciptions />
+        </InactivityHandler>
+      )
+    },
+
+    // Super Administrator Portal Routes 
   ])
 
   return (
