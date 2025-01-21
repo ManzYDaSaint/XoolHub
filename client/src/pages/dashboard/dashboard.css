@@ -39,3 +39,33 @@
     align-items: center;
     justify-content: center;
 }
+
+.billing-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    flex: 1;
+}
+.billing-card {
+    flex: 1;
+    background-color: #E8ECEF;
+    padding: 1.5rem 0;
+    text-align: center;
+}
+.billing-card h3 {
+    text-transform: uppercase;
+    font-size: 1rem;
+    font-family: 'Poppins', sans-serif;
+    color: #6B6868;
+}
+.billing-card .price {
+    font-size: 2.5rem;
+    color: #6B6868;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+.billing-card .periodic {
+    color: #6B6868;
+    margin: 0 !important;
+    padding: 0 !important;
+}

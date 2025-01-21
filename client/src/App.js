@@ -38,6 +38,11 @@ import ProfileSuper from './super-admin/pages/profile/profiles.jsx';
 import Schools from './super-admin/pages/schools/school.jsx';
 import Subsciptions from './super-admin/pages/subscriptions/subscription.jsx';
 import AddSubsciptions from './super-admin/pages/subscriptions/components/add.jsx';
+import Pricing from './pages/pricing/pricing.jsx';
+import Contact from './pages/contacts/contact.jsx';
+import FAQ from './pages/faq/faq.jsx';
+import About from './pages/about/about.jsx';
+import Invoicing from './pages/pricing/billing.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -178,6 +183,46 @@ function App() {
       element: (
           <InactivityHandler>
             <StudentReport />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/pricing',
+      element: (
+          <InactivityHandler>
+            <Pricing />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/contact',
+      element: (
+          <InactivityHandler>
+            <Contact />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/faq',
+      element: (
+          <InactivityHandler>
+            <FAQ />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/about',
+      element: (
+          <InactivityHandler>
+            <About />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/invoicing/:plan',
+      element: (
+          <InactivityHandler>
+            <Invoicing />
           </InactivityHandler>
         )
     },

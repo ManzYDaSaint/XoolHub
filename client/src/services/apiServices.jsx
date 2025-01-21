@@ -13,6 +13,13 @@ const getSubscription = () => axios.get(API + '/get-subscriptions');
 const deletePlan = (id) => axios.delete(API + '/delete-subscriptions/'  + id);
 const editPlan = (id) => axios.get(API + '/edit-subscriptions/'  + id);
 const updatePlan = (id, data) => axios.put(API + '/update-subscriptions/'  + id, data);
+const gotsubs = (plan) => axios.get(`${API}/got-subscription/${plan}`);
+const addBilling = (data) => axios.post(API + '/add-billing', data);
+const checkSubscriptionStatus = () => axios.get(API + '/check-subscription-status');
+const checkPaidStatus = () => axios.get(API + '/check-paid-status');
+const updateSubscriptionStatus = (data) => axios.put(API + '/update-suspended-status', data);
+const getSubscriptionPayment = () => axios.get(API + '/get-subscription-payments');
+const updateStatus = (id, data) => axios.put(API + '/update-statuses/' + id, data);
 // --------- SUPER ADMIN AXIOS -----------
 
 
@@ -326,6 +333,13 @@ export default {
   deletePlan,
   editPlan,
   updatePlan,
+  gotsubs,
+  addBilling,
+  checkSubscriptionStatus,
+  checkPaidStatus,
+  updateSubscriptionStatus,
+  getSubscriptionPayment,
+  updateStatus,
   // ------ SUPER ADMIN EXPORT -------
 
 

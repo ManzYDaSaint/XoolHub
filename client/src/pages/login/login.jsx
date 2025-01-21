@@ -11,7 +11,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setLoginData } from '../../helpers/examination/examSlice.jsx';
 import { Shield, Mail, Lock } from 'lucide-react'
 import { InfinitySpin } from 'react-loader-spinner';
-
+import logo from './assets/logo.png'
 
 const Login = () => {
     const navigate = useNavigate();
@@ -89,6 +89,9 @@ const Login = () => {
             <div className='logContainer'>
                 <Toaster />
                 <div className="shieldContainer">
+                    <Link to={'/'}>
+                        <img src={logo} alt="logo" className='shieldLogo' />
+                    </Link>
                     <Shield size={110} className='shield' />
                 </div>
                 <div className="logSider">

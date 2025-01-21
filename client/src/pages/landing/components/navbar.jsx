@@ -1,70 +1,67 @@
-import React, {  useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import '../front.css';
 import { Link } from 'react-router-dom';
-import { ChevronDown } from 'lucide-react';
-import { GraduationCap, School, CircleDollarSign, MessagesSquare, BookOpenCheck, HandCoins } from 'lucide-react';
-
-const features = [
-  { title: 'Student Management', description: 'Manage student data.', logo: GraduationCap },
-  { title: 'Class & Subject Management', description: 'Organize classes, assign subjects.', logo: School },
-  { title: 'Payroll Management', description: 'Efficient payroll processing.', logo: HandCoins },
-];
-
-const rightFeat = [
-  { title: 'Fees Management', description: 'Automated fee collection and record-keeping.', logo: CircleDollarSign },
-  { title: 'Examination Management', description: 'Schedule exams and manage results effortlessly.', logo: BookOpenCheck },
-  { title: 'Enhanced Communication', description: 'Tools for seamless communication between teachers, admins, and parents.', logo: MessagesSquare },
-];
-
+import { useLocation } from 'react-router-dom';
+import api from '../../../services/apiServices';
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false);
+  const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  useEffect(() => {
+    const checkAuthentication = async () => {
+        try {
+          // Make a request to your authentication endpoint
+          const response = await api.Verify();
+          if (response.data.success === true) {
+            setIsLoggedIn(true);
+          }
+        } catch (error) {
+          console.error('Authentication error:', error);
+        }
+      };
+  
+      checkAuthentication();
+    }, []);
 
+  
   return (
     <body className='navbar-body'>
 
       <nav className="navbar">
         <ul className='navbar-listing'>
           <div className="navbar-left">
-            <h2 className="logo">XoolHub</h2>
-            <li className='featureChevron' onClick={() => setOpen(!open)}>
-              Features <ChevronDown size={18} className={open ? 'chevron active' : 'chevron'} />
-              <div className={open ? 'outerDropDwn active' : 'outerDropDwn'}>
-                <div className="dropDown">
-                  {features.map((ft, index) => (
-                    <div key={index} className="drop-card">
-                      <ft.logo size={35} className='drop-logo' />
-                      <div className="dropSection">
-                        <h3>{ft.title}</h3>
-                        <p>{ft.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                  {rightFeat.map((ft, index) => (
-                    <div key={index} className="drop-card-right">
-                      <ft.logo size={35} className='drop-logo' />
-                      <div className="dropSection">
-                        <h3>{ft.title}</h3>
-                        <p>{ft.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </li>
-            <li onClick={() => scrollToSection('pricing')}>Pricing</li>
-            <li onClick={() => scrollToSection('contact')}>Contact</li>
+            <Link to={'/'} className='all_links'>
+              <h2 className={location.pathname === '/' ? 'logo active' : 'logo'}>XoolHub</h2>
+            </Link>
           </div>
           <div className="navbar-right">
-            <Link to="/login" className="landBtn">Login</Link>
-            <Link to="/demo" className="demoBtn">Request a Demo</Link>
+            <Link to={'/about'} className='all_links'>
+              <li className={location.pathname === '/about' ? 'active' : ''}>About</li>
+            </Link>
+            <Link to={'/faq'} className='all_links'>
+              <li className={location.pathname === '/faq' ? 'active' : ''}>FAQ</li>
+            </Link>
+            <Link to={'/blog'} className='all_links'>
+              <li className={location.pathname === '/blog' ? 'active' : ''}>Blog</li>
+            </Link>
+            <Link to={'/contact'} className='all_links mr-5'>
+              <li className={location.pathname === '/contact' ? 'active' : ''}>Contact</li>
+            </Link>
+            {isLoggedIn ? (
+              <Link to={'/administrator'} className='all_links mr-5 dashbtn'>
+                <li className={location.pathname === '/administrator' ? 'active' : ''}>Dashboard</li>
+              </Link>
+              ) : (
+                <>
+              <Link to="/login" className='all_links ml-5'>
+                <li className={location.pathname === '/login' ? 'active' : ''}>Login</li>
+              </Link>
+              <Link to="/register" className='all_links mr-5'>
+                <li className={location.pathname === '/register' ? 'active' : ''}>Sign Up</li>
+              </Link>
+              </>
+            )}
           </div>
         </ul>
       </nav>

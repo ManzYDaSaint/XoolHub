@@ -12,6 +12,16 @@
 
 
 
+
+/* PRICING */
+.pricing-page {
+  height: 100vh;
+  overflow-y: scroll;
+}
+/* PRICING */
+
+
+
 /* HERO */
 
 .landing-page {
@@ -167,7 +177,7 @@
     margin: 0;
   }
   
-  .navbar-left {
+  .navbar-right {
     cursor: pointer;
     list-style: none;
     display: flex;
@@ -175,7 +185,7 @@
     gap: 3rem;
   }
   
-  .navbar-left li {
+  .navbar-right li {
     cursor: pointer;
     list-style: none;
     display: flex;
@@ -190,21 +200,6 @@
     font-size: 1.5rem;
     margin: 0;
     padding: 0;
-  }
-
-  .landBtn {
-    text-decoration: none;
-    color: var(--primary-color);
-    font-weight: 600;
-    box-shadow: 0px 0px 3px 0px var(--primary-color);
-    padding: 0.3rem 1.5rem;
-    border-radius: 0.5rem;
-    transition: 0.5s ease-in-out;
-  }
-
-  .landBtn:hover {
-    color: var(--text-color-light);
-    background-color: #007BFE;
   }
 
   .navbar-right {
@@ -422,7 +417,7 @@
     text-align: left;
 }
 
-.footer-links li a {
+.all_links {
     text-decoration: none;
     display: block;
     margin-bottom: 1rem;
@@ -431,8 +426,30 @@
     font-size: 1rem;
 }
 
-.footer-links li a:hover {
+.all_links:hover {
     color: var(--primary-color);
+}
+.all_links .active {
+  color: #007BFE;
+}
+.inner-card {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  flex: 1;
+  gap: 0.6rem;
+}
+.inner-container {
+  text-align: left;
+  padding: 0;
+  margin: 0;
+}
+.inner-container p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.inner-icon {
+  color: #007BFE;
 }
 
 .footer-content .container {
@@ -559,21 +576,21 @@
   }
   .feature-card p {
     color: var(--text-color-dark);
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin-top: 1rem;
     font-family: 'Poppins', sans-serif ;
   }
 
-  .features h5, .subscriptions h5, .schools h5, .testimonials h5 {
+  .features h5, .subscriptions h5, .schools h5, .testimonials h5, .plans h5 {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.5rem;
+    font-size: 2rem;
     color: var(--text-color-dark);
     margin-bottom: 1rem;
   }
 
-  .features p, .subscriptions p, .schools p, .testimonials p {
+  .features p, .subscriptions p, .schools p, .testimonials p, .plans p {
     font-family: 'Poppins', sans-serif;
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text-color-dark);
     margin-bottom: 3rem;;
   }
@@ -594,10 +611,10 @@
     padding: 3rem 0;
     text-align: center;
   }
-  
-  .subscriptions h2 {
+
+  .subscriptions h2, .plans h2 {
     font-family: 'Poppins', sans-serif;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     color: var(--text-color-dark);
     margin-bottom: 1rem;
     text-transform: uppercase;
@@ -645,21 +662,22 @@
 
   .onboard h5 {
     text-transform: uppercase;
-    font-size: 0.9rem;
+    font-size: 1rem;
     font-weight: 600;
   }
 
   .onboard p {
-    font-size: 0.9rem;
+    font-size: 1rem;
     padding: 0;
     margin: 0;
   }
 
   .onboard h6 {
     text-transform: uppercase;
-    font-size: 0.8rem;
+    font-size: 1rem;
     font-weight: 500;
-    padding-top: 0.2rem;
+    padding-top: 0.5rem;
+
   }
   
   .plan-card:hover {
@@ -668,10 +686,11 @@
   
   .plan-card h3 {
     color: var(--text-color-dark);
-    font-size: 0.9rem;
+    font-size: 1rem;
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     font-weight: 600;
+    font-family: 'Poppins', sans-serif;
   }
   
   .plan-card .price {
@@ -685,11 +704,15 @@
     text-transform: uppercase;
     font-size: 0.8rem;
     font-weight: 600;
+    margin-bottom: 1.5rem !important;
+  }
+  .feat {
+    margin-bottom: 1rem !important;
+    padding: 0;
   }
   
 
 /* SUBSCRIPTION */
-
 
 
 
@@ -790,3 +813,224 @@
 
 
 /* CONTACT FORM */
+
+
+
+
+
+/* Invoicing */
+
+.invoice-container {
+  margin: 5rem 0;
+  width: 100%;
+  height: 100vh !important;
+  overflow-y: scroll !important;
+}
+.invoice-content {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-bottom: 7rem;
+}
+.customer-content {
+  background-color: #fff;
+  padding: 0 3rem;
+  height: 100%;
+}
+.checkout-container {
+  background-color: #fff;
+  padding: 1rem;
+  height: 100%;
+}
+.customer-content h5 {
+  font-size: 1.3rem;
+  padding-top: 4rem;
+}
+.checkout-content {
+  padding: 1rem;
+}
+.checkout-content h5 {
+  font-size: 1rem;
+  margin: 0;
+}
+.checkout-card {
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #ccc;
+}
+.checkout-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  color: #6e6b6b;
+  margin: 0;
+}
+.checkout-card p {
+  padding: 0;
+  margin: 0;
+}
+.invoice-card-container {
+  padding: 1rem;
+  padding-top: 2rem;
+  border-top: 2px solid #ccc;
+  margin: 0 1rem;
+  margin-top: 1rem;
+  border-bottom: 2px solid #ccc;
+}
+.invoice-card-container h5{
+  font-size: 1rem;
+  padding: 0;
+  margin: 0;
+}
+.disco {
+  background-color: green;
+  color: #fff;
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.5rem;
+}
+.invoice-card-container h3 {
+  text-transform: uppercase;
+  font-family: 'Poppins', sans-serif;
+  padding: 0;
+  margin-top: 1rem;
+  color: #6e6b6b;
+  font-size: 1.2rem;
+}
+.separator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.separator input {
+  text-align: right;
+  border: none;
+  outline: none;
+}
+.separator p {
+ margin-bottom: 0.4rem;
+}
+.sep-total {
+  font-weight: bold;
+}
+
+.payment-method-container {
+  background-color: #fff;
+  padding: 1rem 2rem;
+  height: 100%
+}
+.payment-method-container h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  color: #6e6b6b;
+  font-weight: 600;
+}
+.bank-card h4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.1rem;
+  color: #6e6b6b;
+  font-weight: 500;
+}
+.bank-card li {
+  color: #6e6b6b;
+}
+.fee {
+  font-size: 1.3rem !important;
+  padding: 0;
+  margin: 0;
+}
+.checkout-form {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Invoicing */
+
+
+/* Count Down */
+
+.countdown-outer {
+  background: linear-gradient(135deg, #ff7eb3, #007BFE, #00C9A7);
+  background-size: 300% 300%;
+  animation: gradientAnimation 10s ease infinite;
+  color: #fff;
+  padding-top: 4rem;
+  margin-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+.countdown-outer h5 {
+  font-size: 2rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  padding: 1rem 0;
+}
+.countdown-outer p {
+  font-size: 1.1rem;
+}
+.countdown-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes gradientAnimation {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.countdown {
+  text-align: center;
+  display: flex;
+  gap: 20px;
+}
+
+.countdown-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+}
+
+.countdown-number {
+  font-size: 4rem;
+  font-weight: 600;
+  animation: pulse 1s infinite ease-in-out;
+  font-family: 'Dancing script', monospace;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.countdown-label {
+  font-size: 1.1rem;
+  margin-top: 8px;
+}
+
+.expired-message {
+  font-size: 3rem;
+  font-weight: bold;
+  animation: fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dashbtn {
+  background-color: #00C9A7;
+  padding: 0.4rem 0.8rem;
+  color: #fff;
+  border-radius: 0.3rem;
+}
+
+
+/* Count Down */

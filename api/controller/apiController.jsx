@@ -153,6 +153,16 @@ const {
     deleteSubscription,
     editPlan,
     updatePlan,
+    getSubs,
+    addSubscription,
+    addBilling,
+    checkSubscription,
+    checkSubscriptionStatus,
+    checkPaid,
+    updateSubscriptionStatus,
+    getSubscriptionPayments,
+    updateSubStatus,
+    updateBillingStatus,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -692,7 +702,7 @@ const verify = (req, res) => {
           res.json({ 
               success: true,
               message: 'Authenticated', 
-              school: decoded,
+            //   school: decoded,
             });
             return;
         }
@@ -5033,6 +5043,232 @@ const updatePlans = async(req, res) => {
 
 
 
+// ----------------------- SUBSCRIPTION CONTROLLER -----------------------
+
+const gotSubs = async (req, res) => {
+    try {
+        const { plan } = req.params; // Extract 'plan' from req.params
+
+        const data = await getSubs(plan); // Fetch data from the model
+        if (data.length === 0) {
+            return res.status(404).json({ message: 'No subscription plan found.' });
+        }
+
+        res.status(200).json(data); // Send the data as a JSON response
+    } catch (error) {
+        console.error('Error fetching subscriptions:', error);
+        res.status(500).json({ message: 'Internal server error.' });
+    }
+};
+
+const insertSubscription = async (req, res) => {
+    const { subscriptionName, grandTotal, billingCycle } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    const status = 'inactive';
+    const billing_status = 'pending';
+    const amount = Number(parseFloat(grandTotal).toFixed(0));
+
+    // Calculate expiry time (24 hours from now)
+    const expiryTime = new Date();
+    expiryTime.setHours(expiryTime.getHours() + 24);
+
+    const response = await getSubs(subscriptionName);
+    if(response) {
+        const planID = response[0].id;
+
+        // Check Subscription 
+        const checker = await checkSubscription(sid);
+        if(checker) {
+            res.json({
+                success: false,
+                message: 'You already have an active subscription'
+            })
+        }
+        else {
+
+            // Insert Subscription
+            const result = await addSubscription(sid, planID, status, billingCycle);
+            if(result) {
+                const subscriptionID = result[0].id;
+
+            //     // Insert Billing
+                const billing = await addBilling(subscriptionID, amount, billing_status, expiryTime);
+                if(billing) {
+                    return res.json({
+                        success: true,
+                        message: 'Your subscription is set to Pending waiting for confirmation.'
+                    });
+                }
+                else {
+                    return res.json({
+                        success: false,
+                        message: 'Failed to add subscription'
+                    });
+                }
+            }
+        }
+    }
+}
+
+const checkSubStatus = async (req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const status = await checkSubscriptionStatus(sid);
+        if(status) {
+            return res.json({
+                success: true,
+                status,
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'No records found'
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const checkPaidStatus = async (req, res) => {
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    const status = 'active'
+
+    try {
+        const checker = await checkPaid(sid, status);
+        if(checker) {
+            res.json({
+                success: true,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'No active subscription found'
+            });
+        }
+    } catch (error) {
+        return res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateSuspended = async (req, res) => {
+    const { status } = req.body;
+
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const update = await updateSubscriptionStatus(status, sid);
+        if(update) {
+            res.json({
+                success: true,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        return res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const gotSubscriptionPayments = async (req, res) => {
+    try {
+        const result = await getSubscriptionPayments();
+        if(result) {
+            res.json({
+                success: true,
+                result,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed to fetch payments',
+            })
+        }
+    } catch (error) {
+        return res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateStatuses = async (req, res) => {
+    const { status, bill } = req.body;
+    const { id } = req.params;
+
+    try {
+        // Validate input
+        if (!id || !status || !bill) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required parameters: id, status, or bill',
+            });
+        }
+
+        // Update subscription status
+        const resultOne = await updateSubStatus(id, bill);
+        if (!resultOne) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to update subscription status',
+            });
+        }
+
+        // Update billing status
+        const resultTwo = await updateBillingStatus(id, status);
+        if (!resultTwo) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to update billing status',
+            });
+        }
+
+        // Success response
+        return res.json({
+            success: true,
+            message: 'Payment was successful',
+        });
+
+    } catch (error) {
+        console.error('Error updating statuses:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message,
+        });
+    }
+};
+
+
+// ----------------------- SUBSCRIPTION CONTROLLER -----------------------
+
+
+
 
 module.exports = { 
     // ----- SCHOOL EXPORTS ------
@@ -5301,4 +5537,16 @@ module.exports = {
     editPlans,
     updatePlans,
     // ----- SUPER ADMIN EXPORTS ------
+
+
+
+    // ----- SUBSCRIPTION EXPORTS ------
+    gotSubs,
+    insertSubscription,
+    checkSubStatus,
+    checkPaidStatus,
+    updateSuspended,
+    gotSubscriptionPayments,
+    updateStatuses,
+    // ----- SUBSCRIPTION EXPORTS ------
 };

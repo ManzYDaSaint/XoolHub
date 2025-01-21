@@ -142,6 +142,13 @@ const {
     deletePlan,
     editPlans,
     updatePlans,
+    gotSubs,
+    insertSubscription,
+    checkSubStatus,
+    checkPaidStatus,
+    updateSuspended,
+    gotSubscriptionPayments,
+    updateStatuses,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -173,6 +180,21 @@ router.route('/edit-subscriptions/:id').get(editPlans);
 router.route('/update-subscriptions/:id').put(updatePlans);
 
 // ------- SUPER ADMIN ROUTES -----------
+
+
+
+
+// ------- SUBSCRIPTION ROUTES -----------
+
+router.route('/got-subscription/:plan').get(gotSubs);
+router.route('/add-billing').post(insertSubscription);
+router.route('/check-subscription-status').get(checkSubStatus);
+router.route('/check-paid-status').get(checkPaidStatus);
+router.route('/update-suspended-status').put(updateSuspended);
+router.route('/get-subscription-payments').get(gotSubscriptionPayments);
+router.route('/update-statuses/:id').put(updateStatuses);
+
+// ------- SUBSCRIPTION ROUTES -----------
 
 
 

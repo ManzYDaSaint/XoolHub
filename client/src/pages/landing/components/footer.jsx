@@ -1,5 +1,6 @@
 import React from 'react';
 import { Facebook, Instagram, Twitter } from 'lucide-react'
+import { Link } from 'react-router-dom';
 
 const Footer = () => {
   return (
@@ -19,11 +20,26 @@ const Footer = () => {
               <div className="footer-container">
                 <h4>Company</h4>
                 <ul className='footer-links'>
-                  <li><a href="#about">About Us</a></li>
-                  <li><a href="#team">Team</a></li>
-                  <li><a href="#careers">Careers</a></li>
-                  <li><a href="#contact">Contact Us</a></li>
-                  <li><a href="#referal">Referral Program</a></li>
+                <Link to={'/about'} className='all_links'>
+
+                  <li>About Us</li>
+                </Link>
+                <Link to={'/team'} className='all_links'>
+                  <li>Team</li>
+                </Link>
+                <Link to={'/careers'} className='all_links'>
+                  <li>Careers</li>
+                </Link>
+                  
+                  <Link to={'/terms&services'} className='all_links'>
+                  <li>Terms of Service</li>
+                  </Link>
+                  <Link to={'/privacy'} className='all_links'>
+                  <li>Privacy Policy</li>
+                  </Link>
+                  <Link to={'/security'} className='all_links'>
+                  <li>Security</li>
+                  </Link>
                 </ul>
               </div>
             </div>
@@ -31,16 +47,36 @@ const Footer = () => {
               <div className="footer-container">
                 <h4>Features</h4>
                 <ul className='footer-links'>
-                  <li><a href="#features">Schedule Management</a></li>
-                  <li><a href="#features">Report Cards</a></li>
-                  <li><a href="#features">Attendance Tracking</a></li>
-                  <li><a href="#features">Classroom Management</a></li>
-                  <li><a href="#features">Transcripts</a></li>
-                  <li><a href="#features">Parent Portal</a></li>
-                  <li><a href="#features">Student Information</a></li>
-                  <li><a href="#features">Teacher Management</a></li>
-                  <li><a href="#features">Exam Management</a></li>
-                  <li><a href="#features">Fees Management</a></li>
+                  <Link to={'/schedule'} className='all_links'>
+                  <li>Schedule Management</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Transcripts</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Student Information</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Teacher Management</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Report Cards</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Attendance Tracking</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Classroom Management</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Parent Portal</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Exam Management</li>
+                  </Link>
+                  <Link to={''} className='all_links'>
+                  <li>Fees Management</li>
+                  </Link>
                 </ul>
               </div>
             </div>
@@ -48,11 +84,18 @@ const Footer = () => {
               <div className="footer-container">
                 <h4>Support</h4>
                 <ul className='footer-links'>
-                  <li><a href="#support">FAQ</a></li>
-                  <li><a href="#support">Contact Us</a></li>
-                  <li><a href="#support">Terms of Service</a></li>
-                  <li><a href="#support">Privacy Policy</a></li>
-                  <li><a href="#support">Security</a></li>
+                  <Link to={'/faq'} className='all_links'>
+                    <li>FAQ</li>
+                  </Link>
+                  <Link to={'/contact'} className='all_links'>
+                  <li>Contact Us</li>
+                  </Link>
+                  <Link to={'/referal'} className='all_links'>
+                  <li>Referral Program</li>
+                  </Link>
+                  <Link to={'/advertisement'} className='all_links'>
+                  <li>Advertisements</li>
+                  </Link>
                 </ul>
               </div>
             </div>
@@ -60,11 +103,15 @@ const Footer = () => {
               <div className="footer-container">
                 <h4>Quick Links</h4>
                 <ul className='footer-links'>
-                  <li><a href="#login">Login</a></li>
-                  <li><a href="#signup">Sign Up</a></li>
-                  <li><a href="#pricing">Pricing</a></li>
-                  <li><a href="#blog">Blog</a></li>
-                  <li><a href="#faq">FAQ</a></li>
+                  <Link to={'/login'} className='all_links'>
+                    <li>Login</li>
+                  </Link>
+                  <Link to={'/register'} className='all_links'>
+                    <li>Sign Up</li>
+                  </Link>
+                  <Link to={'/blog'} className='all_links'>
+                  <li>Blog</li>
+                  </Link>
                 </ul>
               </div>
             </div>

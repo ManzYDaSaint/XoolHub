@@ -1763,7 +1763,7 @@ const insertFeatures = async (name, price, features) => {
 
 
 const getSubscriptions = async() => {
-  const query = 'SELECT * FROM subscription_plans ORDER BY name ASC';
+  const query = 'SELECT * FROM subscription_plans ORDER BY price ASC';
   const res = await kneX.query(query);
   return res.rows;
 }
@@ -1792,6 +1792,96 @@ const updatePlan = async (id, name, price, features, update) => {
 };
 
 // --------------------------------------- SUPER ADMIN CRUD ------------------------------------------------
+
+
+
+
+// --------------------------------------- SUBSCRIPTION CRUD ------------------------------------------------
+
+const getSubs = async(plan) => {
+  const query = 'SELECT * FROM subscription_plans WHERE name = $1';
+  const values = [plan];
+  const res = await kneX.query(query, values);
+  return res.rows;
+} 
+
+const addSubscription = async (sid, planid, strata, period) => {
+  const query = `INSERT INTO subscriptions (sid, planid, status, period)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id`;
+  const values = [sid, planid, strata, period];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const addBilling = async (subscriptionid, amount, strata, expiry) => {
+  const query = `INSERT INTO billing (subscriptionid, amount, status, expiry)
+            VALUES ($1, $2, $3, $4)
+            RETURNING id`;
+  const values = [subscriptionid, amount, strata, expiry];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const checkSubscription = async (sid) => {
+  const query =`SELECT * FROM subscriptions WHERE sid = $1 AND status = 'active'`;
+  const values = [sid];
+  const res = await kneX.query(query, values);
+  return res.rows[0];
+}
+
+const checkSubscriptionStatus = async(sid) => {
+  const query =`SELECT b.status, b.expiry FROM billing b
+    INNER JOIN subscriptions s ON s.id = b.subscriptionid
+    WHERE s.sid = $1 AND b.status = 'pending'`;
+  const values = [sid];
+  const res = await kneX.query(query, values);
+  return res.rows[0];
+}
+
+const updateSubscriptionStatus = async (status, sid) => {
+  const query = `UPDATE billing b
+SET status = $1
+FROM subscriptions s
+WHERE s.id = b.subscriptionid
+  AND s.sid = $2`;
+  const values = [status, sid];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const checkPaid = async (sid, status) => {
+  const query = `SELECT status FROM subscriptions WHERE sid = $1 AND status = $2`;
+  const values = [sid, status];
+  const res = await kneX.query(query, values);
+  return res.rows[0];
+}
+
+const getSubscriptionPayments = async() => {
+  const query = `SELECT sub.id, schools.name, sp.name AS plan, sub.period, bill.amount, TO_CHAR(sub.created_at::timestamp, 'DD Mon YYYY') AS date, sub.status, bill.status AS bill FROM subscriptions sub
+    INNER JOIN schools ON schools.sid = sub.sid
+    INNER JOIN billing bill ON bill.subscriptionid = sub.id
+    INNER JOIN subscription_plans sp ON sp.id = sub.planid
+    ORDER BY date DESC`;
+  const res = await kneX.query(query);
+  return res.rows;
+}
+
+const updateSubStatus = async (id, status) => {
+  const query = `UPDATE subscriptions SET status = $1 WHERE id = $2`;
+  const values = [status, id];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const updateBillingStatus = async (id, status) => {
+  const query = 'UPDATE billing SET status = $1 WHERE subscriptionid = $2';
+  const values = [status, id];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+// --------------------------------------- SUBSCRIPTION CRUD ------------------------------------------------
 
 module.exports = {
   // ----- SCHOOLS SECTION -----
@@ -2019,4 +2109,19 @@ module.exports = {
   editPlan, 
   updatePlan,
   // ----- SUPER ADMIN SECTION -----
+
+
+
+  // ----- SUBSCRIPTION SECTION -----
+  getSubs,
+  addSubscription,
+  addBilling,
+  checkSubscription,
+  checkSubscriptionStatus,
+  updateSubscriptionStatus,
+  checkPaid,
+  getSubscriptionPayments,
+  updateSubStatus,
+  updateBillingStatus,
+  // ----- SUBSCRIPTION SECTION -----
 };
