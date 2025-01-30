@@ -11,7 +11,7 @@ const StudentProfile = () => {
     const navigate = useNavigate();
 
     const handleRedirect = () => {
-        navigate('/addstudents')
+        navigate('/add-student')
     }
 
     return (

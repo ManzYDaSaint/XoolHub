@@ -13,7 +13,10 @@ const Students = () => {
   const navigate = useNavigate();
 
   const handleRedirect = () => {
-    navigate("/addstudents");
+    navigate("/add-student");
+  };
+  const handlePromote = () => {
+    navigate("/student-promotion");
   };
 
   return (
@@ -32,12 +35,19 @@ const Students = () => {
                       <div className="headerTitle">
                         <h5>Student Management</h5>
                       </div>
-                      <FormButton
-                        label={"Create"}
-                        id={"tyepButton"}
-                        icon={"plus"}
-                        onClick={handleRedirect}
-                      />
+                      <div className="flex gap-4 align-center">
+                        <FormButton
+                          label={"Promotions"}
+                          id={"nextButton"}
+                          onClick={handlePromote}
+                        />
+                        <FormButton
+                          label={"Create"}
+                          id={"tyepButton"}
+                          icon={"plus"}
+                          onClick={handleRedirect}
+                        />
+                      </div>
                     </div>
                     <div className="student_dashboard">
                       <StudentDashboard />

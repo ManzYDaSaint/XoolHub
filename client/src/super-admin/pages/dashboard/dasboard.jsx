@@ -17,6 +17,10 @@ import api from "../../../services/apiServices";
 
 const SuperDashboard = () => {
   const [ count, setCount ] = useState(0);
+  const [ publico, setPublic ] = useState(0);
+  const [ privato, setPrivate ] = useState(0);
+  const [ subscribe, setSubscribe ] = useState(0);
+  const [ sum, setSum ] = useState(0);
 
   const fetchCount = async () => {
     try {
@@ -32,6 +36,63 @@ const SuperDashboard = () => {
     fetchCount();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+
+  const fetchPrivate = async () => {
+    try {
+      const res = await api.countPrivateXuls();
+      const data = res.data.count;
+      setPrivate(data.count);
+    } catch (error) {
+      console.error("Error fetching student count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrivate();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fetchPublic = async () => {
+    try {
+      const res = await api.countPublicXuls();
+      const data = res.data.count;
+      setPublic(data.count);
+    } catch (error) {
+      console.error("Error fetching student count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPublic();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fetchSubscribe = async () => {
+    try {
+      const res = await api.countSubscribed();
+      const data = res.data.count;
+      setSubscribe(data.count);
+    } catch (error) {
+      console.error("Error fetching student count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSubscribe();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const fetchSum = async () => {
+    try {
+      const res = await api.sumAmount();
+      const data = res.data.sum;
+      setSum(data.sum);
+    } catch (error) {
+      console.error("Error fetching student count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSum();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <SuperAuth0>
       <div className="dashboard__container">
@@ -44,15 +105,15 @@ const SuperDashboard = () => {
                 <Card icon={School} title={count} description="Schools" />
                 <Card
                   icon={LayoutDashboard}
-                  title={"15"}
+                  title={publico}
                   description="Public"
                 />
-                <Card icon={LayoutGrid} title={"8"} description="Private" />
-                <Card icon={Rss} title={"10"} description="Subscribed" />
+                <Card icon={LayoutGrid} title={privato} description="Private" />
+                <Card icon={Rss} title={subscribe} description="Subscribed" />
                 <Card
                   icon={CircleDollarSign}
                   small={"MK"}
-                  title={"391020"}
+                  title={sum}
                   description="Total Payments"
                 />
               </div>

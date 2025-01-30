@@ -6,11 +6,13 @@ import ReportData from "../reports/reportData";
 import Auth0 from "../../hooks/auth";
 import ReportDashboard from "../reports/dashboard/report-dashboard";
 import PAID from "../../hooks/subscription";
+import { Toaster } from "react-hot-toast";
 
 const Report = () => {
   return (
     <Auth0>
       <PAID>
+        <Toaster />
         <div className="dashboard__container">
           <div className="dashboard__content">
             <Sidebar />

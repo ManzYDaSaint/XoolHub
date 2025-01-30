@@ -51,6 +51,11 @@ const Login = () => {
             }
             else if(res.data.osuccess === true) {
                 navigate('/authenticate', { state: { email: res.data.email } });
+
+                const result = await api.sendOTP();
+                if(result.data.success === true) {
+                    console.log(result.data.info, result.data.preview);
+                }
             }
             else if (res.data.message) {
                 toast.error(res.data.message);

@@ -4,7 +4,13 @@ axios.defaults.withCredentials = true;
 const API = 'http://localhost:5000/api';
 
 const countXuls = () => axios.get(API + '/count-schools');
+const countPrivateXuls = () => axios.get(API + '/count-private-schools');
+const countPublicXuls = () => axios.get(API + '/count-public-schools');
+const countSubscribed = () => axios.get(API + '/count-subscribed');
+const sumAmount = () => axios.get(API + '/sum-amount');
+const paymentLineChart = () => axios.get(API + '/payment-linechart');
 const getXuls = () => axios.get(API + '/get-schools');
+const sendOTP = () => axios.post(API + '/send-otp');
 // const deleteSchool = (id) => axios.delete(`${API_URL}${id}`);
 
 // --------- SUPER ADMIN AXIOS -----------
@@ -20,6 +26,7 @@ const checkPaidStatus = () => axios.get(API + '/check-paid-status');
 const updateSubscriptionStatus = (data) => axios.put(API + '/update-suspended-status', data);
 const getSubscriptionPayment = () => axios.get(API + '/get-subscription-payments');
 const updateStatus = (id, data) => axios.put(API + '/update-statuses/' + id, data);
+const updateSchoolStatus = (id, data) => axios.put(API + '/update-school-status/' + id, data);
 // --------- SUPER ADMIN AXIOS -----------
 
 
@@ -305,6 +312,7 @@ const getSchool = () => axios.get(API + '/admindet');
 
 // --------- REPORT AXIOS -----------
 const getReport = (data) => axios.post(API + '/getreport', data);
+const insertPromotion = (data) => axios.post(API + '/insert-promotion', data);
 const getStudentReport = (data) => axios.post(API + '/getstudentreport', data);
 const getCTReport = (data) => axios.post(API + '/getctreport', data);
 const countResult = (data) => axios.post(API + '/countreport', data);
@@ -318,12 +326,28 @@ const countReports = () => axios.get(API + '/count-reports');
 
 
 
+// --------- EVENTS AXIOS -----------
+const addEvent = (data) => axios.post(API + '/insert-event', data);
+const getEvent = () => axios.get(API + '/get-event');
+const editEvent = (id) => axios.get(API + '/edit-event/' + id);
+const updateEvent = (id, data) => axios.put(API + '/update-event/' + id, data);
+const deleteEvent = (id) => axios.delete(API + '/delete-event/' + id);
+// --------- EVENTS AXIOS -----------
+
+
+
 
 // eslint-disable-next-line
 export default {
   // ------ SCHOOL EXPORT -------
   countXuls,
+  countPrivateXuls,
+  countPublicXuls,
+  countSubscribed,
+  sumAmount,
+  paymentLineChart,
   getXuls,
+  sendOTP,
   // ------ SCHOOL EXPORT -------
 
 
@@ -340,6 +364,7 @@ export default {
   updateSubscriptionStatus,
   getSubscriptionPayment,
   updateStatus,
+  updateSchoolStatus,
   // ------ SUPER ADMIN EXPORT -------
 
 
@@ -577,6 +602,7 @@ export default {
 
        // ------ REPORT EXPORT -------
        getReport,
+       insertPromotion,
        getStudentReport,
        getCTReport,
        countResult,
@@ -587,4 +613,15 @@ export default {
        deleteReport,
        countReports,
        // ------ REPORT EXPORT -------
+
+
+
+
+       // ------ EVENTS EXPORT -------
+       addEvent,
+       getEvent,
+       editEvent,
+       updateEvent,
+       deleteEvent,
+       // ------ EVENTS EXPORT -------
 };

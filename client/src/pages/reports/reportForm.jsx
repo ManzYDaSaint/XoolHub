@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import api from "../../services/apiServices.jsx";
 import FormButton from "../../components/input/formButton.jsx";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { setReportFormData } from "../../helpers/examination/examSlice.jsx";
-import YearSelector from "./components/yearSelector.jsx";
 import TermSelector from "./components/termSelector.jsx";
 import ClassSelector from "./components/classSelector.jsx";
 import ExamSelector from "./components/typeSelector.jsx";
@@ -26,7 +25,6 @@ const ReportForm = () => {
   const handleSubmit = async (data) => {
     try {
       const res = await api.getReport({ data });
-
       if (res.data.success === false) {
         toast.error(res.data.message);
       } else {
@@ -42,6 +40,22 @@ const ReportForm = () => {
     }
   };
 
+  const handlePromote = async(data) => {
+    try {
+      const res = await api.insertPromotion({ data });
+      if (res.data.success === false) {
+        toast.error(res.data.message);
+      }
+      else {
+        toast.success(res.data.message);
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     dispatch(setReportFormData({ ...reportFormData, [name]: value }));
@@ -51,6 +65,7 @@ const ReportForm = () => {
     e.preventDefault();
     setIsLoading(true);
     handleSubmit(reportFormData);
+    handlePromote(reportFormData);
   };
 
   const handleAcademics = (id) => {
@@ -65,15 +80,8 @@ const ReportForm = () => {
           setOpen={setOpen}
           reportFormData={reportFormData}
         />
-        <Toaster position="top-center" />
         <form onSubmit={onSubmit} autoComplete="off">
           <div className="formGroup">
-            <YearSelector
-              onChange={handleChange}
-              label="Academic Year"
-              name="yearid"
-              value={reportFormData.yearid}
-            />
             <TermSelector
               onChange={handleChange}
               label="Term"

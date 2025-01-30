@@ -43,6 +43,8 @@ import Contact from './pages/contacts/contact.jsx';
 import FAQ from './pages/faq/faq.jsx';
 import About from './pages/about/about.jsx';
 import Invoicing from './pages/pricing/billing.jsx';
+import Events from './pages/administrator/events.jsx';
+import PromoteStudents from './pages/students/promotion/promotion.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -155,7 +157,7 @@ function App() {
         )
     },
     {
-      path: '/addstudents',
+      path: '/add-student',
       element: (
           <InactivityHandler>
             <AddStudents />
@@ -223,6 +225,22 @@ function App() {
       element: (
           <InactivityHandler>
             <Invoicing />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/events',
+      element: (
+          <InactivityHandler>
+            <Events />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/student-promotion',
+      element: (
+          <InactivityHandler>
+            <PromoteStudents />
           </InactivityHandler>
         )
     },

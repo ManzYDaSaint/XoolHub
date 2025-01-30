@@ -52,8 +52,6 @@ const StudentReport = () => {
     fetchSchool(); // eslint-disable-next-line
   }, []);
 
-
-
   // Fetch MSCE
 
   const fetchMSCE = async () => {
@@ -72,8 +70,6 @@ const StudentReport = () => {
   }, []);
 
   // Fetch MSCE
-
-
 
   // Fetch JCE
 
@@ -188,6 +184,7 @@ const StudentReport = () => {
   const getTeacher = async (id) => {
     try {
       const res = await api.getTBySubject({ id });
+      console.log(res.data.info);
       const respo = res.data.info;
       setTeacher(respo);
     } catch (error) {
@@ -198,7 +195,6 @@ const StudentReport = () => {
   useEffect(() => {
     getTeacher(subjectid); // eslint-disable-next-line
   }, [subjectid]);
-
 
   const fetchRemarks = async (id) => {
     try {
@@ -234,7 +230,6 @@ const StudentReport = () => {
     }
   }, [subjectInfo]);
 
-
   useEffect(() => {
     if (students.length > 0) {
       const classid = students.map((item) => item.classid);
@@ -244,13 +239,12 @@ const StudentReport = () => {
     }
   }, [students]);
 
-
   useEffect(() => {
     if (remarks.length > 0) {
       const matchingRemark = remarks.find(
         (item) => agg >= item.floor && agg <= item.roof
       );
-  
+
       if (matchingRemark) {
         setRem(matchingRemark.remark); // Assuming `remark` is a single value, not an array.
       }
@@ -298,8 +292,20 @@ const StudentReport = () => {
                                 <h4 class="detail">
                                   Class Teacher(s): &nbsp;
                                   {ct.map((it, index) => (
-                                    <span key={index} class="text-dark">
-                                      {it.name} | &nbsp;
+                                    <span
+                                      key={it.id || index}
+                                      className="text-dark"
+                                    >
+                                      {Array.isArray(it.name)
+                                        ? it.name.join(", ")
+                                        : it.name}
+                                      {index < ct.length - 1 &&
+                                      it.name &&
+                                      (Array.isArray(it.name) ||
+                                        ct[index + 1].name)
+                                        ? ", "
+                                        : ""}{" "}
+                                      {/* Comma logic */}
                                     </span>
                                   ))}
                                 </h4>
@@ -386,9 +392,7 @@ const StudentReport = () => {
                           <tr>
                             <td colspan="6">Download</td>
                             <td>
-                              <button
-                                onClick={handleDownload}
-                              >
+                              <button onClick={handleDownload}>
                                 Download PDF
                               </button>
                               <PrintComp

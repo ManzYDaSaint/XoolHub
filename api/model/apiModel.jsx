@@ -11,11 +11,67 @@ const countSchools = async () => {
   return res.rows[0];
 }
 
+const countPrivateSchools = async () => {
+  const query = "SELECT COUNT(*) as count FROM schools WHERE type = 'Private'";
+  const res = await kneX.query(query);
+  return res.rows[0];
+}
+
+const countPublicSchools = async () => {
+  const query = "SELECT COUNT(*) as count FROM schools WHERE type = 'Public'";
+  const res = await kneX.query(query);
+  return res.rows[0];
+}
+
+const countSubscribedSchools = async () => {
+  const query = "SELECT COUNT(*) as count FROM subscriptions WHERE status = 'active'";
+  const res = await kneX.query(query);
+  return res.rows[0];
+}
+
+const sumAmount = async () => {
+  const query = "SELECT SUM(amount) as sum FROM billing WHERE status = 'successful'";
+  const res = await kneX.query(query);
+  return res.rows[0];
+}
+
+const paymentChart = async () => {
+  const query = `SELECT
+      TO_CHAR(payment_date, 'Month') AS month,
+      EXTRACT(MONTH FROM payment_date) AS month_number,
+      SUM(amount) AS total_amount
+      FROM
+          billing
+      WHERE
+          status = 'successful'
+          AND EXTRACT(YEAR FROM payment_date) = 2025
+      GROUP BY
+          month, month_number
+      ORDER BY
+          month_number`;
+    const res = await kneX.query(query);
+    return res.rows;
+}
+
 const getSchools = async () => {
   const query = "SELECT * FROM schools ORDER BY name ASC";
   const res = await kneX.query(query);
   return res.rows;
 }
+
+const getOTPCode = async (email) => {
+  const query = 'SELECT otp_code, otp_expires_at FROM schools WHERE email = $1';
+  const value = [email];
+  const res = await kneX.query(query, value);
+  return res.rows; 
+}
+
+const updateOTPStatus = async (status) => {
+  const query = 'UPDATE schools SET status = $1';
+  const value = [status];
+  const res = await kneX.query(query, value)
+  return res.rows;
+}  
 
 // --------------------------------------- SCHOOL ------------------------------------------------
 
@@ -826,7 +882,8 @@ const deleteClassTeacher = async (id) => {
 const checkStudent = async (sid, students) => {
   const query = `SELECT EXISTS (
         SELECT 1 FROM students
-        WHERE sid = $1 AND name = ANY ($2::text[]))`;
+	      INNER JOIN history ON history.studentid = students.id
+        WHERE history.sid = $1 AND name = ANY ($2::text[]))`;
   const value = [sid, students];
   const res = await kneX.query(query, value);
   if (res.rows && res.rows[0]) {
@@ -838,13 +895,13 @@ const checkStudent = async (sid, students) => {
 };
 
 // Add new object
-const insertStudent = async (sid, studentNames) => {
+const insertStudent = async (studentNames) => {
   const insertedStudents = [];
-  const query = "INSERT INTO students(sid, name) VALUES ($1, $2) RETURNING id";
+  const query = "INSERT INTO students(name) VALUES ($1) RETURNING id";
 
   // Insert each student one by one
   for (const name of studentNames) {
-    const result = await kneX.query(query, [sid, name]);
+    const result = await kneX.query(query, [name]);
     insertedStudents.push(result.rows[0].id);
   }
 
@@ -870,7 +927,7 @@ const getStudent = async (sid) => {
     INNER JOIN students AS s ON s.id = history.studentid
     INNER JOIN acyear ON acyear.yearid=history.yearid
     INNER JOIN class ON class.classid=history.classid
-    WHERE s.sid = $1 AND status != 'Graduated'`;
+    WHERE history.sid = $1 AND status = 'Active'`;
   const value = [sid];
   const res = await kneX.query(query, value);
   return res.rows;
@@ -915,7 +972,7 @@ const updateStudent = async (
 };
 
 const countStudents = async (sid) => {
-  const query = "SELECT COUNT(*) as Count FROM history WHERE sid = $1 AND status != 'Graduated'";
+  const query = "SELECT COUNT(*) as Count FROM history WHERE sid = $1 AND status = 'Active'";
   const value = [sid];
   const res = await kneX.query(query, value);
   return res.rows[0];
@@ -926,7 +983,7 @@ const countMale = async (sid) => {
   const query = `SELECT COUNT(*) as Count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
-    WHERE history.sid = $1 AND status != 'Graduated' AND s.gender = 'Male'`;
+    WHERE history.sid = $1 AND status = 'Active' AND s.gender = 'Male'`;
   const value = [sid];
   const res = await kneX.query(query, value);
   return res.rows[0];
@@ -936,7 +993,7 @@ const countFemale = async (sid) => {
   const query = `SELECT COUNT(*) as Count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
-    WHERE history.sid = $1 AND status != 'Graduated' AND s.gender = 'Female'`;
+    WHERE history.sid = $1 AND status = 'Active' AND s.gender = 'Female'`;
   const value = [sid];
   const res = await kneX.query(query, value);
   return res.rows[0];
@@ -952,7 +1009,7 @@ FROM
     history
 INNER JOIN students s ON s.id = history.studentid
 INNER JOIN class c ON c.classid = history.classid
-WHERE s.sid = $1 and status != 'Graduated'
+WHERE history.sid = $1 AND status = 'Active'
 GROUP BY 
     c.name, s.gender
 ORDER BY 
@@ -969,7 +1026,7 @@ const genderPercentage = async (sid) => {
 FROM 
     history
 INNER JOIN students s ON s.id = history.studentid
-WHERE s.sid = $1 AND status != 'Graduated'
+WHERE history.sid = $1 AND status = 'Active'
 GROUP BY 
     s.gender
 ORDER BY 
@@ -1238,7 +1295,7 @@ ClassTotals AS (
         class c
     LEFT JOIN 
         history s ON c.classid = s.classid
-	WHERE c.sid = $1
+	WHERE s.sid = $1
     GROUP BY 
         c.classid
 )
@@ -1266,24 +1323,21 @@ ORDER BY
 
 // --------------------------------------- ENTRY CRUD ------------------------------------------------
 
-const getYearByTeacherID = async (id) => {
-  const query = "SELECT * FROM acyear WHERE sid = $1";
-  const value = [id];
-  const res = await kneX.query(query, value);
+const getYearByTeacherID = async () => {
+  const query = "SELECT * FROM acyear";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
-const getTermByTeacherID = async (sid) => {
-  const query = "SELECT * FROM term WHERE sid = $1";
-  const value = [sid];
-  const res = await kneX.query(query, value);
+const getTermByTeacherID = async () => {
+  const query = "SELECT * FROM term";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
-const getExamByTeacherID = async (id) => {
-  const query = "SELECT * FROM exam WHERE sid = $1";
-  const value = [id];
-  const res = await kneX.query(query, value);
+const getExamByTeacherID = async () => {
+  const query = "SELECT * FROM exam";
+  const res = await kneX.query(query);
   return res.rows;
 };
 
@@ -1306,13 +1360,16 @@ const getSubjectByTeacherID = async (sid, id, classid) => {
 };
 
 const getStudentForEntry = async (sid, classid) => {
-  const query = `SELECT id, name FROM students WHERE sid = $1 AND classid = $2 ORDER BY name ASC`;
+  const query = `SELECT students.id, name FROM students 
+    INNER JOIN history ON history.studentid = students.id
+    WHERE history.sid = $1 AND classid = $2 AND status = 'Active'
+    ORDER BY name ASC`;
   const values = [sid, classid];
   const res = await kneX.query(query, values);
   return res.rows;
 };
 
-const checkResult = async (sid, data) => {
+const checkResult = async (sid, termid, data) => {
   const query = `SELECT EXISTS (
         SELECT 1 FROM results
         WHERE classid = $1 AND sid = $2 AND typeid = $3 AND studentid = $4 AND subjectid = $5 AND termid = $6)`;
@@ -1322,7 +1379,7 @@ const checkResult = async (sid, data) => {
     data.typeid,
     data.id,
     data.selectedSubject,
-    data.termid,
+    termid,
   ];
   try {
     const res = await kneX.query(query, values);
@@ -1332,13 +1389,13 @@ const checkResult = async (sid, data) => {
   }
 };
 
-const insertResult = async (sid, grade, remarks, data) => {
+const insertResult = async (sid, termid, grade, remarks, data) => {
   const query = `INSERT INTO results(sid, studentid, termid, typeid, classid, subjectid, score, remarks, grade) 
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`;
   const values = [
     sid,
     data.id,
-    data.termid,
+    termid,
     data.typeid,
     data.selectedClass,
     data.selectedSubject,
@@ -1350,16 +1407,16 @@ const insertResult = async (sid, grade, remarks, data) => {
   return res.rows.length > 0;
 };
 
-const getClassById = async (sid, data) => {
-  const query = "SELECT denom FROM class WHERE classid = $1 AND sid = $2";
-  const value = [data, sid];
+const getClassById = async (data) => {
+  const query = "SELECT denom FROM class WHERE classid = $1";
+  const value = [data];
   const res = await kneX.query(query, value);
   return res.rows[0];
 };
 
-const getGradeByDenom = async (sid, denom) => {
-  const query = "SELECT * FROM grading WHERE sid = $1 AND denom = $2";
-  const value = [sid, denom];
+const getGradeByDenom = async (denom) => {
+  const query = "SELECT * FROM grading WHERE denom = $1";
+  const value = [denom];
   const res = await kneX.query(query, value);
   return res.rows;
 };
@@ -1499,7 +1556,7 @@ const countStudentByAssign = async (sid, teacherid, classid) => {
         FROM students
         INNER JOIN history ON history.studentid = students.id
 		    INNER JOIN assignteacher ON assignteacher.classid = history.classid
-        WHERE assignteacher.classid = $1 AND assignteacher.teacherid = $2 AND students.sid = $3`;
+        WHERE assignteacher.classid = $1 AND assignteacher.teacherid = $2 AND history.sid = $3 AND status = 'Active'`;
   const value = [classid, teacherid, sid];
   const res = await kneX.query(query, value);
   return res.rows;
@@ -1510,7 +1567,44 @@ const countStudentByAssign = async (sid, teacherid, classid) => {
 // --------------------------------------- REPORT CRUD ------------------------------------------------
 
 // JCE
-const getReportByStudent = async (sid, yearid, termid, typeid, classid) => {
+const countSubjects = async(termid, typeid, classid, studentid, sid) => {
+  const query = `SELECT COUNT(subjectid) AS count FROM results 
+  WHERE termid = $1 AND typeid = $2 AND classid = $3 AND studentid = $4 AND sid = $5`;
+  const values = [termid, typeid, classid, studentid, sid];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const addPromote = async(sid, termid, typeid, classid, studentid, agg, remarks, rank) => {
+  const query = `INSERT INTO promotion(sid, termid, typeid, classid, studentid, agg, remarks, rank)
+                  VALUES($1, $2, $3, $4, $5, $6, $7, $8)`;
+  const values = [sid, termid, typeid, classid, studentid, agg, remarks, rank];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const checkPromote = async(sid, termid, typeid, classid, studentid) => {
+  const query = `SELECT EXISTS (
+        SELECT 1 FROM students WHERE sid = $1 AND termid = $2 AND typeid = $3 AND classid = $4 AND studentid = ANY ($5::text[]))`;
+  const values = [sid, termid, typeid, classid, studentid];
+  const res = await kneX.query(query, values);
+  if (res.rows && res.rows[0]) {
+    const exists = res.rows[0].exists;
+    return [exists, res.rows.map((row) => row.id)];
+  } else {
+    throw new Error("No result returned from query.");
+  }
+}
+
+const updatePromote = async(sid, termid, typeid, classid, studentid, agg, remarks, rank) => {
+  const query = `UPDATE promotion SET agg = $1, remarks = $2, rank = $3
+                WHERE sid = $4 AND termid = $5 AND typeid = $6 AND classid = $7 AND studentid = $8`;
+  const values = [agg, remarks, rank, sid, termid, typeid, classid, studentid];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const getReportByStudent = async (sid, termid, typeid, classid) => {
   const query = `WITH student_scores AS (
     SELECT 
         studentid,
@@ -1519,11 +1613,10 @@ const getReportByStudent = async (sid, yearid, termid, typeid, classid) => {
         CAST(score AS BIGINT) AS score,
         ROW_NUMBER() OVER (PARTITION BY studentid, classid ORDER BY CAST(score AS BIGINT) DESC) AS subject_rank
     FROM results
-    WHERE results.yearid = $1
-        AND results.termid = $2
-        AND results.typeid = $3
-        AND results.classid = $4 
-        AND results.sid = $5
+    WHERE results.termid = $1
+        AND results.typeid = $2
+        AND results.classid = $3 
+        AND results.sid = $4
 ),
 top_6_subjects AS (
     SELECT 
@@ -1557,16 +1650,15 @@ FROM ranked_students rs
 JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
 JOIN students st ON st.id = r.studentid
 LEFT JOIN subject ON subject.id = r.subjectid
-ORDER BY r.classid, rs.rank, st.name;
+ORDER BY r.classid, rs.rank, st.name
 `;
-  const value = [yearid, termid, typeid, classid, sid];
+  const value = [termid, typeid, classid, sid];
   const res = await kneX.query(query, value);
   return res.rows;
 };
 
 const getStudentCard = async (
   sid,
-  yearid,
   termid,
   typeid,
   classid,
@@ -1578,12 +1670,11 @@ const getStudentCard = async (
         CAST(score AS BIGINT) AS score,
         ROW_NUMBER() OVER (PARTITION BY studentid ORDER BY CAST(score AS BIGINT) DESC) AS subject_rank
     FROM results
-    WHERE results.yearid = $1
-        AND results.termid = $2
-        AND results.typeid = $3
-        AND results.classid = $4
-        AND results.sid = $5
-		AND results.studentid = $6
+    WHERE results.termid = $1
+        AND results.typeid = $2
+        AND results.classid = $3 
+        AND results.sid = $4
+		AND results.studentid = $5
 ),
 top_6_subjects AS (
     SELECT 
@@ -1611,30 +1702,143 @@ SELECT
 FROM ranked_students rs
 JOIN results r ON r.studentid = rs.studentid
 JOIN students st ON st.id = r.studentid
-JOIN acyear ac ON ac.yearid = r.yearid
 JOIN term t ON t.id = r.termid
+JOIN acyear ac ON ac.yearid = t.yearid
 JOIN exam e ON e.id = r.typeid
 JOIN class c ON c.classid = r.classid
 ORDER BY st.name;
 `;
-  const value = [yearid, termid, typeid, classid, sid, studentid];
+  const value = [termid, typeid, classid, sid, studentid];
   const res = await kneX.query(query, value);
   return res.rows;
 };
 
-const countResult = async (sid, yearid, termid, typeid, classid) => {
+const countResult = async (sid, termid, typeid, classid) => {
   const query = `SELECT COUNT(DISTINCT(studentid)) AS count
     FROM results
-    WHERE results.yearid = $1
-        AND results.termid = $2
-        AND results.typeid = $3
-        AND results.classid = $4
-        AND results.sid = $5`;
-  const value = [yearid, termid, typeid, classid, sid];
+    WHERE results.termid = $1
+        AND results.typeid = $2
+        AND results.classid = $3
+        AND results.sid = $4`;
+  const value = [termid, typeid, classid, sid];
   const res = await kneX.query(query, value);
   return res.rows;
 };
 // JCE
+
+
+// MSCE
+
+const getReportByStudentMSCE = async (sid, termid, typeid, classid) => {
+  const query = `WITH student_scores AS (
+    SELECT 
+        studentid,
+        classid,
+        subjectid,
+        CAST(grade AS BIGINT) AS grade,
+        ROW_NUMBER() OVER (PARTITION BY studentid, classid ORDER BY CAST(grade AS BIGINT) DESC) AS subject_rank
+    FROM results
+    WHERE results.termid = $1
+        AND results.typeid = $2
+        AND results.classid = $3
+        AND results.sid = $4
+),
+top_6_subjects AS (
+    SELECT 
+        studentid,
+        classid,
+        SUM(grade) AS total_score
+    FROM student_scores
+    WHERE subject_rank <= 6
+    GROUP BY studentid, classid
+),
+ranked_students AS (
+    SELECT 
+        studentid, 
+        classid, 
+        total_score,
+        RANK() OVER (PARTITION BY classid ORDER BY total_score ASC) AS rank
+    FROM top_6_subjects
+)
+SELECT 
+    DISTINCT r.studentid,
+    rs.rank, 
+    st.name AS studentname,  
+    rs.total_score AS aggregate,
+    r.classid,
+    subject.id AS subject_id, 
+    subject.code AS subject_name, 
+    r.score,
+    r.grade, 
+	r.remarks
+FROM ranked_students rs
+JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
+JOIN students st ON st.id = r.studentid
+LEFT JOIN subject ON subject.id = r.subjectid
+ORDER BY r.classid, rs.rank, st.name
+`;
+  const value = [termid, typeid, classid, sid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+};
+
+const getStudentCardMSCE = async (
+  sid,
+  termid,
+  typeid,
+  classid,
+  studentid
+) => {
+  const query = `WITH student_scores AS (
+    SELECT 
+        studentid,
+        CAST(grade AS BIGINT) AS grade,
+        ROW_NUMBER() OVER (PARTITION BY studentid ORDER BY CAST(grade AS BIGINT) DESC) AS subject_rank
+    FROM results
+    WHERE results.termid = $1
+        AND results.typeid = $2
+        AND results.classid = $3
+        AND results.sid = $4
+		AND results.studentid = $5
+),
+top_6_subjects AS (
+    SELECT 
+        studentid,
+        SUM(grade) AS total_score
+    FROM student_scores
+    WHERE subject_rank <= 6  -- Only consider the top 6 subjects
+    GROUP BY studentid
+),
+ranked_students AS (
+    SELECT 
+        studentid, 
+        total_score,
+        RANK() OVER (ORDER BY total_score DESC) AS rank
+    FROM top_6_subjects
+)
+SELECT 
+    DISTINCT(st.name) AS studentname,  
+    rs.total_score AS aggregate,
+	ac.name AS year,
+	t.name AS term,
+	e.name AS exam,
+	c.name AS class,
+    c.classid
+FROM ranked_students rs
+JOIN results r ON r.studentid = rs.studentid
+JOIN students st ON st.id = r.studentid
+JOIN term t ON t.id = r.termid
+JOIN acyear ac ON ac.yearid = t.yearid
+JOIN exam e ON e.id = r.typeid
+JOIN class c ON c.classid = r.classid
+ORDER BY st.name
+`;
+  const value = [termid, typeid, classid, sid, studentid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+};
+
+// MSCE
 
 // Class Teacher
 const getClassTeacher4Report = async (classid, sid) => {
@@ -1648,7 +1852,6 @@ const getClassTeacher4Report = async (classid, sid) => {
 };
 
 const getSubjectPosition = async (
-  yearid,
   termid,
   typeid,
   classid,
@@ -1666,36 +1869,34 @@ const getSubjectPosition = async (
             results
         INNER JOIN subject On subject.id = results.subjectid
         WHERE 
-        results.yearid = $1 AND
-        results.termid = $2 AND
-        results.typeid = $3 AND
-        results.classid = $4 AND
-        results.sid = $5 AND
-        results.studentid = $6
+        results.termid = $1 AND
+        results.typeid = $2 AND
+        results.classid = $3 AND
+        results.sid = $4 AND
+        results.studentid = $5
         ORDER BY 
             studentid, subject ASC
         `;
-  const value = [yearid, termid, typeid, classid, sid, studentid];
+  const value = [termid, typeid, classid, sid, studentid];
   const res = await kneX.query(query, value);
   return res.rows;
 };
 
-const realPos = async (yearid, termid, typeid, classid, sid, subjectid) => {
+const realPos = async (termid, typeid, classid, sid, subjectid) => {
   const query = `SELECT studentid, subjectid, score, 
         RANK() OVER(ORDER BY CAST(score AS BIGINT) DESC, 
         score DESC) as rank 
         FROM (
         SELECT results.studentid, results.subjectid, score 
         FROM results
-        WHERE results.yearid = $1
-        AND results.termid = $2
-        AND results.typeid = $3
-        AND results.classid = $4
-        AND results.subjectid = $5
-        AND results.sid = $6
+        WHERE results.termid = $1
+        AND results.typeid = $2
+        AND results.classid = $3
+        AND results.subjectid = $4
+        AND results.sid = $5
         GROUP BY results.studentid, results.subjectid, score)
         `;
-  const value = [yearid, termid, typeid, classid, subjectid, sid];
+  const value = [termid, typeid, classid, subjectid, sid];
   const res = await kneX.query(query, value);
   return res.rows;
 };
@@ -1747,6 +1948,55 @@ const countReports = async (id) => {
 }
 
 // --------------------------------------- REPORT CRUD ------------------------------------------------
+
+
+
+
+// --------------------------------------- EVENTS CRUD ------------------------------------------------
+
+const addEvent = async (id, title, date, time, location, description) => {
+  const query = 'INSERT INTO events (title, date, time, locations, description, sid) VALUES ($1, $2, $3, $4, $5, $6)';
+  const values = [title, date, time, location, description, id];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const checkEvent = async (id, title, date) => {
+  const query = 'SELECT * FROM events WHERE sid = $1 AND title = $2 AND date = $3';
+  const values = [id, title, date];
+  const res = await kneX.query(query, values);
+  return res.rows.length > 0;
+}
+
+const getEvents = async (sid) => {
+  const query = 'SELECT * FROM events WHERE sid = $1 ORDER BY created_at DESC';
+  const value = [sid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
+
+const editEvent = async (id) => {
+  const query = 'SELECT * FROM events WHERE id = $1';
+  const value = [id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+}
+
+const updateEvent = async(id, title, date, time, location, description) => {
+  const query = 'UPDATE events SET title = $1, date = $2, time = $3, locations = $4, description = $5 WHERE id = $6';
+  const values = [title, date, time, location, description, id];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const deleteEvent = async(id) => {
+  const query = 'DELETE FROM events WHERE id = $1';
+  const values = [id];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+// --------------------------------------- EVENTS CRUD ------------------------------------------------
 
 
 
@@ -1881,12 +2131,26 @@ const updateBillingStatus = async (id, status) => {
   return res.rows;
 }
 
+const updateSchoolStatus = async (id, status) => {
+  const query = 'UPDATE schools SET status = $1 WHERE sid = $2';
+  const values = [status, id];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
 // --------------------------------------- SUBSCRIPTION CRUD ------------------------------------------------
 
 module.exports = {
   // ----- SCHOOLS SECTION -----
   countSchools,
   getSchools,
+  getOTPCode,
+  updateOTPStatus,
+  countPrivateSchools,
+  countPublicSchools,
+  countSubscribedSchools,
+  sumAmount,
+  paymentChart,
   // ----- SCHOOLS SECTION -----
 
 
@@ -2088,7 +2352,13 @@ module.exports = {
 
   // ----- REPORT SECTION -----
   getReportByStudent,
+  countSubjects,
+  addPromote,
+  checkPromote,
+  updatePromote,
+  getReportByStudentMSCE,
   getStudentCard,
+  getStudentCardMSCE,
   getClassTeacher4Report,
   countResult,
   getSubjectPosition,
@@ -2098,6 +2368,18 @@ module.exports = {
   deleteReport,
   countReports,
   // ----- REPORT SECTION -----
+
+
+
+
+  // ----- EVENTS SECTION -----
+  checkEvent,
+  addEvent,
+  getEvents,
+  editEvent,
+  updateEvent,
+  deleteEvent,
+  // ----- EVENTS SECTION -----
 
 
 
@@ -2123,5 +2405,6 @@ module.exports = {
   getSubscriptionPayments,
   updateSubStatus,
   updateBillingStatus,
+  updateSchoolStatus,
   // ----- SUBSCRIPTION SECTION -----
 };

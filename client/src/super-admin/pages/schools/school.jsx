@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import api from "../../../services/apiServices.jsx";
 import SuperAuth0 from "../../../hooks/superauth.jsx";
 import SchoolTable from "./table.jsx";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 import SuperSidebar from "../../components/navbar/navbar.jsx";
 import Menu from "../../components/Top/menu.jsx";
-import { Trash, Pencil } from "lucide-react";
+import ToggleSwitch from "./toggle.jsx";
 
 const Schools = () => {
   const [school, setSchoolData] = useState([]);
@@ -34,20 +34,11 @@ const Schools = () => {
           contact: item.contact,
           status: item.status,
           actions: (
-            <div>
-              <button
-                onClick={() => handleEdit(item.classid)}
-                className="action_icon"
-              >
-                <Pencil size={18} className="action_edit" />
-              </button>
-              <button
-                onClick={() => handleDelete(item.sid)}
-                className="action_icon"
-              >
-                <Trash size={18} className="action_delete" />
-              </button>
-            </div>
+            <ToggleSwitch 
+                id={item.sid}
+                status={item.status}
+                onToggle={handleToggle}
+            />
           ),
         }));
         setSchoolData(info);
@@ -58,12 +49,26 @@ const Schools = () => {
     fetchData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const handleEdit = (id) => {
-    console.log(id);
-  };
+  const handleToggle = async (id, currentStatus) => {
+    const newStatus = currentStatus === "Activated" ? "Deactivated" : "Activated";
 
-  const handleDelete = (id) => {
-    console.log(id);
+    try {
+      // API call to update the data
+      const res = await api.updateSchoolStatus(id, {
+        status: newStatus,
+      });
+      if(res.data.success === true) {
+        toast.success(res.data.message);
+      }
+      else {
+        toast.error(res.data.message);
+      }
+
+      // Refresh the table data
+      fetchData();
+    } catch (error) {
+      console.error("Error updating the data:", error);
+    }
   };
 
   return (

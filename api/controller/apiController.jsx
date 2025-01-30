@@ -1,4 +1,5 @@
 const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
 const {
     checkMail, 
     checkExam, 
@@ -163,6 +164,22 @@ const {
     getSubscriptionPayments,
     updateSubStatus,
     updateBillingStatus,
+    updateSchoolStatus,
+    countPrivateSchools,
+    countPublicSchools,
+    countSubscribedSchools,
+    sumAmount,
+    paymentChart,
+    getOTPCode,
+    checkEvent,
+    addEvent,
+    getEvents,
+    editEvent,
+    updateEvent,
+    deleteEvent,
+    getReportByStudentMSCE,
+    getStudentCardMSCE,
+    addPromote,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -213,6 +230,117 @@ const countXuls = async (req, res) => {
         })
     }
 }
+const countPrivateXuls = async (req, res) => {
+    try {
+        const count = await countPrivateSchools();
+        if(count) {
+            res.json({
+                success: true,
+                count,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+const countPublicXuls = async (req, res) => {
+    try {
+        const count = await countPublicSchools();
+        if(count) {
+            res.json({
+                success: true,
+                count,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+const countSubscribedXuls = async (req, res) => {
+    try {
+        const count = await countSubscribedSchools();
+        if(count) {
+            res.json({
+                success: true,
+                count,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+const sumAmounts = async (req, res) => {
+    try {
+        const sum = await sumAmount();
+        if(sum) {
+            res.json({
+                success: true,
+                sum,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const paymentLineChart = async (req, res) => {
+    try {
+        const data = await paymentChart();
+        if(data) {
+            res.json({
+                success: true,
+                data,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
 
 const getXuls = async (req, res) => {
     try {
@@ -228,6 +356,65 @@ const getXuls = async (req, res) => {
             res.json({
                 success: false,
             })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const sendOTP = async (req, res) => {
+    try {
+        // Generate a test account
+        let testAccount = await nodemailer.createTestAccount();
+
+        // Create a transporter using the test account
+        let transporter = nodemailer.createTransport({
+            host: "smtp.ethereal.email",
+            port: 587,
+            secure: false, // Use TLS
+            auth: {
+                user: testAccount.user, // Test account username
+                pass: testAccount.pass, // Test account password
+            },
+        });
+
+        // Message details
+        let message = {
+            from: '"Emmanuel Nyangazi" <ManzyN@outlook.com>',
+            to: 'example@email.com',
+            subject: "Account Verification",
+            text: 'Test 1',
+            html: "<b>Hello World</b>",
+        };
+
+        // Send the email
+        let info = await transporter.sendMail(message);
+
+        res.status(201).json({
+            success: true,
+            msg: 'You should receive an email',
+            info: info.messageId,
+            preview: nodemailer.getTestMessageUrl(info),
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+            success: false,
+            error: error.message,
+        });
+    }
+};
+
+
+const getOTP = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const result = await getOTPCode(email);
+        if(result) {
+
         }
     } catch (error) {
         res.status(500).json({
@@ -2810,7 +2997,7 @@ const addStudent = async (req, res) => {
             });
         } else {
             // Insert into Student table
-            const newStudent = await insertStudent(id, studentNames);
+            const newStudent = await insertStudent(studentNames);
             if(newStudent) {
                 const newHistory = await insertStudentHistory(id, yearid, classid, newStudent);
                 return res.json({
@@ -3806,141 +3993,163 @@ const insertResults = async(req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
 
-    let allResults = [];
-    try {
-        for (const entry of studentData) {
-            if(!entry.selectedClass || !entry.yearid || !entry.termid || !entry.typeid || !entry.id || !entry.selectedSubject) {
-                return res.json({
-                    success: false,
-                    message: "Please fill up all the fields"
-                });
-            }
-            else if(Number(entry.score) > 100) {
-                return res.json({
-                    success: false,
-                    message: "Score can not be over 100.."
-                });
-            }
-            else {
-                const check = await checkResult(sid, entry);
-                if(check) {
-                    allResults.push({
-                        success: false,
-                        message: `Result for student ${entry.id} already exists.`,
-                    });
-                }
-                else {
-                    const venom = 'JCE';
-                    const carnage = 'MSCE';
-                    const getClass = await getClassById(sid, entry.selectedClass);
-                    if(getClass) {
-                        if(getClass.denom === venom) {
-                            const getDenom = await getGradeByDenom(sid, venom);
-                            if(getDenom) {
-                                let grade = '';  // Declare grade and remarks outside the loop
-                                let remarks = '';
+    // Get Today's Date
+    const todayDate = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
 
-                                for(const gr of getDenom) {
-                                    if(Number(entry.score) >= gr.floor && Number(entry.score) <= gr.roof) {
-                                        grade = gr.grade;  // Assign values to grade and remarks
-                                        remarks = gr.remark;
-                                        break;  // Break the loop once the grade is found
-                                    }
-                                }
+    // Get the Term as of today
+    const term = await getTerm();
+    if (term && term.length > 0) {
+        const start = new Date(term[0].start_date); // Convert to Date object
+        const end = new Date(term[0].end_date);    // Convert to Date object
+        const tdate = new Date(todayDate());              // Ensure todayDate is a Date object
 
-                                if (grade && remarks) {
-                                    // Insert Results
-                                    const add = await insertResult(sid, grade, remarks, entry);
-                                    if(add) {
-                                        allResults.push({
-                                            success: true,
-                                            message: `Result for student ${entry.id} inserted successfully.`,
-                                        });
-                                    }
-                                    else {
-                                        allResults.push({
-                                            success: false,
-                                            message: `Failed to insert result for student ${entry.id}.`,
-                                        });
-                                    }
-                                } else {
-                                    allResults.push({
-                                        success: false,
-                                        message: `No valid grade found for score of student ${entry.id}.`,
-                                    });
-                                }
-                            }
+        if (tdate >= start && tdate <= end) {
+            const termid = term[0].id;
+
+            let allResults = [];
+            try {
+                for (const entry of studentData) {
+                    if(!entry.selectedClass || !entry.typeid || !entry.id || !entry.selectedSubject) {
+                        return res.json({
+                            success: false,
+                            message: "Please fill up all the fields"
+                        });
+                    }
+                    else if(Number(entry.score) > 100) {
+                        return res.json({
+                            success: false,
+                            message: "Score can not be over 100.."
+                        });
+                    }
+                    else {
+                        const check = await checkResult(sid, termid, entry);
+                        if(check) {
+                            allResults.push({
+                                success: false,
+                                message: `Result for student ${entry.id} already exists.`,
+                            });
                         }
                         else {
-                            const getDenom = await getGradeByDenom(sid, carnage);
-                            if(getDenom) {
-                                let grade = '';  // Declare grade and remarks outside the loop
-                                let remarks = '';
+                            const venom = 'JCE';
+                            const carnage = 'MSCE';
+                            const getClass = await getClassById(entry.selectedClass);
+                            if(getClass) {
+                                if(getClass.denom === venom) {
+                                    const getDenom = await getGradeByDenom(venom);
+                                    if(getDenom) {
+                                        let grade = '';  // Declare grade and remarks outside the loop
+                                        let remarks = '';
 
-                                for(const gr of getDenom) {
-                                    if(Number(entry.score) >= gr.floor && Number(entry.score) <= gr.roof) {
-                                        grade = gr.grade;  // Assign values to grade and remarks
-                                        remarks = gr.remark;
-                                        break;  // Break the loop once the grade is found
+                                        for(const gr of getDenom) {
+                                            if(Number(entry.score) >= gr.floor && Number(entry.score) <= gr.roof) {
+                                                grade = gr.grade;  // Assign values to grade and remarks
+                                                remarks = gr.remark;
+                                                break;  // Break the loop once the grade is found
+                                            }
+                                        }
+
+                                        if (grade && remarks) {
+                                            // Insert Results
+                                            const add = await insertResult(sid, termid, grade, remarks, entry);
+                                            if(add) {
+                                                allResults.push({
+                                                    success: true,
+                                                    message: `Result for student ${entry.id} inserted successfully.`,
+                                                });
+                                            }
+                                            else {
+                                                allResults.push({
+                                                    success: false,
+                                                    message: `Failed to insert result for student ${entry.id}.`,
+                                                });
+                                            }
+                                        } else {
+                                            allResults.push({
+                                                success: false,
+                                                message: `No valid grade found for score of student ${entry.id}.`,
+                                            });
+                                        }
                                     }
                                 }
+                                else {
+                                    const getDenom = await getGradeByDenom(carnage);
+                                    if(getDenom) {
+                                        let grade = '';  // Declare grade and remarks outside the loop
+                                        let remarks = '';
 
-                                if (grade && remarks) {
-                                    // Insert Results
-                                    const add = await insertResult(sid, grade, remarks, entry);
-                                    if(add) {
-                                        allResults.push({
-                                            success: true,
-                                            message: `Result for student ${entry.id} inserted successfully.`,
-                                        });
+                                        for(const gr of getDenom) {
+                                            if(Number(entry.score) >= gr.floor && Number(entry.score) <= gr.roof) {
+                                                grade = gr.grade;  // Assign values to grade and remarks
+                                                remarks = gr.remark;
+                                                break;  // Break the loop once the grade is found
+                                            }
+                                        }
+
+                                        if (grade && remarks) {
+                                            // Insert Results
+                                            const add = await insertResult(sid, termid, grade, remarks, entry);
+                                            if(add) {
+                                                allResults.push({
+                                                    success: true,
+                                                    message: `Result for student ${entry.id} inserted successfully.`,
+                                                });
+                                            }
+                                            else {
+                                                allResults.push({
+                                                    success: false,
+                                                    message: `Failed to insert result for student ${entry.id}.`,
+                                                });
+                                            }
+                                        } else {
+                                            allResults.push({
+                                                success: false,
+                                                message: `No valid grade found for score of student ${entry.id}.`,
+                                            });
+                                        }
                                     }
-                                    else {
-                                        allResults.push({
-                                            success: false,
-                                            message: `Failed to insert result for student ${entry.id}.`,
-                                        });
-                                    }
-                                } else {
-                                    allResults.push({
-                                        success: false,
-                                        message: `No valid grade found for score of student ${entry.id}.`,
-                                    });
                                 }
                             }
                         }
                     }
                 }
+
+                if (allResults.length > 0) {
+                    const anySuccess = allResults.some(result => result.success === true);
+
+                    if (anySuccess) {
+                        return res.json({
+                            success: true,
+                            message: `Results for ${allResults.length} students inserted successfully.`,
+                        });
+                    } else {
+                        return res.json({
+                            success: false,
+                            message: `Results for ${allResults.length} students already exist or failed.`,
+                        });
+                    }
+                } else {
+                    // If no entries were processed
+                    return res.json({
+                        success: false,
+                        message: "No results were processed.",
+                    });
+                }
+            } catch (error) {
+                return res.status(500).json({
+                    message: "Internal Server Error. Please try again later.",
+                    error: error.message,
+                });
             }
         }
-
-        if (allResults.length > 0) {
-            const anySuccess = allResults.some(result => result.success === true);
-
-            if (anySuccess) {
-                return res.json({
-                    success: true,
-                    message: `Results for ${allResults.length} students inserted successfully.`,
-                });
-            } else {
-                return res.json({
-                    success: false,
-                    message: `Results for ${allResults.length} students already exist or failed.`,
-                });
-            }
-        } else {
-            // If no entries were processed
-            return res.json({
-                success: false,
-                message: "No results were processed.",
-            });
-        }
-    } catch (error) {
-        return res.status(500).json({
-            message: "Internal Server Error. Please try again later.",
-            error: error.message,
-        });
+    } else {
+        console.error("No term data available");
     }
-
 }
 
 // ----------------------- ENTRY CONTROLLER -----------------------
@@ -4504,13 +4713,13 @@ const countStudentByTeacher = async (req, res) => {
 // ----------------------- REPORT CONTROLLER -----------------------
 
 const getReport = async (req, res) => {
-    const { yearid, termid, typeid, classid} = req.body.data;
+    const { termid, typeid, classid} = req.body.data;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
     try {
-        if(!yearid || !termid || !typeid || !classid) {
+        if(!termid || !typeid || !classid) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
@@ -4518,12 +4727,161 @@ const getReport = async (req, res) => {
         }
 
         const venom = 'JCE';
-        const carnage = 'MSCE';
-        const getClass = await getClassById(sid, classid);
+        const getClass = await getClassById(classid);
 
         if(getClass) {
             if(getClass.denom === venom) {
-                const codes = await getReportByStudent(sid, yearid, termid, typeid, classid);
+                const codes = await getReportByStudent(sid, termid, typeid, classid);
+                if(codes) {
+                    // Transform data to be used in frontend
+                    const subjectsSet = new Set();
+                    const studentsMap = new Map();
+
+                    codes.forEach(row => {
+                        // Collect unique subjects
+                        subjectsSet.add(row.subject_name);
+
+                        // Collect student data with scores
+                        if (!studentsMap.has(row.studentid)) {
+                            studentsMap.set(row.studentid, {
+                                student_id: row.studentid,
+                                rank: row.rank,
+                                agg: row.aggregate,
+                                student_name: row.studentname,
+                                grade: row.grade,
+                                remarks: row.remarks,
+                                score: {},
+                            });
+                        }
+                        studentsMap.get(row.studentid).score[row.subject_name] = row.score;
+                    });
+
+                    const subjects = Array.from(subjectsSet); // Convert to array for easier use on frontend
+                    const students = Array.from(studentsMap.values());
+
+                    return res.json({ subjects, students });
+                }
+                return res.json({
+                    success: false,
+                    message: 'No records found'
+                });
+            }
+            else {
+                const codes = await getReportByStudentMSCE(sid, termid, typeid, classid);
+                if(codes) {
+                    // Transform data to be used in frontend
+                    const subjectsSet = new Set();
+                    const studentsMap = new Map();
+
+                    codes.forEach(row => {
+                        // Collect unique subjects
+                        subjectsSet.add(row.subject_name);
+
+                        // Collect student data with scores
+                        if (!studentsMap.has(row.studentid)) {
+                            studentsMap.set(row.studentid, {
+                                student_id: row.studentid,
+                                rank: row.rank,
+                                agg: row.aggregate,
+                                student_name: row.studentname,
+                                grade: row.grade,
+                                remarks: row.remarks,
+                                score: {},
+                            });
+                        }
+                        studentsMap.get(row.studentid).score[row.subject_name] = row.score;
+                    });
+
+                    const subjects = Array.from(subjectsSet); // Convert to array for easier use on frontend
+                    const students = Array.from(studentsMap.values());
+
+                    return res.json({ subjects, students });
+                }
+                return res.json({
+                    success: false,
+                    message: 'No records found'
+                });
+            }
+        }
+        
+        return res.json({
+            success: false,
+            message: 'No records found'
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const insertPromotion = async(req, res) => {
+    const { termid, typeid, classid} = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    if(!termid || !typeid || !classid) {
+        return res.json({
+            success: false,
+            message: 'Please fill in the blank fields'
+        });
+    }
+
+    try {
+        const venom = 'JCE';
+        const getClass = await getClassById(classid);
+
+        if(getClass) {
+            if(getClass.denom === venom) {
+                const codes = await getReportByStudent(sid, termid, typeid, classid);
+                if(codes) {
+                    // Transform data to be used in frontend
+                    const studentsMap = new Map();
+
+                    codes.forEach(row => {
+                        // Collect student data with scores
+                        if (!studentsMap.has(row.studentid)) {
+                            studentsMap.set(row.studentid, {
+                                student_id: row.studentid,
+                                rank: row.rank,
+                                agg: row.aggregate,
+                            });
+                        }
+                        studentsMap.get(row.studentid, row.aggregate, row.rank);
+                    });
+                    const students = Array.from(studentsMap.values());
+
+                    // Add Promotion
+                    if (!students || !Array.isArray(students)) {
+                        return res.status(400).json({ message: "Invalid students array" });
+                      }
+                  
+                      const promises = students.map(student => 
+                        addPromote(
+                          sid, 
+                          termid, 
+                          typeid, 
+                          classid, 
+                          parseInt(student.student_id, 10), 
+                          parseInt(student.agg, 10), 
+                          student.remarks || "", // Default empty if no remarks
+                          parseInt(student.rank, 10)
+                        )
+                      );
+                  
+                      await Promise.all(promises); // Execute all inserts concurrently
+                  
+                      res.status(201).json({ message: "Students promoted successfully" });
+                }
+                return res.json({
+                    success: false,
+                    message: 'No records found'
+                });
+            }
+            else {
+                const codes = await getReportByStudentMSCE(sid, termid, typeid, classid);
                 if(codes) {
                     // Transform data to be used in frontend
                     const subjectsSet = new Set();
@@ -4573,31 +4931,52 @@ const getReport = async (req, res) => {
 }
 
 const getStudentReport = async (req, res) => {
-    const { yearid, termid, typeid, classid, id} = req.body;
+    const { termid, typeid, classid, id} = req.body;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
     try {
-        if(!yearid || !termid || !typeid || !classid || !id) {
+        if(!termid || !typeid || !classid || !id) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
             });
         }
 
-        // Fecthing data
-        const studentInfo = await getStudentCard(sid, yearid, termid, typeid, classid, id);
-        if(studentInfo) {
-            return res.json({
-                success: true,
-                studentInfo
-            });
+        const venom = 'JCE';
+        const getClass = await getClassById(classid);
+
+        if(getClass) {
+            if(getClass.denom === venom) {
+                // Fecthing data
+                const studentInfo = await getStudentCard(sid, termid, typeid, classid, id);
+                if(studentInfo) {
+                    return res.json({
+                        success: true,
+                        studentInfo
+                    });
+                }
+                return res.json({
+                    success: false,
+                    message: 'No records found'
+                });
+            }
+            else {
+                // Fecthing data
+                const studentInfo = await getStudentCardMSCE(sid, termid, typeid, classid, id);
+                if(studentInfo) {
+                    return res.json({
+                        success: true,
+                        studentInfo
+                    });
+                }
+                return res.json({
+                    success: false,
+                    message: 'No records found'
+                });
+            }
         }
-        return res.json({
-            success: false,
-            message: 'No records found'
-        });
     } catch (error) {
         res.status(500).json({
             message: "Internal Server Error. Please try again later.",
@@ -4607,13 +4986,13 @@ const getStudentReport = async (req, res) => {
 }
 
 const getCount = async (req, res) => {
-    const { yearid, termid, typeid, classid} = req.body.data;
+    const { termid, typeid, classid} = req.body.data;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
     try {
-        if(!yearid || !termid || !typeid || !classid) {
+        if(!termid || !typeid || !classid) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
@@ -4621,7 +5000,7 @@ const getCount = async (req, res) => {
         }
 
         // Fecthing data
-        const count = await countResult(sid, yearid, termid, typeid, classid);
+        const count = await countResult(sid, termid, typeid, classid);
         if(count) {
             return res.json({
                 success: true,
@@ -4675,13 +5054,13 @@ const getCT4Report = async (req, res) => {
 }
 
 const getSubjectPos = async (req, res) => {
-    const { yearid, termid, typeid, classid, id } = req.body;
+    const { termid, typeid, classid, id } = req.body;
     const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
     try {
-        if(!yearid || !termid || !typeid || !classid) {
+        if(!termid || !typeid || !classid) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
@@ -4689,7 +5068,7 @@ const getSubjectPos = async (req, res) => {
         }
 
         // Fecthing data
-        const pos = await getSubjectPosition(yearid, termid, typeid, classid, sid, id);
+        const pos = await getSubjectPosition(termid, typeid, classid, sid, id);
         if(pos) {
             return res.json({
                 success: true,
@@ -4709,13 +5088,13 @@ const getSubjectPos = async (req, res) => {
 }
 
 const realPosition = async (req, res) => {
-    const { yearid, termid, typeid, classid, id } = req.body;
+    const { termid, typeid, classid, id } = req.body;
     const token = req.cookies.schoolToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
     try {
-        if (!yearid || !termid || !typeid || !classid) {
+        if (!termid || !typeid || !classid) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
@@ -4725,7 +5104,7 @@ const realPosition = async (req, res) => {
         // Fetch data for each subjectid
         const positions = await Promise.all(
             id.map(async (subjectId) => {
-                const result = await realPos(yearid, termid, typeid, classid, sid, subjectId);
+                const result = await realPos(termid, typeid, classid, sid, subjectId);
                 return result;
             })
         );
@@ -4892,6 +5271,157 @@ const countTermlyReports = async(req, res) => {
 }
 
 // ----------------------- REPORT CONTROLLER -----------------------
+
+
+
+
+
+// ----------------------- EVENT CONTROLLER -----------------------
+
+const insertEvent = async (req, res) => {
+    const { title, date, time, location, description } = req.body.data;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!title || !date || !time || !location || !description) {
+            return res.json({
+                success: false,
+                message: 'Please fill in the required fields'
+            });
+        }
+
+        // Check Event if exists
+        const checker = await checkEvent(sid, title, date);
+        if(checker) {
+            res.json({
+                success: false,
+                message: 'Event already exists in the system'
+            });
+        }
+
+        // Insert New Event
+        const insert = await addEvent(sid, title, date, time, location, description);
+        if(insert) {
+            res.json({
+                success: true,
+                message: 'Event added succesfully'
+            });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message,
+        });
+    }
+}
+
+const getEvent = async(req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const event = await getEvents(sid);
+        if(event) {
+            return res.json({
+                event,
+            })
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'Failed fetching events'
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message,
+        });
+    }
+}
+
+const editEvents = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editEvent(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving event data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateEvents = async(req, res) => {
+    const { id } = req.params;
+    const { title, date, time, location, description } = req.body;
+
+    try {
+        // Check if events exists
+        const update = await updateEvent(id, title, date, time, location, description);
+        if(update) {
+            res.json({
+                success: true,
+                message: "Event updated successfully",
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Event updating failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const deleteEvents = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const del = await deleteEvent(id);
+        if(del) {
+            res.json({
+                success: true,
+                message: 'Deleted successfully'
+            })
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Deletion failed'
+            })
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- EVENT CONTROLLER -----------------------
 
 
 
@@ -5264,6 +5794,43 @@ const updateStatuses = async (req, res) => {
     }
 };
 
+const updateSchoolStatuses = async (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    try {
+        // Validate input
+        if (!id || !status) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required parameters: id, status',
+            });
+        }
+
+        // Update subscription status
+        const resultOne = await updateSchoolStatus(id, status);
+        if (!resultOne) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to update school status',
+            });
+        }
+
+        // Success response
+        return res.json({
+            success: true,
+            message: 'School has been activated successfully',
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message,
+        });
+    }
+};
+
 
 // ----------------------- SUBSCRIPTION CONTROLLER -----------------------
 
@@ -5273,7 +5840,13 @@ const updateStatuses = async (req, res) => {
 module.exports = { 
     // ----- SCHOOL EXPORTS ------
     countXuls,
+    countPrivateXuls,
+    countPublicXuls,
+    countSubscribedXuls,
+    sumAmounts,
+    paymentLineChart,
     getXuls,
+    sendOTP,
     // ----- SCHOOL EXPORTS ------
 
     // ----- LOGIN EXPORTS ------
@@ -5517,6 +6090,7 @@ module.exports = {
 
     // ----- REPORT EXPORTS ------
     getReport,
+    insertPromotion,
     getStudentReport,
     getCT4Report,
     getCount,
@@ -5527,6 +6101,17 @@ module.exports = {
     deleteReports,
     countTermlyReports,
     // ----- REPORT EXPORTS ------
+
+
+
+
+    // ----- EVENTS EXPORTS ------
+    insertEvent,
+    getEvent,
+    editEvents,
+    updateEvents,
+    deleteEvents,
+    // ----- EVENTS EXPORTS ------
 
 
 
@@ -5548,5 +6133,6 @@ module.exports = {
     updateSuspended,
     gotSubscriptionPayments,
     updateStatuses,
+    updateSchoolStatuses,
     // ----- SUBSCRIPTION EXPORTS ------
 };

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { DollarSign, File, GraduationCap, House, User } from "lucide-react";
+import { DollarSign, File, GraduationCap, House, User, CalendarDays } from "lucide-react";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -69,6 +69,16 @@ const Sidebar = () => {
           >
             <p className="sideIcons"><File size={23} /></p>
             <p className="actualP">Report</p>
+          </li>
+        </Link>
+        <Link to={"/events"} className="Links">
+          <li
+            className={
+              location.pathname === "/events" ? "sideItem active" : "sideItem"
+            }
+          >
+            <p className="sideIcons"><CalendarDays size={23} /></p>
+            <p className="actualP">Events</p>
           </li>
         </Link>
       </ul>

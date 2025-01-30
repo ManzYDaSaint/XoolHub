@@ -149,12 +149,31 @@ const {
     updateSuspended,
     gotSubscriptionPayments,
     updateStatuses,
+    updateSchoolStatuses,
+    countPrivateXuls,
+    countPublicXuls,
+    countSubscribedXuls,
+    sumAmounts,
+    paymentLineChart,
+    sendOTP,
+    insertEvent,
+    getEvent,
+    editEvents,
+    updateEvents,
+    deleteEvents,
+    insertPromotion,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
 
 router.route('/count-schools').get(countXuls);
+router.route('/count-private-schools').get(countPrivateXuls);
+router.route('/count-public-schools').get(countPublicXuls);
+router.route('/count-subscribed').get(countSubscribedXuls);
+router.route('/sum-amount').get(sumAmounts);
 router.route('/get-schools').get(getXuls);
+router.route('/payment-linechart').get(paymentLineChart);
+router.route('/send-otp').post(sendOTP);
 
 // ***** POST Methods
 router.route('/authenticate').post((req, res) => res.end());
@@ -193,6 +212,7 @@ router.route('/check-paid-status').get(checkPaidStatus);
 router.route('/update-suspended-status').put(updateSuspended);
 router.route('/get-subscription-payments').get(gotSubscriptionPayments);
 router.route('/update-statuses/:id').put(updateStatuses);
+router.route('/update-school-status/:id').put(updateSchoolStatuses);
 
 // ------- SUBSCRIPTION ROUTES -----------
 
@@ -481,6 +501,7 @@ router.route('/admindet').get(getSchool);
 // ------- REPORT ROUTES -----------
 // JCE
 router.route('/getreport').post(getReport);
+router.route('/insert-promotion').post(insertPromotion);
 router.route('/getstudentreport').post(getStudentReport);
 router.route('/getctreport').post(getCT4Report);
 router.route('/countreport').post(getCount);
@@ -492,6 +513,16 @@ router.route('/deletereport').delete(deleteReports);
 router.route('/count-reports').get(countTermlyReports);
 // JCE
 // ------- REPORT ROUTES -----------
+
+
+
+// ------- EVENTS ROUTES -----------
+router.route('/insert-event').post(insertEvent);
+router.route('/get-event').get(getEvent);
+router.route('/edit-event/:id').get(editEvents);
+router.route('/update-event/:id').put(updateEvents);
+router.route('/delete-event/:id').delete(deleteEvents);
+// ------- EVENTS ROUTES -----------
 
 
 

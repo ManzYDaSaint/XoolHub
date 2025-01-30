@@ -1,0 +1,75 @@
+.event-container {
+    margin-top: 2rem;
+}
+.circle1 {
+    position: absolute;
+    top: -0.7rem;
+    left: -1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}
+.circle2 {
+    position: absolute;
+    top: -0.7rem;
+    right: -1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}
+.circle3 {
+    position: absolute;
+    bottom: -0.7rem;
+    left: -1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}
+.circle4 {
+    position: absolute;
+    bottom: -0.7rem;
+    right: -1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}
+.circle5 {
+    position: absolute;
+    top: -1.5rem;
+    left: 13rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}
+.circle6 {
+    position: absolute;
+    bottom: -1.5rem;
+    left: 13rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}
+.circle1 {
+    position: absolute;
+    top: -0.7rem;
+    left: -1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}
+.circle1 {
+    position: absolute;
+    top: -0.7rem;
+    left: -1rem;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: #F9FAFB;
+}

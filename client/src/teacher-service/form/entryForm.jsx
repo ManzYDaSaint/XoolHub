@@ -134,7 +134,7 @@ const EntryForm = () => {
       <form onSubmit={handleFilter}>
         {step === 1 && (
           <div className="multi_step">
-            <h3><span className='m-3'>Step 1:</span> Specify students to add results.</h3>
+            <h3 style={{fontFamily: "'Poppins', san-serif"}}><span className='m-3'>Step 1:</span> Specify students to add results.</h3>
             <div className="formGroup">
                 <TypeSelector 
                     onChange={handleChange}
@@ -166,7 +166,7 @@ const EntryForm = () => {
       <form onSubmit={onSubmit}>
         {step === 2 && (
           <div className="multi_step mt-3">
-            <h3><span className='m-3'>Step 2:</span> Enter Examination Scores</h3>
+            <h3 style={{fontFamily: "'Poppins', san-serif"}}><span className='m-3'>Step 2:</span> Enter Examination Scores</h3>
               <div>
                 <table className="table customisedTable">
                   <thead>

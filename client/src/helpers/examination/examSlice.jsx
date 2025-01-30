@@ -26,6 +26,13 @@ const ExamSlice = createSlice({
       newPassword: '',
       confirm: '',
     },
+    eventFormData: {
+      title: '',
+      date: '',
+      time: '',
+      location: '',
+      description: '',
+    },
     superPassword: {
       current: '',
       newPassword: '',
@@ -98,7 +105,6 @@ const ExamSlice = createSlice({
       classid: '',
     },
     reportFormData: {
-      yearid: '',
       termid: '',
       typeid: '',
       classid: '',
@@ -159,6 +165,9 @@ const ExamSlice = createSlice({
     },
     setStudentIDs: (state, action) => {
       state.studentIDs = action.payload;
+    },
+    setEventFormData: (state, action) => {
+      state.eventFormData = action.payload;
     },
     setFormData: (state, action) => {
       state.formData = action.payload;
@@ -271,5 +280,6 @@ export const {
   setReportFormData,
   setSuperPassword,
   setSubscriptionData,
+  setEventFormData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

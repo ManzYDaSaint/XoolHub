@@ -80,7 +80,7 @@ const StudentForm = ({ fetchData }) => {
       <form onSubmit={onSubmit}>
         {step === 1 && (
           <div className="multi_step">
-            <h3><span>Step 1:</span> Select Year and Class</h3>
+            <h3 style={{fontFamily: "'Poppins', san-serif"}}><span>Step 1:</span> Select Year and Class</h3>
             <div className="formGroup">
               <ClassSelectInput
                 handleChange={handleChange}
@@ -106,7 +106,7 @@ const StudentForm = ({ fetchData }) => {
 
         {step === 2 && (
           <div className="multi_step">
-            <h3><span>Step 2:</span> Enter Student Names</h3>
+            <h3 style={{fontFamily: "'Poppins', san-serif"}}><span>Step 2:</span> Enter Student Names</h3>
             {studentNames.map((student, index) => (
               <div key={index}>
                 <label className="mb-3">
