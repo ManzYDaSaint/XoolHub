@@ -180,6 +180,8 @@ const {
     getReportByStudentMSCE,
     getStudentCardMSCE,
     addPromote,
+    checkPromote,
+    updatePromote,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -4857,6 +4859,26 @@ const insertPromotion = async(req, res) => {
                     if (!students || !Array.isArray(students)) {
                         return res.status(400).json({ message: "Invalid students array" });
                       }
+
+                      const studentIDs = students.map(student => student.student_id);
+                      const exists = await checkPromote(sid, termid, typeid, classid, studentIDs);
+                      if(exists) {
+                        const promises = students.map(student => 
+                            updatePromote(
+                                sid, 
+                                termid, 
+                                typeid, 
+                                classid, 
+                                parseInt(student.student_id, 10), 
+                                parseInt(student.agg, 10), 
+                                student.remarks || "",
+                                parseInt(student.rank, 10)
+                            )
+                        )
+
+                        await Promise.all(promises);
+                        res.status(201).json({ message: "Students promotion updated successfully" });
+                      }
                   
                       const promises = students.map(student => 
                         addPromote(
@@ -4866,12 +4888,12 @@ const insertPromotion = async(req, res) => {
                           classid, 
                           parseInt(student.student_id, 10), 
                           parseInt(student.agg, 10), 
-                          student.remarks || "", // Default empty if no remarks
+                          student.remarks || "", 
                           parseInt(student.rank, 10)
                         )
                       );
                   
-                      await Promise.all(promises); // Execute all inserts concurrently
+                      await Promise.all(promises);
                   
                       res.status(201).json({ message: "Students promoted successfully" });
                 }
