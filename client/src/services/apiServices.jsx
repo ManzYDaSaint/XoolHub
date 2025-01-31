@@ -313,6 +313,7 @@ const getSchool = () => axios.get(API + '/admindet');
 // --------- REPORT AXIOS -----------
 const getReport = (data) => axios.post(API + '/getreport', data);
 const insertPromotion = (data) => axios.post(API + '/insert-promotion', data);
+const getStudentPromotion = (data) => axios.post(API + '/get-student-promotion', data);
 const getStudentReport = (data) => axios.post(API + '/getstudentreport', data);
 const getCTReport = (data) => axios.post(API + '/getctreport', data);
 const countResult = (data) => axios.post(API + '/countreport', data);
@@ -603,6 +604,7 @@ export default {
        // ------ REPORT EXPORT -------
        getReport,
        insertPromotion,
+       getStudentPromotion,
        getStudentReport,
        getCTReport,
        countResult,

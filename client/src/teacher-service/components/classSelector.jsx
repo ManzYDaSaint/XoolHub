@@ -3,8 +3,8 @@ import api from '../../services/apiServices';
 
 const ClassSelector = ({ label, selectedClass, handleClassChange, handleSubjectChange, name, value, labell, namee, valuee }) => {
   const [classs, setClasss] = useState([]);
-  const [subject, setSubject] = useState([]);
-
+  const [subject, setSubject] = useState([]); 
+  
   useEffect(() => {
     const fetchData = async () => {
       try {

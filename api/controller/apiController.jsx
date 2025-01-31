@@ -182,6 +182,8 @@ const {
     addPromote,
     checkPromote,
     updatePromote,
+    countSubjects,
+    getStudentForPromotion,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -4818,137 +4820,137 @@ const getReport = async (req, res) => {
     }
 }
 
-const insertPromotion = async(req, res) => {
-    const { termid, typeid, classid} = req.body.data;
-    const token = req.cookies.schoolToken
+const insertPromotion = async (req, res) => {
+    const { termid, typeid, classid } = req.body.data;
+    const token = req.cookies.schoolToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
-    if(!termid || !typeid || !classid) {
+    if (!termid || !typeid || !classid) {
         return res.json({
             success: false,
-            message: 'Please fill in the blank fields'
+            message: 'Please fill in the blank fields',
         });
     }
 
     try {
+        // Get End Of Term
+
         const venom = 'JCE';
         const getClass = await getClassById(classid);
 
-        if(getClass) {
-            if(getClass.denom === venom) {
-                const codes = await getReportByStudent(sid, termid, typeid, classid);
-                if(codes) {
-                    // Transform data to be used in frontend
-                    const studentsMap = new Map();
+        if (!getClass) {
+            return res.json({ success: false, message: 'No records found' });
+        }
 
-                    codes.forEach(row => {
-                        // Collect student data with scores
-                        if (!studentsMap.has(row.studentid)) {
-                            studentsMap.set(row.studentid, {
-                                student_id: row.studentid,
-                                rank: row.rank,
-                                agg: row.aggregate,
-                            });
-                        }
-                        studentsMap.get(row.studentid, row.aggregate, row.rank);
-                    });
-                    const students = Array.from(studentsMap.values());
+        const getReport = getClass.denom === venom ? getReportByStudent : getReportByStudentMSCE;
+        const codes = await getReport(sid, termid, typeid, classid);
 
-                    // Add Promotion
-                    if (!students || !Array.isArray(students)) {
-                        return res.status(400).json({ message: "Invalid students array" });
-                      }
+        if (!codes || codes.length === 0) {
+            return res.json({ success: false, message: 'No records found' });
+        }
 
-                      const studentIDs = students.map(student => student.student_id);
-                      const exists = await checkPromote(sid, termid, typeid, classid, studentIDs);
-                      if(exists) {
-                        const promises = students.map(student => 
-                            updatePromote(
-                                sid, 
-                                termid, 
-                                typeid, 
-                                classid, 
-                                parseInt(student.student_id, 10), 
-                                parseInt(student.agg, 10), 
-                                student.remarks || "",
-                                parseInt(student.rank, 10)
-                            )
-                        )
-
-                        await Promise.all(promises);
-                        res.status(201).json({ message: "Students promotion updated successfully" });
-                      }
-                  
-                      const promises = students.map(student => 
-                        addPromote(
-                          sid, 
-                          termid, 
-                          typeid, 
-                          classid, 
-                          parseInt(student.student_id, 10), 
-                          parseInt(student.agg, 10), 
-                          student.remarks || "", 
-                          parseInt(student.rank, 10)
-                        )
-                      );
-                  
-                      await Promise.all(promises);
-                  
-                      res.status(201).json({ message: "Students promoted successfully" });
-                }
-                return res.json({
-                    success: false,
-                    message: 'No records found'
+        // Transform data to be used in frontend
+        const studentsMap = new Map();
+        codes.forEach(row => {
+            if (!studentsMap.has(row.studentid)) {
+                studentsMap.set(row.studentid, {
+                    student_id: row.studentid,
+                    rank: row.rank,
+                    agg: row.aggregate,
                 });
+            }
+        });
+
+        const students = Array.from(studentsMap.values());
+
+        if (!students.length) {
+            return res.status(400).json({ message: 'Invalid students array' });
+        }
+
+        let remark = '';
+        const studentIDs = students.map(student => student.student_id);
+        const aggregate = students.map(student => student.agg);
+        const count = await countSubjects(termid, typeid, classid, studentIDs, sid);
+        
+        if (count[0].count < 6) {
+            remark = 'Failed';
+        } else {
+            if(getClass.denom === venom ? count[0].count >= 6 : Math.max(...aggregate.map(Number)) <= 48) {
+                remark = 'Passed';
             }
             else {
-                const codes = await getReportByStudentMSCE(sid, termid, typeid, classid);
-                if(codes) {
-                    // Transform data to be used in frontend
-                    const subjectsSet = new Set();
-                    const studentsMap = new Map();
-
-                    codes.forEach(row => {
-                        // Collect unique subjects
-                        subjectsSet.add(row.subject_name);
-
-                        // Collect student data with scores
-                        if (!studentsMap.has(row.studentid)) {
-                            studentsMap.set(row.studentid, {
-                                student_id: row.studentid,
-                                rank: row.rank,
-                                agg: row.aggregate,
-                                student_name: row.studentname,
-                                grade: row.grade,
-                                remarks: row.remarks,
-                                score: {},
-                            });
-                        }
-                        studentsMap.get(row.studentid).score[row.subject_name] = row.score;
-                    });
-
-                    const subjects = Array.from(subjectsSet); // Convert to array for easier use on frontend
-                    const students = Array.from(studentsMap.values());
-
-                    return res.json({ subjects, students });
-                }
-                return res.json({
-                    success: false,
-                    message: 'No records found'
-                });
+                remark = 'Failed'
             }
         }
+
+        const exists = await checkPromote(sid, termid, typeid, classid, studentIDs);
         
-        return res.json({
-            success: false,
-            message: 'No records found'
-        });
+        if (exists[0] === true) {
+            const updatePromises = students.map(student =>
+                updatePromote(
+                    sid,
+                    termid,
+                    typeid,
+                    classid,
+                    parseInt(student.student_id, 10),
+                    parseInt(student.agg, 10),
+                    remark,
+                    parseInt(student.rank, 10)
+                )
+            );
+
+            await Promise.all(updatePromises);
+            return res.status(201).json({ message: 'Students promotion updated successfully' });
+        } else {
+            const insertPromises = students.map(student =>
+                addPromote(
+                    sid,
+                    termid,
+                    typeid,
+                    classid,
+                    parseInt(student.student_id, 10),
+                    parseInt(student.agg, 10),
+                    remark,
+                    parseInt(student.rank, 10)
+                )
+            );
+    
+            await Promise.all(insertPromises);
+            return res.status(201).json({ message: 'Students promoted successfully' });
+        }
     } catch (error) {
         res.status(500).json({
-            message: "Internal Server Error. Please try again later.",
+            message: 'Internal Server Error. Please try again later.',
             error: error.message,
         });
+    }
+};
+
+const getStudentPromos = async (req, res) => {
+    const { data } = req.body;
+    
+    if(!data) {
+        res.json({
+            success: false,
+            message: 'Please select a valid class',
+        })
+    }
+
+    try {
+        const info = await getStudentForPromotion(data);
+        if(info) {
+            res.json({
+                success: true,
+                info,
+            })
+        }
+    } catch (error) {
+        res.json({
+            success: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message,
+        })
     }
 }
 
@@ -6113,6 +6115,7 @@ module.exports = {
     // ----- REPORT EXPORTS ------
     getReport,
     insertPromotion,
+    getStudentPromos,
     getStudentReport,
     getCT4Report,
     getCount,

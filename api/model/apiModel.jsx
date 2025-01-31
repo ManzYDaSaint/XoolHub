@@ -1569,7 +1569,7 @@ const countStudentByAssign = async (sid, teacherid, classid) => {
 // JCE
 const countSubjects = async(termid, typeid, classid, studentid, sid) => {
   const query = `SELECT COUNT(subjectid) AS count FROM results 
-  WHERE termid = $1 AND typeid = $2 AND classid = $3 AND studentid = $4 AND sid = $5`;
+  WHERE termid = $1 AND typeid = $2 AND classid = $3 AND studentid = ANY ($4::bigint[]) AND sid = $5`;
   const values = [termid, typeid, classid, studentid, sid];
   const res = await kneX.query(query, values);
   return res.rows;
@@ -1585,7 +1585,7 @@ const addPromote = async(sid, termid, typeid, classid, studentid, agg, remarks, 
 
 const checkPromote = async(sid, termid, typeid, classid, studentid) => {
   const query = `SELECT EXISTS (
-        SELECT 1 FROM students WHERE sid = $1 AND termid = $2 AND typeid = $3 AND classid = $4 AND studentid = ANY ($5::text[]))`;
+        SELECT 1 FROM promotion WHERE sid = $1 AND termid = $2 AND typeid = $3 AND classid = $4 AND studentid = ANY ($5::bigint[]))`;
   const values = [sid, termid, typeid, classid, studentid];
   const res = await kneX.query(query, values);
   if (res.rows && res.rows[0]) {
@@ -1945,6 +1945,25 @@ const countReports = async (id) => {
   const value = [id];
   const res = await kneX.query(query, value);
   return res.rows[0];
+}
+
+const getStudentForPromotion = async (classid) => {
+  const query = `WITH CurrentTerm AS (
+        SELECT 
+            id AS termid
+        FROM 
+            term
+        WHERE 
+            CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+        )
+    SELECT p.studentid, students.name AS student, exam.name AS exam, p.agg, p.remarks, p.rank
+    FROM promotion p
+    INNER JOIN students ON students.id = p.studentid
+    INNER JOIN exam ON exam.id = p.typeid
+    WHERE p.classid = $1 AND p.termid = (SELECT p.termid FROM CurrentTerm)`;
+  const values = [classid];
+  const res = await kneX.query(query, values);
+  return res.rows;
 }
 
 // --------------------------------------- REPORT CRUD ------------------------------------------------
@@ -2367,6 +2386,7 @@ module.exports = {
   getRemarks,
   deleteReport,
   countReports,
+  getStudentForPromotion,
   // ----- REPORT SECTION -----
 
 

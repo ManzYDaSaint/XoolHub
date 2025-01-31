@@ -162,6 +162,7 @@ const {
     updateEvents,
     deleteEvents,
     insertPromotion,
+    getStudentPromos,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -502,6 +503,7 @@ router.route('/admindet').get(getSchool);
 // JCE
 router.route('/getreport').post(getReport);
 router.route('/insert-promotion').post(insertPromotion);
+router.route('/get-student-promotion').post(getStudentPromos);
 router.route('/getstudentreport').post(getStudentReport);
 router.route('/getctreport').post(getCT4Report);
 router.route('/countreport').post(getCount);
