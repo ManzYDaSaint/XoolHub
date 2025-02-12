@@ -54,9 +54,9 @@ const AveData = () => {
 
   return (
     <div>
-        <table class="custom__table table-hover mt-4 w-100" id="class__table">
+        <div className="custom__table table-hover mt-4 w-100" id="class__table">
             <AveTable aveData={aveData}/>
-        </table>
+        </div>
     </div>
   )
 }

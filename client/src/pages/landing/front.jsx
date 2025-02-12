@@ -9,13 +9,11 @@ function Landing() {
 
   return (
     <>
-      <body>
         <div className={'front-page'}>
           <Navbar />
           <LandingPage />
           <Footer />
         </div>
-      </body>
     </>
   );
 }

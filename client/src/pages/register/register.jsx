@@ -7,8 +7,8 @@ import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { setRegisterData } from "../../helpers/examination/examSlice.jsx";
-import { CircleCheck, Lock, Mail, ShieldEllipsis } from "lucide-react";
-import logo from './assets/logo.png'
+import { CircleCheck, Lock, Mail } from "lucide-react";
+import logo from '../../logo.png'
 
 const Register = () => {
   const registerData = useSelector((state) => state.exam.registerData);
@@ -57,17 +57,13 @@ const Register = () => {
     <div className="notFound">
       <div className="logContainer">
         <Toaster />
-        <div className="shieldContainer">
-          <Link to={"/"}>
-            <img src={logo} alt="logo" className="shieldLogo" />
-          </Link>
-          <ShieldEllipsis size={110} className="shield" />
-        </div>
+        
         <div className="logSider">
-          <h4>Create an account</h4>
+        <p className='d-flex align-items-center justify-content-center mb-4'>
+                            <img src={logo} alt="logo" />
+                            </p>
           <p class="loginPT mb-4">
-            Enter your school's email, password and confirm <br /> password to
-            create your account.
+            One xoolHub account is all you need <br />to access to all xoolHub services.
           </p>
           <form onSubmit={onSubmit} className="loginForm">
             <Input
@@ -100,7 +96,7 @@ const Register = () => {
             <button className="loginButton signin">
               {loading ? "Registering..." : "Register"}
             </button>
-            <p className="cont">Or Continue</p>
+            <p className="cont">Or</p>
             <Link to={"/login"} className="linka">
               <button className="loginButton regIn" id="nextButton">
                 Log In
@@ -108,11 +104,11 @@ const Register = () => {
             </Link>
             <p className="mt-4 termspolicy">
               By clicking continue, you agree to our{" "}
-              <Link to={""}>
+              <Link to={"/terms"}>
                 Terms <br />
                 of Service
               </Link>{" "}
-              and <Link to={""}>Privacy Policy</Link>
+              and <Link to={"/policy"}>Privacy Policy</Link>
             </p>
           </form>
         </div>

@@ -45,6 +45,11 @@ import About from './pages/about/about.jsx';
 import Invoicing from './pages/pricing/billing.jsx';
 import Events from './pages/administrator/events.jsx';
 import PromoteStudents from './pages/students/promotion/promotion.jsx';
+import UserProfile from './teacher-service/pages/profile.jsx';
+import Feedback from './pages/administrator/feedback.jsx';
+import Feeds from './super-admin/pages/feedback/feeds.jsx';
+import PrivacyPolicy from './pages/law/policy.jsx';
+import TermsOfService from './pages/law/terms.jsx';
 
 function App() {
   const router = createBrowserRouter([
@@ -237,6 +242,30 @@ function App() {
         )
     },
     {
+      path: '/feedback',
+      element: (
+          <InactivityHandler>
+            <Feedback />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/policy',
+      element: (
+          <InactivityHandler>
+            <PrivacyPolicy />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/terms',
+      element: (
+          <InactivityHandler>
+            <TermsOfService />
+          </InactivityHandler>
+        )
+    },
+    {
       path: '/student-promotion',
       element: (
           <InactivityHandler>
@@ -277,6 +306,14 @@ function App() {
       element: (
           <InactivityHandler>
             <StudentDetail />
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/teacher-profile',
+      element: (
+          <InactivityHandler>
+            <UserProfile />
           </InactivityHandler>
         )
     },
@@ -355,6 +392,14 @@ function App() {
       element: (
         <InactivityHandler>
           <Subsciptions />
+        </InactivityHandler>
+      )
+    },
+    {
+      path: '/feeds',
+      element: (
+        <InactivityHandler>
+          <Feeds />
         </InactivityHandler>
       )
     },

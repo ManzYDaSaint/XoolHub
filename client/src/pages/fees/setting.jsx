@@ -5,7 +5,7 @@ import Sidebar from '../../components/input/sidebar.jsx'
 import Navbar from '../../components/input/top.jsx'
 import { useNavigate } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import FeesData from './components.jsx/feesData.jsx';
+import FeesData from './components/feesData.jsx';
 
 const Setting = () => {
     const navigate = useNavigate();

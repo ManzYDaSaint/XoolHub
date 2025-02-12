@@ -99,7 +99,7 @@ const TeacherBoard = () => {
         </div>
         <div className="box">
         <div className="bottomist ">
-          <h4 className="top_performing_title text-center mb-5">Best Teachers</h4>
+          {/* <h4 className="top_performing_title text-center mb-5">Best Teachers</h4>
           <div className="top_performing">
             <Ctcard 
               icon={Users}
@@ -116,8 +116,8 @@ const TeacherBoard = () => {
               score={"Form 3"}
               student={"Emmanuel Nyangazi"}
             />
-            </div>
-          </div>
+            </div> */}
+          </div> 
           <div className="topist mt-5">
           <h4 className="top_performing_title">Class Teachers</h4>
           <div className="top_performing">

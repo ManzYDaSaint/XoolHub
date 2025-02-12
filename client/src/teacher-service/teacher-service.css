@@ -4,14 +4,12 @@
 .teacherContent {
     width: 100%;
     display: flex;
-    flex-direction: row;
+    /* flex-direction: row; */
     flex-wrap: wrap;
+    height: 100%;
 }
 .righter {
     flex: 2;
-}
-.lefter {
-    flex: 1;
 }
 .ui.modal {
     top: 60% !important;
@@ -30,6 +28,8 @@
     padding: 1rem;
     background-color: #E8ECEF;
     border-radius: 0.7rem;
+    flex: 1;
+    height: 100%;
 }
 .lefter button {
     border: none;
@@ -81,29 +81,20 @@
     }
   }
   .teacherDeto ul li {
-    border-left: 3px solid #007BFE;
-    margin-bottom: 0.7rem;
+    border-top: 3px solid #007BFE;
+    margin-bottom: 2rem;
     list-style: none;
     text-align: left;
     padding: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
-.teacherDeto p {
-  margin: 0;
-  color: #6e6b6b;
-}
-.teacherDeto ul li p {
-    padding: 0;
-    margin: 0 1rem;
-    font-size: 0.9rem;
-  }
   .classes {
     font-weight: 500;
+    font-size: 1.1rem;
+    margin: 0 !important;
   }
   .subject {
     color: #6e6b6b;
+    margin: 0 !important;
   }
   .classTeacher {
     padding: 1rem;
@@ -293,7 +284,7 @@
 }
 .dateContainer h3 {
   font-size: 2rem;
-  padding: 0.2rem 0.5rem;
+  padding: 0.2rem 1rem;
   border: 2px solid #007BFE;
   border-radius: 0.5rem;
   border-top: 1rem solid #007BFE;
@@ -388,8 +379,8 @@
   width: 100%;
   display: flex;
   align-items: center;
-  text-align: right;
-  justify-content: right;
+  text-align: center;
+  justify-content: center;
 }
 .recharts-tooltip-wrapper {
   font-size: 0.9rem;

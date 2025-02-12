@@ -5,15 +5,21 @@ import YearSelectInput from "../components/yearSelect";
 import Table from "./table";
 import api from "../../../services/apiServices";
 import ToggleSwitch from "./toggle";
+import { InfinitySpin } from "react-loader-spinner";
+import { toast } from 'react-hot-toast'
 
 const PromotionData = () => {
   const [students, setStudents] = useState([]);
   const [currentClass, setCurrentClass] = useState("");
+  const [nextClass, setNextClass] = useState("");
+  const [nextYear, setNextYear] = useState("");
   const [studentIDs, setStudentIDs] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const filterData = async (data) => {
     try {
-      const res = await api.getStudentPromotion({data}); // Ensure correct API call
+      setIsLoading(true);
+      const res = await api.getStudentPromotion({data});
       const info = res.data.info;
       if(info.length === 0) {
         const students = info.map((item, index) => ({
@@ -46,6 +52,9 @@ const PromotionData = () => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
+    finally {
+      setIsLoading(false);
+    }
   };
 
   // Update table data when class changes
@@ -68,19 +77,36 @@ const PromotionData = () => {
   };
   console.log(studentIDs);
 
-  const handleSubmit = async () => {
-    if (studentIDs.length === 0) {
-      alert("No students selected for promotion.");
+  const onSubmit = (e) => {
+    e.preventDefault();
+    handleSubmit(studentIDs, currentClass, nextClass, nextYear);
+  }
+  const handleSubmit = async (studentIDs, currentClass, nextClass, nextYear) => {
+    if (studentIDs.length === 0 || currentClass === "" || nextClass === "" || nextYear === "") {
+      toast.error("Please select all fields.");
       return;
+    }
+
+    try {
+      const res = await api.updatePro({studentIDs, currentClass, nextClass, nextYear});
+    if (res.data.success === true) {
+      toast.success("Students promoted successfully.");
+      setStudentIDs([]);
+      setCurrentClass("");
+      setNextClass("");
+      setNextYear("");
+    } else {
+      toast.error("An error occurred. Please try again.");
+    } 
+    } catch (error) {
+      error.response.data.errors.forEach((error) => {
+        toast.error(error.message);
+      });
     }
   }
 
-
-  const handleCurrectChange = (e) => {
-    
-  };
-
   return (
+    <form onSubmit={onSubmit}>
     <div className="">
       <div className="mb-6">
         <div className="promotion-content">
@@ -111,19 +137,23 @@ const PromotionData = () => {
               >
                 Target Academic Year and Class
               </h6>
-              <form onSubmit={handleSubmit}></form>
+              
               <div className="formGroup ml-3">
                 <YearSelectInput
                   label={"Next Academic Year"}
-                  onChange={""}
+                  onChange={(e) => {
+                    setNextYear(e.target.value);
+                  }}
                   name={"nextYear"}
-                  value={""}
+                  value={nextYear}
                 />
                 <ClassSelector
                   label={"Next Class:"}
-                  onChange={handleCurrectChange}
+                  onChange={(e) => {
+                    setNextClass(e.target.value);
+                  }}
                   name={"nextClass"}
-                  value={""}
+                  value={nextClass}
                 />
               </div>
             </div>
@@ -132,15 +162,22 @@ const PromotionData = () => {
       </div>
 
       <div className="promote-table">
-        <Table data={students} />
+        {isLoading ? (
+          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                        <InfinitySpin width='150' color="#007BFE" />
+                      </div>
+        ) : (
+          <Table data={students} />
+        )}
       </div>
       <FormButton
-        onClick={""}
         className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg"
         label={"Promote Students"}
         id={"tyepButton"}
+        type={"submit"}
       />
     </div>
+    </form>
   );
 };
 

@@ -21,23 +21,26 @@ const Forgot = () => {
   const handleBlur = () => {
     setActiveInputId(null);
   };
+
+  console.log(activeInputId)
+
   return (
-    <div className="auth_container">
-      <div className="auth_content">
+    <div className="notFound">
+    <div className="logContainer">
+      <div className="logSider">
         <div className="header">
           <img
             src={Email}
-            alt="My Image Description"
+            alt="My"
             className="pass__master__icon"
           />
         </div>
-        <div className="body">
-          <div className="dotted">
-            <h1>Forgot Password?</h1>
-            <div className="dot"></div>
-          </div>
-          <p>No worries, we'll send you reset instructions.</p>
-          <form className="custom_form forgot__new" autoComplete="off">
+        <div className="dotted">
+          <h1>Forgot Password?</h1>
+          <div className="dot"></div>
+        </div>
+        <p>No worries, we'll send you reset instructions.</p>
+          <form className="loginForm" autoComplete="off">
             <Input
               placeholder="Type email here.."
               value={email}
@@ -55,8 +58,8 @@ const Forgot = () => {
                 id={"resetPassword"}
                 label={"Reset Password"}
               />
-              <p>
-                <Link className="back" to={"/login"}>
+              <p className="flex items-center justify-center">
+                <Link className="back flex items-center mt-4" to={"/login"}>
                  <ArrowLeft size={16} className="backarrow" />
                   Back to Login
                 </Link>
@@ -64,7 +67,7 @@ const Forgot = () => {
             </div>
           </form>
         </div>
-      </div>
+    </div>
     </div>
   );
 };

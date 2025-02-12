@@ -97,6 +97,8 @@
     color: #6e6b6b;
     transition: 0.3s ease-in-out;
     box-shadow: 0px 0px 2px 0px;
+    display: flex;
+    align-items: center;
   }
   .lucideVideo {
     margin-right: 0.5rem;
@@ -134,6 +136,9 @@
 .props-card {
   padding: 2rem 3rem;
   width: 25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .props-card h4 {
@@ -164,9 +169,17 @@
     background-color: var(--light-background);
     color: var(--text-color-dark);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem 2rem;
+    padding: 1rem 2rem;
     z-index: 1000;
     width: 100%;
+  }
+
+  .navbar-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    position: relative;
   }
   
   .navbar-listing {
@@ -175,6 +188,7 @@
     align-items: center;
     justify-content: space-between;
     margin: 0;
+    padding-top: 1rem;
   }
   
   .navbar-right {
@@ -183,6 +197,8 @@
     display: flex;
     align-items: center;
     gap: 3rem;
+    margin: 0;
+    padding: 0;
   }
   
   .navbar-right li {
@@ -196,10 +212,12 @@
   }
   
   .logo {
-    font-weight: bold;
-    font-size: 1.5rem;
+    width: 4rem;
     margin: 0;
     padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .navbar-right {
@@ -210,179 +228,161 @@
     gap: 2rem;
   }
 
-  .demoBtn {
-    text-decoration: none;
-    font-weight: 600;
-    background-color: var(--primary-color);
-    color: var(--text-color-light);
-    padding: 0.3rem 1rem;
-    border-radius: 0.5rem;
-    transition: 0.5s ease-in-out;
-  }
-  
-  .demoBtn:hover {
-    color: var(--primary-color);
-    background-color: transparent;
-    box-shadow: 0px 0px 3px 0px var(--primary-color);
-  }
-
-  .chevron {
-    margin: 0;
-    padding: 0;
-    transition: 0.3s ease-in-out;
-  }
-
-  .outerDropDwn.active {
+.burgerM::after {
+    content: '';
+    position: absolute;
+    right: -0rem;
+    top: 0.6rem;
+    z-index: 10;
+    background-color: #fff;
+    width: 1.3rem;
+    height: 0.10rem;
+}
+.burgerM {
+    content: '';
+    position: absolute;
+    right: 0.6rem;
+    top: 1.5rem;
+    z-index: 10;
+    background-color: #fff;
+    width: 1.3rem;
+    height: 0.15rem;
     opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-    transition: 0.5s ease-out;
-    box-shadow: 0px 0px 0px 0px;
-  }
-
-  .chevron.active {
-    transform: rotate(180deg);
-    transition: 0.3s ease-in-out;
-    box-shadow: 0px 0px 0px 0px;
-  }
-
-  .featureChevron {
-    position: relative;
-    cursor: pointer;
-    transition: 0.5s ease-in-out;
-  }  
-
-.outerDropDwn {
-  visibility: hidden;
-  opacity: 0;
-  transform: translateY(-20px);
-  transition: 0.5s ease-in-out;
+    display: none;
+}
+.burgerM::before {
+    content: '';
+    position: absolute;
+    right: 0rem;
+    top: 0.30rem;
+    z-index: 10;
+    background-color: #fff;
+    width: 1.3rem;
+    height: 0.12rem;
 }
 
-  .dropDown {
-    transition: 0.5s ease-in-out;
-    position: absolute;
-    background-color: #fff;
-    top: 4rem;
-    left: -2rem;
-    border-radius: 0.5rem;
-    padding: 2rem; 
-    width: 80rem;
-    box-shadow: 0px 0px 3px 0px var(--text-color-dark);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2rem;
-  }
+.burgerT {
+  content: '';
+  position: absolute;
+  right: 0rem;
+  top: 0.6rem;
+  z-index: 10;
+  background-color: #007BFE;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: none;
+}
+.burgerT::after {
+  content: '';
+  position: absolute;
+  right: 0.6rem;
+  top: 1.2rem;
+  z-index: 10;
+  background-color: #fff;
+  width: 1.3rem;
+  height: 0.15rem;
+  transform: rotate(45deg);
+  opacity: 0;
+}
+.burgerT::before {
+  content: '';
+  position: absolute;
+  right: 0.6rem;
+  top: 1.2rem;
+  z-index: 10;
+  background-color: #fff;
+  width: 1.3rem;
+  height: 0.15rem;
+  transform: rotate(-45deg);
+  opacity: 0;
+}
+.navbar-container.active .burgerM {
+  opacity: 0;
+} 
+.navbar-container.active .burgerT::after, .navbar-container.active .burgerT::before {
+  opacity: 1;
+} 
 
-  .drop-card, .drop-card-right {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 1rem;
-    padding: 1rem;
-    transition: 0.3s ease-in-out;
-  }
-  .drop-card:hover, .drop-card-right:hover {
-    background-color: #f4f4f4;
-  }
-  .drop-card .drop-logo, .drop-card-right .drop-logo {
-    background-color: #007BFE;
-    color: #fff;
-    padding: 0.3rem;
-    border-radius: 0rem;
-  }
+.navbar-container.active .navbar-right {
+  display: block;
+  position: absolute;
+  top: 5rem;
+  right: -1.7rem;
+  background-color: #fff;
+  padding: 1rem;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  height: 100vh;
+}
 
-  .dropSection h3 {
-    font-size: 0.9rem;
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #6e6b6b;
-    font-weight: 500;
+@media screen and (max-width: 480px) {
+  .navbar-right {
+    display: none;
   }
-
-  .dropSection p {
-    font-size: 0.9rem;
-    font-family: 'Poppins', sans-serif;
-    margin: 0;
-    padding: 0;
-    color: #aaa;
+  .burgerT, .burgerM {
+    display: block;
   }
+}
 
 /* NAVGATION BAR */
+
+
+
+.plan-icons {
+  width: 6rem;
+}
 
 
 
 
 /* TESTIMONY */
 
-/* src/components/Testimonials.css */
-.testimonials {
-    background-color: #f4f4f4;
-    padding: 4rem 1rem;
-    text-align: center;
-  }
-  
-  .testimonials h2 {
-    font-family: 'Poppins', sans-serif;
-    font-size: 1.2rem;
-    color: var(--text-color-dark);
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-  }
-  
-.slider-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 3rem;
+.testimonial-slider .slick-dots li button:before {
+  color: white;
+  opacity: 0.5;
 }
 
-  .testimonial-slider {
-    width: 70%;
-  }
-  .testimonial-card {
-    background-color: white;
-    padding: 6rem 3rem;
-    width: 50%;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .feedback {
-    font-style: italic;
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  .name {
-    margin-top: 0.5rem;
-    font-weight: bold;
+.testimonial-slider .slick-dots li.slick-active button:before {
+  color: white;
+  opacity: 1;
+}
+
+.testimonial-slider .slick-prev,
+.testimonial-slider .slick-next {
+  z-index: 10;
+}
+
+.testimonial-slider .slick-prev {
+  left: -30px;
+}
+
+.testimonial-slider .slick-next {
+  right: -30px;
+}
+
+.testimonial-slider .slick-prev:before,
+.testimonial-slider .slick-next:before {
+  font-size: 30px;
+  color: white;
+}
+
+@media (max-width: 640px) {
+  .testimonial-slider .slick-prev {
+    left: -15px;
   }
 
-  .quote {
-    color: var(--light-background);
-    font-size: 5rem;
-    font-family: "Passion One", sans-serif;
-    margin-right: 1rem;
-    padding: 1rem;
-    position: relative;
-    z-index: 1;
-    display: inline-block;
+  .testimonial-slider .slick-next {
+    right: -15px;
   }
-  
-  .quote::before {
-    content: '';
-    position: absolute;
-    right: -0.6rem;
-    top: -1.3rem;
-    z-index: -1;
-    background-color: #007BFE;
-    width: 4rem;
-    height: 4rem;
-    border-radius: 50%;
+
+  .testimonial-slider .slick-prev:before,
+  .testimonial-slider .slick-next:before {
+    font-size: 20px;
   }
+}
+
 
 /* TESTIMONY */
 
@@ -560,6 +560,9 @@
     padding: 2rem;
     width: 20rem;
     transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   .feature-card:hover {
@@ -568,8 +571,8 @@
   
   .feature-card h3 {
     color: var(--dark-background);
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    margin-bottom: 0rem;
     margin-top: 1rem;
     text-transform: uppercase;
     font-family: 'Poppins', sans-serif ;
@@ -592,9 +595,9 @@
     font-family: 'Poppins', sans-serif;
     font-size: 1rem;
     color: var(--text-color-dark);
-    margin-bottom: 3rem;;
+    margin-bottom: 3rem;
   }
-  
+ 
 
 /* FEATURE */
 
@@ -633,6 +636,9 @@
     width: 20rem;
     text-align: center;
     transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .success-wrapper {
@@ -1001,7 +1007,7 @@
   font-size: 4rem;
   font-weight: 600;
   animation: pulse 1s infinite ease-in-out;
-  font-family: 'Dancing script', monospace;
+  font-family:'Times New Roman', Times, serif;
 }
 
 @keyframes pulse {
@@ -1034,3 +1040,16 @@
 
 
 /* Count Down */
+
+
+
+
+/* About US */
+.mission {
+    margin: 10% auto;
+}
+.color {
+  color: #007BFE;
+}
+
+/* About US */

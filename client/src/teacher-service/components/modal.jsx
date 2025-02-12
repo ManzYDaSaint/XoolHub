@@ -20,7 +20,7 @@ function LogOutModal({ open, setOpen }) {
             toast.success(res.data.message);
 
             setTimeout(() => {
-                navigate('/');
+                navigate('/login');
             }, 1000);
             return;
         }
@@ -40,7 +40,7 @@ function LogOutModal({ open, setOpen }) {
             Logging Out
         </Header>
         <ModalContent>
-            <p>
+            <p className='text-center'>
             Are you sure want to log out? All your <br /> unsaved data will be lost.
             </p>
         </ModalContent>

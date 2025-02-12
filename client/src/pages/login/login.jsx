@@ -9,9 +9,8 @@ import api from '../../services/apiServices.jsx'
 import { useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setLoginData } from '../../helpers/examination/examSlice.jsx';
-import { Shield, Mail, Lock } from 'lucide-react'
-import { InfinitySpin } from 'react-loader-spinner';
-import logo from './assets/logo.png'
+import { Mail, Lock } from 'lucide-react'
+import logo from '../../logo.png'
 
 const Login = () => {
     const navigate = useNavigate();
@@ -93,15 +92,11 @@ const Login = () => {
         <div className="notFound">
             <div className='logContainer'>
                 <Toaster />
-                <div className="shieldContainer">
-                    <Link to={'/'}>
-                        <img src={logo} alt="logo" className='shieldLogo' />
-                    </Link>
-                    <Shield size={110} className='shield' />
-                </div>
                 <div className="logSider">
-                    <h4>Sign In</h4>
-                    <p className="login__paragraph mb-4">Enter your school's email and password <br /> to log into the system.
+                    <p className='d-flex align-items-center justify-content-center mb-4'>
+                    <img src={logo} alt="logo" />
+                    </p>
+                    <p className="login__paragraph mb-4">Only login using a registered email <br />address to log into the system.
                     </p>
                     <form onSubmit={onSubmit} className='loginForm'>
                         <Input
@@ -123,10 +118,10 @@ const Login = () => {
                             icon={Lock}
                         />
                         <Link className="forgot" to={'/forgot'}>Forgot Password?</Link>
-                        <button className='loginButton signin'>{loading ? <InfinitySpin width='80' color='#4274BA' /> : 'Sign In'}</button>
-                        <p className="cont">Or Continue</p>
+                        <button className='loginButton signin'>{loading ? 'Signing..' : 'Sign In'}</button>
+                        <p className="cont">Or</p>
                         <Link to={'/register'} className='linka'><button className='loginButton regIn' id='nextButton'>Register</button></Link>
-                        <p className='mt-4 termspolicy'>By clicking continue, you agree to our <Link to={''}>Terms <br />of Service</Link> and <Link to={''}>Privacy Policy</Link></p>
+                        <p className='mt-4 termspolicy'>By clicking continue, you agree to our <Link to={'/terms'}>Terms <br />of Service</Link> and <Link to={'/policy'}>Privacy Policy</Link></p>
                     </form>
                 </div>
             </div>

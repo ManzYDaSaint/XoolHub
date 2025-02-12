@@ -11,6 +11,38 @@ const StudentDashboard = () => {
   const [male, setMale] = useState(0);
   const [female, setFemale] = useState(0);
   const [chart, setChart] = useState([]);
+  const [worst, setWorst] = useState([]);
+  const [best, setBest] = useState([]);
+
+// Best Students
+const fethBest = async () => {
+  try {
+    const res = await api.getBestStudents();
+    const data = res.data.best;
+    setBest(data);
+  } catch (error) {
+    console.error("Error fetching student count:", error);
+  }
+};
+
+useEffect(() => {
+  fethBest();
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+// Worst Students
+const fethWorst = async () => {
+  try {
+    const res = await api.getWorstStudents();
+    const data = res.data.worst;
+    setWorst(data);
+  } catch (error) {
+    console.error("Error fetching student count:", error);
+  }
+};
+
+useEffect(() => {
+  fethWorst();
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const fethCount = async () => {
     try {
@@ -125,78 +157,37 @@ const StudentDashboard = () => {
           </div>
         </div>
         <div className="box">
-          <h4 className="top_performing_title">Top Performing Students</h4>
+          <h4 className="top_performing_title">Top performance this term</h4>
           <div className="top_performing">
-            <TopPerforming
-              icon={GraduationCap}
-              score={"90%"}
-              student={"Emmanuel Nyangazi"}
-              term={"Term 1"}
-              exam={"MidTerm"}
-              form={"Form 1"}
+            {best.map((item, index) => (
+              <TopPerforming
+                key={index}
+                icon={GraduationCap}
+                score={item.agg}
+                student={item.student}
+                term={item.term}
+                exam={item.exam}
+                form={item.class}
             />
-            <TopPerforming
-              icon={GraduationCap}
-              score={"87%"}
-              student={"Darry Mwandelire"}
-              term={"Term 1"}
-              exam={"MidTerm"}
-              form={"Form 3"}
-            />
-            <TopPerforming
-              icon={GraduationCap}
-              score={"90%"}
-              student={"John Doe"}
-              term={"Term 1"}
-              exam={"MidTerm"}
-              form={"Form 1"}
-            />
-            <TopPerforming
-              icon={GraduationCap}
-              score={"90%"}
-              student={"John Doe"}
-              term={"Term 1"}
-              exam={"MidTerm"}
-              form={"Form 1"}
-            />
+            ))}
+
           </div>
           <div className="worst_students">
             <h4 className="worst_performing_title">
-              Worst Performing Students
+              Worst performance this term
             </h4>
             <div className="top_performing">
+            {worst.map((item, index) => (
               <TopPerforming
+                key={index}
                 icon={GraduationCap}
-                score={"90%"}
-                student={"Emmanuel Nyangazi"}
-                term={"Term 1"}
-                exam={"MidTerm"}
-                form={"Form 1"}
+                score={item.agg}
+                student={item.student}
+                term={item.term}
+                exam={item.exam}
+                form={item.class}
               />
-              <TopPerforming
-                icon={GraduationCap}
-                score={"87%"}
-                student={"Darry Mwandelire"}
-                term={"Term 1"}
-                exam={"MidTerm"}
-                form={"Form 3"}
-              />
-              <TopPerforming
-                icon={GraduationCap}
-                score={"90%"}
-                student={"John Doe"}
-                term={"Term 1"}
-                exam={"MidTerm"}
-                form={"Form 1"}
-              />
-              <TopPerforming
-                icon={GraduationCap}
-                score={"90%"}
-                student={"John Doe"}
-                term={"Term 1"}
-                exam={"MidTerm"}
-                form={"Form 1"}
-              />
+            ))}
             </div>
           </div>
         </div>

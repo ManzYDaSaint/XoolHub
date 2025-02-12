@@ -124,9 +124,9 @@ const PlanOptions = () => {
         <div className="countdown-outer">
           <h5 className="text-center">PAYMENT CONFIRMATION</h5>
           <p className="text-center">
-            Wait For Administrator to confirm payment and activate your
-            subscription. <br /> if you haven't been assisted even after the
-            Count Down runs out, please click{" "}
+            Please contact the System Administrator to activate your account < br/>
+            to be able to access the Beta Version features and help the <br /> 
+            System be molded to your preferences by clicking {" "}
             <Link to="/contact" style={{ color: "red" }}>
               Here
             </Link>

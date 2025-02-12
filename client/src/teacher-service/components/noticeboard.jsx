@@ -22,7 +22,7 @@ const Noticeboard = () => {
         <Presentation size={20} color='#007BFE' />
         <h6>Notice Board</h6>
       </div>
-      <div className="noticeContent">
+      {/* <div className="noticeContent">
         <Accordion fluid styled>
           <AccordionTitle
             active={activeIndex === 0}
@@ -78,7 +78,7 @@ const Noticeboard = () => {
             </p>
           </AccordionContent>
         </Accordion>
-      </div>
+      </div> */}
     </>
   )
 }

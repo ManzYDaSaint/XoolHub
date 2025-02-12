@@ -1,10 +1,8 @@
 import React, { useState } from 'react'
-import { UserRoundPen, SquareDashedKanban } from 'lucide-react'
-import AdminPersonal from './adminPersonal'
-import '../dashboard.css'
-import Billing from './billing'
+import { UserRoundPen } from 'lucide-react'
+import Profile from './profile';
 
-const AdminTabs = () => {
+const ProTabs = () => {
     const [selectedTab, setSelectedTab] = useState(0);
     const [active, setActive] = useState(0);
     
@@ -17,15 +15,15 @@ const AdminTabs = () => {
     <div className="settingContent">
     <div className="tab">
       <button className={selectedTab === 0 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(0)}>Profile <UserRoundPen size={22} className='adminIcon' /></button>
-      <button className={selectedTab === 1 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(1)}>Billing <SquareDashedKanban size={22} className='adminIcon' /></button>
-      {/* <button className={selectedTab === 2 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(2)}>Notice Board <Presentation size={22} className='adminIcon' /></button> */}
+      {/* <button className={selectedTab === 1 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(1)}>Messages <MessageCircleMore size={22} className='adminIcon' /></button> */}
+      {/* <button className={selectedTab === 2 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(2)}>Notifications <BellRing size={22} className='adminIcon' /></button> */}
     </div>
     {selectedTab === 0 && <div id="Personal" className="tabcontent animate-bottom">
-        <AdminPersonal />
+        <Profile />
     </div> 
     }
     {selectedTab === 1 &&<div id="Academic" className="tabcontent animate-bottom">
-        <Billing />
+        {/* <Billing /> */}
     </div>
     }
     {selectedTab === 2 &&<div id="Academic" className="tabcontent animate-bottom">
@@ -36,4 +34,4 @@ const AdminTabs = () => {
   )
 }
 
-export default AdminTabs
+export default ProTabs

@@ -1,16 +1,63 @@
 import React from 'react';
 import { Facebook, Instagram, Twitter } from 'lucide-react'
 import { Link } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { setSubscribeData } from '../../../helpers/examination/examSlice.jsx';
+import api from '../../../services/apiServices.jsx';
+import { toast, Toaster } from 'react-hot-toast';
 
 const Footer = () => {
+    const subscribeData = useSelector((state) => state.exam.subscribeData);
+    const dispatch = useDispatch();
+
+    const handleSubmit = async (data) => {
+        try {
+            const res = await api.addSubscribe(data);
+            console.log(res.data);
+            if(res.data.success === true) {
+                toast.success(res.data.message);
+            }
+            else {
+                toast.error(res.data.message);
+            }
+            dispatch(setSubscribeData({
+                email: '',
+            }));
+        } catch (error) {
+            toast.error('An error occurred. Please try again.');
+            console.error('Error:', error);
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        dispatch(
+            setSubscribeData({
+                ...subscribeData,
+                [name]: value,
+            }));
+    };
+
+    const onSubmit = (e) => {
+        e.preventDefault();
+        handleSubmit(subscribeData);
+    };
+
   return (
     <footer className="footer">
+      <Toaster />
       <div className="footer-content">
         <div className="connect">
           <h4>Let's connect</h4>
           <p>Subscribe to our newsletter for the latest updates, <br />promotions and exclusive offers.</p>
-          <form className='connect-form'>
-            <input type="email" placeholder="Enter your email" />
+          <form className='connect-form' onSubmit={onSubmit}>
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              name='email'
+              value={subscribeData.email}
+              onChange={handleChange}
+            />
             <button type="submit">Subscribe</button>
           </form>
         </div>

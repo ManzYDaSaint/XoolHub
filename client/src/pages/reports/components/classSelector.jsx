@@ -23,7 +23,7 @@ const ClassSelector = ({ label, onChange, name, value }) => {
         {label && <label htmlFor={''}>{label}</label>}
         <div className="inputContainer">
           <select name={name} value={value} onChange={onChange}>
-            <option selected disabled>Select an option</option>
+            <option value={''} disabled selected>Select an option</option>
             {options.map((option) => (
               <option key={option.classid} value={option.classid}>
                 {option.name}

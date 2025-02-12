@@ -23,55 +23,59 @@ const Reset = () => {
   const handleBlur = () => {
     setActiveInputId(null);
   };
+
+  console.log(activeInputId)
   return (
-    <div className="auth_container">
-      <div className="auth_content">
-        <div className="header">
-          <img
-            src={Reseto}
-            alt="My Image Description"
-            className="pass__master__icon"
-          />
-        </div>
-        <div className="body">
-          <div className="dotted">
-            <h1>Set New Password</h1>
-            <div className="dot"></div>
+    <div className="notFound">
+      <div className="logContainer">
+        <div className="logSider">
+          <div className="header">
+            <img
+              src={Reseto}
+              alt="My"
+              className="pass__master__icon"
+            />
           </div>
-          <p>
-            Your new password must be different to <br></br> previously used
-            passwords
-          </p>
-          <form className="custom_form forgot__new mb-5" autoComplete="off">
-            <Input
-              placeholder="Password"
-              name="password"
-              type="password"
-              value={password}
-              id="password"
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              onChange={handlePassword}
-            />
-            <Input
-              placeholder="Confirm Password"
-              name="password"
-              type="password"
-              value={confirmPassword}
-              id="password"
-              onFocus={handleFocus}
-              onBlur={handleBlur}
-              onChange={handleConfirmPassword}
-            />
-            <div className="auth_buttons">
-              <Buttonee
-                type={"submit"}
-                value={"Reset Password"}
-                id={"resetPassword"}
-                label={"Reset Password"}
-              />
+          <div className="body">
+            <div className="dotted">
+              <h1>Set New Password</h1>
+              <div className="dot"></div>
             </div>
-          </form>
+            <p>
+              Your new password must be different to <br></br> previously used
+              passwords
+            </p>
+            <form className="loginForm mb-5" autoComplete="off">
+              <Input
+                placeholder="Password"
+                name="password"
+                type="password"
+                value={password}
+                id="password"
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onChange={handlePassword}
+              />
+              <Input
+                placeholder="Confirm Password"
+                name="password"
+                type="password"
+                value={confirmPassword}
+                id="password"
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onChange={handleConfirmPassword}
+              />
+              <div className="auth_buttons">
+                <Buttonee
+                  type={"submit"}
+                  value={"Reset Password"}
+                  id={"resetPassword"}
+                  label={"Reset Password"}
+                />
+              </div>
+            </form>
+          </div>
         </div>
       </div>
     </div>

@@ -3,69 +3,77 @@ import '../front.css';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import api from '../../../services/apiServices';
+import logo from '../../../logo.png';
 
 const Navbar = () => {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [closeMenu, setCloseMenu] = useState(true);
+
+  const handleCloseMenu = () => {
+    setCloseMenu(!closeMenu);
+  };
 
   useEffect(() => {
     const checkAuthentication = async () => {
-        try {
-          // Make a request to your authentication endpoint
-          const response = await api.Verify();
-          if (response.data.success === true) {
-            setIsLoggedIn(true);
-          }
-        } catch (error) {
-          console.error('Authentication error:', error);
+      try {
+        // Make a request to your authentication endpoint
+        const response = await api.Verify();
+        if (response.data.success === true) {
+          setIsLoggedIn(true);
         }
-      };
-  
-      checkAuthentication();
-    }, []);
+      } catch (error) {
+        console.error('Authentication error:', error);
+      }
+    };
 
-  
+    checkAuthentication();
+  }, []);
+
   return (
-    <body className='navbar-body'>
-
+    <div className="navbar-body">
       <nav className="navbar">
-        <ul className='navbar-listing'>
+        <div className={closeMenu === false ? "navbar-container active" : "navbar-container"}>
           <div className="navbar-left">
-            <Link to={'/'} className='all_links'>
-              <h2 className={location.pathname === '/' ? 'logo active' : 'logo'}>XoolHub</h2>
+            <Link to="/" className="all_links" onClick={closeMenu}>
+              <img
+                src={logo}
+                alt="logo"
+                className={location.pathname === '/' ? 'logo active' : 'logo'}
+              />
             </Link>
           </div>
-          <div className="navbar-right">
-            <Link to={'/about'} className='all_links'>
+          {/* Hamburger Menu Button */}
+          <div className="burgerT" onClick={handleCloseMenu}></div>
+            <div className="burgerM"></div>
+          <ul className={`navbar-right ${closeMenu ? 'active' : ''}`}>
+            <Link to="/about" className="all_links">
               <li className={location.pathname === '/about' ? 'active' : ''}>About</li>
             </Link>
-            <Link to={'/faq'} className='all_links'>
+            <Link to="/faq" className="all_links">
               <li className={location.pathname === '/faq' ? 'active' : ''}>FAQ</li>
             </Link>
-            <Link to={'/blog'} className='all_links'>
+            <Link to="/blog" className="all_links">
               <li className={location.pathname === '/blog' ? 'active' : ''}>Blog</li>
             </Link>
-            <Link to={'/contact'} className='all_links mr-5'>
+            <Link to="/contact" className="all_links mr-5">
               <li className={location.pathname === '/contact' ? 'active' : ''}>Contact</li>
             </Link>
             {isLoggedIn ? (
-              <Link to={'/administrator'} className='all_links mr-5 dashbtn'>
+              <Link to="/administrator" className="all_links mr-5 dashbtn">
                 <li className={location.pathname === '/administrator' ? 'active' : ''}>Dashboard</li>
               </Link>
-              ) : (
-                <>
-              <Link to="/login" className='all_links ml-5'>
-                <li className={location.pathname === '/login' ? 'active' : ''}>Login</li>
-              </Link>
-              <Link to="/register" className='all_links mr-5'>
-                <li className={location.pathname === '/register' ? 'active' : ''}>Sign Up</li>
-              </Link>
+            ) : (
+              <>
+                <Link to="/login" className="all_links ml-5 mr-5 dashbtn px-5 bg-blue-600">
+                  <li className={location.pathname === '/login' ? 'active' : ''}>Login</li>
+                </Link>
               </>
             )}
-          </div>
-        </ul>
+          </ul>
+        </div>
       </nav>
-    </body>
+    </div>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { CircleDollarSign, Cog, House, LayoutGrid } from "lucide-react";
+import { CircleDollarSign, Cog, House, LayoutGrid, MessageSquareDiff } from "lucide-react";
 
 const SuperSidebar = () => {
   const location = useLocation();
@@ -53,6 +53,18 @@ const SuperSidebar = () => {
           >
             <p className="sideIcons"><CircleDollarSign size={23} /></p>
             <p className="actualP">Subscriptions</p>
+          </li>
+        </Link>
+        <Link to={"/feeds"} className="Links">
+          <li
+            className={
+              location.pathname === "/feeds"
+                ? "sideItem active"
+                : "sideItem"
+            }
+          >
+            <p className="sideIcons"><MessageSquareDiff size={23} /></p>
+            <p className="actualP">Feedback</p>
           </li>
         </Link>
         <Link to={"/setting"} className="Links">

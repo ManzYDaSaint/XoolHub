@@ -4,25 +4,8 @@ import api from '../../services/apiServices'
 import GenderPieChart from './genderPieChart.jsx'
 
 const Info = ({setOpen}) => {
-    const [teacher, setTeacher] = useState('')
     const [cns, setCnS] = useState([])
     const [assign, setAssign] = useState('')
-
-    const fetchData = async () => {
-        try {
-            const res = await api.getTeacher4Dashboard();
-            const teacher = res.data.teacher; 
-
-            setTeacher(teacher);
-            return;
-        } catch (error) {
-            console.error('Error fetching individual:', error);
-        }
-    }; 
-
-    useEffect(() => {        
-        fetchData(); // eslint-disable-next-line
-    }, []);
 
     const classSubjectData = async () => {
         try {
@@ -58,24 +41,8 @@ const Info = ({setOpen}) => {
 
   return (
     <>
-        <button onClick={() => setOpen(true)}>
-            <Icon name='shutdown' />
-            Log Out
-        </button>
         <div className="teacherInfo">
-            {/* <CircleUserRound size={25} className='headerIcon mt-3' /> */}
-            <Icon name='user circle outline' className='headerIcon mt-3'/>
             <div className="teacherDeto mt-4">
-                {teacher ? (
-                <>
-                <h6>{teacher.name}</h6>
-                <p>{teacher.email}</p>
-                <p>{teacher.contact}</p>
-                <p>{teacher.address}</p>
-                </>
-                ) : (
-                    <p>No teacher data found.</p>
-                )}
                 <ul className='mt-5'>
                     {cns.map((item, index) => (
                     <li key={index}>

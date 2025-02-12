@@ -6,7 +6,7 @@ const TopPerforming = ({ icon: Icon, score, student, term, exam, form }) => {
       <div className="student_card_top">
         {Icon && <Icon size={50} className="student_card_icon" />}
         <div className="student_card_detail">
-          <h4>{score}</h4>
+          <h4>Agg: {score}</h4>
           <p>{student}</p>
         </div>
       </div>

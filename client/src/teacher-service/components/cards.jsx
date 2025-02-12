@@ -15,7 +15,7 @@ const Cards = () => {
             <div className="col-sm-4">
                 <DashboardCard 
                     label={'Today Lessons'}
-                    figure={'3'}
+                    figure={'0'}
                     icon={'chess'}
                     note={'Number of lessons today'}
                     cardTop={'ndCard'}
@@ -25,7 +25,7 @@ const Cards = () => {
             <div className="col-sm-4">
                 <DashboardCard 
                     label={'Messages'}
-                    figure={'8'}
+                    figure={'0'}
                     icon={'mail'}
                     note={'New messages'}
                     cardTop={'rdCard'}

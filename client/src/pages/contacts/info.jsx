@@ -1,4 +1,4 @@
-import { LocateFixed, Mail, Phone, User } from "lucide-react";
+import { LocateFixed, Mail, MessageCircle, Phone, User } from "lucide-react";
 import React, { useState } from "react";
 import Input from "../../components/input/input";
 
@@ -24,8 +24,56 @@ const ContactPage = () => {
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen mt-5 plans">
+      <div className="mt-20 mb-20 text-center">
+        <h2 className="text-xl font-semibold text-gray-700 pt-20">
+          Let's Get In Touch.
+        </h2>
+        <p>
+          Get in touch with us so that we might talk more about your thoughts
+          and suggestions <br /> so that we might help improve and tailor this
+          system to your needs.
+        </p>
+        <div className="plan-cards">
+          <div className="plan-card">
+            <div className="inner-card">
+              <Phone size={25} className="inner-icon" />
+              <div className="inner-container">
+                <h6>Phone:</h6>
+                <p className="text-gray-600">+265 (0) 993-353-3315</p>
+              </div>
+            </div>
+          </div>
+          <div className="plan-card">
+            <div className="inner-card">
+              <Mail size={25} className="inner-icon" />
+              <div className="inner-container">
+                <h6>Email:</h6>
+                <p className="text-gray-600">ManzyN@outlook.com</p>
+              </div>
+            </div>
+          </div>
+          <div className="plan-card">
+            <div className="inner-card">
+              <LocateFixed size={25} className="inner-icon" />
+              <div className="inner-container">
+                <h6>Address:</h6>
+                <p className="text-gray-600">Mchinji</p>
+              </div>
+            </div>
+          </div>
+          <div className="plan-card">
+            <div className="inner-card">
+              <MessageCircle size={25} className="inner-icon" />
+              <div className="inner-container">
+                <h6>WhatsApp:</h6>
+                <p className="text-gray-600">+265 (0) 886-563-330</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="text-center mt-5">
-        <h2>CONTACT US</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 pt-20">CONTACT US</h2>
         <p>
           Feel free to contact us on any information that you <br /> wanna
           communicate about the system.
@@ -106,45 +154,6 @@ const ContactPage = () => {
             </div>
           </form>
         )}
-      </div>
-      <div className="mt-20 mb-20 text-center">
-        <h2 className="text-xl font-semibold text-gray-700 pt-20">
-          Let's Get In Touch.
-        </h2>
-        <p>
-          Get in touch with us so that we might talk more about your thoughts
-          and suggestions <br /> so that we might help improve and tailor this
-          system to your needs.
-        </p>
-        <div className="plan-cards">
-          <div className="plan-card">
-            <div className="inner-card">
-              <Phone size={25} className="inner-icon" />
-              <div className="inner-container">
-                <h6>Phone:</h6>
-                <p className="text-gray-600">+265 (0) 993-353-3315</p>
-              </div>
-            </div>
-          </div>
-          <div className="plan-card">
-            <div className="inner-card">
-              <Mail size={25} className="inner-icon" />
-              <div className="inner-container">
-                <h6>Email:</h6>
-                <p className="text-gray-600">ManzyN@outlook.com</p>
-              </div>
-            </div>
-          </div>
-          <div className="plan-card">
-            <div className="inner-card">
-              <LocateFixed size={25} className="inner-icon" />
-              <div className="inner-container">
-                <h6>Address:</h6>
-                <p className="text-gray-600">Lilongwe, Area 3</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

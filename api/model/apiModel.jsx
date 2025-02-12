@@ -94,6 +94,13 @@ const checkPassword = async (sid) => {
   return res.rows[0];
 };
 
+const checkTeacherPassword = async (sid, id) => {
+  const query = "SELECT password FROM teachers WHERE sid = $1 AND id = $2";
+  const value = [sid, id];
+  const res = await kneX.query(query, value);
+  return res.rows[0];
+};
+
 const checkSuperPassword = async () => {
   const query = "SELECT password FROM administrator";
   const res = await kneX.query(query);
@@ -187,6 +194,13 @@ const OTPGeneration = async(otpCode, otpExpire, email) => {
 const updatePassword = async(newPassword, sid) => {
   const query = "UPDATE schools SET password = $1 WHERE sid = $2";
   const value = [newPassword, sid];
+  const res = await kneX.query(query, value);
+  return res.rows;
+}
+
+const updateTeacherPassword = async(newPassword, sid, id) => {
+  const query = "UPDATE teachers SET password = $1 WHERE sid = $2 AND id = $3";
+  const value = [newPassword, sid, id];     
   const res = await kneX.query(query, value);
   return res.rows;
 }
@@ -935,12 +949,12 @@ const getStudent = async (sid) => {
 
 // Get single object
 const getSingleStudent = async (sid, id) => {
-  const query = `SELECT s.*, TO_CHAR(s.created_at, 'Month DD, YYYY') AS admission, class.name AS class 
-FROM history
-INNER JOIN class ON class.classid=history.classid
-INNER JOIN students s ON s.id = history.studentid
-WHERE s.sid = $1 AND s.id = $2`;
-  const value = [sid, id];
+  const query = `SELECT s.*, TO_CHAR(s.created_at, 'Month DD, YYYY') AS admission, class.name AS class
+FROM students s
+INNER JOIN history h ON h.studentid = s.id 
+INNER JOIN class ON class.classid = h.classid
+WHERE s.id = $1 AND h.sid = $2 AND h.status = 'Active'`;
+  const value = [id, sid];
   const res = await kneX.query(query, value);
   return res.rows;
 };
@@ -1097,17 +1111,26 @@ const updateFee = async (id, name, amount, description, update) => {
 
 // Get all object
 const getPay = async (sid) => {
-  const query = `SELECT pid, payment.paid, payment.updated_at, students.id, 
-students.name AS student, class.name as class, 
-fees.name AS fee, payment.status, term.name AS term, acyear.name AS year
-FROM payment
-INNER JOIN students ON payment.id = students.id
-INNER JOIN history ON students.id = history.studentid
-INNER JOIN fees ON fees.feeid = payment.feeid
-INNER JOIN term ON term.id = payment.termid
-INNER JOIN acyear ON acyear.yearid = term.yearid
-INNER JOIN class ON history.classid = class.classid
-                    WHERE payment.sid = $1`;
+  const query = `SELECT 
+    p.pid, 
+    p.paid, 
+    p.updated_at, 
+    s.id, 
+    s.name AS student, 
+    c.name AS class, 
+    f.name AS fee, 
+    p.status, 
+    t.name AS term, 
+    ay.name AS year
+FROM payment p
+INNER JOIN students s ON p.id = s.id
+INNER JOIN history h ON s.id = h.studentid
+    AND h.yearid = (SELECT yearid FROM term WHERE id = p.termid) -- Ensure the student was in this academic year
+INNER JOIN fees f ON f.feeid = p.feeid
+INNER JOIN term t ON t.id = p.termid
+INNER JOIN acyear ay ON ay.yearid = t.yearid
+INNER JOIN class c ON h.classid = c.classid
+WHERE p.sid = $1`;
   const value = [sid];
   const res = await kneX.query(query, value);
   return res.rows;
@@ -1431,8 +1454,8 @@ const getX = async (sid, termid, typeid, classid, subjectid) => {
         INNER JOIN students ON students.id = results.studentid
         INNER JOIN class ON class.classid = results.classid
         INNER JOIN subject ON subject.id = results.subjectid
-        WHERE results.yearid = $1 AND results.termid = $2 AND results.typeid = $3
-        AND results.classid = $4 AND results.subjectid = $5 AND results.sid = $6`;
+        WHERE results.termid = $1 AND results.typeid = $2
+        AND results.classid = $3 AND results.subjectid = $4 AND results.sid = $5`;
   const value = [termid, typeid, classid, subjectid, sid];
   const res = await kneX.query(query, value);
   return res.rows;
@@ -1513,7 +1536,8 @@ const dashboardClassTeacher = async (sid, teacherid) => {
 const getStudentByGender = async (sid, classid) => {
   const query = `SELECT COALESCE(gender, 'Other') as gender, COUNT(*) as count
       FROM students
-	  WHERE classid = $1 AND sid = $2
+      INNER JOIN history h ON h.studentid = students.id
+	  WHERE classid = $1 AND h.sid = $2
       GROUP BY COALESCE(gender, 'Other')`;
   const values = [classid, sid];
   const res = await kneX.query(query, values);
@@ -1535,16 +1559,15 @@ const getTopStudent = async (sid, teacherid, classid) => {
 };
 
 const getAggScoreBySUbject = async (sid, teacherid, classid) => {
-  const query = `SELECT subject.name AS subject, ROUND(AVG(CAST(score AS BIGINT))) AS average, acyear.name AS year, term.name AS term, exam.name AS exam, class.name AS class
+  const query = `SELECT subject.name AS subject, ROUND(AVG(CAST(score AS BIGINT))) AS average, term.name AS term, exam.name AS exam, class.name AS class
         FROM results
         INNER JOIN subject ON subject.id = results.subjectid
-        INNER JOIN acyear ON acyear.yearid = results.yearid
         INNER JOIN term ON term.id = results.termid
         INNER JOIN exam ON exam.id = results.typeid
         INNER JOIN class ON class.classid = results.classid
         INNER JOIN assignteacher ON assignteacher.classid = results.classid
         WHERE assignteacher.classid = $1 AND assignteacher.teacherid = $2 AND results.sid = $3
-        GROUP BY subject.name, acyear.name, term.name, exam.name, class.name
+        GROUP BY subject.name, term.name, exam.name, class.name
         ORDER BY average DESC`;
   const value = [classid, teacherid, sid];
   const res = await kneX.query(query, value);
@@ -1569,7 +1592,7 @@ const countStudentByAssign = async (sid, teacherid, classid) => {
 // JCE
 const countSubjects = async(termid, typeid, classid, studentid, sid) => {
   const query = `SELECT COUNT(subjectid) AS count FROM results 
-  WHERE termid = $1 AND typeid = $2 AND classid = $3 AND studentid = ANY ($4::bigint[]) AND sid = $5`;
+  WHERE termid = $1 AND typeid = $2 AND classid = $3 AND studentid = ANY ($4::uuid[]) AND sid = $5`;
   const values = [termid, typeid, classid, studentid, sid];
   const res = await kneX.query(query, values);
   return res.rows;
@@ -1585,7 +1608,7 @@ const addPromote = async(sid, termid, typeid, classid, studentid, agg, remarks, 
 
 const checkPromote = async(sid, termid, typeid, classid, studentid) => {
   const query = `SELECT EXISTS (
-        SELECT 1 FROM promotion WHERE sid = $1 AND termid = $2 AND typeid = $3 AND classid = $4 AND studentid = ANY ($5::bigint[]))`;
+        SELECT 1 FROM promotion WHERE sid = $1 AND termid = $2 AND typeid = $3 AND classid = $4 AND studentid = ANY ($5::uuid[]))`;
   const values = [sid, termid, typeid, classid, studentid];
   const res = await kneX.query(query, values);
   if (res.rows && res.rows[0]) {
@@ -1926,7 +1949,6 @@ const deleteReport = async (yearid, termid, typeid, classid, sid) => {
   return res.rows;
 };
 
-
 const countReports = async (id) => {
   const query = `WITH CurrentTerm AS (
       SELECT 
@@ -1947,7 +1969,7 @@ const countReports = async (id) => {
   return res.rows[0];
 }
 
-const getStudentForPromotion = async (classid) => {
+const getStudentForPromotion = async (classid, sid) => {
   const query = `WITH CurrentTerm AS (
         SELECT 
             id AS termid
@@ -1960,8 +1982,79 @@ const getStudentForPromotion = async (classid) => {
     FROM promotion p
     INNER JOIN students ON students.id = p.studentid
     INNER JOIN exam ON exam.id = p.typeid
-    WHERE p.classid = $1 AND p.termid = (SELECT p.termid FROM CurrentTerm)`;
-  const values = [classid];
+    WHERE p.classid = $1 AND p.termid = (SELECT p.termid FROM CurrentTerm) AND p.sid = $2`;
+  const values = [classid, sid];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const upperPromote = async (status, classid, studentid) => {
+  const updateHistory = [];
+  const query = `UPDATE history SET status = $1
+    WHERE classid = $2 AND studentid = $3`;
+
+  // Insert each student one by one
+  for (const id of studentid) {
+    const result = await kneX.query(query, [status, classid, id]);
+    updateHistory.push(result.rows[0]);
+  }
+  return updateHistory;
+}
+
+const bestStudents = async (sid) => {
+  const query = `WITH CurrentTerm AS (
+    SELECT id AS termid
+    FROM term
+    WHERE CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+)
+SELECT DISTINCT ON (p.classid) s.name AS student, term.name AS term, class.name AS class, exam.name AS exam, p.agg
+FROM promotion p
+INNER JOIN students s ON s.id = p.studentid 
+INNER JOIN term ON term.id= p.termid
+INNER JOIN class ON class.classid = p.classid
+INNER JOIN exam ON exam.id = p.typeid 
+WHERE p.termid = (SELECT termid FROM CurrentTerm) AND sid = $1
+ORDER BY p.classid, rank ASC;
+`;
+  const res = await kneX.query(query, [sid]);
+  return res.rows;
+}
+
+const worstStudents = async (sid) => {
+  const query = `WITH CurrentTerm AS (
+    SELECT id AS termid
+    FROM term
+    WHERE CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+)
+SELECT DISTINCT ON (p.classid) s.name AS student, term.name AS term, class.name AS class, exam.name AS exam, p.agg
+FROM promotion p
+INNER JOIN students s ON s.id = p.studentid 
+INNER JOIN term ON term.id= p.termid
+INNER JOIN class ON class.classid = p.classid
+INNER JOIN exam ON exam.id = p.typeid 
+WHERE p.termid = (SELECT termid FROM CurrentTerm) AND sid = $1
+ORDER BY p.classid, rank DESC;
+`;
+  const res = await kneX.query(query, [sid]);
+  return res.rows;
+}
+
+const avSubByClass = async (sid, classid) => {
+  const query =  `WITH CurrentTerm AS (
+    SELECT id AS termid
+    FROM term
+    WHERE CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+    )SELECT 
+      subject.name AS subject,
+        classid, 
+        subjectid, 
+        ROUND(AVG(score::NUMERIC)) AS average
+    FROM results
+    INNER JOIN subject ON subject.id = results.subjectid
+    WHERE classid = $1 AND results.sid = $2 AND results.termid = (SELECT termid FROM CurrentTerm)
+    GROUP BY classid, subjectid, subject
+    ORDER BY classid, subjectid, subject ASC`;
+  const values = [classid, sid];
   const res = await kneX.query(query, values);
   return res.rows;
 }
@@ -2108,6 +2201,15 @@ const checkSubscriptionStatus = async(sid) => {
   return res.rows[0];
 }
 
+const checkSubsByID = async(sid) => {
+  const query =`SELECT *, sp.name FROM subscriptions
+    INNER JOIN subscription_plans sp ON sp.id = subscriptions.planid      
+    WHERE sid = $1 ORDER BY subscriptions.created_at ASC`;
+  const values = [sid];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
 const updateSubscriptionStatus = async (status, sid) => {
   const query = `UPDATE billing b
 SET status = $1
@@ -2159,6 +2261,65 @@ const updateSchoolStatus = async (id, status) => {
 
 // --------------------------------------- SUBSCRIPTION CRUD ------------------------------------------------
 
+
+
+
+
+
+
+
+// --------------------------------------- SUBSCRIBE CRUD ------------------------------------------------
+
+const checkSubscribe = async(email) => {
+  const query = 'SELECT email FROM subscribe WHERE email = $1';
+  const values = [email];
+  const res = await kneX.query(query, values);
+  return res.rows[0];
+}
+
+const addSubscribe = async (email) => {
+  const query = `INSERT INTO subscribe (email) VALUES ($1) RETURNING id`;
+  const values = [email];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+
+// --------------------------------------- SUBSCRIBE CRUD ------------------------------------------------
+
+
+
+
+// --------------------------------------- FEEDBACK CRUD ------------------------------------------------
+
+const addFeedback = async (sid, rating, optioni, commenti) => {
+  const query = `INSERT INTO feedback (sid, rating, optioni, commenti) VALUES ($1, $2, $3, $4) RETURNING id`;
+  const values = [sid, rating, optioni, commenti];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const getFeedbackByRating = async(rating) => {
+  const query = `SELECT feedback.*, schools.name FROM feedback 
+  INNER JOIN schools ON schools.sid = feedback.sid  
+  WHERE rating = $1`;
+  const values = [rating];
+  const res = await kneX.query(query, values);
+  return res.rows;
+}
+
+const getFeedback = async() => {
+  const query = `SELECT feedback.*, schools.name, TO_CHAR(feedback.created_at, 'Month DD, YYYY') AS date FROM feedback 
+  INNER JOIN schools ON schools.sid = feedback.sid`;
+  const res = await kneX.query(query);
+  return res.rows;
+}
+
+// --------------------------------------- FEEDBACK CRUD ------------------------------------------------
+
+
+
+
 module.exports = {
   // ----- SCHOOLS SECTION -----
   countSchools,
@@ -2177,12 +2338,14 @@ module.exports = {
   checkSchool,
   checkSuperPassword,
   checkPassword,
+  checkTeacherPassword,
   insertSchool,
   editSchool,
   updateSchool,
   updateSchoolWithoutLogo,
   OTPGeneration,
   updatePassword,
+  updateTeacherPassword,
   updateSuperPassword,
   // ----- REGISTER SECTION -----
 
@@ -2387,6 +2550,10 @@ module.exports = {
   deleteReport,
   countReports,
   getStudentForPromotion,
+  upperPromote,
+  bestStudents,
+  worstStudents,
+  avSubByClass,
   // ----- REPORT SECTION -----
 
 
@@ -2420,6 +2587,7 @@ module.exports = {
   addBilling,
   checkSubscription,
   checkSubscriptionStatus,
+  checkSubsByID,
   updateSubscriptionStatus,
   checkPaid,
   getSubscriptionPayments,
@@ -2427,4 +2595,22 @@ module.exports = {
   updateBillingStatus,
   updateSchoolStatus,
   // ----- SUBSCRIPTION SECTION -----
+
+
+
+
+  // ----- SUBSCRIBE SECTION -----
+
+  checkSubscribe,
+  addSubscribe,
+  // ----- SUBSCRIBE SECTION -----
+
+
+
+  // ----- FEEDBACK SECTION -----
+  addFeedback,
+  getFeedbackByRating,
+  getFeedback,
+  // ----- FEEDBACK SECTION -----
+
 };

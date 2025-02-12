@@ -184,6 +184,18 @@ const {
     updatePromote,
     countSubjects,
     getStudentForPromotion,
+    upperPromote,
+    bestStudents,
+    worstStudents,
+    avSubByClass,
+    checkTeacherPassword,
+    updateTeacherPassword,
+    checkSubscribe,
+    addSubscribe,
+    addFeedback,
+    getFeedbackByRating,
+    getFeedback,
+    checkSubsByID,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -620,6 +632,56 @@ const updateSchools = async (req, res) => {
 };
 
 
+
+const TeacherPasswordUpdates = async(req, res) => {
+    const { current, newPassword, confirm } = req.body;
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    const teacherid = decoded.id;
+
+    try {
+        if(!current || !newPassword || !confirm) {
+            return res.json({
+                success: false,
+                message: "Please fill up all the fields",
+            });
+        }
+        else if(newPassword !== confirm) {
+            return res.json({
+                success: false,
+                message: "Password does not match..",
+            });
+        }
+
+        const checkPass = await checkTeacherPassword(sid, teacherid);
+        if(current !== checkPass.password) {
+            return res.json({
+                success: false,
+                message: "Invalid password..",
+            });
+        }
+
+        const update = await updateTeacherPassword(newPassword, sid, teacherid);
+        if(update) {
+            res.json({
+                success: true,
+                message: "Password updated successfully",
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Password updating failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            success: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+}
 
 const PasswordUpdates = async(req, res) => {
     const { current, newPassword, confirm } = req.body;
@@ -4164,18 +4226,18 @@ const insertResults = async(req, res) => {
 // ----------------------- FILTER CONTROLLER -----------------------
 
 const getXs = async(req, res) => {
-    const { yearid, termid, typeid, selectedClass, selectedSubject } = req.body;
+    const { termid, typeid, selectedClass, selectedSubject } = req.body;
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
     try {
-        if(!yearid || !termid || !typeid || !selectedSubject || !selectedClass) {
+        if(!termid || !typeid || !selectedSubject || !selectedClass) {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields"
             });
         }
-        const x = await getX(sid, yearid, termid, typeid, selectedClass, selectedSubject);
+        const x = await getX(sid, termid, typeid, selectedClass, selectedSubject);
         if(x) {
             if(x.length === 0) {
                 return res.json({
@@ -4286,10 +4348,10 @@ const updateScores = async(req, res) => {
         else {
             const venom = 'JCE';
             const carnage = 'MSCE';
-            const getClass = await getClassById(sid, classID);
+            const getClass = await getClassById(classID);
             if(getClass) {
                 if(getClass.denom === venom) {
-                    const getDenom = await getGradeByDenom(sid, venom);
+                    const getDenom = await getGradeByDenom(venom);
                     if(getDenom) {
                         let grade = ''; 
                         let remarks = '';
@@ -4308,7 +4370,7 @@ const updateScores = async(req, res) => {
                             if(add) {
                                 return res.json({
                                     success: true,
-                                    message: `Result for student update successfully.`,
+                                    message: `Result for student update successfully.`
                                 });
                             }
                             else {
@@ -4714,7 +4776,37 @@ const countStudentByTeacher = async (req, res) => {
 
 
 
-// ----------------------- REPORT CONTROLLER -----------------------
+// ---------------------- REPORT CONTROLLER -----------------------
+
+const updatePromotions = async (req, res) => {
+    const { studentIDs, currentClass, nextClass, nextYear } = req.body;
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    const status = 'Promoted';
+
+    try {
+        const update = await upperPromote(status, currentClass, studentIDs);
+        if(update) {
+            const insert = await insertStudentHistory(sid, nextYear, nextClass, studentIDs);
+            if(insert) {
+                res.json({
+                    success: true,
+                    message: 'Promotion successful'
+                });
+                return;
+            }
+        }
+    }
+    catch (error) {
+        res.status(500).json({
+            status: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message
+        });
+    }
+}
 
 const getReport = async (req, res) => {
     const { termid, typeid, classid} = req.body.data;
@@ -4893,7 +4985,7 @@ const insertPromotion = async (req, res) => {
                     termid,
                     typeid,
                     classid,
-                    parseInt(student.student_id, 10),
+                    student.student_id,
                     parseInt(student.agg, 10),
                     remark,
                     parseInt(student.rank, 10)
@@ -4909,13 +5001,13 @@ const insertPromotion = async (req, res) => {
                     termid,
                     typeid,
                     classid,
-                    parseInt(student.student_id, 10),
+                    student.student_id,
                     parseInt(student.agg, 10),
                     remark,
                     parseInt(student.rank, 10)
                 )
             );
-    
+            
             await Promise.all(insertPromises);
             return res.status(201).json({ message: 'Students promoted successfully' });
         }
@@ -4925,10 +5017,13 @@ const insertPromotion = async (req, res) => {
             error: error.message,
         });
     }
-};
+}
 
 const getStudentPromos = async (req, res) => {
     const { data } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
     
     if(!data) {
         res.json({
@@ -4938,7 +5033,7 @@ const getStudentPromos = async (req, res) => {
     }
 
     try {
-        const info = await getStudentForPromotion(data);
+        const info = await getStudentForPromotion(data, sid);
         if(info) {
             res.json({
                 success: true,
@@ -5294,6 +5389,86 @@ const countTermlyReports = async(req, res) => {
     }
 }
 
+const getBestStudents = async(req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const best = await bestStudents(sid);
+        if(best) {
+            return res.json({
+                success: true,
+                best,
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'No records found'
+            })
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getWorstStudents = async(req, res) => {
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    try {
+        const worst = await worstStudents(sid);
+        if(worst) {
+            return res.json({
+                success: true,
+                worst,
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'No records found'
+            })
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const avSubjectbyClassID = async(req, res) => {
+    const { classID } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const get = await avSubByClass(sid, classID);
+        if(get) {
+            res.json({
+                success: true,
+                get,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'No records found',
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        })
+    }
+}
+
 // ----------------------- REPORT CONTROLLER -----------------------
 
 
@@ -5599,6 +5774,32 @@ const updatePlans = async(req, res) => {
 
 // ----------------------- SUBSCRIPTION CONTROLLER -----------------------
 
+const SubsByID = async (req, res) => {
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const subs = await checkSubsByID(sid);
+        if (subs) {
+            res.json({
+                success: true,
+                subs,
+            });
+        } else {
+            res.json({
+                success: false,
+                message: "Retrieving subscription data failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
 const gotSubs = async (req, res) => {
     try {
         const { plan } = req.params; // Extract 'plan' from req.params
@@ -5860,6 +6061,145 @@ const updateSchoolStatuses = async (req, res) => {
 
 
 
+// ----------------------- SUBSCRIBE CONTROLLER -----------------------
+
+const addSubscriber = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        if (!email) {
+            return res.json({
+                success: false,
+                message: 'Please provide an email address',
+            });
+        }
+
+        const check = await checkSubscribe(email);
+        if(check) {
+            return res.json({
+                success: false,
+                message: 'You are already subscribed',
+            });
+        }
+        else {
+            const subscriber = await addSubscribe(email);
+            if (subscriber) {
+                return res.json({
+                    success: true,
+                    message: 'You have been subscribed successfully',
+                });
+            }
+            else {
+                return res.json({
+                    success: false,
+                    message: 'Failed to subscribe. Please try again later',
+                });
+            }
+        }
+    } catch (error) {
+        return res.json({
+            success: false,
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+// ----------------------- SUBSCRIBE CONTROLLER -----------------------
+
+
+
+
+
+// ----------------------- FEEDBACK CONTROLLER -----------------------
+
+const insertFeedback = async (req, res) => {
+    const { rating, selectedOption, comment } = req.body;
+    const token = req.cookies.schoolToken
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        if(!rating || !selectedOption || !comment) {
+            return res.json({
+                success: false,
+                message: 'Please fill in the blank fields',
+            });
+        }
+
+        const feedback = await addFeedback(sid, rating, selectedOption, comment);
+        if(feedback) {
+            return res.json({
+                success: true,
+                message: 'Feedback submitted successfully',
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'Failed to submit feedback',
+            });
+        }
+    } catch (error) {
+        return res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getFeedbackRating = async (req, res) => {
+    
+    try {
+        const rate = '5';
+        const rating = await getFeedbackByRating(rate);
+        if(rating) {
+            return res.json({
+                success: true,
+                rating,
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'Failed to fetch feedback',
+            });
+        }
+    } catch (error) {
+        return res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const getFeedbacko = async (req, res) => {
+    try {
+        const feedback = await getFeedback();
+        if(feedback) {
+            return res.json({
+                success: true,
+                feedback,
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'Failed to fetch feedback',
+            });
+        }
+    } catch (error) {
+        return res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }   
+}
+
+// ----------------------- FEEDBACK CONTROLLER -----------------------
+
+
+
 
 module.exports = { 
     // ----- SCHOOL EXPORTS ------
@@ -5891,6 +6231,7 @@ module.exports = {
     resetPassword, 
     verifyUser,
     updateSchools,
+    TeacherPasswordUpdates,
     PasswordUpdates,
     PasswordSuper,
     // ----- REGISTER EXPORTS ------
@@ -6114,6 +6455,7 @@ module.exports = {
 
     // ----- REPORT EXPORTS ------
     getReport,
+    updatePromotions,
     insertPromotion,
     getStudentPromos,
     getStudentReport,
@@ -6125,6 +6467,9 @@ module.exports = {
     getRemarksByClassID,
     deleteReports,
     countTermlyReports,
+    getBestStudents,
+    getWorstStudents,
+    avSubjectbyClassID,
     // ----- REPORT EXPORTS ------
 
 
@@ -6152,6 +6497,7 @@ module.exports = {
 
     // ----- SUBSCRIPTION EXPORTS ------
     gotSubs,
+    SubsByID,
     insertSubscription,
     checkSubStatus,
     checkPaidStatus,
@@ -6160,4 +6506,18 @@ module.exports = {
     updateStatuses,
     updateSchoolStatuses,
     // ----- SUBSCRIPTION EXPORTS ------
+
+
+
+    // ----- SUBSCRIBE EXPORTS ------
+    addSubscriber,
+    // ----- SUBSCRIBE EXPORTS ------
+
+
+
+    // ----- FEEDBACK EXPORTS ------
+    insertFeedback,
+    getFeedbacko,
+    getFeedbackRating,
+    // ----- FEEDBACK EXPORTS ------
 };

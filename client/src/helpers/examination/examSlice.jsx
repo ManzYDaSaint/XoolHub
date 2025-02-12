@@ -150,6 +150,9 @@ const ExamSlice = createSlice({
     scoreFormData: {
       score: '',
     },
+    subscribeData: {
+      email: '',
+    },
     subscriptionData: {
       name: '',
       price: '',
@@ -180,6 +183,9 @@ const ExamSlice = createSlice({
     },
     setLoginData: (state, action) => {
       state.loginData = action.payload;
+    },
+    setSubscribeData: (state, action) => {
+      state.subscribeData = action.payload;
     },
     setYearFormData: (state, action) => {
       state.yearFormData = action.payload;
@@ -281,5 +287,6 @@ export const {
   setSuperPassword,
   setSubscriptionData,
   setEventFormData,
+  setSubscribeData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

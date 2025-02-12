@@ -5,7 +5,6 @@ const FormButton = ({type, label, id, onClick, icon}) => {
   return (
     <div className='formButtonContainer'>
         <button 
-            icon={Icon}
             className='formButton'
             id={id}
             type={type}

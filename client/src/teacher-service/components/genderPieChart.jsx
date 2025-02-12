@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip } from 'recharts';
 import api from '../../services/apiServices';
 
 const GenderPieChart = ({ id }) => { // Destructure 'id' from props
   const [data, setData] = useState([]);
 
-  const fetchData = async () => {
+const fetchData = async (id) => {
     try {
       const res = await api.getStudentByGender(id); // Pass 'id' to the API call
 
@@ -21,20 +21,20 @@ const GenderPieChart = ({ id }) => { // Destructure 'id' from props
   }
 
   useEffect(() => {
-      fetchData();
+      fetchData(id);  
   }, [id]); // eslint-disable-next-line 
 
   const COLORS = ['#0088FE', '#FFBB28', '#FF8042']; // Adding a third color for 'Other'
 
   return (
-    <PieChart width={50} height={50}>
+    <PieChart width={150} height={150}>
       <Pie
         data={data}
-        cx={25}
-        cy={25}
+        cx={75}
+        cy={75}
         labelLine={false}
         label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-        outerRadius={20}
+        outerRadius={70}
         fill="#8884d8"
         dataKey="value"
       >

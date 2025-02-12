@@ -163,6 +163,16 @@ const {
     deleteEvents,
     insertPromotion,
     getStudentPromos,
+    updatePromotions,
+    getBestStudents,
+    getWorstStudents,
+    avSubjectbyClassID,
+    TeacherPasswordUpdates,
+    addSubscriber,
+    insertFeedback,
+    getFeedbacko,
+    getFeedbackRating,
+    SubsByID,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
@@ -207,6 +217,7 @@ router.route('/update-subscriptions/:id').put(updatePlans);
 // ------- SUBSCRIPTION ROUTES -----------
 
 router.route('/got-subscription/:plan').get(gotSubs);
+router.route('/get-subs').get(SubsByID);
 router.route('/add-billing').post(insertSubscription);
 router.route('/check-subscription-status').get(checkSubStatus);
 router.route('/check-paid-status').get(checkPaidStatus);
@@ -225,6 +236,7 @@ router.route('/update-school-status/:id').put(updateSchoolStatuses);
 router.route('/signup').post(signup)
 router.route('/updateschool').put(updateSchools);
 router.route('/update-school-password').put(PasswordUpdates);
+router.route('/update-teacher-password').put(TeacherPasswordUpdates);
 router.route('/update-super-password').put(PasswordSuper);
 // ------- REGISTER ROUTES -----------
 
@@ -504,6 +516,10 @@ router.route('/admindet').get(getSchool);
 router.route('/getreport').post(getReport);
 router.route('/insert-promotion').post(insertPromotion);
 router.route('/get-student-promotion').post(getStudentPromos);
+router.route('/update-pro').post(updatePromotions);
+router.route('/best-students').get(getBestStudents);
+router.route('/average-subject').post(avSubjectbyClassID);
+router.route('/worst-students').get(getWorstStudents);
 router.route('/getstudentreport').post(getStudentReport);
 router.route('/getctreport').post(getCT4Report);
 router.route('/countreport').post(getCount);
@@ -525,6 +541,20 @@ router.route('/edit-event/:id').get(editEvents);
 router.route('/update-event/:id').put(updateEvents);
 router.route('/delete-event/:id').delete(deleteEvents);
 // ------- EVENTS ROUTES -----------
+
+
+
+// ------- SUBSCRIBE ROUTES -----------
+router.route('/insert-subscribe').post(addSubscriber);
+// ------- SUBSCRIBE ROUTES -----------
+
+
+
+// ------- FEEDBACK ROUTES -----------
+router.route('/insert-feedback').post(insertFeedback);
+router.route('/get-feedback').get(getFeedbacko);
+router.route('/get-feedback-rating').get(getFeedbackRating);
+// ------- FEEDBACK ROUTES -----------
 
 
 

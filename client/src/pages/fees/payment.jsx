@@ -5,7 +5,7 @@ import Sidebar from '../../components/input/sidebar.jsx'
 import Navbar from '../../components/input/top.jsx'
 import { useNavigate } from 'react-router-dom';
 import { Icon } from 'semantic-ui-react';
-import PayTable from './components.jsx/payTable.jsx';
+import PayTable from './components/payTable.jsx';
 import api from '../../services/apiServices.jsx';
 import { Timer, CircleCheckBig } from 'lucide-react';
 

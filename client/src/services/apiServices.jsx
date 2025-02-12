@@ -27,7 +27,9 @@ const updateSubscriptionStatus = (data) => axios.put(API + '/update-suspended-st
 const getSubscriptionPayment = () => axios.get(API + '/get-subscription-payments');
 const updateStatus = (id, data) => axios.put(API + '/update-statuses/' + id, data);
 const updateSchoolStatus = (id, data) => axios.put(API + '/update-school-status/' + id, data);
+const getSubsByID = () => axios.get(API + '/get-subs');
 // --------- SUPER ADMIN AXIOS -----------
+
 
 
 
@@ -37,6 +39,7 @@ const updateSchoolStatus = (id, data) => axios.put(API + '/update-school-status/
 const createSchool = (data) => axios.post(API + '/signup', data);
 const updateSchool = (data) => axios.put(API + '/updateschool', data);
 const updatePassword = (data) => axios.put(API + '/update-school-password', data);
+const updateTeacherPassword = (data) => axios.put(API + '/update-teacher-password', data);
 const updateSuperPassword = (data) => axios.put(API + '/update-super-password', data);
 // --------- REGISTER AXIOS -----------
 
@@ -314,6 +317,10 @@ const getSchool = () => axios.get(API + '/admindet');
 const getReport = (data) => axios.post(API + '/getreport', data);
 const insertPromotion = (data) => axios.post(API + '/insert-promotion', data);
 const getStudentPromotion = (data) => axios.post(API + '/get-student-promotion', data);
+const updatePro = (data) => axios.post(API + '/update-pro', data);
+const getBestStudents = () => axios.get(API + '/best-students');
+const getWorstStudents = () => axios.get(API + '/worst-students');
+const avSubject = (data) => axios.post(API + '/average-subject', data);
 const getStudentReport = (data) => axios.post(API + '/getstudentreport', data);
 const getCTReport = (data) => axios.post(API + '/getctreport', data);
 const countResult = (data) => axios.post(API + '/countreport', data);
@@ -334,6 +341,19 @@ const editEvent = (id) => axios.get(API + '/edit-event/' + id);
 const updateEvent = (id, data) => axios.put(API + '/update-event/' + id, data);
 const deleteEvent = (id) => axios.delete(API + '/delete-event/' + id);
 // --------- EVENTS AXIOS -----------
+
+
+
+
+// --------- SUBSCRIBE AXIOS -----------
+const addSubscribe = (data) => axios.post(API + '/insert-subscribe', data);
+// --------- SUBSCRIBE AXIOS -----------
+
+// --------- FEEDBACK AXIOS -----------
+const insertFeedback = (data) => axios.post(API + '/insert-feedback', data);
+const getFeedback = () => axios.get(API + '/get-feedback');
+const getFeedbackRating = () => axios.get(API + '/get-feedback-rating');
+// --------- FEEDBACK AXIOS -----------
 
 
 
@@ -366,6 +386,7 @@ export default {
   getSubscriptionPayment,
   updateStatus,
   updateSchoolStatus,
+  getSubsByID,
   // ------ SUPER ADMIN EXPORT -------
 
 
@@ -375,6 +396,7 @@ export default {
   updateSchool,
   updateSuperPassword,
   updatePassword,
+  updateTeacherPassword,
   // ------ REGISTER EXPORT -------
 
 
@@ -605,6 +627,10 @@ export default {
        getReport,
        insertPromotion,
        getStudentPromotion,
+       updatePro,
+       getBestStudents,
+       getWorstStudents,
+       avSubject,
        getStudentReport,
        getCTReport,
        countResult,
@@ -626,4 +652,18 @@ export default {
        updateEvent,
        deleteEvent,
        // ------ EVENTS EXPORT -------
+
+
+
+       // ------ SUBSCRIBE EXPORT -------
+       addSubscribe,
+       // ------ SUBSCRIBE EXPORT -------
+
+
+
+       // ------ FEEDBACK EXPORT -------
+       insertFeedback,
+       getFeedback,
+       getFeedbackRating,
+       // ------ FEEDBACK EXPORT -------
 };
