@@ -452,7 +452,7 @@ const getOTP = async (req, res) => {
 const signup = async (req, res) => {
     const { schoolEmail, schoolPassword, confirm } = req.body;
         try {
-            if(!schoolEmail || !schoolPassword || !confirm) {
+            if(schoolEmail === '' || schoolPassword === '' || confirm === '') {
                 return res.json({
                     success: false,
                     message: "Please fill up all the fields",
@@ -467,31 +467,31 @@ const signup = async (req, res) => {
 
             // Check if the school already exists
             const exist = await checkSchool(schoolEmail);
-            if (exist) {
+            if (exist.length > 0) {
                 return res.json({
                     success: false,
                     message: "School already exists..."
                 });
             }
-            else {
-                // Hash the password
-                const hashedPassword = await bcrypt.hash(schoolPassword, 10);
 
-                // Add the new school
-                const newSchool = await insertSchool( schoolEmail, hashedPassword );
-                if(newSchool) {
-                    res.json({
-                        success: true,
-                        message: "School registered successfully",
-                    });
-                }
-                else {
-                    res.json({
-                        success: false,
-                        message: "School registration failed",
-                    });
-                }
-            }  
+                // Hash the password
+            const hashedPassword = await bcrypt.hash(schoolPassword, 10);
+
+            // Add the new school
+            const newSchool = await insertSchool( schoolEmail, hashedPassword );
+            if(newSchool.length > 0) {
+                res.json({
+                    success: true,
+                    message: "School registered successfully",
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "School registration failed",
+                });
+            }
+            
         } catch (error) {
             res.json({
                 success: false,
@@ -641,7 +641,7 @@ const TeacherPasswordUpdates = async(req, res) => {
     const teacherid = decoded.id;
 
     try {
-        if(!current || !newPassword || !confirm) {
+        if(current === '' || newPassword === '' || confirm === '') {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields",
@@ -690,7 +690,7 @@ const PasswordUpdates = async(req, res) => {
     const sid = decoded.id;
 
     try {
-        if(!current || !newPassword || !confirm) {
+        if(current === '' || newPassword === '' || confirm === '') {
             return res.json({
                 success: false,
                 message: "Please fill up all the fields",
@@ -705,7 +705,7 @@ const PasswordUpdates = async(req, res) => {
 
         const checkPass = await checkPassword(sid);
         const isMatch = await bcrypt.compare(current, checkPass.password);
-        if (!isMatch) {
+        if (isMatch.length === 0) {
             return res.json({
                 success: false,
                 message: "Invalid password..",
@@ -803,13 +803,14 @@ const login = async(req, res) => {
         }
 
         // Find the school by email
+
         const school = await checkMail(schoolEmail);
-        if (!school) {
+        if (school.length === 0) {
             const teacher = await checkTeacherMail(schoolEmail);
-            if(!teacher) {
+            if(teacher.length === 0) {
                 // Getting ADMINISTRATOR
                 const superAdmin = await checkAdminMail(schoolEmail);
-                if(!superAdmin) {
+                if(superAdmin.length === 0) {
                     return res.json({
                         success: false,
                         message: "Invalid email or password",
@@ -817,8 +818,8 @@ const login = async(req, res) => {
                 }
 
                 // Compare the password
-                const isMatch = await bcrypt.compare(schoolPassword, superAdmin.password);
-                if (!isMatch) {
+                const isMatch = await bcrypt.compare(schoolPassword, superAdmin[0].password);
+                if (isMatch.length === 0) {
                     return res.json({
                         success: false,
                         message: "Invalid email or password here",
@@ -837,6 +838,7 @@ const login = async(req, res) => {
                 // Set the token as an HTTP-only cookie
                 res.cookie('administratorToken', superToken, {
                     httpOnly: true,
+                    // secure: true,
                     sameSite: 'Lax',
                     maxAge: 60 * 60 * 1000, // 1 hour
                 });
@@ -848,7 +850,7 @@ const login = async(req, res) => {
             }
 
             // Compare the password
-            if (schoolPassword !== teacher.password) {
+            if (schoolPassword !== teacher[0].password) {
                 return res.json({
                     tsuccess: false,
                     tmessage: "Invalid email or password",
@@ -876,6 +878,7 @@ const login = async(req, res) => {
             // Set the token as an HTTP-only cookie
             res.cookie('teacherToken', token, {
                 httpOnly: true,
+                // secure: true,
                 sameSite: 'Lax',
                 maxAge: 60 * 60 * 1000, // 1 hour
             });
@@ -887,7 +890,7 @@ const login = async(req, res) => {
         }
 
         // Compare the password
-        const isMatch = await bcrypt.compare(schoolPassword, school.password);
+        const isMatch = await bcrypt.compare(schoolPassword, school[0].password);
         if (!isMatch) {
             return res.json({
                 success: false,
@@ -925,6 +928,7 @@ const login = async(req, res) => {
         // Set the token as an HTTP-only cookie
         res.cookie('schoolToken', token, {
             httpOnly: true,
+            // secure: true,
             sameSite: 'Lax',
             maxAge: 60 * 60 * 1000, // 1 hour
         });
@@ -934,6 +938,7 @@ const login = async(req, res) => {
             message: "Login successfully..",
         });
     } catch (error) {
+        console.error('Error during login:', error);
         res.status(500).send({
             error: "Internal Server Error"
         });
@@ -1305,7 +1310,7 @@ const addYear = async (req, res) => {
 
         // Check if exam exists
         const checker = await checkYear(yearName, startDate, endDate);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Academic year already exists..."
@@ -5667,23 +5672,23 @@ const gotSubscriptions = async(req, res) => {
     try {
         const plan = await getSubscriptions();
         if(plan) {
-            return res.json({
+            res.json({
                 success: true,
                 plan,
             });
         }
         else {
-            return res.json({
+            res.json({
                 success: false,
-                message: 'No records found'
+                message: 'Failed fetching subscriptions'
             });
         }
-    } catch (error) {
-        res.status(500).json({
-            status: false,
-            error: 'Internal Server Error. Please try again later.'
-        })
-    }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
 }
 
 const deletePlan = async(req, res) => {
@@ -5745,7 +5750,6 @@ const updatePlans = async(req, res) => {
         const updateAt = now.toLocaleString();
         
         const feature = JSON.stringify(features)
-        console.log(feature);
 
         const update = await updatePlan(id, name, price, feature, updateAt);
         if(update) {
@@ -6075,7 +6079,7 @@ const addSubscriber = async (req, res) => {
         }
 
         const check = await checkSubscribe(email);
-        if(check) {
+        if(check.length !== 0) {
             return res.json({
                 success: false,
                 message: 'You are already subscribed',
@@ -6120,7 +6124,7 @@ const insertFeedback = async (req, res) => {
     const sid = decoded.id;
 
     try {
-        if(!rating || !selectedOption || !comment) {
+        if(rating === '' || selectedOption === '' || comment === '') {
             return res.json({
                 success: false,
                 message: 'Please fill in the blank fields',

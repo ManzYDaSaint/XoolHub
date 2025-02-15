@@ -13,7 +13,6 @@ const Footer = () => {
     const handleSubmit = async (data) => {
         try {
             const res = await api.addSubscribe(data);
-            console.log(res.data);
             if(res.data.success === true) {
                 toast.success(res.data.message);
             }

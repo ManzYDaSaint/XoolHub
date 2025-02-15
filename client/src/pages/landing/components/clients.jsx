@@ -15,7 +15,6 @@ const Schools = () => {
     fetchData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   return (
     <div className="schools">
       <h2>Our Clients</h2>

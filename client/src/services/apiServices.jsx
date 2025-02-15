@@ -11,7 +11,6 @@ const sumAmount = () => axios.get(API + '/sum-amount');
 const paymentLineChart = () => axios.get(API + '/payment-linechart');
 const getXuls = () => axios.get(API + '/get-schools');
 const sendOTP = () => axios.post(API + '/send-otp');
-// const deleteSchool = (id) => axios.delete(`${API_URL}${id}`);
 
 // --------- SUPER ADMIN AXIOS -----------
 const addSubscription = (data) => axios.post(API + '/add-subscriptions', data);
@@ -19,7 +18,7 @@ const getSubscription = () => axios.get(API + '/get-subscriptions');
 const deletePlan = (id) => axios.delete(API + '/delete-subscriptions/'  + id);
 const editPlan = (id) => axios.get(API + '/edit-subscriptions/'  + id);
 const updatePlan = (id, data) => axios.put(API + '/update-subscriptions/'  + id, data);
-const gotsubs = (plan) => axios.get(`${API}/got-subscription/${plan}`);
+const gotsubs = (data) => axios.get(API + '/got-subscription/', data);
 const addBilling = (data) => axios.post(API + '/add-billing', data);
 const checkSubscriptionStatus = () => axios.get(API + '/check-subscription-status');
 const checkPaidStatus = () => axios.get(API + '/check-paid-status');

@@ -1,7 +1,6 @@
 const router = require('express').Router();
 const { 
     signup, 
-    getAllSchools, 
     login, 
     generateOTP, 
     verifyOTP, 

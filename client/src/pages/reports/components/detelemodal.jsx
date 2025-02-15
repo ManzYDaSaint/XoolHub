@@ -14,7 +14,6 @@ function DeleteModal({ open, setOpen, reportFormData }) {
   const handleDelete = async (data) => {
     try {
       const res = await api.deleteReport({ data });
-      console.log(res);
       if (res.data.success === true) {
         toast.success(res.data.message);
       } else {

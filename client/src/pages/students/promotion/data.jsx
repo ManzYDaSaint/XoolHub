@@ -75,7 +75,6 @@ const PromotionData = () => {
         : [...prevSelected, studentId] // Add if not selected
     );
   };
-  console.log(studentIDs);
 
   const onSubmit = (e) => {
     e.preventDefault();

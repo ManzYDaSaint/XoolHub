@@ -34,7 +34,7 @@ const SubscriptionOptions = () => {
         {plans.map((plan, index) => (
           <div key={index} className="plan-card">
             <h3>{plan.name}</h3>
-            <p className="price">{formatPrice(plan.price)}</p>
+            <p className="price">{plan.price}</p>
             <p className="periodic">per term</p>
             <p className='feat'>{Array.isArray(plan.features) ? plan.features.join(', ') : plan.features}</p>
           </div>

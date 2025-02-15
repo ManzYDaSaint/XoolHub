@@ -62,7 +62,7 @@ const Register = () => {
         <p className='d-flex align-items-center justify-content-center mb-4'>
                             <img src={logo} alt="logo" />
                             </p>
-          <p class="loginPT mb-4">
+          <p className="loginPT mb-4">
             One xoolHub account is all you need <br />to access to all xoolHub services.
           </p>
           <form onSubmit={onSubmit} className="loginForm">

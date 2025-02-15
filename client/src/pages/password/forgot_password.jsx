@@ -22,8 +22,6 @@ const Forgot = () => {
     setActiveInputId(null);
   };
 
-  console.log(activeInputId)
-
   return (
     <div className="notFound">
     <div className="logContainer">

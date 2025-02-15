@@ -24,7 +24,6 @@ const Reset = () => {
     setActiveInputId(null);
   };
 
-  console.log(activeInputId)
   return (
     <div className="notFound">
       <div className="logContainer">

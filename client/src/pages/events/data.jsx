@@ -33,7 +33,6 @@ const EventPage = () => {
   const handleEditEvent = async(id) => {
     setShow(true);
     const res = await api.editEvent(id);
-    console.log(res.data.edit.title)
     dispatch(setEventFormData({
       title: res.data.edit.title || '',
       date: res.data.edit.date || '',

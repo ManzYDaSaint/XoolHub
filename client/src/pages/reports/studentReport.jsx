@@ -184,7 +184,6 @@ const StudentReport = () => {
   const getTeacher = async (id) => {
     try {
       const res = await api.getTBySubject({ id });
-      console.log(res.data.info);
       const respo = res.data.info;
       setTeacher(respo);
     } catch (error) {
