@@ -1319,7 +1319,8 @@ const addYear = async (req, res) => {
         else {
             // Add new exam
             const newYear = await insertYear(yearName, startDate, endDate);
-            if(newYear) {
+            
+            if(newYear.length > 0) {
                 res.json({ 
                     success: true,
                     message: "Academic year added successfully",
