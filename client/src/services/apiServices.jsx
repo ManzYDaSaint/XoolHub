@@ -18,7 +18,7 @@ const getSubscription = () => axios.get(API + '/get-subscriptions');
 const deletePlan = (id) => axios.delete(API + '/delete-subscriptions/'  + id);
 const editPlan = (id) => axios.get(API + '/edit-subscriptions/'  + id);
 const updatePlan = (id, data) => axios.put(API + '/update-subscriptions/'  + id, data);
-const gotsubs = (data) => axios.get(API + '/got-subscription/', data);
+const gotsubs = (data) => axios.get(API + '/got-subscription/' + data);
 const addBilling = (data) => axios.post(API + '/add-billing', data);
 const checkSubscriptionStatus = () => axios.get(API + '/check-subscription-status');
 const checkPaidStatus = () => axios.get(API + '/check-paid-status');

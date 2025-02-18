@@ -18,7 +18,8 @@ const StudentDashboard = () => {
 const fethBest = async () => {
   try {
     const res = await api.getBestStudents();
-    const data = res.data.best;
+    const data = res.data.best || [];
+    console.log(data)
     setBest(data);
   } catch (error) {
     console.error("Error fetching student count:", error);
@@ -33,7 +34,7 @@ useEffect(() => {
 const fethWorst = async () => {
   try {
     const res = await api.getWorstStudents();
-    const data = res.data.worst;
+    const data = res.data.worst || [];
     setWorst(data);
   } catch (error) {
     console.error("Error fetching student count:", error);
@@ -99,21 +100,23 @@ useEffect(() => {
   
     useEffect(() => {
       fetchGenderClass();
-      }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
       // Reshape Data
-      const reshapedData = chart.reduce((acc, item) => {
-        const existingClass = acc.find((entry) => entry.class === item.class);
-        if (existingClass) {
-          existingClass[item.gender] = parseInt(item.count, 10); // Add gender count to the existing class
-        } else {
-          acc.push({
-            class: item.class,
-            [item.gender]: parseInt(item.count, 10), // Initialize gender count
-          });
-        }
-        return acc;
-      }, []);
+      const reshapedData = (chart && Array.isArray(chart) && chart.length > 0) 
+  ? chart.reduce((acc, item) => { 
+      const existingClass = acc.find((entry) => entry.class === item.class);
+      if (existingClass) {
+        existingClass[item.gender] = parseInt(item.count, 10);
+      } else {
+        acc.push({
+          class: item.class,
+          [item.gender]: parseInt(item.count, 10),
+        });
+      }
+      return acc;
+    }, [])
+  : [];
 
       
 

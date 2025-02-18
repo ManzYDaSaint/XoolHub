@@ -7,6 +7,7 @@ const SubscriptionOptions = () => {
   const [plans, setPlans] = useState([]);
   const fetchData = async () => {
     const res = await api.getSubscription();
+    
     const data = res.data.plan;
     setPlans(data);
   }
@@ -23,7 +24,6 @@ const SubscriptionOptions = () => {
     }
     return price.toString(); // Return the original price for smaller values
   };
-  
 
   return (
     <section className="subscriptions">
@@ -36,7 +36,7 @@ const SubscriptionOptions = () => {
             <h3>{plan.name}</h3>
             <p className="price">{plan.price}</p>
             <p className="periodic">per term</p>
-            <p className='feat'>{Array.isArray(plan.features) ? plan.features.join(', ') : plan.features}</p>
+            <p className='feat'>{Array.isArray(plan.features) ? plan.features.join(' , ') : JSON.parse(plan.features).join(', ')}</p>
           </div>
         ))}
       </div>

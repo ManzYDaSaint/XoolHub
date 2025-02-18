@@ -21,8 +21,8 @@ const Invoicing = () => {
   const fetchSubs = async (plan) => {
     try {
       const res = await api.gotsubs(plan);
-      const price = parseFloat(res.data[0]?.price) || 0;
-      const subscription = res.data[0]?.name;
+      const price = parseFloat(res.data?.price) || 0;
+      const subscription = res.data?.name;
       setPrice(price);
       setSubscription(subscription);
     } catch (error) {

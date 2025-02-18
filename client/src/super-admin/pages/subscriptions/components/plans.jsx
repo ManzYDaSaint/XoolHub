@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import api from '../../../../services/apiServices';
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setSubscriptionData } from '../../../../helpers/examination/examSlice';
 import FormInput from '../../../../components/input/formInput';
@@ -74,7 +74,6 @@ const Plans = ({ fetchData }) => {
 
     return (
         <>
-        <Toaster />
         <form onSubmit={onSubmit}>
             <div className="formGroup">
                 <FormInput

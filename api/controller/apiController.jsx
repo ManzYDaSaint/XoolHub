@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
+const { v4: uuidv4 } = require('uuid');
 const {
     checkMail, 
     checkExam, 
@@ -535,9 +536,6 @@ const updateSchools = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const sid = decoded.id;
 
-        const now = new Date();
-        const updatedAt = now.toLocaleString();
-
         // Check if a file is uploaded
         if (req.files && req.files.logo) {
             const logo = req.files.logo;
@@ -595,7 +593,6 @@ const updateSchools = async (req, res) => {
                 publicUrl,
                 slogan,
                 type,
-                updatedAt
             );
 
             return res.json({
@@ -615,7 +612,6 @@ const updateSchools = async (req, res) => {
             contact,
             slogan,
             type,
-            updatedAt
         );
 
         return res.json({
@@ -705,7 +701,7 @@ const PasswordUpdates = async(req, res) => {
 
         const checkPass = await checkPassword(sid);
         const isMatch = await bcrypt.compare(current, checkPass.password);
-        if (isMatch.length === 0) {
+        if (isMatch === false) {
             return res.json({
                 success: false,
                 message: "Invalid password..",
@@ -754,7 +750,7 @@ const PasswordSuper = async(req, res) => {
 
         const checkPass = await checkSuperPassword();
         const isMatch = await bcrypt.compare(current, checkPass.password);
-        if (!isMatch) {
+        if (isMatch === false) {
             return res.json({
                 success: false,
                 message: "Invalid password..",
@@ -817,8 +813,8 @@ const login = async(req, res) => {
                     });
                 }
 
-                // Compare the password
-                const isMatch = await bcrypt.compare(schoolPassword, superAdmin[0].password);
+                // Compare the password'
+                const isMatch = await bcrypt.compare(schoolPassword, superAdmin.password);
                 if (isMatch.length === 0) {
                     return res.json({
                         success: false,
@@ -891,7 +887,7 @@ const login = async(req, res) => {
 
         // Compare the password
         const isMatch = await bcrypt.compare(schoolPassword, school[0].password);
-        if (!isMatch) {
+        if (isMatch === false) {
             return res.json({
                 success: false,
                 message: "Invalid email or password",
@@ -903,11 +899,11 @@ const login = async(req, res) => {
             const otpCode = (Math.floor(100000 + Math.random() * 900000)).toString();
             const otpExpiresAt = new Date(Date.now() + 10 * 60000); // Expires in 10 minutes
 
-            const otpcheck = await OTPGeneration(otpCode, otpExpiresAt, school.email);
+            const otpcheck = await OTPGeneration(otpCode, otpExpiresAt, school[0].email);
             if(otpcheck) {
                 return res.json({
                     osuccess: true,
-                    email: school.email
+                    email: school[0].email
                 });
             } else {
                 return res.json({
@@ -920,7 +916,7 @@ const login = async(req, res) => {
 
         // Create a JWT
         const token = jwt.sign(
-            { id: school.sid },
+            { id: school[0].id },
             process.env.JWT_SECRET,
             { expiresIn: '24h' }
         );
@@ -1151,7 +1147,7 @@ const addExam = async (req, res) => {
 
         // Check if exam exists
         const checker = await checkExam(namer);
-        if(checker) {
+        if(checker.length > 0) {
             return res.json({
                 success: false,
                 message: "Exam already exists..."
@@ -1257,18 +1253,16 @@ const updateExams = async(req, res) => {
     const { namer, percentage } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkExam(namer);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Exam already exists..."
             });
         }
         else {
-            const update = await updateExam(id, namer, percentage, updateAt);
+            const update = await updateExam(id, namer, percentage);
             if(update) {
                 res.json({
                     success: true,
@@ -1319,8 +1313,7 @@ const addYear = async (req, res) => {
         else {
             // Add new exam
             const newYear = await insertYear(yearName, startDate, endDate);
-            
-            if(newYear.length > 0) {
+            if(newYear) {
                 res.json({ 
                     success: true,
                     message: "Academic year added successfully",
@@ -1416,18 +1409,17 @@ const updateYears = async(req, res) => {
     const { yearName, startDate, endDate } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
+
         // Check if exam exists
         const checker = await checkYear(yearName, startDate, endDate);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Academic year already exists..."
             });
         }
         else {
-            const update = await updateYear(id, yearName, startDate, endDate, updateAt);
+            const update = await updateYear(id, yearName, startDate, endDate);
             if(update) {
                 res.json({
                     success: true,
@@ -1470,7 +1462,7 @@ const addSubject = async (req, res) => {
 
         // Check if subject exists
         const checker = await checkSubject(subjectName, code);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Subject already exists..."
@@ -1576,18 +1568,17 @@ const updateSubjects = async(req, res) => {
     const { subjectName, code } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
+
         // Check if exam exists
         const checker = await checkSubject(subjectName);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Subject already exists..."
             });
         }
         else {
-            const update = await updateSubject(id, subjectName, code, updateAt);
+            const update = await updateSubject(id, subjectName, code);
             if(update) {
                 res.json({
                     success: true,
@@ -1631,7 +1622,7 @@ const addClass = async (req, res) => {
 
         // Check if class exists
         const checker = await checkClass(className, denom)
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Class already exists..."
@@ -1736,18 +1727,16 @@ const updateClasses = async(req, res) => {
     const { className, denom } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkClass(className, denom);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Class already exists..."
             });
         }
         else {
-            const update = await updateClass(id, className, denom, updateAt);
+            const update = await updateClass(id, className, denom);
             if(update) {
                 res.json({
                     success: true,
@@ -1791,7 +1780,7 @@ const addTerm = async (req, res) => {
 
         // Check if class exists
         const checker = await checkTerm(termName, startDate, endDate)
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Term already exists..."
@@ -1896,8 +1885,6 @@ const updateTerms = async(req, res) => {
     const { termName, year, startDate, endDate } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkTerm(termName);
         if(checker) {
@@ -1907,7 +1894,7 @@ const updateTerms = async(req, res) => {
             });
         }
         else {
-            const update = await updateTerm(id, termName, year, startDate, endDate, updateAt);
+            const update = await updateTerm(id, termName, year, startDate, endDate);
             if(update) {
                 res.json({
                     success: true,
@@ -1970,7 +1957,7 @@ const addGrade = async (req, res) => {
 
         // Check if class exists
         const checker = await checkGrade(denom, grade)
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Grade already exists..."
@@ -2119,18 +2106,16 @@ const updateGrades = async(req, res) => {
     const { denom, roof, floor, grade, remark } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkGrade(denom, grade);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Grade already exists..."
             });
         }
         else {
-            const update = await updateGrade(id, denom, roof, floor, grade, remark, updateAt);
+            const update = await updateGrade(id, denom, roof, floor, grade, remark);
             if(update) {
                 res.json({
                     success: true,
@@ -2176,7 +2161,7 @@ const addJCE = async (req, res) => {
 
         // Check if class exists
         const checker = await checkJCE(denom, roof, floor)
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Remark already exists..."
@@ -2281,18 +2266,16 @@ const updateJCEs = async(req, res) => {
     const { denom, roof, floor, remark } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkJCE(denom, roof, floor);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Remark already exists..."
             });
         }
         else {
-            const update = await updateJCE(id, denom, roof, floor, remark, updateAt);
+            const update = await updateJCE(id, denom, roof, floor, remark);
             if(update) {
                 res.json({
                     success: true,
@@ -2336,7 +2319,7 @@ const addMSCE = async (req, res) => {
 
         // Check if class exists
         const checker = await checkMSCE(denom, roof, floor)
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Remark already exists..."
@@ -2442,18 +2425,16 @@ const updateMSCEs = async(req, res) => {
     const { denom, roof, floor, remark } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkMSCE(denom, roof, floor);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Remark already exists..."
             });
         }
         else {
-            const update = await updateMSCE(id, denom, roof, floor, remark, updateAt);
+            const update = await updateMSCE(id, denom, roof, floor, remark);
             if(update) {
                 res.json({
                     success: true,
@@ -2693,8 +2674,6 @@ const updateTeachers = async(req, res) => {
     const sid = decoded.id;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
 
         const update = await updateTeacher(id, name, contact, email, address, gender, updateAt);
         if(update) {
@@ -3060,29 +3039,36 @@ const addStudent = async (req, res) => {
         
         // Call the function
         const result = await checkStudent(id, studentNames);
-
         // Check the result
-        if (result[0] === true) {
+        if (result === true) {
             return res.json({
                 success: false,
                 message: `Students are already in the database...`,
             });
         } else {
-            // Insert into Student table
-            const newStudent = await insertStudent(studentNames);
-            if(newStudent) {
+
+            // Map each student to include a generated UUID.
+            const studentsWithId = studentNames.map(student => ({
+                student,            // this sets the studentName property to the string value
+                studentID: uuidv4(),    // add the generated UUID
+            }));
+            
+            const newStudent = await insertStudent(studentsWithId);
+            if(newStudent.length > 0) {
                 const newHistory = await insertStudentHistory(id, yearid, classid, newStudent);
-                return res.json({
-                    success: true,
-                    message: 'Students added succesfully...!',
-                    newHistory,
-                })
+                if(newHistory.affectedRows > 0) {
+                    return res.json({
+                        success: true,
+                        message: 'Students added succesfully...!',
+                        newHistory,
+                    });
+                }
             }
             else {
                 return res.json({
                     success: false,
                     message: 'An unknown error occurred...'
-                })
+                });
             }
         }
     } catch (error) {
@@ -3092,6 +3078,7 @@ const addStudent = async (req, res) => {
         });
     }
 };
+
 
 const getSingleStudents = async (req, res) => {
     const { id } = req.params;
@@ -3176,8 +3163,6 @@ const updateStudents = async(req, res) => {
     const { student, contact, email, address, gender, dob } = req.body;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
 
         const update = await updateStudent(id, student, contact, email, address, gender, dob, updateAt);
         if(update) {
@@ -3297,7 +3282,7 @@ const countGenderForClass = async(req, res) => {
             res.json({
                 success: false,
                 message: 'An unknown error occurred...'
-            })
+            });
         }
     } catch (error) {
         res.json({
@@ -5401,7 +5386,7 @@ const getBestStudents = async(req, res) => {
     const sid = decoded.id;
     try {
         const best = await bestStudents(sid);
-        if(best) {
+        if(best.length > 0) {
             return res.json({
                 success: true,
                 best,
@@ -5499,7 +5484,8 @@ const insertEvent = async (req, res) => {
 
         // Check Event if exists
         const checker = await checkEvent(sid, title, date);
-        if(checker) {
+        
+        if(checker === false) {
             res.json({
                 success: false,
                 message: 'Event already exists in the system'
@@ -5507,8 +5493,8 @@ const insertEvent = async (req, res) => {
         }
 
         // Insert New Event
-        const insert = await addEvent(sid, title, date, time, location, description);
-        if(insert) {
+        const inserto = await addEvent(sid, title, date, time, location, description);
+        if(inserto) {
             res.json({
                 success: true,
                 message: 'Event added succesfully'
@@ -5649,7 +5635,8 @@ const addSubscriptions = async(req, res) => {
         const feature = JSON.stringify(features)
 
         const insert = await insertFeatures(name, price, feature);
-        if(insert) {
+
+        if(insert === true) {
             return res.json({
                 success: true,
                 message: 'Subscription added successfully'
@@ -5806,15 +5793,16 @@ const SubsByID = async (req, res) => {
 }
 
 const gotSubs = async (req, res) => {
+    const { plan } = req.params; 
+    
     try {
-        const { plan } = req.params; // Extract 'plan' from req.params
 
         const data = await getSubs(plan); // Fetch data from the model
-        if (data.length === 0) {
-            return res.status(404).json({ message: 'No subscription plan found.' });
+        if (data === false) {
+            return res.json({ message: 'No subscription plan found.' });
         }
 
-        res.status(200).json(data); // Send the data as a JSON response
+        res.json(data); // Send the data as a JSON response
     } catch (error) {
         console.error('Error fetching subscriptions:', error);
         res.status(500).json({ message: 'Internal server error.' });
@@ -5827,8 +5815,8 @@ const insertSubscription = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
-    const status = 'inactive';
-    const billing_status = 'pending';
+    const status = 'Pending';
+    const billing_status = 'Pending';
     const amount = Number(parseFloat(grandTotal).toFixed(0));
 
     // Calculate expiry time (24 hours from now)
@@ -5837,11 +5825,11 @@ const insertSubscription = async (req, res) => {
 
     const response = await getSubs(subscriptionName);
     if(response) {
-        const planID = response[0].id;
+        const planID = response.id;
 
         // Check Subscription 
         const checker = await checkSubscription(sid);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: 'You already have an active subscription'
@@ -5850,12 +5838,12 @@ const insertSubscription = async (req, res) => {
         else {
 
             // Insert Subscription
-            const result = await addSubscription(sid, planID, status, billingCycle);
+            const newId = uuidv4();
+            const result = await addSubscription(newId, sid, planID, status, billingCycle);
             if(result) {
-                const subscriptionID = result[0].id;
 
             //     // Insert Billing
-                const billing = await addBilling(subscriptionID, amount, billing_status, expiryTime);
+                const billing = await addBilling(newId, amount, billing_status, expiryTime);
                 if(billing) {
                     return res.json({
                         success: true,
@@ -5904,11 +5892,11 @@ const checkPaidStatus = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
 
-    const status = 'active'
+    const status = 'Active'
 
     try {
         const checker = await checkPaid(sid, status);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: true,
             });
@@ -6039,7 +6027,7 @@ const updateSchoolStatuses = async (req, res) => {
 
         // Update subscription status
         const resultOne = await updateSchoolStatus(id, status);
-        if (!resultOne) {
+        if (resultOne.affectedRows === 0) {
             return res.status(500).json({
                 success: false,
                 message: 'Failed to update school status',
@@ -6125,7 +6113,7 @@ const insertFeedback = async (req, res) => {
     const sid = decoded.id;
 
     try {
-        if(rating === '' || selectedOption === '' || comment === '') {
+        if(!rating || !selectedOption || !comment) {
             return res.json({
                 success: false,
                 message: 'Please fill in the blank fields',

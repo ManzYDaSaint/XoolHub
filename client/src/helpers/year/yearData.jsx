@@ -35,8 +35,8 @@ const YearData = () => {
         end: item.end_date,
         actions: (
             <div>
-            <button onClick={() => handleEdit(item.yearid)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-            <button onClick={() => handleDelete(item.yearid)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
+            <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
             </div>
         ),
         }));
@@ -58,7 +58,7 @@ const YearData = () => {
             endDate: res.data.edit.end_date,
         }));
         dispatch(setIsEditMode(true));
-        dispatch(setEditItemId(res.data.edit.yearid));
+        dispatch(setEditItemId(res.data.edit.id));
     };
       
     //   Handle Delete

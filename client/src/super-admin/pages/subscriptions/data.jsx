@@ -52,8 +52,8 @@ const Data = () => {
 
   const handleToggle = async (id, currentStatus, currentBilling) => {
     // Determine the new values
-    const newStatus = currentStatus === "successful" ? "pending" : "successful";
-    const newBilling = currentBilling === "active" ? "inactive" : "active";
+    const newStatus = currentStatus === "Paid" ? "Pending" : "Paid";
+    const newBilling = currentBilling === "Active" ? "Pending" : "Active";
 
     try {
       // API call to update the data

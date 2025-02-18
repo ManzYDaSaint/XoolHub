@@ -35,7 +35,7 @@ const Schools = () => {
           status: item.status,
           actions: (
             <ToggleSwitch 
-                id={item.sid}
+                id={item.id}
                 status={item.status}
                 onToggle={handleToggle}
             />

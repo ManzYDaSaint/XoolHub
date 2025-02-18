@@ -25,7 +25,7 @@ const YearSelectInput = ({ label, onChange, name, value }) => {
           <select name={name} value={value} onChange={onChange}>
             <option value="" selected disabled>Select an option</option>
             {options.map((option) => (
-              <option key={option.yearid} value={option.yearid}>
+              <option key={option.id} value={option.id}>
                 {option.name}
               </option>
             ))}

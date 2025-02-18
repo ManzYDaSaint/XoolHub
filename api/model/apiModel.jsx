@@ -7,48 +7,49 @@ const conn = require('../database/mysql.jsx');
 const countSchools = async () => {
   const sql = 'SELECT COUNT(*) as count FROM schools';
   const [res] = await conn.query(sql); // Changed to async/await
-  return res;
+  return res[0];
 }
 
 const countPrivateSchools = async () => {
   const sql = 'SELECT COUNT(*) as count FROM schools WHERE type = "Private"';
   const [res] = await conn.query(sql); // Changed to async/await
-  return res;
+  return res[0];
 }
 
 const countPublicSchools = async () => {
   const sql = 'SELECT COUNT(*) as count FROM schools WHERE type = "Public"';
   const [res] = await conn.query(sql); // Changed to async/await
-  return res;
+  return res[0];
 }
 
 const countSubscribedSchools = async () => {
   const sql = 'SELECT COUNT(*) as count FROM subscriptions WHERE status = "active"';
   const [res] = await conn.query(sql); // Changed to async/await
-  return res;
+  return res[0];
 }
 
 const sumAmount = async () => {
   const sql = 'SELECT SUM(amount) as sum FROM billing WHERE status = "successful"';
   const [res] = await conn.query(sql); // Changed to async/await
-  return res;
+  return res[0];
 }
 
-const paymentChart = async () => {
+const paymentChart = async (year) => {
   const sql = `SELECT
-    DATE_FORMAT(payment_date, '%M') AS month,
-    MONTH(payment_date) AS month_number,
+    DATE_FORMAT(created_at, '%M') AS month,
+    MONTH(created_at) AS month_number,
     SUM(amount) AS total_amount
     FROM
         billing
     WHERE
         status = 'successful'
-        AND YEAR(payment_date) = 2025
+        AND YEAR(created_at) = 2025
     GROUP BY
         month, month_number
     ORDER BY
         month_number`;
-  const [res] = await conn.query(sql); // Changed to async/await
+        const values = [year];
+  const [res] = await conn.query(sql, values); // Changed to async/await
   return res;
 }
 
@@ -92,23 +93,23 @@ const checkSchool = async (email) => {
 };
 
 const checkPassword = async (sid) => {
-  const sql = 'SELECT password FROM schools WHERE sid = ?';
+  const sql = 'SELECT password FROM schools WHERE id = ?';
   const values = [sid];
   const [res] = await conn.query(sql, values);
-  return res;
+  return res[0];
 };
 
 const checkTeacherPassword = async (sid, id) => {
   const sql = 'SELECT password FROM teachers WHERE sid = ? AND id = ?';
   const values = [sid, id];
   const [res] = await conn.query(sql, values);
-  return res;
+  return res[0];
 };
 
 const checkSuperPassword = async () => {
   const sql = "SELECT password FROM administrator";
   const [res] = await conn.query(sql);
-  return res;
+  return res[0];
 };
 
 const insertSchool = async (email, password) => {
@@ -120,10 +121,10 @@ const insertSchool = async (email, password) => {
 
 
 const editSchool = async (id) => {
-  const sql = 'SELECT * FROM schools WHERE sid = ?';
+  const sql = 'SELECT * FROM schools WHERE id = ?';
   const values = [id];
   const [res] = await conn.query(sql, values);
-  return res;
+  return res[0];
 };
 
 const updateSchool = async (
@@ -138,7 +139,7 @@ const updateSchool = async (
   slogan,
   type,
 ) => {
-  const sql = "UPDATE schools SET name = ?, address = ?, city = ?, country = ?, email = ?, contact = ?, logo = ?, slogan = ?, type = ? WHERE sid = ?";
+  const sql = "UPDATE schools SET name = ?, address = ?, city = ?, country = ?, email = ?, contact = ?, logo = ?, slogan = ?, type = ? WHERE id = ?";
   const values = [name, address, city, country, email, contact, logo, slogan, type, id];
   const [res] = await conn.query(sql, values);
   return res;
@@ -155,7 +156,7 @@ const updateSchoolWithoutLogo = async (
   slogan,
   type
 ) => {
-  const sql = "UPDATE schools SET name = ?, address = ?, city = ?, country = ?, email = ?, contact = ?, slogan = ?, type = ? WHERE sid = ?";
+  const sql = "UPDATE schools SET name = ?, address = ?, city = ?, country = ?, email = ?, contact = ?, slogan = ?, type = ? WHERE id = ?";
   const values = [name, address, city, country, email, contact, slogan, type, id];
   const [res] = await conn.query(sql, values);
   return res;
@@ -169,7 +170,7 @@ const OTPGeneration = async(otpCode, otpExpire, email) => {
 };
 
 const updatePassword = async(newPassword, sid) => {
-  const sql = "UPDATE schools SET password = ? WHERE sid = ?";
+  const sql = "UPDATE schools SET password = ? WHERE id = ?";
   const values = [newPassword, sid];
   const [res] = await conn.query(sql, values);
   return res;
@@ -211,7 +212,7 @@ const checkAdminMail = async (email) => {
   const sql = 'SELECT * FROM administrator WHERE email = ?';
   const values = [email];
   const [res] = await conn.query(sql, values);
-  return res;
+  return res[0];
 };
 
 
@@ -231,10 +232,10 @@ const checkExam = async (name) => {
 // // Add new examination type
 const insertExam = async (name, percentage) => {
   const query =
-    "INSERT INTO exam(name, percentage) VALUES (?, ?) RETURNING *"; // Changed to ?
+    "INSERT INTO exam(name, percentage) VALUES (?, ?)"; // Changed to ?
   const values = [name, percentage];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 };
 
 // // Get all examination types
@@ -249,14 +250,14 @@ const deleteExam = async (id) => {
   const query = "DELETE FROM exam WHERE id = ?"; // Changed to ?
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res.length < 1;
+  return res;
 };
 
 // // Updating Examination Type
-const updateExam = async (id, name, percentage, update) => {
+const updateExam = async (id, name, percentage) => {
   const query =
-    "UPDATE exam SET name = ?, percentage = ?, updated_at = ? WHERE id = ?"; // Changed to ?
-  const values = [name, percentage, update, id];
+    "UPDATE exam SET name = ?, percentage = ? WHERE id = ?"; // Changed to ?
+  const values = [name, percentage, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
 };
@@ -266,7 +267,7 @@ const editExam = async (id) => {
   const query = "SELECT id, name, percentage FROM exam WHERE id = ?"; // Changed to ?
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- EXAM CRUD ------------------------------------------------
@@ -284,10 +285,10 @@ const checkYear = async (name, startDate, endDate) => {
 
 // // Add new academic year
 const insertYear = async (name, startDate, endDate) => {
-  const query = "INSERT INTO acyear(name, start_date, end_date) VALUES (?, ?, ?) RETURNING *";
+  const query = "INSERT INTO acyear(name, start_date, end_date) VALUES (?, ?, ?)";
   const values = [name, startDate, endDate];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 };
 
 // // Get all academic year
@@ -299,27 +300,27 @@ const getYear = async () => {
 
 // // Delete academic year
 const deleteYear = async (id) => {
-  const query = "DELETE FROM acyear WHERE yearid = ?";
+  const query = "DELETE FROM acyear WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res.length < 1;
+  return res;
 };
 
 // // Updating academic year
-const updateYear = async (id, name, startDate, endDate, update) => {
+const updateYear = async (id, name, startDate, endDate) => {
   const query =
-    "UPDATE acyear SET name = ?, start_date = ?, end_date = ?, updated_at = ? WHERE yearid = ?";
-  const values = [name, startDate, endDate, update, id];
+    "UPDATE acyear SET name = ?, start_date = ?, end_date = ? WHERE id = ?";
+  const values = [name, startDate, endDate, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
 };
 
 // // Get Single academic year
 const editYear = async (id) => {
-  const query = "SELECT * FROM acyear WHERE yearid = ?";
+  const query = "SELECT * FROM acyear WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- ACADEMIC YEAR CRUD ------------------------------------------------
@@ -336,10 +337,10 @@ const checkSubject = async (name, code) => {
 
 // // Add new subject
 const insertSubject = async (name, code) => {
-  const query = "INSERT INTO subject(name, code) VALUES (?, ?) RETURNING *";
+  const query = "INSERT INTO subject(name, code) VALUES (?, ?)";
   const values = [name, code];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 };
 
 // // Get all subject
@@ -354,13 +355,13 @@ const deleteSubject = async (id) => {
   const query = "DELETE FROM subject WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res.length < 1;
+  return res;
 };
 
 // // Updating subject
-const updateSubject = async (id, name, code, update) => {
-  const query = "UPDATE subject SET name = ?, code = ?, updated_at = ? WHERE id = ?";
-  const values = [name, code, update, id];
+const updateSubject = async (id, name, code) => {
+  const query = "UPDATE subject SET name = ?, code = ? WHERE id = ?";
+  const values = [name, code, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
 };
@@ -370,7 +371,7 @@ const editSubject = async (id) => {
   const query = "SELECT id, name, code FROM subject WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- SUBJECT CRUD ------------------------------------------------
@@ -387,10 +388,10 @@ const checkClass = async (name, denom) => {
 
 // // Add new object
 const insertClass = async (name, denom) => {
-  const query = "INSERT INTO class(name, denom) VALUES (?, ?) RETURNING *";
+  const query = "INSERT INTO class(name, denom) VALUES (?, ?)";
   const values = [name, denom];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -409,20 +410,20 @@ const deleteClass = async (id) => {
 };
 
 // // Updating object
-const updateClass = async (id, name, denom, update) => {
+const updateClass = async (id, name, denom) => {
   const query =
-    "UPDATE class SET name = ?, denom = ?, updated_at = ? WHERE classid = ?";
-  const values = [name, denom, update, id];
+    "UPDATE class SET name = ?, denom = ? WHERE id = ?";
+  const values = [name, denom, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
 };
 
 // // Get Single object
 const editClass = async (id) => {
-  const query = "SELECT classid, denom, name FROM class WHERE classid = ?";
+  const query = "SELECT id, denom, name FROM class WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- CLASS CRUD ------------------------------------------------
@@ -440,11 +441,10 @@ const checkTerm = async (name, startDate, endDate) => {
 
 // // Add new object
 const insertTerm = async (name, year, startDate, endDate) => {
-  const query =
-    "INSERT INTO term(name, yearid, start_date, end_date) VALUES (?, ?, ?, ?) RETURNING *";
+  const query = "INSERT INTO term(name, yearid, start_date, end_date) VALUES (?, ?, ?, ?)";
   const values = [name, year, startDate, endDate];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -465,10 +465,10 @@ const deleteTerm = async (id) => {
 };
 
 // // Updating object
-const updateTerm = async (id, name, year, startDate, endDate, update) => {
+const updateTerm = async (id, name, year, startDate, endDate) => {
   const query =
-    "UPDATE term SET name = ?, yearid = ?, start_date = ?, end_date = ?, updated_at = ? WHERE id = ?";
-  const values = [name, year, startDate, endDate, update, id];
+    "UPDATE term SET name = ?, yearid = ?, start_date = ?, end_date = ? WHERE id = ?";
+  const values = [name, year, startDate, endDate, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
 };
@@ -478,7 +478,7 @@ const editTerm = async (id) => {
   const query = "SELECT id, name, yearid, start_date, end_date FROM term WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- TERM CRUD ------------------------------------------------
@@ -495,10 +495,10 @@ const checkGrade = async (denom, grade) => {
 
 // // Add new object
 const insertGrade = async (denom, roof, floor, grade, remark) => {
-  const query = "INSERT INTO grading(denom, roof, floor, grade, remark) VALUES (?, ?, ?, ?, ?) RETURNING *";
+  const query = "INSERT INTO grading(denom, roof, floor, grade, remark) VALUES (?, ?, ?, ?, ?)";
   const values = [denom, roof, floor, grade, remark];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -525,13 +525,13 @@ const deleteGrade = async (id) => {
   const query = "DELETE FROM grading WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res.length < 1;
+  return res;
 };
 
 // Updating object
-const updateGrade = async (id, denom, roof, floor, grade, remark, update) => {
-  const query = "UPDATE grading SET denom = ?, roof = ?, floor = ?, grade = ?, remark = ?, updated_at = ? WHERE id = ?";
-  const values = [denom, roof, floor, grade, remark, update, id];
+const updateGrade = async (id, denom, roof, floor, grade, remark) => {
+  const query = "UPDATE grading SET denom = ?, roof = ?, floor = ?, grade = ?, remark = ? WHERE id = ?";
+  const values = [denom, roof, floor, grade, remark, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
 };
@@ -541,7 +541,7 @@ const editGrade = async (id) => {
   const query = "SELECT * FROM grading WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- GRADING CRUD ------------------------------------------------
@@ -550,8 +550,7 @@ const editGrade = async (id) => {
 
 // // Check if object exists
 const checkJCE = async (denom, roof, floor) => {
-  const query =
-    "SELECT denom, roof, floor FROM remarks WHERE denom = ? AND roof = ? AND floor = ?";
+  const query = "SELECT denom, roof, floor FROM remarks WHERE denom = ? AND roof = ? AND floor = ?";
   const value = [denom, roof, floor];
   const [res] = await conn.query(query, value);
   return res;
@@ -560,10 +559,10 @@ const checkJCE = async (denom, roof, floor) => {
 // // Add new object
 const insertJCE = async (denom, roof, floor, remark) => {
   const query =
-    "INSERT INTO remarks(denom, roof, floor, remark) VALUES (?, ?, ?, ?) RETURNING *";
+    "INSERT INTO remarks(denom, roof, floor, remark) VALUES (?, ?, ?, ?)";
   const values = [denom, roof, floor, remark];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -578,14 +577,14 @@ const deleteJCE = async (id) => {
   const query = "DELETE FROM remarks WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res.length < 1;
+  return res;
 };
 
 // // Updating object
-const updateJCE = async (id, denom, roof, floor, remark, update) => {
+const updateJCE = async (id, denom, roof, floor, remark) => {
   const query =
-    "UPDATE remarks SET denom = ?, roof = ?, floor = ?, remark = ?, updated_at = ? WHERE id = ?";
-  const values = [denom, roof, floor, remark, update, id];
+    "UPDATE remarks SET denom = ?, roof = ?, floor = ?, remark = ? WHERE id = ?";
+  const values = [denom, roof, floor, remark, id];
   const [res] = await conn.query(query, values);
   return res;
 };
@@ -595,7 +594,7 @@ const editJCE = async (id) => {
   const query = "SELECT * FROM remarks WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- JCE CRUD ------------------------------------------------
@@ -614,10 +613,10 @@ const checkMSCE = async (denom, roof, floor) => {
 // // Add new object
 const insertMSCE = async (denom, roof, floor, remark) => {
   const query =
-    "INSERT INTO remarks(denom, roof, floor, remark) VALUES (?, ?, ?, ?) RETURNING *";
+    "INSERT INTO remarks(denom, roof, floor, remark) VALUES (?, ?, ?, ?)";
   const values = [denom, roof, floor, remark];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -632,14 +631,14 @@ const deleteMSCE = async (id) => {
   const query = "DELETE FROM remarks WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res.length < 1;
+  return res;
 };
 
 // // Updating object
-const updateMSCE = async (id, denom, roof, floor, remark, update) => {
+const updateMSCE = async (id, denom, roof, floor, remark) => {
   const query =
-    "UPDATE remarks SET denom = ?, roof = ?, floor = ?, remark = ?, updated_at = ? WHERE id = ?";
-  const values = [denom, roof, floor, remark, update, id];
+    "UPDATE remarks SET denom = ?, roof = ?, floor = ?, remark = ? WHERE id = ?";
+  const values = [denom, roof, floor, remark, id];
   const [res] = await conn.query(query, values);
   return res;
 };
@@ -649,7 +648,7 @@ const editMSCE = async (id) => {
   const query = "SELECT * FROM remarks WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- MSCE CRUD ------------------------------------------------
@@ -668,10 +667,10 @@ const checkTeacher = async (sid, email, contact) => {
 // // Add new object
 const insertTeacher = async (sid, name, contact, email, address, gender, password) => {
   const query =
-    "INSERT INTO teachers(sid, name, contact, email, address, gender, password) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *";
+    "INSERT INTO teachers(sid, name, contact, email, address, gender, password) VALUES (?, ?, ?, ?, ?, ?, ?)";
   const values = [sid, name, contact, email, address, gender, password];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -789,10 +788,10 @@ const checkAssignTeacher = async (sid, classid, subjectid) => {
 // // Add new object
 const insertAssignTeacher = async (sid, teacherid, classid, subjectid) => {
   const query =
-    "INSERT INTO assignteacher(sid, teacherid, classid, subjectid) VALUES (?, ?, ?, ?) RETURNING *";
+    "INSERT INTO assignteacher(sid, teacherid, classid, subjectid) VALUES (?, ?, ?, ?)";
   const values = [sid, teacherid, classid, subjectid];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -831,10 +830,10 @@ const checkClassTeacher = async (sid, classid) => {
 // // Add new object
 const insertClassTeacher = async (sid, teacherid, classid) => {
   const query =
-    "INSERT INTO classteacher(sid, teacherid, classid) VALUES (?, ?, ?) RETURNING *";
+    "INSERT INTO classteacher(sid, teacherid, classid) VALUES (?, ?, ?)";
   const values = [sid, teacherid, classid];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -863,53 +862,72 @@ const deleteClassTeacher = async (id) => {
 // // Check if object exists
 const checkStudent = async (sid, students) => {
   const query = `SELECT EXISTS (
-        SELECT 1 FROM students
-        INNER JOIN history ON history.studentid = students.id
-        WHERE history.sid = ? AND name = ANY ($2::text[]))`;
-  const value = [sid, students];
-  const [res] = await conn.query(query, value);
-  if (res) {
-    const exists = res.exists;
-    return [exists, res.map((row) => row.id)];
-  } else {
-    throw new Error("No result returned from query.");
-  }
+      SELECT 1 FROM students
+      INNER JOIN history ON history.studentid = students.id
+      WHERE history.schoolid = ? 
+      AND name IN (${students.map(() => '?').join(',')})
+  ) AS existsCheck`; // Assign an alias for readability
+  const values = [sid, ...students]; // Spread students array
+  const [res] = await conn.query(query, values);
+  
+  // Extract value properly
+  const exists = Object.values(res[0])[0]; // Get first column value (1 or 0)
+  
+  return exists === 1; // Return true or false
 };
+
 
 // // Add new object
-const insertStudent = async (studentNames) => {
-  const insertedStudents = [];
-  const query = "INSERT INTO students(name) VALUES ($1) RETURNING id";
-
-  // Insert each student one by one
-  for (const name of studentNames) {
-    const result = await conn.query(query, [name]);
-    insertedStudents.push(result.id);
+const insertStudent = async (students) => {
+  const studentIDs = [];
+  const query = "INSERT INTO students (id, name) VALUES (?, ?)";
+  try {
+    // Assuming 'conn' is your MySQL connection or pool
+    for (const { studentID, student } of students) {
+      await conn.query(query, [studentID, student]);
+      studentIDs.push(studentID);
+    }
+    return studentIDs;
+  } catch (error) {
+    throw error;
   }
-
-  return insertedStudents;
 };
+
 
 const insertStudentHistory = async (sid, yearid, classid, studentIDs) => {
-  const insertHistory = [];
-  const query =
-    "INSERT INTO history(sid, yearid, classid, studentid) VALUES ($1, $2, $3, $4) RETURNING *";
-
-  // Insert each student one by one
-  for (const id of studentIDs) {
-    const result = await conn.query(query, [sid, yearid, classid, id]);
-    insertHistory.push(result);
+  const query = "INSERT INTO history (schoolid, yearid, classid, studentid) VALUES ?";
+  
+  const values = studentIDs.map(studentID => [sid, yearid, classid, studentID]); // Prepare bulk insert data
+  
+  try {
+    const [result] = await conn.query(query, [values]); // Bulk insert into history
+    return result; 
+  } catch (error) {
+    throw error; // Propagate the error
   }
-  return insertHistory;
 };
+
+
+// const insertStudentHistory = async (sid, yearid, classid, studentIDs) => {
+//   const insertHistory = [];
+//   const query =
+//     "INSERT INTO history(sid, yearid, classid, studentid) VALUES ($1, $2, $3, $4)";
+
+//   // Insert each student one by one
+//   for (const id of studentIDs) {
+//     const result = await conn.query(query, [sid, yearid, classid, id]);
+//     insertHistory.push(result);
+//   }
+//   return insertHistory;
+// };
 
 // // Get all object
 const getStudent = async (sid) => {
   const query = `SELECT s.id, s.name, class.name AS class, s.dob, s.gender, s.address FROM history
     INNER JOIN students AS s ON s.id = history.studentid
-    INNER JOIN acyear ON acyear.yearid=history.yearid
-    INNER JOIN class ON class.classid=history.classid
-    WHERE history.sid = ? AND status = 'Active'`;
+    INNER JOIN acyear ON acyear.id=history.yearid
+    INNER JOIN class ON class.id=history.classid
+    WHERE history.schoolid = ? AND status = 'Active'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -954,30 +972,30 @@ const updateStudent = async (
 };
 
 const countStudents = async (sid) => {
-  const query = "SELECT COUNT(*) as Count FROM history WHERE sid = ? AND status = 'Active'";
+  const query = "SELECT COUNT(*) as Count FROM history WHERE schoolid = ? AND status = 'Active'";
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const countMale = async (sid) => {
   const query = `SELECT COUNT(*) as Count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
-    WHERE history.sid = ? AND status = 'Active' AND s.gender = 'Male'`;
+    WHERE history.schoolid = ? AND status = 'Active' AND s.gender = 'Male'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const countFemale = async (sid) => {
   const query = `SELECT COUNT(*) as Count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
-    WHERE history.sid = ? AND status = 'Active' AND s.gender = 'Female'`;
+    WHERE history.schoolid = ? AND status = 'Active' AND s.gender = 'Female'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const countGenderAndClass = async (sid) => {
@@ -988,15 +1006,15 @@ const countGenderAndClass = async (sid) => {
 FROM 
     history
 INNER JOIN students s ON s.id = history.studentid
-INNER JOIN class c ON c.classid = history.classid
-WHERE history.sid = ? AND status = 'Active'
+INNER JOIN class c ON c.id = history.classid
+WHERE history.schoolid = ? AND status = 'Active'
 GROUP BY 
     c.name, s.gender
 ORDER BY 
     c.name, s.gender`;
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res;
+  return res.affectedRows > 0;
 }
 
 const genderPercentage = async (sid) => {
@@ -1006,7 +1024,7 @@ const genderPercentage = async (sid) => {
 FROM 
     history
 INNER JOIN students s ON s.id = history.studentid
-WHERE history.sid = ? AND status = 'Active'
+WHERE history.schoolid = ? AND status = 'Active'
 GROUP BY 
     s.gender
 ORDER BY 
@@ -1031,10 +1049,10 @@ const checkFee = async (sid, name) => {
 // // Add new object
 const insertFee = async (sid, name, amount, description) => {
   const query =
-    "INSERT INTO fees(sid, name, amount, description) VALUES (?, ?, ?, ?) RETURNING *";
+    "INSERT INTO fees(sid, name, amount, description) VALUES (?, ?, ?, ?)";
   const values = [sid, name, amount, description];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 // // Get all object
@@ -1050,7 +1068,7 @@ const deleteFee = async (id) => {
   const query = "DELETE FROM fees WHERE feeid = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res.length < 1;
+  return res;
 };
 
 // // Get Single object
@@ -1116,10 +1134,10 @@ INNER JOIN acyear ON acyear.yearid = term.yearid
 
 const insertPay = async (sid, id, feeid, paid, balance, status, term) => {
   const query =
-    "INSERT INTO payment(sid, id, feeid, paid, balance, status, termid) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *";
+    "INSERT INTO payment(sid, id, feeid, paid, balance, status, termid) VALUES (?, ?, ?, ?, ?, ?, ?)";
   const values = [sid, id, feeid, paid, balance, status, term];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 const checkPay = async (sid, feeid, id, term) => {
@@ -1174,7 +1192,7 @@ const sumPayment = async (id) => {
         termid = (SELECT termid FROM CurrentTerm) AND payment.sid = ?`;
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const sumPaymentThisMonth = async (id) => {
@@ -1197,16 +1215,15 @@ WHERE
      AND payment.sid = ?`;
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const getTuition = async (id) => {
-  const query = `SELECT amount 
-    FROM fees
+  const query = `SELECT amount FROM fees
     WHERE sid = ?`;
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 const getOutstanding = async (id) => {
@@ -1226,7 +1243,7 @@ const getOutstanding = async (id) => {
         termid = (SELECT termid FROM CurrentTerm) AND payment.sid = ?`;
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const PaidByDays = async (id) => {
@@ -1251,7 +1268,7 @@ ORDER BY
     TO_CHAR(created_at::DATE, 'Day') DESC`;
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const PaidByClass = async (id) => {
@@ -1375,7 +1392,7 @@ const checkResult = async (sid, termid, data) => {
 
 const insertResult = async (sid, termid, grade, remarks, data) => {
   const query = `INSERT INTO results(sid, studentid, termid, typeid, classid, subjectid, score, remarks, grade) 
-  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`;
+  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   const values = [
     sid,
     data.id,
@@ -1388,7 +1405,7 @@ const insertResult = async (sid, termid, grade, remarks, data) => {
     grade,
   ];
   const [res] = await conn.query(query, values);
-  return res.length > 0;
+  return res;
 };
 
 const getClassById = async (data) => {
@@ -1563,7 +1580,7 @@ const addPromote = async (sid, termid, typeid, classid, studentid, agg, remarks,
                   VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
   const values = [sid, termid, typeid, classid, studentid, agg, remarks, rank];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 }
 
 const checkPromote = async (sid, termid, typeid, classid, studentid) => {
@@ -1941,19 +1958,25 @@ const bestStudents = async (sid) => {
   const query = `WITH CurrentTerm AS (
     SELECT id AS termid
     FROM term
-    WHERE CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
-  )
-  SELECT DISTINCT ON (p.classid) s.name AS student, term.name AS term, class.name AS class, exam.name AS exam, p.agg
-  FROM promotion p
-  INNER JOIN students s ON s.id = p.studentid 
-  INNER JOIN term ON term.id= p.termid
-  INNER JOIN class ON class.classid = p.classid
-  INNER JOIN exam ON exam.id = p.typeid 
-  WHERE p.termid = (SELECT termid FROM CurrentTerm) AND sid = ?
-  ORDER BY p.classid, rank ASC;`;
+    WHERE CURRENT_DATE BETWEEN CAST(start_date AS DATE) AND CAST(end_date AS DATE)
+)
+SELECT DISTINCT p.classid, 
+       s.name AS student, 
+       term.name AS term, 
+       class.name AS class, 
+       exam.name AS exam, 
+       p.agg
+FROM promotion p
+INNER JOIN students s ON s.id = p.studentid 
+INNER JOIN term ON term.id = p.termid
+INNER JOIN class ON class.id = p.classid
+INNER JOIN exam ON exam.id = p.typeid 
+WHERE p.termid = (SELECT termid FROM CurrentTerm) AND sid = ?
+ORDER BY p.classid, p.rank ASC
+`;
   const value = [sid];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res.affectedRows > 0;
 }
 
 const worstStudents = async (sid) => {
@@ -2004,17 +2027,17 @@ const avSubByClass = async (sid, classid) => {
 // // --------------------------------------- EVENTS CRUD ------------------------------------------------
 
 const addEvent = async (id, title, date, time, location, description) => {
-  const query = 'INSERT INTO events (title, date, time, locations, description, sid) VALUES (?, ?, ?, ?, ?, ?)'; // Changed to ?
+  const query = 'INSERT INTO events (title, date, time, locations, description, sid) VALUES (?, ?, ?, ?, ?, ?)';
   const values = [title, date, time, location, description, id];
-  const [res] = await conn.query(query, values); // Changed to async/await
-  return res; // Adjusted for MySQL
+  const [res] = await conn.query(query, values);
+  return res.affectedRows > 0;
 }
 
 const checkEvent = async (id, title, date) => {
   const query = 'SELECT * FROM events WHERE sid = ? AND title = ? AND date = ?';
   const values = [id, title, date];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.length > 0;
+  return res;
 }
 
 const getEvents = async (sid) => {
@@ -2056,7 +2079,7 @@ const insertFeatures = async (name, price, features) => {
   const query = `INSERT INTO subscription_plans (name, price, features) VALUES (?, ?, ?)`;
   const value = [name, price, features];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res.affecte > 0; // Adjusted for MySQL
+  return res.affectedRows > 0; // Adjusted for MySQL
 };
 
 const getSubscriptions = async () => {
@@ -2076,7 +2099,7 @@ const editPlan = async (id) => {
   const query = "SELECT * FROM subscription_plans WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res; // Adjusted for MySQL
+  return res[0]; // Adjusted for MySQL
 };
 
 // Updating object
@@ -2099,24 +2122,23 @@ const getSubs = async (plan) => {
   const query = 'SELECT * FROM subscription_plans WHERE name = ?'; // Changed to ?
   const values = [plan];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res; // Adjusted for MySQL
+  return res[0]; // Adjusted for MySQL
 } 
 
-const addSubscription = async (sid, planid, strata, period) => {
-  const query = `INSERT INTO subscriptions (sid, planid, status, period)
-          VALUES (?, ?, ?, ?) RETURNING *`;
-  const values = [sid, planid, strata, period];
+const addSubscription = async (id, sid, planid, strata, period) => {
+  const query = `INSERT INTO subscriptions (id, sid, planid, status, period)
+          VALUES (?, ?, ?, ?, ?)`;
+  const values = [id, sid, planid, strata, period];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
 }
 
 const addBilling = async (subscriptionid, amount, strata, expiry) => {
   const query = `INSERT INTO billing (subscriptionid, amount, status, expiry)
-          VALUES (?, ?, ?, ?)
-          RETURNING id`;
+          VALUES (?, ?, ?, ?)`;
   const values = [subscriptionid, amount, strata, expiry];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res;
+  return res.affectedRows > 0;
 }
 
 const checkSubscription = async (sid) => {
@@ -2132,7 +2154,7 @@ const checkSubscriptionStatus = async (sid) => {
     WHERE s.sid = ? AND b.status = 'Pending'`;
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res;
+  return res[0];
 }
 
 const checkSubsByID = async (sid) => {
@@ -2163,7 +2185,7 @@ const checkPaid = async (sid, status) => {
 }
 
 const getSubscriptionPayments = async () => {
-  const query = `SELECT sub.id, schools.name, sp.name AS plan, sub.period, bill.amount, TO_CHAR(sub.created_at::timestamp, 'DD Mon YYYY') AS date, sub.status, bill.status AS bill FROM subscriptions sub
+  const query = `SELECT sub.id, schools.name, sp.name AS plan, sub.period, bill.amount, sub.created_at AS date, sub.status, bill.status AS bill FROM subscriptions sub
     INNER JOIN schools ON schools.id = sub.sid
     INNER JOIN billing bill ON bill.subscriptionid = sub.id
     INNER JOIN subscription_plans sp ON sp.id = sub.planid
@@ -2187,7 +2209,7 @@ const updateBillingStatus = async (id, status) => {
 }
 
 const updateSchoolStatus = async (id, status) => {
-  const query = 'UPDATE schools SET status = ? WHERE sid = ?';
+  const query = 'UPDATE schools SET status = ? WHERE id = ?';
   const values = [status, id];
   const [res] = await conn.query(query, values);
   return res;
@@ -2230,7 +2252,7 @@ const addFeedback = async (sid, rating, optioni, commenti) => {
   const query = `INSERT INTO feedback (sid, rating, optioni, commenti) VALUES (?, ?, ?, ?)`;
   const values = [sid, rating, optioni, commenti];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res; // Adjusted for MySQL
+  return res.affectedRows > 0;
 }
 
 const getFeedbackByRating = async (rating) => {
@@ -2245,7 +2267,7 @@ const getFeedbackByRating = async (rating) => {
 };
 
 const getFeedback = async () => {
-  const query = `SELECT feedback.*, schools.name, TO_CHAR(feedback.created_at, 'Month DD, YYYY') AS date FROM feedback 
+  const query = `SELECT feedback.*, schools.name, feedback.created_at AS date FROM feedback 
   INNER JOIN schools ON schools.id = feedback.sid`;
   const [res] = await conn.query(query); // Changed to async/await
   return res; // Adjusted for MySQL

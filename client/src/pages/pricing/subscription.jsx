@@ -25,7 +25,7 @@ const PlanOptions = () => {
       setSubscriptionStatus(strata.status);
       setExpiryTime(strata.expiry);
 
-      if (strata.status === "pending" && strata.expiry) {
+      if (strata.status === "Pending" && strata.expiry) {
         const timeRemaining = Math.max(
           0,
           Math.floor((new Date(strata.expiry).getTime() - Date.now()) / 1000)
@@ -44,7 +44,7 @@ const PlanOptions = () => {
 
   // Countdown timer for pending status
   useEffect(() => {
-    if (subscriptionStatus === "pending" && timeLeft > 0) {
+    if (subscriptionStatus === "Pending" && timeLeft > 0) {
       const interval = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -71,7 +71,7 @@ const PlanOptions = () => {
       const timeLeft = calculateRemainingTime();
 
       // If the countdown ends, automatically suspend the subscription
-      if (timeLeft <= 0 && subscriptionStatus === "pending") {
+      if (timeLeft <= 0 && subscriptionStatus === "Pending") {
         updateStatusToSuspended();
       }
     };
@@ -84,7 +84,7 @@ const PlanOptions = () => {
 
   const updateStatusToSuspended = async () => {
     try {
-      const res = await api.updateSubscriptionStatus({ status: "suspended" });
+      const res = await api.updateSubscriptionStatus({ status: "Cancelled" });
       if (res.data.success === true) {
         toast.error("Your Payment was suspended");
       }
@@ -120,7 +120,7 @@ const PlanOptions = () => {
   return (
     <>
       <Toaster />
-      {subscriptionStatus === "pending" ? (
+      {subscriptionStatus === "Pending" ? (
         <div className="countdown-outer">
           <h5 className="text-center">PAYMENT CONFIRMATION</h5>
           <p className="text-center">
@@ -187,9 +187,9 @@ const PlanOptions = () => {
               <p className="feat">
                 {Array.isArray(plan.features)
                   ? plan.features.join(", ")
-                  : plan.features}
+                  : JSON.parse(plan.features).join(', ')}
               </p>
-              {subscriptionStatus === "pending" ? (
+              {subscriptionStatus === "Pending" ? (
                 ""
               ) : (
                 <FormButton

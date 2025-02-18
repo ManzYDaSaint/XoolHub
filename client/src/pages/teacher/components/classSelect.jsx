@@ -25,7 +25,7 @@ const ClassSelectInput = ({ label, handleChange, name, value }) => {
           <select name={name} value={value} onChange={handleChange}>
             <option value="" selected disabled>Select an option</option>
             {options.map((option) => (
-              <option key={option.classid} value={option.classid}>
+              <option key={option.id} value={option.id}>
                 {option.name}
               </option>
             ))}

@@ -36,7 +36,7 @@ const PlanData = () => {
         sr: index + 1,
         name: item.name,
         price: `MK${item.price}`,
-        features: item.features.join(', '),
+        features: JSON.parse(item.features).join(', '),
         actions: (
             <div>
             <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil size={18} className='action_edit' /></button>
@@ -75,8 +75,8 @@ const PlanData = () => {
                 name: res.data.edit.name || '',
                 price: res.data.edit.price || '',
                 features: Array.isArray(res.data.edit.features)
-                    ? res.data.edit.features
-                    : [], // Ensure it is an array of strings
+    ? res.data.edit.features
+    : JSON.parse(res.data.edit.features || '[]'),
             })
         );
         dispatch(setIsEditMode(true));
