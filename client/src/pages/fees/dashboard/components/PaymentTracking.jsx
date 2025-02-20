@@ -34,9 +34,9 @@ const PaymentTracking = () => {
             key={index}
             icon={School}
             title={item.class}
-            percentage={item.percentage}
+            percentage={item.Percentage}
             description={'%'}
-            small={item.percentage}
+            small={item.Percentage}
           />
         ))}
       </div>

@@ -37,8 +37,8 @@ const FeesData = () => {
         description: item.description,
         actions: (
             <div>
-            <button onClick={() => handleEdit(item.feeid)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-            <button onClick={() => handleDelete(item.feeid)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
+            <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
             </div>
         ),
         }));
@@ -60,7 +60,7 @@ const FeesData = () => {
             description: res.data.edit.description,
         }));
         dispatch(setIsEditMode(true));
-        dispatch(setEditItemId(res.data.edit.feeid));
+        dispatch(setEditItemId(res.data.edit.id));
     };
       
     //   Handle Delete

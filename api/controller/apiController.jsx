@@ -806,7 +806,7 @@ const login = async(req, res) => {
             if(teacher.length === 0) {
                 // Getting ADMINISTRATOR
                 const superAdmin = await checkAdminMail(schoolEmail);
-                if(superAdmin.length === 0) {
+                if(!superAdmin) {
                     return res.json({
                         success: false,
                         message: "Invalid email or password",
@@ -2484,8 +2484,8 @@ const addTeacher = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkTeacher(id, email, contact)
-        if(checker) {
+        const checker = await checkTeacher(id, name)
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Teacher already exists..."
@@ -2669,13 +2669,10 @@ const editTeachers = async(req, res) => {
 const updateTeachers = async(req, res) => {
     const { id } = req.params;
     const { name, contact, email, address, gender } = req.body;
-    const token = req.cookies.schoolToken
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
 
     try {
 
-        const update = await updateTeacher(id, name, contact, email, address, gender, updateAt);
+        const update = await updateTeacher(id, name, contact, email, address, gender);
         if(update) {
             res.json({
                 success: true,
@@ -2829,7 +2826,7 @@ const addAssignTeacher = async (req, res) => {
 
         // Check if class exists
         const checker = await checkAssignTeacher(id, classid, subjectid)
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Teacher already assigned..."
@@ -2934,7 +2931,7 @@ const addClassTeacher = async (req, res) => {
 
         // Check if class exists
         const checker = await checkClassTeacher(id, classid)
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Teacher already assigned..."
@@ -3137,6 +3134,7 @@ const deleteStudents = async(req, res) => {
     const { id } = req.params;
     try {
         const del = await deleteStudent(id);
+
         if(del) {
             res.json({ 
                 success: true,
@@ -3164,7 +3162,7 @@ const updateStudents = async(req, res) => {
 
     try {
 
-        const update = await updateStudent(id, student, contact, email, address, gender, dob, updateAt);
+        const update = await updateStudent(id, student, contact, email, address, gender, dob);
         if(update) {
             res.json({
                 success: true,
@@ -3192,6 +3190,7 @@ const StudentCounter = async(req, res) => {
     const sid = decoded.id;
     try {
         const counter = await countStudents(sid);
+
         if(counter) {
             res.json({
                 success: true,
@@ -3348,8 +3347,8 @@ const addFee = async (req, res) => {
         }
 
         // Check if class exists
-        const checker = await checkFee(id, name)
-        if(checker) {
+        const checker = await checkFee(id, name);
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Fee already exists..."
@@ -3460,18 +3459,16 @@ const updateFees = async(req, res) => {
     const sid = decoded.id;
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
         const checker = await checkFee(sid, name);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Fee already exists..."
             });
         }
         else {
-            const update = await updateFee(id, name, amount, description, updateAt);
+            const update = await updateFee(id, name, amount, description);
             if(update) {
                 res.json({
                     success: true,
@@ -3582,11 +3579,11 @@ const addPay = async (req, res) => {
         }
 
         const balance = Number(feeamount) - Number(paid);
-        const status = Number(paid) < Number(feeamount) ? 'ongoing' : 'complete';
+        const status = Number(paid) < Number(feeamount) ? 'Pending' : 'Complete';
 
         // Check if class exists
         const checker = await checkPay(sid, feeid, id, term);
-        if(checker) {
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: "Payment was already made..."
@@ -3594,6 +3591,7 @@ const addPay = async (req, res) => {
         }
         else {
             // Add new grade
+
             const newPay = await insertPay(sid, id, feeid, paid, balance, status, term);
             if(newPay) {
                 res.json({ 
@@ -3645,7 +3643,7 @@ const updatePays = async(req, res) => {
     const { paid, amount, term } = req.body;
 
     const balance = Number(amount) - Number(paid);
-    const status = Number(paid) < Number(amount) ? 'ongoing' : 'complete';
+    const status = Number(paid) < Number(amount) ? 'Pending' : 'Complete';
 
     if(!amount || !id || !paid || !term) {
         return res.json({
@@ -3668,11 +3666,9 @@ const updatePays = async(req, res) => {
     }
 
     try {
-        const now = new Date();
-        const updateAt = now.toLocaleString();
         // Check if exam exists
 
-        const update = await updatePay(id, paid, balance, status, updateAt, term);
+        const update = await updatePay(id, paid, balance, status, term);
         if(update) {
             res.json({
                 success: true,

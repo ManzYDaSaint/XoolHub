@@ -16,7 +16,7 @@ const AssignData = () => {
 const fetchData = async () => {
   const res = await api.getAssignTeacher();
   const data = res.data.assign;
-  if(data.length < 1) {
+  if(data.length === 0) {
       const assignTeacherData = data.map((item, index) => ({
       sr: "",
       teacher: "No records found...",

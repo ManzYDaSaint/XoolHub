@@ -18,7 +18,10 @@ const FeeCollectionLineChart = () => {
       try {
         const res = await api.paymentDays();
         const data = res.data.paid;
-        setData(data);
+        setData(Array.isArray(data) ? data.map(item => ({
+          ...item,
+          amount: Number(item.amount) // Ensure amount is a number
+        })) : []);
       } catch (error) {
         console.error("Error fetching student count:", error);
       }

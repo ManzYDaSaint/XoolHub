@@ -24,7 +24,7 @@ const Payment = () => {
     const fetchData = async () => {
         const res = await api.getPay();
         const data = res.data.pay;
-        if(data.length < 1) {
+        if(data.length === 0) {
             const payData = data.map((item, index) => ({
             sr: "",
             date: "",
@@ -49,11 +49,11 @@ const Payment = () => {
             amount: item.paid,
             status: (
                 <>
-                    {item.status === 'ongoing' ? (
+                    {item.status === 'Pending' ? (
                         <>
                             <Timer size={16} className='iconLucide' color='orange' /> Ongoing
                         </>
-                    ) : item.status === 'complete' ? (
+                    ) : item.status === 'Complete' ? (
                         <>
                             <CircleCheckBig size={15} className='iconLucide' color='green' /> Complete
                         </>

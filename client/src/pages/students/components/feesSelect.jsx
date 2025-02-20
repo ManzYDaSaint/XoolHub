@@ -8,13 +8,13 @@ const FeesSelectInput = ({ label, name, onChange, value }) => {
 
   const handleSelectChange = (event) => {
     const selectedOption = options.find(
-      (option) => option.feeid === event.target.value
+      (option) => option.id === event.target.value
     );
     if (selectedOption) {
       setSelectedAmount(selectedOption.amount);
-      setSelectedId(selectedOption.feeid);
+      setSelectedId(selectedOption.id);
       // Call the provided onChange function with selected data
-      onChange({ id: selectedOption.feeid, amount: selectedOption.amount });
+      onChange({ id: selectedOption.id, amount: selectedOption.amount });
     } else {
       // Handle case where no option is selected (e.g., reset state)
       setSelectedAmount(null);
@@ -44,7 +44,7 @@ const FeesSelectInput = ({ label, name, onChange, value }) => {
           <select name={name} value={value} onChange={handleSelectChange}>
             <option value="" selected disabled>Select an option</option>
             {options.map((option) => (
-              <option key={option.feeid} value={option.feeid}>
+              <option key={option.id} value={option.id}>
                 {option.name}
               </option>
             ))}

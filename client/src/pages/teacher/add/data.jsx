@@ -7,10 +7,8 @@ import { setIsEditMode, setEditItemId, setTeacherFormData } from '../../../helpe
 import { toast } from 'react-hot-toast';
 import AddForm from './form.jsx';
 import AddTable from './table.jsx';
-import { useNavigate } from 'react-router-dom';
 
 const Data = () => {
-    const navigate = useNavigate();
   const dispatch = useDispatch();
   const [teacherData, setTeacherData] = useState([]);
   const [showAdd, setShowAdd] = useState(false);
@@ -21,7 +19,7 @@ const Data = () => {
 const fetchData = async () => {
   const res = await api.getTeacher();
   const data = res.data.teacher;
-  if(data.length < 1) {
+  if(data.length === 0) {
       const teacherData = data.map((item, index) => ({
       sr: "",
       name: "No records found...",
@@ -59,12 +57,6 @@ useEffect(() => {
     fetchData();
 }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-
-//   const handleView = (id) => {
-//     navigate(`/teacher_profile/${id}`);
-//   };
-
-
   // Get One exam
   const handleEdit = async(id) => {
     setShowAdd(true);
@@ -74,6 +66,7 @@ useEffect(() => {
           contact: res.data.edit.contact,
           email: res.data.edit.email,
           address: res.data.edit.address,
+          gender: res.data.edit.gender,
       }));
       dispatch(setIsEditMode(true));
       dispatch(setEditItemId(res.data.edit.id));

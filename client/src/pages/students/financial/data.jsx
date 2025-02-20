@@ -22,7 +22,7 @@ const PfData = () => {
     const res = await api.getPayee(id);
 
     const data = res.data.payee;
-    if(data.length < 1) {
+    if(data.length === 0) {
         const payData = data.map((item, index) => ({
         sr: "",
         date: "",
@@ -46,8 +46,8 @@ const PfData = () => {
         balance: item.balance,
         actions: (
             <div>
-            <button onClick={() => handleEdit(item.pid)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-            <button onClick={() => handleDelete(item.pid)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
+            <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
             </div>
         ),
         }));
@@ -60,22 +60,22 @@ const PfData = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Get One exam
-    const handleEdit = async(pid) => {
+    const handleEdit = async(id) => {
         setShowPay(true);
-        const res = await api.editPay(pid);
+        const res = await api.editPay(id);
         dispatch(setPayFormData({
             paid: res.data.edit.paid,
             amount: res.data.edit.amount,
             term: res.data.edit.termid,
         }));
         dispatch(setIsEditMode(true));
-        dispatch(setEditItemId(res.data.edit.pid));
+        dispatch(setEditItemId(res.data.edit.id));
     };
       
     //   Handle Delete
-    const handleDelete = async (pid) => {
+    const handleDelete = async (id) => {
         try {
-            const res = await api.deletePay(pid);
+            const res = await api.deletePay(id);
             if (res.data.success === true) {
                 fetchData();
                 toast.success(res.data.message);

@@ -656,10 +656,10 @@ const editMSCE = async (id) => {
 // // --------------------------------------- TEACHER CRUD ------------------------------------------------
 
 // // Check if object exists
-const checkTeacher = async (sid, email, contact) => {
+const checkTeacher = async (sid, name) => {
   const query =
-    "SELECT sid, email, contact FROM teachers WHERE sid = ? AND email = ? AND contact = ?";
-  const value = [sid, email, contact];
+    "SELECT sid, name FROM teachers WHERE sid = ? AND name = ?";
+  const value = [sid, name];
   const [res] = await conn.query(query, value);
   return res;
 };
@@ -715,10 +715,10 @@ const deleteTeacher = async (id) => {
 };
 
 // Updating object
-const updateTeacher = async (id, name, contact, email, address, gender, update) => {
+const updateTeacher = async (id, name, contact, email, address, gender) => {
   const query =
-    "UPDATE teachers SET name = ?, contact = ?, email = ?, address = ?, gender = ?, updated_at = ? WHERE id = ?";
-  const values = [name, contact, email, address, gender, update, id];
+    "UPDATE teachers SET name = ?, contact = ?, email = ?, address = ?, gender = ? WHERE id = ?";
+  const values = [name, contact, email, address, gender, id];
   const [res] = await conn.query(query, values);
   return res;
 };
@@ -728,32 +728,32 @@ const editTeacher = async (id) => {
   const query = "SELECT * FROM teachers WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 const countTeachers = async (sid) => {
-  const query = "SELECT COUNT(*) as Count FROM teachers WHERE sid = ?";
+  const query = "SELECT COUNT(*) as count FROM teachers WHERE sid = ?";
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const countMaleTeachers = async (sid) => {
-  const query = `SELECT COUNT(*) as Count
+  const query = `SELECT COUNT(*) as count
     FROM teachers 
     WHERE sid = ? AND gender = 'Male'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const countFemaleTeachers = async (sid) => {
-  const query = `SELECT COUNT(*) as Count
+  const query = `SELECT COUNT(*) as count
     FROM teachers 
     WHERE sid = ? AND gender = 'Female'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 }
 
 const teacherGenderPercentage = async (sid) => {
@@ -766,7 +766,7 @@ WHERE sid = ?
 GROUP BY 
     gender
 ORDER BY 
-    gender;`
+    gender`
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -798,7 +798,7 @@ const insertAssignTeacher = async (sid, teacherid, classid, subjectid) => {
 const getAssignTeacher = async (sid) => {
   const query = `SELECT assignteacher.id, teachers.name AS teacher, class.name AS classs, subject.name AS subject FROM assignteacher
     INNER JOIN teachers ON teachers.id=assignteacher.teacherid
-    INNER JOIN class ON class.classid=assignteacher.classid
+    INNER JOIN class ON class.id=assignteacher.classid
     INNER JOIN subject ON subject.id=assignteacher.subjectid
     WHERE assignteacher.sid = ?`;
   const value = [sid];
@@ -811,7 +811,7 @@ const deleteAssignTeacher = async (id) => {
   const query = "DELETE FROM assignteacher WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res.length < 1;
+  return res;
 };
 
 // // --------------------------------------- ASSIGN TEACHER CRUD ------------------------------------------------
@@ -824,7 +824,7 @@ const checkClassTeacher = async (sid, classid) => {
     "SELECT sid, classid FROM classteacher WHERE sid = ? AND classid = ?";
   const value = [sid, classid];
   const [res] = await conn.query(query, value);
-  return res[1]; // Adjusted to return the correct row
+  return res; // Adjusted to return the correct row
 };
 
 // // Add new object
@@ -840,7 +840,7 @@ const insertClassTeacher = async (sid, teacherid, classid) => {
 const getClassTeacher = async (sid) => {
   const query = `SELECT classteacher.id, teachers.name AS teacher, class.name AS classs FROM classteacher
     INNER JOIN teachers ON teachers.id=classteacher.teacherid
-    INNER JOIN class ON class.classid=classteacher.classid
+    INNER JOIN class ON class.id=classteacher.classid
     WHERE classteacher.sid = ?`;
   const value = [sid];
   const [res] = await conn.query(query, value);
@@ -852,7 +852,7 @@ const deleteClassTeacher = async (id) => {
   const query = "DELETE FROM classteacher WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res.length < 1;
+  return res;
 };
 
 // // --------------------------------------- CLASS TEACHER CRUD ------------------------------------------------
@@ -935,11 +935,11 @@ const getStudent = async (sid) => {
 
 // // Get single object
 const getSingleStudent = async (sid, id) => {
-  const query = `SELECT s.*, TO_CHAR(s.created_at, 'Month DD, YYYY') AS admission, class.name AS class
+  const query = `SELECT s.*, DATE_FORMAT(s.created_at, '%M %d, %Y') AS admission, class.name AS class
 FROM students s
 INNER JOIN history h ON h.studentid = s.id 
-INNER JOIN class ON class.classid = h.classid
-WHERE s.id = ? AND h.sid = ? AND h.status = 'Active'`;
+INNER JOIN class ON class.id = h.classid
+WHERE s.id = ? AND h.schoolid = ? AND h.status = 'Active'`;
   const value = [id, sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -950,7 +950,7 @@ const deleteStudent = async (id) => {
   const query = "DELETE FROM students WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res.length < 1;
+  return res;
 };
 
 // // Updating object
@@ -961,25 +961,24 @@ const updateStudent = async (
   email,
   address,
   gender,
-  dob,
-  update
+  dob
 ) => {
   const query =
-    "UPDATE students SET name = ?, contact = ?, email = ?, address = ?, gender = ?, dob = ?, updated_at = ? WHERE id = ?";
-  const values = [name, contact, email, address, gender, dob, update, id];
+    "UPDATE students SET name = ?, contact = ?, email = ?, address = ?, gender = ?, dob = ? WHERE id = ?";
+  const values = [name, contact, email, address, gender, dob, id];
   const [res] = await conn.query(query, values);
   return res;
 };
 
 const countStudents = async (sid) => {
-  const query = "SELECT COUNT(*) as Count FROM history WHERE schoolid = ? AND status = 'Active'";
+  const query = "SELECT COUNT(*) as count FROM history WHERE schoolid = ? AND status = 'Active'";
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res[0];
 }
 
 const countMale = async (sid) => {
-  const query = `SELECT COUNT(*) as Count
+  const query = `SELECT COUNT(*) as count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
     WHERE history.schoolid = ? AND status = 'Active' AND s.gender = 'Male'`;
@@ -989,7 +988,7 @@ const countMale = async (sid) => {
 }
 
 const countFemale = async (sid) => {
-  const query = `SELECT COUNT(*) as Count
+  const query = `SELECT COUNT(*) as count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
     WHERE history.schoolid = ? AND status = 'Active' AND s.gender = 'Female'`;
@@ -1014,7 +1013,7 @@ ORDER BY
     c.name, s.gender`;
   const value = [sid];
   const [res] = await conn.query(query, value);
-  return res.affectedRows > 0;
+  return res;
 }
 
 const genderPercentage = async (sid) => {
@@ -1065,7 +1064,7 @@ const getFee = async (sid) => {
 
 // // Delete object
 const deleteFee = async (id) => {
-  const query = "DELETE FROM fees WHERE feeid = ?";
+  const query = "DELETE FROM fees WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
   return res;
@@ -1073,17 +1072,17 @@ const deleteFee = async (id) => {
 
 // // Get Single object
 const editFee = async (id) => {
-  const query = "SELECT * FROM fees WHERE feeid = ?";
+  const query = "SELECT * FROM fees WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 // // Updating object
-const updateFee = async (id, name, amount, description, update) => {
+const updateFee = async (id, name, amount, description) => {
   const query =
-    "UPDATE fees SET name = ?, amount = ?, description = ?, updated_at = ? WHERE feeid = ?";
-  const values = [name, amount, description, update, id];
+    "UPDATE fees SET name = ?, amount = ?, description = ? WHERE id = ?";
+  const values = [name, amount, description, id];
   const [res] = await conn.query(query, values);
   return res;
 };
@@ -1095,7 +1094,7 @@ const updateFee = async (id, name, amount, description, update) => {
 // // Get all object
 const getPay = async (sid) => {
   const query = `SELECT 
-      p.pid, 
+      p.id, 
       p.paid, 
       p.updated_at, 
       s.id, 
@@ -1106,13 +1105,13 @@ const getPay = async (sid) => {
       t.name AS term, 
       ay.name AS year
   FROM payment p
-  INNER JOIN students s ON p.id = s.id
+  INNER JOIN students s ON p.studentid = s.id
   INNER JOIN history h ON s.id = h.studentid
       AND h.yearid = (SELECT yearid FROM term WHERE id = p.termid) -- Ensure the student was in this academic year
-  INNER JOIN fees f ON f.feeid = p.feeid
+  INNER JOIN fees f ON f.id = p.feeid
   INNER JOIN term t ON t.id = p.termid
-  INNER JOIN acyear ay ON ay.yearid = t.yearid
-  INNER JOIN class c ON h.classid = c.classid
+  INNER JOIN acyear ay ON ay.id = t.yearid
+  INNER JOIN class c ON h.classid = c.id
   WHERE p.sid = ?`;
   const value = [sid];
   const [res] = await conn.query(query, value);
@@ -1120,28 +1119,27 @@ const getPay = async (sid) => {
 };
 
 const getPayee = async (sid, id) => {
-  const query = `SELECT payment.pid, TO_CHAR(payment.updated_at, 'Month DD, YYYY') AS date, fees.name, 
+  const query = `SELECT payment.id, DATE_FORMAT(payment.updated_at, '%M %d, %Y') AS date, fees.name, 
 fees.amount, payment.paid, payment.balance, payment.status, term.name AS term, acyear.name AS year
 FROM payment
-INNER JOIN fees ON fees.feeid = payment.feeid
+INNER JOIN fees ON fees.id = payment.feeid
 INNER JOIN term ON term.id = payment.termid
-INNER JOIN acyear ON acyear.yearid = term.yearid
-                    WHERE payment.sid =  ? AND payment.id = ?`;
+INNER JOIN acyear ON acyear.id = term.yearid
+                    WHERE payment.sid =  ? AND payment.studentid = ?`;
   const value = [sid, id];
   const [res] = await conn.query(query, value);
   return res;
 };
 
 const insertPay = async (sid, id, feeid, paid, balance, status, term) => {
-  const query =
-    "INSERT INTO payment(sid, id, feeid, paid, balance, status, termid) VALUES (?, ?, ?, ?, ?, ?, ?)";
+  const query = "INSERT INTO payment(sid, studentid, feeid, paid, balance, status, termid) VALUES (?, ?, ?, ?, ?, ?, ?)";
   const values = [sid, id, feeid, paid, balance, status, term];
   const [res] = await conn.query(query, values);
   return res;
 };
 
 const checkPay = async (sid, feeid, id, term) => {
-  const query = `SELECT * FROM payment WHERE sid = ? AND feeid = ? AND id = ? AND termid = ?`;
+  const query = `SELECT * FROM payment WHERE sid = ? AND feeid = ? AND studentid = ? AND termid = ?`;
   const value = [sid, feeid, id, term];
   const [res] = await conn.query(query, value);
   return res;
@@ -1151,25 +1149,25 @@ const checkPay = async (sid, feeid, id, term) => {
 const editPay = async (id) => {
   const query = `SELECT payment.*, fees.amount 
                   FROM payment 
-                  INNER JOIN fees ON fees.feeid = payment.feeid
-                  WHERE pid = ?`;
+                  INNER JOIN fees ON fees.id = payment.feeid
+                  WHERE payment.id = ?`;
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 // // Updating object
-const updatePay = async (id, paid, balance, status, update, term) => {
+const updatePay = async (id, paid, balance, status, term) => {
   const query =
-    "UPDATE payment SET paid = ?, balance = ?, status = ?, updated_at = ?, termid = ? WHERE pid = ?";
-  const values = [paid, balance, status, update, term, id];
+    "UPDATE payment SET paid = ?, balance = ?, status = ?, termid = ? WHERE id = ?";
+  const values = [paid, balance, status, term, id];
   const [res] = await conn.query(query, values);
   return res;
 };
 
 // // Delete object
 const deletePay = async (id) => {
-  const query = "DELETE FROM payment WHERE pid = ?";
+  const query = "DELETE FROM payment WHERE id = ?";
   const value = [id];
   const [res] = await conn.query(query, value);
   return res.length < 1;
@@ -1177,15 +1175,15 @@ const deletePay = async (id) => {
 
 const sumPayment = async (id) => {
   const query = `WITH CurrentTerm AS (
-        SELECT 
-            id AS termid
-        FROM 
-            term
-        WHERE 
-            CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
-    )
     SELECT 
-        COALESCE(SUM(paid::NUMERIC), 0) AS count
+        id AS termid
+    FROM 
+        term
+    WHERE 
+        CURRENT_DATE BETWEEN CAST(start_date AS DATE) AND CAST(end_date AS DATE)
+)
+SELECT 
+    COALESCE(SUM(CAST(paid AS DECIMAL)), 0) AS count
     FROM 
         payment
     WHERE 
@@ -1202,17 +1200,17 @@ const sumPaymentThisMonth = async (id) => {
     FROM 
         term
     WHERE 
-        CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
- )
+        CURRENT_DATE BETWEEN CAST(start_date AS DATE) AND CAST(end_date AS DATE)
+)
 SELECT 
-    COALESCE(SUM(paid::NUMERIC), 0) AS count
+    COALESCE(SUM(CAST(paid AS DECIMAL(10,2))), 0) AS count
 FROM 
     payment
 WHERE 
-    termid = (SELECT termid FROM CurrentTerm)
-    AND DATE_PART('month', payment.created_at::DATE) = DATE_PART('month', CURRENT_DATE)
-    AND DATE_PART('year', payment.created_at::DATE) = DATE_PART('year', CURRENT_DATE)
-     AND payment.sid = ?`;
+    termid = (SELECT termid FROM CurrentTerm LIMIT 1) 
+    AND MONTH(payment.created_at) = MONTH(CURRENT_DATE)
+    AND YEAR(payment.created_at) = YEAR(CURRENT_DATE)
+    AND payment.sid = ?`;
   const value = [id];
   const [res] = await conn.query(query, value);
   return res[0];
@@ -1233,7 +1231,7 @@ const getOutstanding = async (id) => {
         FROM 
             term
         WHERE 
-            CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+            CURRENT_DATE BETWEEN CAST(start_date AS DATE) AND CAST(end_date AS DATE)
     )
     SELECT 
         COUNT(*) AS count
@@ -1253,22 +1251,24 @@ const PaidByDays = async (id) => {
     FROM 
         term
     WHERE 
-        CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
- )
+        CURRENT_DATE BETWEEN CAST(start_date AS DATE) AND CAST(end_date AS DATE)
+    LIMIT 1
+)
 SELECT 
-    TO_CHAR(created_at::DATE, 'Day') AS day,
-    COALESCE(SUM(paid::NUMERIC), 0) AS amount
+    DATE_FORMAT(created_at, '%W') AS day,  -- Converts to weekday name (e.g., 'Monday')
+    COALESCE(SUM(CAST(paid AS DECIMAL(10,0))), 0) AS amount
 FROM 
     payment
 WHERE 
-    termid = (SELECT termid FROM CurrentTerm) AND payment.sid = ?
+    termid = (SELECT termid FROM CurrentTerm) 
+    AND payment.sid = ?
 GROUP BY 
-    TO_CHAR(created_at::DATE, 'Day')
+    DATE_FORMAT(created_at, '%W')
 ORDER BY 
-    TO_CHAR(created_at::DATE, 'Day') DESC`;
+    FIELD(DATE_FORMAT(created_at, '%W'), 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') DESC`;
   const value = [id];
   const [res] = await conn.query(query, value);
-  return res[0];
+  return res;
 }
 
 const PaidByClass = async (id) => {
@@ -1278,47 +1278,51 @@ const PaidByClass = async (id) => {
     FROM 
         term
     WHERE 
-        CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
- ),
- ClassPaymentStats AS (
-     SELECT 
-         history.classid,
-         COUNT(DISTINCT fp.id) AS StudentsPaid
-     FROM 
-         payment fp
-    INNER JOIN history ON history.studentid=fp.id
-     WHERE 
-         fp.termid = (SELECT termid FROM CurrentTerm)
-     GROUP BY 
-         history.classid
- ),
- ClassTotals AS (
-     SELECT 
-         c.classid, c.name AS class,
-         COUNT(s.studentid) AS TotalStudents
-     FROM 
-         class c
-     LEFT JOIN 
-         history s ON c.classid = s.classid
-    WHERE s.sid = ?
-     GROUP BY 
-         c.classid
- )
- SELECT 
-     ct.classid, ct.class,
-     COALESCE(cp.StudentsPaid, 0) AS StudentsPaid,
-     ct.TotalStudents,
-     CASE 
-         WHEN ct.TotalStudents > 0 THEN ROUND((cp.StudentsPaid::NUMERIC / ct.TotalStudents) * 100, 0)
-         ELSE 0
-     END AS Percentage
- FROM 
-     ClassTotals ct
- LEFT JOIN 
-     ClassPaymentStats cp ON ct.classid = cp.classid
- ORDER BY 
-     Percentage DESC
- `;
+        CURRENT_DATE BETWEEN CAST(start_date AS DATE) AND CAST(end_date AS DATE)
+    LIMIT 1
+),
+ClassPaymentStats AS (
+    SELECT 
+        history.classid,
+        COUNT(DISTINCT fp.studentid) AS StudentsPaid
+    FROM 
+        payment fp
+    INNER JOIN history ON history.schoolid = fp.sid
+    WHERE 
+        fp.termid = (SELECT termid FROM CurrentTerm)
+    GROUP BY 
+        history.classid
+),
+ClassTotals AS (
+    SELECT 
+        c.id, 
+        c.name AS class,
+        COUNT(s.studentid) AS TotalStudents
+    FROM 
+        class c
+    LEFT JOIN 
+        history s ON c.id = s.classid
+    WHERE 
+        s.schoolid = ?
+    GROUP BY 
+        c.id
+)
+SELECT 
+    ct.id, 
+    ct.class,
+    COALESCE(cp.StudentsPaid, 0) AS StudentsPaid,
+    ct.TotalStudents,
+    CASE 
+        WHEN ct.TotalStudents > 0 
+        THEN ROUND((COALESCE(cp.StudentsPaid, 0) / ct.TotalStudents) * 100, 0)
+        ELSE 0
+    END AS Percentage
+FROM 
+    ClassTotals ct
+LEFT JOIN 
+    ClassPaymentStats cp ON ct.id = cp.classid
+ORDER BY 
+    Percentage DESC`;
   const value = [id];
   const [res] = await conn.query(query, value);
   return res;

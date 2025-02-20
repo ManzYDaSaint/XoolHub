@@ -30,11 +30,11 @@ const FinData = () => {
         amount: item.paid,
         status: (
           <>
-              {item.status === 'ongoing' ? (
+              {item.status === 'Pending' ? (
                   <>
                       <Timer size={16} className='iconLucide' color='orange' /> Ongoing
                   </>
-              ) : item.status === 'complete' ? (
+              ) : item.status === 'Complete' ? (
                   <>
                       <CircleCheckBig size={16} className='iconLucide' color='green' /> Complete
                   </>
