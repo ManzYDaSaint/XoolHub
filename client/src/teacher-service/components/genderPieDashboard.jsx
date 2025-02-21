@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, Tooltip, Legend, Sector } from 'recharts';
+import { PieChart, Pie, Cell, Tooltip, Sector } from 'recharts';
 import api from '../../services/apiServices';
 
 // Custom active shape for pie chart
@@ -55,9 +55,10 @@ const DashPieChart = ({ id }) => {
 
   const fetchData = async () => {
     try {
-      const res = await api.getStudentByGender(7); // Pass 'id' to the API call
-      const formattedData = res.data.gender.map(item => ({
-        name: item.gender.charAt(0).toUpperCase() + item.gender.slice(1),
+      const res = await api.getStudentByGender();
+      console.log(res)
+      const formattedData = res.data.studentGender.map(item => ({
+        name: item.studentGender.charAt(0).toUpperCase() + item.studentGender.slice(1),
         value: parseInt(item.count, 10)
       }));
       setData(formattedData);

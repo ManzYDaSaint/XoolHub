@@ -37,7 +37,7 @@ const EventPage = () => {
       title: res.data.edit.title || '',
       date: res.data.edit.date || '',
       time: res.data.edit.time || '',
-      location: res.data.edit.locations || '',
+      location: res.data.edit.location || '',
       description: res.data.edit.description || '',
     }));
     dispatch(setIsEditMode(true));
@@ -129,7 +129,7 @@ const EventPage = () => {
               </div>
               <div className="flex items-center text-gray-600 text-sm mb-2">
                 <MapPin className="w-5 h-5 mr-2" />
-                <span>{event.locations}</span>
+                <span>{event.location}</span>
               </div>
               <p className="text-gray-700 text-sm">{event.description}</p>
             </div>

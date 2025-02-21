@@ -9,7 +9,7 @@ const StudentCard = () => {
         try {
             const res = await api.countStudentByTeacher();
             const data = res.data.counter[0].count; 
-            setCount(data[0]);
+            setCount(data.count);
         } catch (error) {
             console.error('Error fetching individual:', error);
         }
@@ -24,7 +24,7 @@ const StudentCard = () => {
             {count ? (
                 <DashboardCard
                     label={'Students'}
-                    figure={count.count}
+                    figure={count}
                     icon={'student'}
                     note={'Total number of students'}
                     cardTop={'stCard'}

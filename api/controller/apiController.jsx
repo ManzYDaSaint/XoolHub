@@ -853,7 +853,7 @@ const login = async(req, res) => {
                 });
             }
 
-            const get = editSchool(teacher.sid);
+            const get = editSchool(teacher[0].sid);
             if(get.status === "Deactivated") {
                 return res.json({
                     success: false,
@@ -864,8 +864,8 @@ const login = async(req, res) => {
             // Create a JWT
             const token = jwt.sign(
                 { 
-                    sid: teacher.sid,
-                    id: teacher.id 
+                    sid: teacher[0].sid,
+                    id: teacher[0].id 
                 },
                 process.env.JWT_SECRET,
                 { expiresIn: '24h' }
@@ -4610,23 +4610,31 @@ const dashboardClassTeachers = async (req, res) => {
 // ----------------------- CHART CONTROLLER -----------------------
 
 const getGenderPieTeacher = async (req, res) => {
-    const {id} = req.params;
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
+    const teacherid = decoded.id;
+
     try {
-        const gender = await getStudentByGender(sid, id);
-        if(gender) {
-            res.json({
-                success: true,
-                gender,
-            });
-            return;
-        }
-        else {
+        const CnS = await getClassNSubject(sid, teacherid);
+        
+        if (CnS) {
+            for (const item of CnS) {
+                const classid = item.id;
+                const gender = await getStudentByGender(sid, classid);
+                
+                // Send the response once after collecting all data
+                res.json({
+                    success: true,
+                    gender
+                });
+            }
+            
+        } else {
             res.json({
                 success: false,
-            })
+                message: "No classes or subjects found"
+            });
         }
     } catch (error) {
         res.status(500).json({
@@ -4648,9 +4656,9 @@ const getTopStudents = async (req, res) => {
         
         if (CnS) {
             for (const item of CnS) {
-                const classid = item.classid;
+                const classid = item.id;
                 const top = await getTopStudent(sid, teacherid, classid); // Make sure to await if it's async
-                
+
                 topStudents.push({
                     top: top || 'No top student' // Handle no top student case
                 });
@@ -4688,9 +4696,9 @@ const getAverageScoreBySubject = async (req, res) => {
         
         if (CnS) {
             for (const item of CnS) {
-                const classid = item.classid;
+                const classid = item.id;
                 const subject = await getAggScoreBySUbject(sid, teacherid, classid); // Make sure to await if it's async
-                
+
                 topSubject.push({
                     subject: subject || 'No subject found' // Handle no top student case
                 });
@@ -4728,11 +4736,11 @@ const countStudentByTeacher = async (req, res) => {
         
         if (CnS) {
             for (const item of CnS) {
-                const classid = item.classid;
+                const classid = item.id;
                 const count = await countStudentByAssign(sid, teacherid, classid);
                 
                 counter.push({
-                    count: count || 'No subject found' // Handle no top student case
+                    count: count || 'No students found' // Handle no top student case
                 });
             }
 
@@ -5480,8 +5488,8 @@ const insertEvent = async (req, res) => {
 
         // Check Event if exists
         const checker = await checkEvent(sid, title, date);
-        
-        if(checker === false) {
+        console.log(checker)
+        if(checker.length > 0) {
             res.json({
                 success: false,
                 message: 'Event already exists in the system'
@@ -5531,6 +5539,7 @@ const getEvent = async(req, res) => {
         });
     }
 }
+
 
 const editEvents = async(req, res) => {
     const { id } = req.params;

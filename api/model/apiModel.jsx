@@ -682,10 +682,10 @@ const getTeacher = async (sid) => {
 };
 
 const getSingleTeacher = async (sid, id) => {
-  const query = "SELECT * FROM teachers WHERE sid = ? AND id=?";
+  const query = "SELECT * FROM teachers WHERE sid = ? AND id = ?";
   const value = [sid, id];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 const getTeacherClass = async (sid, id) => {
@@ -1265,7 +1265,7 @@ WHERE
 GROUP BY 
     DATE_FORMAT(created_at, '%W')
 ORDER BY 
-    FIELD(DATE_FORMAT(created_at, '%W'), 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') DESC`;
+    FIELD(DATE_FORMAT(created_at, '%W'), 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday') ASC`;
   const value = [id];
   const [res] = await conn.query(query, value);
   return res;
@@ -1493,8 +1493,8 @@ const getClassStudent = async (sid, teacherid) => {
 };
 
 const getClassNSubject = async (sid, teacherid) => {
-  const query = `SELECT class.classid, class.name AS class, subject.name AS subject FROM assignteacher
-      INNER JOIN class ON class.classid = assignteacher.classid
+  const query = `SELECT class.id, class.name AS class, subject.name AS subject FROM assignteacher
+      INNER JOIN class ON class.id = assignteacher.classid
       INNER JOIN subject ON subject.id = assignteacher.subjectid
       WHERE assignteacher.sid = ? AND assignteacher.teacherid = ?`;
   const value = [sid, teacherid];
@@ -1504,7 +1504,7 @@ const getClassNSubject = async (sid, teacherid) => {
 
 const dashboardClassTeacher = async (sid, teacherid) => {
   const query = `SELECT class.name AS class FROM classteacher
-      INNER JOIN class ON class.classid = classteacher.classid
+      INNER JOIN class ON class.id = classteacher.classid
       WHERE classteacher.sid = ? AND classteacher.teacherid = ?`;
   const value = [sid, teacherid];
   const [res] = await conn.query(query, value);
@@ -1518,7 +1518,7 @@ const getStudentByGender = async (sid, classid) => {
   const query = `SELECT COALESCE(gender, 'Other') as gender, COUNT(*) as count
     FROM students
     INNER JOIN history h ON h.studentid = students.id
-    WHERE classid = ? AND h.sid = ?
+    WHERE classid = ? AND h.schoolid = ?
     GROUP BY COALESCE(gender, 'Other')`;
   const values = [classid, sid];
   const [res] = await conn.query(query, values);
@@ -1526,44 +1526,46 @@ const getStudentByGender = async (sid, classid) => {
 };
 
 const getTopStudent = async (sid, teacherid, classid) => {
-  const query = `SELECT DISTINCT ON (classid, subjectid) 
-    students.name, subject.name AS subject, score, results.classid, results.subjectid
-    FROM results
-    INNER JOIN students ON students.id = results.studentid
-    INNER JOIN subject ON subject.id = results.subjectid
-    INNER JOIN assignteacher ON assignteacher.classid = results.classid
-    WHERE assignteacher.classid = ? AND assignteacher.teacherid = ? AND assignteacher.sid = ?
-    ORDER BY classid, subjectid, score DESC, results.created_at DESC`;
+  const query = `SELECT DISTINCT results.classid, results.subjectid, students.name, subject.name AS subject, 
+       results.score
+FROM results
+INNER JOIN students ON students.id = results.studentid
+INNER JOIN subject ON subject.id = results.subjectid
+INNER JOIN assignteacher ON assignteacher.classid = results.classid
+WHERE assignteacher.classid = ?
+AND assignteacher.teacherid = ?
+AND assignteacher.sid = ?
+ORDER BY results.classid, results.subjectid, results.score DESC, results.created_at DESC;`;
   const value = [classid, teacherid, sid];
   const [res] = await conn.query(query, value);
   return res;
 };
 
 const getAggScoreBySUbject = async (sid, teacherid, classid) => {
-  const query = `SELECT subject.name AS subject, ROUND(AVG(CAST(score AS BIGINT))) AS average, term.name AS term, exam.name AS exam, class.name AS class
+  const query = `SELECT subject.name AS subject, ROUND(AVG(score)) AS average, term.name AS term, exam.name AS exam, class.name AS class
     FROM results
     INNER JOIN subject ON subject.id = results.subjectid
     INNER JOIN term ON term.id = results.termid
     INNER JOIN exam ON exam.id = results.typeid
-    INNER JOIN class ON class.classid = results.classid
+    INNER JOIN class ON class.id = results.classid
     INNER JOIN assignteacher ON assignteacher.classid = results.classid
     WHERE assignteacher.classid = ? AND assignteacher.teacherid = ? AND results.sid = ?
     GROUP BY subject.name, term.name, exam.name, class.name
     ORDER BY average DESC`;
   const value = [classid, teacherid, sid];
-  const [res] = await conn.query(value);
+  const [res] = await conn.query(query, value);
   return res;
 };
 
 const countStudentByAssign = async (sid, teacherid, classid) => {
-  const query = `SELECT COUNT(DISTINCT(students.id))
+  const query = `SELECT COUNT(DISTINCT(students.id)) AS count
     FROM students
     INNER JOIN history ON history.studentid = students.id
     INNER JOIN assignteacher ON assignteacher.classid = history.classid
-    WHERE assignteacher.classid = ? AND assignteacher.teacherid = ? AND history.sid = ? AND status = 'Active'`;
+    WHERE assignteacher.classid = ? AND assignteacher.teacherid = ? AND history.schoolid = ? AND status = 'Active'`;
   const value = [classid, teacherid, sid];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 // // --------------------------------------- CHART CRUD ------------------------------------------------
@@ -2031,10 +2033,10 @@ const avSubByClass = async (sid, classid) => {
 // // --------------------------------------- EVENTS CRUD ------------------------------------------------
 
 const addEvent = async (id, title, date, time, location, description) => {
-  const query = 'INSERT INTO events (title, date, time, locations, description, sid) VALUES (?, ?, ?, ?, ?, ?)';
+  const query = 'INSERT INTO events (title, date, time, location, description, sid) VALUES (?, ?, ?, ?, ?, ?)';
   const values = [title, date, time, location, description, id];
   const [res] = await conn.query(query, values);
-  return res.affectedRows > 0;
+  return res;
 }
 
 const checkEvent = async (id, title, date) => {
@@ -2055,11 +2057,11 @@ const editEvent = async (id) => {
   const query = 'SELECT * FROM events WHERE id = ?';
   const value = [id];
   const [res] = await conn.query(query, value); // Changed to async/await
-  return res;
+  return res[0];
 };
 
 const updateEvent = async (id, title, date, time, location, description) => {
-  const query = 'UPDATE events SET title = ?, date = ?, time = ?, locations = ?, description = ? WHERE id = ?';
+  const query = 'UPDATE events SET title = ?, date = ?, time = ?, location = ?, description = ? WHERE id = ?';
   const values = [title, date, time, location, description, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
