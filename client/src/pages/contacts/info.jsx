@@ -1,29 +1,76 @@
 import { LocateFixed, Mail, MessageCircle, Phone, User } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "../../components/input/input";
+import api from "../../services/apiServices";
+import { useSelector, useDispatch } from "react-redux";
+import { setContactData } from "../../helpers/examination/examSlice";
+import toast, { Toaster } from 'react-hot-toast';
 
 const ContactPage = () => {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    message: "",
-  });
+  const [school, setSchool] = useState();
   const [submitted, setSubmitted] = useState(false);
+  const contactData = useSelector((state) => state.exam.contactData);
+  const dispatch = useDispatch();
+
+  const fetchStudents = async () => {
+    try {
+      const res = await api.getAdmin();
+      const data = res.data.checker || [];
+
+      setSchool(data);
+    } catch (error) {
+      console.error("Error fetching count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // New Lines
+
+  const handleSubmit = async (data) => {
+    try {
+      const res = await api.insertContacts(data);
+      if (res.data.success === true) {
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      dispatch(
+        setContactData({
+          name: '',
+          email: '',
+          message: ''
+        })
+      );
+    }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    dispatch(
+      setContactData({
+        ...contactData,
+        [name]: value,
+      })
+    );
   };
 
-  const handleSubmit = (e) => {
+  const onSubmit = (e) => {
     e.preventDefault();
-    // Simulate form submission
     setSubmitted(true);
-    setFormData({ name: "", email: "", message: "" });
+    handleSubmit(contactData);
   };
+
+  // New Lines
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen mt-5 plans">
+      <Toaster />
       <div className="mt-20 mb-20 text-center">
         <h2 className="text-xl font-semibold text-gray-700 pt-20">
           Let's Get In Touch.
@@ -39,7 +86,7 @@ const ContactPage = () => {
               <Phone size={25} className="inner-icon" />
               <div className="inner-container">
                 <h6>Phone:</h6>
-                <p className="text-gray-600">+265 (0) 993-353-3315</p>
+                <p className="text-gray-600">{school?.phone}</p>
               </div>
             </div>
           </div>
@@ -48,7 +95,7 @@ const ContactPage = () => {
               <Mail size={25} className="inner-icon" />
               <div className="inner-container">
                 <h6>Email:</h6>
-                <p className="text-gray-600">ManzyN@outlook.com</p>
+                <p className="text-gray-600">{school?.email_address}</p>
               </div>
             </div>
           </div>
@@ -57,7 +104,7 @@ const ContactPage = () => {
               <LocateFixed size={25} className="inner-icon" />
               <div className="inner-container">
                 <h6>Address:</h6>
-                <p className="text-gray-600">Mchinji</p>
+                <p className="text-gray-600">{school?.address}</p>
               </div>
             </div>
           </div>
@@ -66,14 +113,17 @@ const ContactPage = () => {
               <MessageCircle size={25} className="inner-icon" />
               <div className="inner-container">
                 <h6>WhatsApp:</h6>
-                <p className="text-gray-600">+265 (0) 886-563-330</p>
+                <p className="text-gray-600">{school?.whatsapp}</p>
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <div className="text-center mt-5">
-        <h2 className="text-2xl font-semibold text-gray-700 pt-20">CONTACT US</h2>
+        <h2 className="text-2xl font-semibold text-gray-700 pt-20">
+          CONTACT US
+        </h2>
         <p>
           Feel free to contact us on any information that you <br /> wanna
           communicate about the system.
@@ -91,7 +141,7 @@ const ContactPage = () => {
             </p>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={onSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -101,9 +151,9 @@ const ContactPage = () => {
               </label>
               <Input
                 type="text"
-                name={"schoolEmail"}
+                name={"name"}
                 placeholder="Full Name"
-                value={""}
+                value={contactData.name}
                 onChange={handleChange}
                 autoComplete={"off"}
                 icon={User}
@@ -118,9 +168,9 @@ const ContactPage = () => {
               </label>
               <Input
                 type="text"
-                name={"schoolEmail"}
+                name={"email"}
                 placeholder="mail@example.com"
-                value={""}
+                value={contactData.email}
                 onChange={handleChange}
                 autoComplete={"off"}
                 icon={Mail}
@@ -136,7 +186,7 @@ const ContactPage = () => {
               <textarea
                 id="message"
                 name="message"
-                value={formData.message}
+                value={contactData.message}
                 onChange={handleChange}
                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Enter your message"

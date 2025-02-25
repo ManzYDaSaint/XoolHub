@@ -50,11 +50,6 @@ const Login = () => {
             }
             else if(res.data.osuccess === true) {
                 navigate('/authenticate', { state: { email: res.data.email } });
-
-                const result = await api.sendOTP();
-                if(result.data.success === true) {
-                    console.log(result.data.info, result.data.preview);
-                }
             }
             else if (res.data.message) {
                 toast.error(res.data.message);
@@ -93,7 +88,9 @@ const Login = () => {
                 <Toaster />
                 <div className="logSider">
                     <p className='d-flex align-items-center justify-content-center mb-4'>
-                    <img src={logo} alt="logo" />
+                        <Link to={'/'}>
+                            <img src={logo} alt="logo" />
+                        </Link>
                     </p>
                     <p className="login__paragraph mb-4">Only login using a registered email <br />address to log into the system.
                     </p>

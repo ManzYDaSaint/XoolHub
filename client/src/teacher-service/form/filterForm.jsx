@@ -3,20 +3,19 @@ import FormButton from "../../components/input/formButton.jsx";
 import { toast } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { setXFormData } from "../../helpers/examination/examSlice.jsx";
-import YearSelector from "../components/yearSelector.jsx";
 import TypeSelector from "../components/examTypeSelector.jsx";
 import ClassSelector from "../components/classSelector.jsx";
 import TermSelector from "../components/termSelector.jsx";
 import api from "../../services/apiServices.jsx";
 import { InfinitySpin } from "react-loader-spinner";
 import FilterTable from "../table/filterTable.jsx";
-import { Icon } from "semantic-ui-react";
 import EditModal from "../components/editModal.jsx";
 import {
   setEditItemId,
   setScoreFormData,
 } from "../../helpers/examination/examSlice.jsx";
 import DeleteModal from "../components/deletemodal.jsx";
+import { FilePenLine } from 'lucide-react'
 
 const FilterForm = () => {
   const xFormData = useSelector((state) => state.exam.xFormData);
@@ -41,7 +40,7 @@ const FilterForm = () => {
         const students = res.data.x;
 
         if (students.length === 0) {
-          const filterData = data.map((item, index) => ({
+          const filterData = data.map(() => ({
             sr: "",
             name: "No records found...",
             class: "",
@@ -67,7 +66,7 @@ const FilterForm = () => {
                   onClick={() => handleEdit(item.resultid)}
                   className="action_icon"
                 >
-                  <Icon name="redo" className="action_edit" />
+                  <FilePenLine size={20} className="action_edit" />
                 </button>
               </>
             ),
@@ -152,12 +151,6 @@ const FilterForm = () => {
             <span className="m-3">Step 1:</span> Filter the students
           </h3>
           <div className="formGroup">
-            <YearSelector
-              onChange={handleChange}
-              label={"Academic Year"}
-              name={"yearid"}
-              value={xFormData.yearid}
-            />
             <TermSelector
               onChange={handleChange}
               label={"Term"}

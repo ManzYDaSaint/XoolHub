@@ -172,11 +172,18 @@ const {
     getFeedbacko,
     getFeedbackRating,
     SubsByID,
+    countOTeachers,
+    countOStudents,
+    getAdministrator,
+    updateAdministrator,
+    insertContacts,
 } = require('../controller/apiController.jsx');
 const { localVariable } = require('../middleware/api.jsx')
 
 
 router.route('/count-schools').get(countXuls);
+router.route('/count-o-teachers').get(countOTeachers);
+router.route('/count-o-students').get(countOStudents);
 router.route('/count-private-schools').get(countPrivateXuls);
 router.route('/count-public-schools').get(countPublicXuls);
 router.route('/count-subscribed').get(countSubscribedXuls);
@@ -186,7 +193,8 @@ router.route('/payment-linechart').get(paymentLineChart);
 router.route('/send-otp').post(sendOTP);
 
 // ***** POST Methods
-router.route('/authenticate').post((req, res) => res.end());
+// router.route('/authenticate').post((req, res) => res.end());
+
 
 // ***** GET Methods
 router.route('/school/:username').get();
@@ -237,7 +245,15 @@ router.route('/updateschool').put(updateSchools);
 router.route('/update-school-password').put(PasswordUpdates);
 router.route('/update-teacher-password').put(TeacherPasswordUpdates);
 router.route('/update-super-password').put(PasswordSuper);
+router.route('/get-administrator').get(getAdministrator);
+router.route('/update-administrator').put(updateAdministrator);
 // ------- REGISTER ROUTES -----------
+
+
+
+// ------- CONTACTS ROUTES -----------
+router.route('/add-contacts').post(insertContacts);
+// ------- CONTACTS ROUTES -----------
 
 
 

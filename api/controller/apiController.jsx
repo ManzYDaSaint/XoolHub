@@ -1,5 +1,7 @@
 const bcrypt = require('bcryptjs');
-const nodemailer = require('nodemailer');
+require('dotenv').config();
+const { Resend } = require('resend');
+const resend = new Resend(process.env.RESEND_API_KEY);
 const { v4: uuidv4 } = require('uuid');
 const {
     checkMail, 
@@ -197,6 +199,11 @@ const {
     getFeedbackByRating,
     getFeedback,
     checkSubsByID,
+    countAllTeachers,
+    countAllStudents,
+    getAdmin,
+    updateAdmin,
+    addContacts,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -247,6 +254,53 @@ const countXuls = async (req, res) => {
         })
     }
 }
+
+const countOTeachers = async (req, res) => {
+    try {
+        const count = await countAllTeachers();
+        if(count) {
+            res.json({
+                success: true,
+                count,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
+const countOStudents = async (req, res) => {
+    try {
+        const count = await countAllStudents();
+        if(count) {
+            res.json({
+                success: true,
+                count,
+            });
+            return;
+        }
+        else {
+            res.json({
+                success: false,
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: false,
+            error: error.message
+        })
+    }
+}
+
 const countPrivateXuls = async (req, res) => {
     try {
         const count = await countPrivateSchools();
@@ -269,6 +323,7 @@ const countPrivateXuls = async (req, res) => {
         })
     }
 }
+
 const countPublicXuls = async (req, res) => {
     try {
         const count = await countPublicSchools();
@@ -384,38 +439,7 @@ const getXuls = async (req, res) => {
 
 const sendOTP = async (req, res) => {
     try {
-        // Generate a test account
-        let testAccount = await nodemailer.createTestAccount();
-
-        // Create a transporter using the test account
-        let transporter = nodemailer.createTransport({
-            host: "smtp.ethereal.email",
-            port: 587,
-            secure: false, // Use TLS
-            auth: {
-                user: testAccount.user, // Test account username
-                pass: testAccount.pass, // Test account password
-            },
-        });
-
-        // Message details
-        let message = {
-            from: '"Emmanuel Nyangazi" <ManzyN@outlook.com>',
-            to: 'example@email.com',
-            subject: "Account Verification",
-            text: 'Test 1',
-            html: "<b>Hello World</b>",
-        };
-
-        // Send the email
-        let info = await transporter.sendMail(message);
-
-        res.status(201).json({
-            success: true,
-            msg: 'You should receive an email',
-            info: info.messageId,
-            preview: nodemailer.getTestMessageUrl(info),
-        });
+        
     } catch (error) {
         console.error(error);
         res.status(500).json({
@@ -480,7 +504,7 @@ const signup = async (req, res) => {
 
             // Add the new school
             const newSchool = await insertSchool( schoolEmail, hashedPassword );
-            if(newSchool.length > 0) {
+            if(newSchool) {
                 res.json({
                     success: true,
                     message: "School registered successfully",
@@ -492,6 +516,7 @@ const signup = async (req, res) => {
                     message: "School registration failed",
                 });
             }
+
             
         } catch (error) {
             res.json({
@@ -779,8 +804,100 @@ const PasswordSuper = async(req, res) => {
     }
 }
 
+const getAdministrator = async(req, res) => {
+    try {
+        const checker = await getAdmin();
+
+        if(checker) {
+            res.json({
+                success: true,
+                checker,
+            })
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed to get records'
+            })
+        }
+    } catch (error) {
+        res.json({
+            success: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+}
+
+const updateAdministrator = async(req, res) => {
+    const { email, phone, address, email_address, whatsapp } = req.body;
+    const token = req.cookies.administratorToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const adminID = decoded.aid;
+
+    try {
+        const checker = await updateAdmin(email, phone, address, email_address, whatsapp, adminID);
+
+        if(checker) {
+            res.json({
+                success: true,
+                message: 'System details updated successfully'
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed to update details'
+            });
+        }
+    } catch (error) {
+        res.json({
+            success: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+}
+
 
 // ----------------------- REGISTER CONTROLLER -----------------------
+
+
+
+// ----------------------- CONTACTS CONTROLLER -----------------------
+
+const insertContacts = async(req, res) => {
+    const {name, email, message} = req.body;
+
+    try {
+        if(!name || !email || !message) {
+            res.json({
+                success: false,
+                message: "Please fill in the required fields",
+            });
+        }
+        else {
+            const insert = await addContacts(name, email, message);
+            if(insert) {
+                res.json({
+                    success: true,
+                    message: "Contacted successully"
+                });
+            }
+            else {
+                res.json({
+                    success: false,
+                    message: "Failed to contact admin"
+                });
+            }
+        }
+    } catch (error) {
+        res.json({
+            success: false,
+            message: "Internal Server Error. Please try again later.",
+        });
+    }
+}
+
+// ----------------------- CONTACTS CONTROLLER -----------------------
 
 
 
@@ -821,11 +938,10 @@ const login = async(req, res) => {
                         message: "Invalid email or password here",
                     });
                 }
-
                 // Create a JWT
                 const superToken = jwt.sign(
                     { 
-                        aid: superAdmin.aid,
+                        aid: superAdmin.id,
                     },
                     process.env.JWT_SECRET,
                     { expiresIn: '24h' }
@@ -893,7 +1009,7 @@ const login = async(req, res) => {
                 message: "Invalid email or password",
             });
         }
-        else if(school.status === 'Deactivated') {
+        else if(school[0].status === 'Deactivated') {
             
             // Generate OTP and save to the database
             const otpCode = (Math.floor(100000 + Math.random() * 900000)).toString();
@@ -901,6 +1017,15 @@ const login = async(req, res) => {
 
             const otpcheck = await OTPGeneration(otpCode, otpExpiresAt, school[0].email);
             if(otpcheck) {
+                // Send OTP email using Resend
+                const sender = await resend.emails.send({
+                    from: "onboarding@resend.dev", // Use a verified domain
+                    to: 'manzyn@outlook.com',
+                    subject: "Your OTP Code",
+                    text: `Your OTP code is: ${otpCode}. It will expire in 10 minutes.`,
+                });
+                
+                console.log(sender)
                 return res.json({
                     osuccess: true,
                     email: school[0].email
@@ -4087,6 +4212,7 @@ const insertResults = async(req, res) => {
                                 success: false,
                                 message: `Result for student ${entry.id} already exists.`,
                             });
+                            continue;
                         }
                         else {
                             const venom = 'JCE';
@@ -4225,6 +4351,7 @@ const getXs = async(req, res) => {
             });
         }
         const x = await getX(sid, termid, typeid, selectedClass, selectedSubject);
+
         if(x) {
             if(x.length === 0) {
                 return res.json({
@@ -4316,9 +4443,6 @@ const updateScores = async(req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
 
-    const now = new Date();
-    const updateAt = now.toLocaleString();
-
     try {
         if(!score) {
             return res.json({
@@ -4353,7 +4477,7 @@ const updateScores = async(req, res) => {
 
                         if (grade && remarks) {
                             // Insert Results
-                            const add = await updateScore(id, score, grade, remarks, updateAt);
+                            const add = await updateScore(id, score, grade, remarks);
                             if(add) {
                                 return res.json({
                                     success: true,
@@ -4390,7 +4514,7 @@ const updateScores = async(req, res) => {
 
                         if (grade && remarks) {
                             // Insert Results
-                            const add = await updateScore(sid, score, grade, remarks, updateAt);
+                            const add = await updateScore(sid, score, grade, remarks);
                             if(add) {
                                 return res.json({
                                     success: true,
@@ -4950,7 +5074,7 @@ const insertPromotion = async (req, res) => {
         });
 
         const students = Array.from(studentsMap.values());
-
+       
         if (!students.length) {
             return res.status(400).json({ message: 'Invalid students array' });
         }
@@ -4972,8 +5096,7 @@ const insertPromotion = async (req, res) => {
         }
 
         const exists = await checkPromote(sid, termid, typeid, classid, studentIDs);
-        
-        if (exists[0] === true) {
+        if (exists.exist === 1) {
             const updatePromises = students.map(student =>
                 updatePromote(
                     sid,
@@ -5224,7 +5347,6 @@ const realPosition = async (req, res) => {
         );
 
         const validPositions = positions.filter(Boolean);
-
         if (validPositions.length > 0) {
             return res.json({
                 success: true,
@@ -5488,7 +5610,6 @@ const insertEvent = async (req, res) => {
 
         // Check Event if exists
         const checker = await checkEvent(sid, title, date);
-        console.log(checker)
         if(checker.length > 0) {
             res.json({
                 success: false,
@@ -6202,6 +6323,8 @@ const getFeedbacko = async (req, res) => {
 module.exports = { 
     // ----- SCHOOL EXPORTS ------
     countXuls,
+    countOTeachers,
+    countOStudents,
     countPrivateXuls,
     countPublicXuls,
     countSubscribedXuls,
@@ -6232,7 +6355,15 @@ module.exports = {
     TeacherPasswordUpdates,
     PasswordUpdates,
     PasswordSuper,
+    getAdministrator,
+    updateAdministrator,
     // ----- REGISTER EXPORTS ------
+
+
+    // ----- CONTACTS EXPORTS ------
+    insertContacts,
+    // ----- CONTACTS EXPORTS ------
+
 
     // ----- EXAM EXPORTS ------
     addExam,

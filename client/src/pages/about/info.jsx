@@ -1,8 +1,58 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Users, Globe, Layers, School, GraduationCap, User } from "lucide-react";
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
+import api from "../../services/apiServices";
 
 const AboutUs = () => {
+  const [schools, setSchools] = useState();
+  const [teachers, setTeachers] = useState();
+  const [students, setStudents] = useState();
+
+  const fetchSchools = async () => {
+    try {
+      const res = await api.countXuls();
+      const data = res.data.count;
+      setSchools(data.count);
+    } catch (error) {
+      console.error("Error fetching count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSchools();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  const fetchTeachers = async () => {
+    try {
+      const res = await api.countAllTeacher();
+      const data = res.data.count;
+      setTeachers(data.count);
+    } catch (error) {
+      console.error("Error fetching count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTeachers();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
+  const fetchStudents = async () => {
+    try {
+      const res = await api.countAllStudent();
+      const data = res.data.count;
+      setStudents(data.count);
+    } catch (error) {
+      console.error("Error fetching count:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchStudents();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+
   const formatPrice = (price) => {
     if (price >= 1000000) {
       return (price / 1000000).toFixed(1).replace(/\.0$/, "") + "M"; // Format as '1M', '2.5M', etc.
@@ -91,7 +141,7 @@ const AboutUs = () => {
         </h2>
         <p>
           Ever since the system was lauched to the public, we have managed to
-          come up with <br /> these numbers and counting. You can be among be
+          come up with <br /> these numbers and counting. You can be among
           these numbers and lets build together.
         </p>
         <div className="plan-cards">
@@ -99,7 +149,7 @@ const AboutUs = () => {
             <div className="inner-card">
               <School size={45} className="inner-icon" />
               <div className="inner-container">
-                <h6 className="text-4xl">{formatPrice(45)}</h6>
+                <h6 className="text-4xl">{formatPrice(Number(schools))}</h6>
                 <p className="text-gray-600">Registered Schools</p>
               </div>
             </div>
@@ -108,8 +158,8 @@ const AboutUs = () => {
             <div className="inner-card">
               <User size={45} className="inner-icon" />
               <div className="inner-container">
-                <h6 className="text-4xl">{formatPrice(645)}</h6>
-                <p className="text-gray-600">Active Parents</p>
+                <h6 className="text-4xl">{formatPrice(Number(teachers))}</h6>
+                <p className="text-gray-600">Active Teachers</p>
               </div>
             </div>
           </div>
@@ -117,7 +167,7 @@ const AboutUs = () => {
             <div className="inner-card">
               <GraduationCap size={45} className="inner-icon" />
               <div className="inner-container">
-                <h6 className="text-4xl">{formatPrice(283612)}</h6>
+                <h6 className="text-4xl">{formatPrice(Number(students))}</h6>
                 <p className="text-gray-600">Students</p>
               </div>
             </div>

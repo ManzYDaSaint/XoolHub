@@ -10,6 +10,18 @@ const countSchools = async () => {
   return res[0];
 }
 
+const countAllTeachers = async () => {
+  const sql = 'SELECT COUNT(*) as count FROM teachers';
+  const [res] = await conn.query(sql); // Changed to async/await
+  return res[0];
+}
+
+const countAllStudents = async () => {
+  const sql = `SELECT COUNT(*) as count FROM history WHERE status = 'Active'`;
+  const [res] = await conn.query(sql); // Changed to async/await
+  return res[0];
+}
+
 const countPrivateSchools = async () => {
   const sql = 'SELECT COUNT(*) as count FROM schools WHERE type = "Private"';
   const [res] = await conn.query(sql); // Changed to async/await
@@ -190,7 +202,36 @@ const updateSuperPassword = async(newPassword) => {
   return res;
 };
 
+
+const getAdmin = async() => {
+  const query = `SELECT * FROM administrator`;
+  const [res] = await conn.query(query);
+  return res[0]
+}
+
+const updateAdmin = async(email, phone, address, email_address, whatsapp, id) => {
+  const query = `UPDATE administrator SET email = ?, phone = ?, address = ?, email_address = ?, whatsapp = ? WHERE id = ?`;
+  const values = [email, phone, address, email_address, whatsapp, id];
+  const [res] = await conn.query(query, values);
+  return res;
+}
+
 // // --------------------------------------- REGISTER CRUD ------------------------------------------------
+
+
+
+// // --------------------------------------- CONTACTS ------------------------------------------------
+
+const addContacts = async(name, email, message) => {
+  const query =  `INSERT INTO contacts(name, email, message) VALUES (?, ?, ?)`;
+  const value = [name, email, message];
+  const [res] = await conn.query(query, value);
+  return res;
+}
+
+// // --------------------------------------- CONTACTS ------------------------------------------------
+
+
 
 // // --------------------------------------- LOGIN ------------------------------------------------
 
@@ -1339,7 +1380,9 @@ const getYearByTeacherID = async () => {
 };
 
 const getTermByTeacherID = async () => {
-  const query = "SELECT * FROM term";
+  const query = `SELECT term.*, acyear.name AS year
+    FROM term 
+    INNER JOIN acyear ON acyear.id = term.yearid`;
   const [res] = await conn.query(query);
   return res;
 };
@@ -1351,8 +1394,8 @@ const getExamByTeacherID = async () => {
 };
 
 const getClassByTeacherID = async (sid, id) => {
-  const query = `SELECT DISTINCT(class.name), class.classid FROM assignteacher
-                  INNER JOIN class ON  class.classid = assignteacher.classid
+  const query = `SELECT DISTINCT(class.name), class.id FROM assignteacher
+                  INNER JOIN class ON  class.id = assignteacher.classid
                   WHERE assignteacher.sid = ? AND assignteacher.teacherid = ?`;
   const value = [sid, id];
   const [res] = await conn.query(query, value);
@@ -1371,7 +1414,7 @@ const getSubjectByTeacherID = async (sid, id, classid) => {
 const getStudentForEntry = async (sid, classid) => {
   const query = `SELECT students.id, name FROM students 
   INNER JOIN history ON history.studentid = students.id
-  WHERE history.sid = ? AND classid = ? AND status = 'Active'
+  WHERE history.schoolid = ? AND classid = ? AND status = 'Active'
   ORDER BY name ASC`;
   const values = [sid, classid];
   const [res] = await conn.query(query, values);
@@ -1379,20 +1422,36 @@ const getStudentForEntry = async (sid, classid) => {
 };
 
 const checkResult = async (sid, termid, data) => {
-  const query = `SELECT EXISTS (
-      SELECT 1 FROM results
-      WHERE classid = ? AND sid = ? AND typeid = ? AND studentid = ? AND subjectid = ? AND termid = ?)`;
-  const values = [
-    data.selectedClass,
-    sid,
-    data.typeid,
-    data.id,
-    data.selectedSubject,
-    termid,
-  ];
-  const [res] = await conn.query(query, values);
-  return res.exists;
+  try {
+    const query = `
+      SELECT EXISTS (
+        SELECT 1 FROM results
+        WHERE classid = ? 
+          AND sid = ? 
+          AND typeid = ? 
+          AND studentid = ? 
+          AND subjectid = ? 
+          AND termid = ?
+      ) AS record_exists`;
+
+    const values = [
+      data.selectedClass,
+      sid,
+      data.typeid,
+      data.id,
+      data.selectedSubject,
+      termid,
+    ];
+
+    const [rows] = await conn.query(query, values);
+    
+    return rows.length > 0 ? rows[0].record_exists === 1 : false;
+  } catch (error) {
+    console.error("Error checking result:", error);
+    throw new Error("Database query failed");
+  }
 };
+
 
 const insertResult = async (sid, termid, grade, remarks, data) => {
   const query = `INSERT INTO results(sid, studentid, termid, typeid, classid, subjectid, score, remarks, grade) 
@@ -1413,10 +1472,10 @@ const insertResult = async (sid, termid, grade, remarks, data) => {
 };
 
 const getClassById = async (data) => {
-  const query = "SELECT denom FROM class WHERE classid = ?";
+  const query = "SELECT denom FROM class WHERE id = ?";
   const value = [data];
   const [res] = await conn.query(query, value);
-  return res;
+  return res[0];
 };
 
 const getGradeByDenom = async (denom) => {
@@ -1434,7 +1493,7 @@ const getX = async (sid, termid, typeid, classid, subjectid) => {
   const query = `SELECT results.id as resultid, students.name as student, class.name as class, subject.name as subject, results.score, results.grade, results.remarks
       FROM results
       INNER JOIN students ON students.id = results.studentid
-      INNER JOIN class ON class.classid = results.classid
+      INNER JOIN class ON class.id = results.classid
       INNER JOIN subject ON subject.id = results.subjectid
       WHERE results.termid = ? AND results.typeid = ?
       AND results.classid = ? AND results.subjectid = ? AND results.sid = ?`;
@@ -1455,23 +1514,21 @@ const deleteResult = async (
     "DELETE FROM results WHERE yearid = ? AND termid = ? AND typeid = ? AND classid = ? AND subjectid = ? AND sid = ?";
   const value = [yearid, termid, typeid, classid, subjectid, sid];
   const [res] = await conn.query(query, value);
-  return res.length < 1;
-};
-
-const getScore = async (id) => {
-  const query = `SELECT *
-      FROM results
-      WHERE id = ?`;
-  const value = [id];
-  const [res] = await conn.query(query, value);
   return res;
 };
 
+const getScore = async (id) => {
+  const query = `SELECT * FROM results WHERE id = ?`;
+  const value = [id];
+  const [res] = await conn.query(query, value);
+  return res[0];
+};
+
 // Updating object
-const updateScore = async (id, score, grade, remark, update) => {
+const updateScore = async (id, score, grade, remark) => {
   const query =
-    "UPDATE results SET score = ?, grade = ?, remarks = ?, updated_at = ? WHERE id = ?";
-  const values = [score, grade, remark, update, id];
+    "UPDATE results SET score = ?, grade = ?, remarks = ? WHERE id = ?";
+  const values = [score, grade, remark, id];
   const [res] = await conn.query(query, values);
   return res;
 };
@@ -1481,12 +1538,21 @@ const updateScore = async (id, score, grade, remark, update) => {
 // // --------------------------------------- TEACHER STUDENR CRUD ------------------------------------------------
 
 const getClassStudent = async (sid, teacherid) => {
-  const query = `SELECT students.id, students.name, EXTRACT(YEAR FROM AGE(CAST(students.dob AS DATE))) AS age, class.name as class, students.gender, students.address, students.contact
-      FROM classteacher
-      INNER JOIN history ON history.classid = classteacher.classid
-      INNER JOIN students ON students.id = history.studentid
-      INNER JOIN class ON class.classid = classteacher.classid
-      WHERE classteacher.sid = ? AND classteacher.teacherid = ? AND history.status = 'Active'`;
+  const query = `SELECT 
+    students.id, 
+    students.name, 
+    TIMESTAMPDIFF(YEAR, students.dob, CURDATE()) AS age, 
+    class.name AS class, 
+    students.gender, 
+    students.address, 
+    students.contact
+FROM classteacher
+INNER JOIN history ON history.classid = classteacher.classid
+INNER JOIN students ON students.id = history.studentid
+INNER JOIN class ON class.id = classteacher.classid
+WHERE classteacher.sid = ? 
+AND classteacher.teacherid = ? 
+AND history.status = 'Active'`;
   const value = [sid, teacherid];
   const [res] = await conn.query(query, value);
   return res;
@@ -1512,6 +1578,7 @@ const dashboardClassTeacher = async (sid, teacherid) => {
 };
 // // --------------------------------------- TEACHER STUDENR CRUD ------------------------------------------------
 
+
 // // --------------------------------------- CHART CRUD ------------------------------------------------
 
 const getStudentByGender = async (sid, classid) => {
@@ -1526,32 +1593,74 @@ const getStudentByGender = async (sid, classid) => {
 };
 
 const getTopStudent = async (sid, teacherid, classid) => {
-  const query = `SELECT DISTINCT results.classid, results.subjectid, students.name, subject.name AS subject, 
-       results.score
-FROM results
-INNER JOIN students ON students.id = results.studentid
-INNER JOIN subject ON subject.id = results.subjectid
-INNER JOIN assignteacher ON assignteacher.classid = results.classid
-WHERE assignteacher.classid = ?
-AND assignteacher.teacherid = ?
-AND assignteacher.sid = ?
-ORDER BY results.classid, results.subjectid, results.score DESC, results.created_at DESC;`;
+  const query = `WITH CurrentTerm AS (
+    SELECT 
+        id AS termid
+    FROM 
+        term
+    WHERE 
+        CURRENT_DATE BETWEEN start_date AND end_date
+),
+RankedResults AS (
+    SELECT 
+        results.classid, 
+        results.subjectid, 
+        students.name, 
+        subject.name AS subject,  
+        results.score,
+        ROW_NUMBER() OVER (
+            PARTITION BY results.classid, results.subjectid 
+            ORDER BY results.score DESC, results.created_at DESC
+        ) AS rank
+    FROM results
+    INNER JOIN students ON students.id = results.studentid
+    INNER JOIN subject ON subject.id = results.subjectid
+    INNER JOIN assignteacher ON assignteacher.classid = results.classid
+    WHERE assignteacher.classid = ?
+    AND assignteacher.teacherid = ?
+    AND assignteacher.sid = ?
+    AND results.termid = (SELECT termid FROM CurrentTerm) -- Ensuring data is within the current term
+)
+SELECT classid, subjectid, name, subject, score
+FROM RankedResults
+WHERE rank = 1;
+`;
   const value = [classid, teacherid, sid];
   const [res] = await conn.query(query, value);
   return res;
 };
 
 const getAggScoreBySUbject = async (sid, teacherid, classid) => {
-  const query = `SELECT subject.name AS subject, ROUND(AVG(score)) AS average, term.name AS term, exam.name AS exam, class.name AS class
-    FROM results
-    INNER JOIN subject ON subject.id = results.subjectid
-    INNER JOIN term ON term.id = results.termid
-    INNER JOIN exam ON exam.id = results.typeid
-    INNER JOIN class ON class.id = results.classid
-    INNER JOIN assignteacher ON assignteacher.classid = results.classid
-    WHERE assignteacher.classid = ? AND assignteacher.teacherid = ? AND results.sid = ?
-    GROUP BY subject.name, term.name, exam.name, class.name
-    ORDER BY average DESC`;
+  const query = `WITH CurrentTerm AS (
+    SELECT 
+        term.id AS termid, 
+        term.name AS term_name,
+        acyear.name AS year
+    FROM 
+        term
+    INNER JOIN acyear ON acyear.id = term.yearid
+    WHERE 
+      CURRENT_DATE BETWEEN term.start_date AND term.end_date
+)
+SELECT 
+    subject.name AS subject, 
+    ROUND(AVG(results.score)) AS average, 
+    CurrentTerm.term_name AS term, 
+    CurrentTerm.year AS year, 
+    exam.name AS exam, 
+    class.name AS class
+FROM results
+INNER JOIN subject ON subject.id = results.subjectid
+INNER JOIN CurrentTerm ON CurrentTerm.termid = results.termid
+INNER JOIN exam ON exam.id = results.typeid
+INNER JOIN class ON class.id = results.classid
+INNER JOIN assignteacher ON assignteacher.classid = results.classid
+WHERE assignteacher.classid = ? 
+AND assignteacher.teacherid = ? 
+AND results.sid = ?
+GROUP BY subject.name, CurrentTerm.term_name, exam.name, class.name
+ORDER BY average DESC
+`;
   const value = [classid, teacherid, sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -1574,8 +1683,15 @@ const countStudentByAssign = async (sid, teacherid, classid) => {
 
 // // JCE
 const countSubjects = async (termid, typeid, classid, studentid, sid) => {
-  const query = `SELECT COUNT(subjectid) AS count FROM results 
-    WHERE termid = ? AND typeid = ? AND classid = ? AND studentid = ANY ($4::uuid[]) AND sid = ?`;
+  const query = `SELECT studentid, COUNT(subjectid) AS count 
+    FROM results 
+    WHERE termid = ? 
+    AND typeid = ? 
+    AND classid = ? 
+    AND studentid IN (?)  -- This should be an array of student IDs
+    AND sid = ?
+    GROUP BY studentid
+    `;
   const values = [termid, typeid, classid, studentid, sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
@@ -1590,11 +1706,16 @@ const addPromote = async (sid, termid, typeid, classid, studentid, agg, remarks,
 }
 
 const checkPromote = async (sid, termid, typeid, classid, studentid) => {
-  const query = `SELECT EXISTS (
-        SELECT true FROM promotion WHERE sid = ? AND termid = ? AND typeid = ? AND classid = ? AND studentid = ANY ($5::uuid[]))`;
+  const query = `SELECT COUNT(*) > 0 AS exist
+    FROM promotion 
+    WHERE sid = ? 
+    AND termid = ? 
+    AND typeid = ? 
+    AND classid = ? 
+    AND studentid IN (?)`;
   const values = [sid, termid, typeid, classid, studentid];
   const [res] = await conn.query(query, values); // Changed to async/await
-  return res.exists;
+  return res[0];
 }
 
 const updatePromote = async (sid, termid, typeid, classid, studentid, agg, remarks, rank) => {
@@ -1607,51 +1728,54 @@ const updatePromote = async (sid, termid, typeid, classid, studentid, agg, remar
 
 const getReportByStudent = async (sid, termid, typeid, classid) => {
   const query = `WITH student_scores AS (
-      SELECT 
-          studentid,
-          classid,
-          subjectid,
-          CAST(score AS BIGINT) AS score,
-          ROW_NUMBER() OVER (PARTITION BY studentid, classid ORDER BY CAST(score AS BIGINT) DESC) AS subject_rank
-      FROM results
-      WHERE results.termid = ?
-          AND results.typeid = ?
-          AND results.classid = ? 
-          AND results.sid = ?
-  ),
-  top_6_subjects AS (
-      SELECT 
-          studentid,
-          classid,
-          SUM(score) AS total_score
-      FROM student_scores
-      WHERE subject_rank <= 6  -- Only consider the top 6 subjects
-      GROUP BY studentid, classid
-  ),
-  ranked_students AS (
-      SELECT 
-          studentid, 
-          classid, 
-          total_score,
-          RANK() OVER (PARTITION BY classid ORDER BY total_score DESC) AS rank
-      FROM top_6_subjects
-  )
-  SELECT 
-      DISTINCT r.studentid,
-      rs.rank, 
-      st.name AS studentname,  
-      rs.total_score AS aggregate,
-      r.classid,
-      subject.id AS subject_id, 
-      subject.code AS subject_name, 
-      r.score,
-      r.grade, 
-      r.remarks
-  FROM ranked_students rs
-  JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
-  JOIN students st ON st.id = r.studentid
-  LEFT JOIN subject ON subject.id = r.subjectid
-  ORDER BY r.classid, rs.rank, st.name`;
+    SELECT 
+        studentid,
+        classid,
+        subjectid,
+        score,
+        ROW_NUMBER() OVER (
+            PARTITION BY studentid, classid 
+            ORDER BY score DESC
+        ) AS subject_rank
+    FROM results
+    WHERE results.termid = ?
+      AND results.typeid = ?
+      AND results.classid = ?
+      AND results.sid = ?
+),
+top_6_subjects AS (
+    SELECT 
+        studentid,
+        classid,
+        SUM(score) AS total_score
+    FROM student_scores
+    WHERE subject_rank <= 6  -- Only consider the top 6 subjects per student
+    GROUP BY studentid, classid
+),
+ranked_students AS (
+    SELECT 
+        studentid, 
+        classid, 
+        total_score,
+        RANK() OVER (PARTITION BY classid ORDER BY total_score DESC) AS rank
+    FROM top_6_subjects
+)
+SELECT 
+    DISTINCT r.studentid,
+    rs.rank, 
+    st.name AS studentname,  
+    rs.total_score AS aggregate,
+    r.classid,
+    subject.id AS subject_id, 
+    subject.code AS subject_name, 
+    r.score,
+    r.grade, 
+    r.remarks
+FROM ranked_students rs
+JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
+JOIN students st ON st.id = r.studentid
+LEFT JOIN subject ON subject.id = r.subjectid
+ORDER BY r.classid, rs.rank, st.name;`;
   
   const value = [termid, typeid, classid, sid];
   const [res] = await conn.query(query, value); // Changed to async/await
@@ -1659,49 +1783,45 @@ const getReportByStudent = async (sid, termid, typeid, classid) => {
 };
 
 const getStudentCard = async (sid, termid, typeid, classid, studentid) => {
-  const query = `WITH student_scores AS (
-      SELECT 
-          studentid,
-          CAST(score AS BIGINT) AS score,
-          ROW_NUMBER() OVER (PARTITION BY studentid ORDER BY CAST(score AS BIGINT) DESC) AS subject_rank
-      FROM results
-      WHERE results.termid = ?
-          AND results.typeid = ?
-          AND results.classid = ? 
-          AND results.sid = ?
-          AND results.studentid = ?
-  ),
-  top_6_subjects AS (
-      SELECT 
-          studentid,
-          SUM(score) AS total_score
-      FROM student_scores
-      WHERE subject_rank <= 6  -- Only consider the top 6 subjects
-      GROUP BY studentid
-  ),
-  ranked_students AS (
-      SELECT 
-          studentid, 
-          total_score,
-          RANK() OVER (ORDER BY total_score DESC) AS rank
-      FROM top_6_subjects
-  )
-  SELECT 
-      DISTINCT(st.name) AS studentname,  
-      rs.total_score AS aggregate,
-      ac.name AS year,
-      t.name AS term,
-      e.name AS exam,
-      c.name AS class,
-      c.classid
-  FROM ranked_students rs
-  JOIN results r ON r.studentid = rs.studentid
-  JOIN students st ON st.id = r.studentid
-  JOIN term t ON t.id = r.termid
-  JOIN acyear ac ON ac.yearid = t.yearid
-  JOIN exam e ON e.id = r.typeid
-  JOIN class c ON c.classid = r.classid
-  ORDER BY st.name;`;
+  const query = `SELECT 
+    st.name AS studentname,  
+    rs.total_score AS aggregate,
+    ac.name AS year,
+    t.name AS term,
+    e.name AS exam,
+    c.name AS class,
+    c.id AS classid
+FROM (
+    SELECT 
+        studentid,
+        termid,  -- Include termid here
+        typeid,  -- Include typeid here
+    classid,
+        SUM(score) AS total_score
+    FROM (
+        SELECT 
+            studentid,
+            termid,  -- Include termid here
+            typeid,  -- Include typeid here
+        classid,
+            CAST(score AS SIGNED) AS score,
+            ROW_NUMBER() OVER (PARTITION BY studentid ORDER BY CAST(score AS SIGNED) DESC) AS subject_rank
+        FROM results
+        WHERE termid = ?
+          AND typeid = ?
+          AND classid = ?
+          AND sid = ?
+          AND studentid = ?
+    ) AS student_scores
+    WHERE subject_rank <= 6  -- Only consider the top 6 subjects
+    GROUP BY studentid, termid, typeid  -- Group by typeid as well
+) AS rs  -- Now typeid is part of the outer query
+JOIN students st ON st.id = rs.studentid
+JOIN term t ON t.id = rs.termid  -- Join term based on termid
+JOIN acyear ac ON ac.id = t.yearid  -- Join acyear based on term's yearid
+JOIN exam e ON e.id = rs.typeid  -- Join exam based on typeid
+JOIN class c ON c.id = rs.classid
+ORDER BY st.name`;
   
   const value = [termid, typeid, classid, sid, studentid];
   const [res] = await conn.query(query, value); // Changed to async/await
@@ -1871,18 +1991,22 @@ const getSubjectPosition = async (
 };
 
 const realPos = async (termid, typeid, classid, sid, subjectid) => {
-  const query = `SELECT studentid, subjectid, score, 
-        RANK() OVER(ORDER BY CAST(score AS BIGINT) DESC, 
-        score DESC) as rank 
-        FROM (
-        SELECT results.studentid, results.subjectid, score 
+  const query = `SELECT studentid, 
+          subjectid, 
+          score, 
+          ROW_NUMBER() OVER (ORDER BY score DESC) AS rank
+    FROM (
+        SELECT results.studentid, 
+              results.subjectid, 
+              results.score
         FROM results
         WHERE results.termid = ?
-        AND results.typeid = ?
-        AND results.classid = ?
-        AND results.subjectid = ?
-        AND results.sid = ?
-        GROUP BY results.studentid, results.subjectid, score)`;
+          AND results.typeid = ?
+          AND results.classid = ?
+          AND results.subjectid = ?
+          AND results.sid = ?
+        GROUP BY results.studentid, results.subjectid, results.score
+    ) AS ranked_results`;
   const value = [termid, typeid, classid, subjectid, sid];
   const [res] = await conn.query(query, value); // Changed to async/await
   return res; // Adjusted for MySQL
@@ -1935,18 +2059,23 @@ const countReports = async (id) => {
 
 const getStudentForPromotion = async (classid, sid) => {
   const query = `WITH CurrentTerm AS (
-        SELECT 
-            id AS termid
-        FROM 
-            term
-        WHERE 
-            CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
-        )
-    SELECT p.studentid, students.name AS student, exam.name AS exam, p.agg, p.remarks, p.rank
-    FROM promotion p
-    INNER JOIN students ON students.id = p.studentid
-    INNER JOIN exam ON exam.id = p.typeid
-    WHERE p.classid = ? AND p.termid = (SELECT p.termid FROM CurrentTerm) AND p.sid = ?`;
+    SELECT id AS termid
+    FROM term
+    WHERE CURRENT_DATE BETWEEN DATE(start_date) AND DATE(end_date)
+)
+SELECT 
+    p.studentid, 
+    students.name AS student, 
+    exam.name AS exam, 
+    p.agg, 
+    p.remarks, 
+    p.rank
+FROM promotion p
+INNER JOIN students ON students.id = p.studentid
+INNER JOIN exam ON exam.id = p.typeid
+WHERE p.classid = ? 
+  AND p.termid = (SELECT termid FROM CurrentTerm) 
+  AND p.sid = ?`;
   const values = [classid, sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res; // Adjusted for MySQL
@@ -2008,18 +2137,21 @@ const avSubByClass = async (sid, classid) => {
   const query =  `WITH CurrentTerm AS (
     SELECT id AS termid
     FROM term
-    WHERE CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
-    )
-  SELECT 
+    WHERE CURRENT_DATE BETWEEN DATE(start_date) AND DATE(end_date)
+)
+SELECT 
     subject.name AS subject,
     classid, 
     subjectid, 
-    ROUND(AVG(score::NUMERIC)) AS average
-  FROM results
-  INNER JOIN subject ON subject.id = results.subjectid
-  WHERE classid = ? AND results.sid = ? AND results.termid = (SELECT termid FROM CurrentTerm)
-  GROUP BY classid, subjectid, subject
-  ORDER BY classid, subjectid, subject ASC`;
+    ROUND(AVG(CAST(score AS DECIMAL(10, 0)))) AS average
+FROM results
+INNER JOIN subject ON subject.id = results.subjectid
+WHERE classid = ? 
+  AND results.sid = ? 
+  AND results.termid = (SELECT termid FROM CurrentTerm)
+GROUP BY classid, subjectid, subject
+ORDER BY classid, subjectid, subject ASC;
+`;
   const values = [classid, sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
@@ -2287,6 +2419,8 @@ const getFeedback = async () => {
 module.exports = {
 //   // ----- SCHOOLS SECTION -----
   countSchools,
+  countAllTeachers,
+  countAllStudents,
   getSchools,
   getOTPCode,
   updateOTPStatus,
@@ -2311,7 +2445,15 @@ module.exports = {
   updatePassword,
   updateTeacherPassword,
   updateSuperPassword,
+  getAdmin,
+  updateAdmin,
 //   // ----- REGISTER SECTION -----
+
+
+
+//   // ----- CONTACTS SECTION -----
+addContacts,
+//   // ----- CONTACTS SECTION -----
 
   checkMail,
   checkTeacherMail,

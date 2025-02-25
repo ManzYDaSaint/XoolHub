@@ -4,13 +4,15 @@ axios.defaults.withCredentials = true;
 const API = 'http://localhost:5000/api';
 
 const countXuls = () => axios.get(API + '/count-schools');
+const countAllTeacher = () => axios.get(API + '/count-o-teachers');
+const countAllStudent = () => axios.get(API + '/count-o-students');
 const countPrivateXuls = () => axios.get(API + '/count-private-schools');
 const countPublicXuls = () => axios.get(API + '/count-public-schools');
 const countSubscribed = () => axios.get(API + '/count-subscribed');
 const sumAmount = () => axios.get(API + '/sum-amount');
 const paymentLineChart = () => axios.get(API + '/payment-linechart');
 const getXuls = () => axios.get(API + '/get-schools');
-const sendOTP = () => axios.post(API + '/send-otp');
+const sendOTP = (data) => axios.post(API + '/send-otp', data);
 
 // --------- SUPER ADMIN AXIOS -----------
 const addSubscription = (data) => axios.post(API + '/add-subscriptions', data);
@@ -27,6 +29,8 @@ const getSubscriptionPayment = () => axios.get(API + '/get-subscription-payments
 const updateStatus = (id, data) => axios.put(API + '/update-statuses/' + id, data);
 const updateSchoolStatus = (id, data) => axios.put(API + '/update-school-status/' + id, data);
 const getSubsByID = () => axios.get(API + '/get-subs');
+const getAdmin = () => axios.get(API + '/get-administrator');
+const updateAdmin = (data) => axios.put(API + '/update-administrator', data);
 // --------- SUPER ADMIN AXIOS -----------
 
 
@@ -41,6 +45,12 @@ const updatePassword = (data) => axios.put(API + '/update-school-password', data
 const updateTeacherPassword = (data) => axios.put(API + '/update-teacher-password', data);
 const updateSuperPassword = (data) => axios.put(API + '/update-super-password', data);
 // --------- REGISTER AXIOS -----------
+
+
+
+// --------- CONTACTS AXIOS -----------
+const insertContacts = (data) => axios.post(API + '/add-contacts', data);
+// --------- CONTACTS AXIOS -----------
 
 
 
@@ -361,6 +371,8 @@ const getFeedbackRating = () => axios.get(API + '/get-feedback-rating');
 export default {
   // ------ SCHOOL EXPORT -------
   countXuls,
+  countAllTeacher,
+  countAllStudent,
   countPrivateXuls,
   countPublicXuls,
   countSubscribed,
@@ -386,6 +398,8 @@ export default {
   updateStatus,
   updateSchoolStatus,
   getSubsByID,
+  getAdmin,
+  updateAdmin,
   // ------ SUPER ADMIN EXPORT -------
 
 
@@ -397,6 +411,11 @@ export default {
   updatePassword,
   updateTeacherPassword,
   // ------ REGISTER EXPORT -------
+
+
+  // ------ CONTACT EXPORT -------
+  insertContacts,
+  // ------ CONTACT EXPORT -------
 
 
   // ------ LOGIN EXPORT -------

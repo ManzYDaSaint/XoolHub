@@ -26,7 +26,7 @@ const TermSelector = ({ label, onChange, name, value }) => {
             <option value="" selected disabled>Select an option</option>
             {options.map((option) => (
               <option key={option.id} value={option.id}>
-                {option.name}
+                {option.name} ({option.year})
               </option>
             ))}
           </select>

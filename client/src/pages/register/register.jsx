@@ -8,9 +8,11 @@ import { toast } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { setRegisterData } from "../../helpers/examination/examSlice.jsx";
 import { CircleCheck, Lock, Mail } from "lucide-react";
-import logo from '../../logo.png'
+import logo from "../../logo.png";
+import { useNavigate } from 'react-router-dom';
 
 const Register = () => {
+  const navigate = useNavigate();
   const registerData = useSelector((state) => state.exam.registerData);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
@@ -20,6 +22,12 @@ const Register = () => {
       const res = await api.createSchool(data);
       if (res.data.success === true) {
         toast.success(res.data.message);
+
+        // Redirecting to dashboard after successful login
+        setTimeout(() => {
+          navigate('/login');
+        }, 3000);
+      return;
       } else {
         toast.error(res.data.message);
       }
@@ -57,13 +65,16 @@ const Register = () => {
     <div className="notFound">
       <div className="logContainer">
         <Toaster />
-        
+
         <div className="logSider">
-        <p className='d-flex align-items-center justify-content-center mb-4'>
-                            <img src={logo} alt="logo" />
-                            </p>
+          <p className="d-flex align-items-center justify-content-center mb-4">
+            <Link to={"/"}>
+              <img src={logo} alt="logo" />
+            </Link>
+          </p>
           <p className="loginPT mb-4">
-            One xoolHub account is all you need <br />to access to all xoolHub services.
+            One xoolHub account is all you need <br />
+            to access to all xoolHub services.
           </p>
           <form onSubmit={onSubmit} className="loginForm">
             <Input

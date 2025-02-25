@@ -35,7 +35,7 @@ const Navbar = () => {
       <nav className="navbar">
         <div className={closeMenu === false ? "navbar-container active" : "navbar-container"}>
           <div className="navbar-left">
-            <Link to="/" className="all_links" onClick={closeMenu}>
+            <Link to="/" className="all_links">
               <img
                 src={logo}
                 alt="logo"

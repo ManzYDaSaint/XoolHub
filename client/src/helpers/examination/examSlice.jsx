@@ -38,6 +38,13 @@ const ExamSlice = createSlice({
       newPassword: '',
       confirm: '',
     },
+    superDetail: {
+      email: '',
+      phone: '',
+      address: '',
+      email_address: '',
+      whatsapp: '',
+    },
     yearFormData: {
       yearName: '',
       startDate: '',
@@ -59,6 +66,11 @@ const ExamSlice = createSlice({
     classFormData: {
       denom: '',
       className: '',
+    },
+    contactData: {
+      name: '',
+      email: '',
+      message: '',
     },
     termFormData: {
       termName: '',
@@ -193,6 +205,9 @@ const ExamSlice = createSlice({
     setClassFormData: (state, action) => {
       state.classFormData = action.payload;
     },
+    setContactData: (state, action) => {
+      state.contactData = action.payload;
+    },
     setTermFormData: (state, action) => {
       state.termFormData = action.payload;
     },
@@ -247,6 +262,9 @@ const ExamSlice = createSlice({
     setSuperPassword: (state, action) => {
       state.superPassword = action.payload;
     },
+    setSuperDetail: (state, action) => {
+      state.superDetail = action.payload;
+    },
     setReportFormData: (state, action) => {
       state.reportFormData = action.payload;
     },
@@ -269,6 +287,7 @@ export const {
   setTermFormData,
   setGradeFormData,
   setJCEFormData,
+  setContactData,
   setMSCEFormData,
   setTeacherFormData,
   setAssignTeacherFormData,
@@ -285,6 +304,7 @@ export const {
   setPasswordFormData,
   setReportFormData,
   setSuperPassword,
+  setSuperDetail,
   setSubscriptionData,
   setEventFormData,
   setSubscribeData,

@@ -43,7 +43,7 @@ const ClassSelector = ({ label, selectedClass, handleClassChange, handleSubjectC
           <select name={name} value={value} onChange={handleClassChange}>
             <option value="" selected disabled>Select an option</option>
             {classs.map((clas) => (
-              <option key={clas.classid} value={clas.classid}>
+              <option key={clas.id} value={clas.id}>
                 {clas.name}
               </option>
             ))}
