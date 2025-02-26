@@ -65,6 +65,8 @@ const superVerify = () => axios.post(API + '/superverify');
 const superLogout = () => axios.post(API + '/superlogout');
 const tLogout = () => axios.post(API + '/tlogout');
 const Logout = () => axios.post(API + '/logout');
+const VerifyOTP = (data) => axios.post(API + '/verifyOTP', data);
+const ResendOTP = (data) => axios.post(API + '/resendOTP', data);
 
 // --------- LOGIN AXIOS -----------
 
@@ -426,6 +428,8 @@ export default {
   Logon,
   Logout,
   tLogout,
+  VerifyOTP,
+  ResendOTP,
   // ------ LOGIN EXPORT -------
   
   // ------ EXAM EXPORT -------

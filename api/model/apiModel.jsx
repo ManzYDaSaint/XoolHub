@@ -181,6 +181,13 @@ const OTPGeneration = async(otpCode, otpExpire, email) => {
   return res;
 };
 
+const OTPVerification = async(email) => {
+  const sql = "UPDATE schools SET status = 'Activated' WHERE email = ?";
+  const values = [email];
+  const [res] = await conn.query(sql, values);
+  return res;
+};
+
 const updatePassword = async(newPassword, sid) => {
   const sql = "UPDATE schools SET password = ? WHERE id = ?";
   const values = [newPassword, sid];
@@ -2442,6 +2449,7 @@ module.exports = {
   updateSchool,
   updateSchoolWithoutLogo,
   OTPGeneration,
+  OTPVerification,
   updatePassword,
   updateTeacherPassword,
   updateSuperPassword,

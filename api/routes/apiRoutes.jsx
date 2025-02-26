@@ -4,6 +4,7 @@ const {
     login, 
     generateOTP, 
     verifyOTP, 
+    resendOTP,
     createResetSession, 
     resetPassword, 
     addExam, 
@@ -199,7 +200,8 @@ router.route('/send-otp').post(sendOTP);
 // ***** GET Methods
 router.route('/school/:username').get();
 router.route('/generateOTP').get(localVariable, generateOTP);
-router.route('/verifyOTP').get(verifyOTP);
+router.route('/verifyOTP').post(verifyOTP);
+router.route('/resendOTP').post(resendOTP);
 router.route('/createResetSession').get(createResetSession);
 
 

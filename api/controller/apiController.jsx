@@ -1,7 +1,13 @@
 const bcrypt = require('bcryptjs');
 require('dotenv').config();
-const { Resend } = require('resend');
-const resend = new Resend(process.env.RESEND_API_KEY);
+const nodemailer = require("nodemailer");
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+    },
+});
 const { v4: uuidv4 } = require('uuid');
 const {
     checkMail, 
@@ -204,6 +210,7 @@ const {
     getAdmin,
     updateAdmin,
     addContacts,
+    OTPVerification,
 } = require('../model/apiModel.jsx');
 const jwt = require('jsonwebtoken')
 const OTPgen = require('otp-generator')
@@ -1017,19 +1024,26 @@ const login = async(req, res) => {
 
             const otpcheck = await OTPGeneration(otpCode, otpExpiresAt, school[0].email);
             if(otpcheck) {
-                // Send OTP email using Resend
-                const sender = await resend.emails.send({
-                    from: "onboarding@resend.dev", // Use a verified domain
-                    to: 'manzyn@outlook.com',
-                    subject: "Your OTP Code",
-                    text: `Your OTP code is: ${otpCode}. It will expire in 10 minutes.`,
-                });
-                
-                console.log(sender)
-                return res.json({
-                    osuccess: true,
-                    email: school[0].email
-                });
+                try {
+                    const mailOptions = {
+                        from: '"XoolHub" <admin@xoolhub.com>',
+                        to: school[0].email,
+                        subject: "Your OTP Code",
+                        text: `Your OTP code is: ${otpCode}. It expires in 10 minutes.`,
+                    };
+            
+                    const info = await transporter.sendMail(mailOptions);
+                    console.log("Email sent: " + info.response);
+
+                    return res.json({
+                        osuccess: true,
+                        email: school[0].email
+                    });
+                } catch (error) {
+                    console.error("Error sending OTP email:", error);
+                    return false;
+                }
+
             } else {
                 return res.json({
                     success: false,
@@ -1226,13 +1240,90 @@ const generateOTP = async (req, res, next) => {
 }
 
 // Verify OTP at localhost:5000/api/auth/verifyOTP
-const verifyOTP = async (req, res, next) => {
-    const { code } = req.query;
-    if(parseInt(req.app.locals.OTP) === parseInt(code)) {
-        req.app.locals.OTP = null;
-        req.app.locals.resetSession = true;
-        return res.status(201).send({
-            msg: "Verify Successfully..."
+const verifyOTP = async (req, res) => {
+    const { email, otp} = req.body;
+
+    try {
+        const checker = await checkSchool(email);
+        if (checker.length > 0) {
+            if (checker[0].otp_code !== otp) {
+                return res.json({
+                    success: false,
+                    message: "OTP verification failed..",
+                });
+            }
+            else if(new Date(checker[0].otp_expires_at).getTime() < Date.now()) {
+                return res.json({
+                    success: false,
+                    message: "OTP expired",
+                });
+            }
+            else {
+                const update = await OTPVerification(email);
+                if (update) {
+                    return res.json({
+                        success: true,
+                        message: "OTP verified successfully",
+                    });
+                }
+                else {
+                    return res.json({
+                        success: false,
+                        message: "OTP verification failed",
+                    });
+                }
+            }
+        }
+
+        return res.json({
+            success: false,
+            message: "Authentication failed",
+        });
+    } catch (error) {
+        res.json({
+            error: "Verify User Internal Server Error"
+        });
+    }
+}
+
+const resendOTP = async (req, res) => {
+    const { email } = req.body;
+    try {
+        // Generate OTP and save to the database
+        const otpCode = (Math.floor(100000 + Math.random() * 900000)).toString();
+        const otpExpiresAt = new Date(Date.now() + 10 * 60000); // Expires in 10 minutes
+
+        const otpcheck = await OTPGeneration(otpCode, otpExpiresAt, email);
+        if (otpcheck) {
+            try {
+                const mailOptions = {
+                    from: '"XoolHub" <admin@xoolhub.com>',
+                    to: email,
+                    subject: "Your Resent OTP Code",
+                    text: `Your Resent OTP code is: ${otpCode}. It expires in 10 minutes.`,
+                };
+        
+                const info = await transporter.sendMail(mailOptions);
+                console.log("Email sent: " + info.response);
+
+                return res.json({
+                    success: true,
+                    message: 'OTP resent successfully',
+                });
+            } catch (error) {
+                console.error("Error sending OTP email:", error);
+                return false;
+            }
+        }
+        else {
+            return res.json({
+                success: false,
+                message: "Failed to resend OTP",
+            });
+        }
+    } catch (error) {
+        res.json({
+            error: "Resend OTP Internal Server Error"
         });
     }
 }
@@ -6348,6 +6439,7 @@ module.exports = {
     signup, 
     generateOTP, 
     verifyOTP, 
+    resendOTP,
     createResetSession, 
     resetPassword, 
     verifyUser,
