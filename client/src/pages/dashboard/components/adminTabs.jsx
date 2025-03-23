@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import { UserRoundPen, SquareDashedKanban } from 'lucide-react'
 import AdminPersonal from './adminPersonal'
-import '../dashboard.css'
 import Billing from './billing'
 
 const AdminTabs = () => {

@@ -217,7 +217,9 @@ const deleteClassTeacher = (id) => axios.delete(API + '/deletclassteacher/' + id
 
 const addStudent = (data) => axios.post(API + '/addstudent', data);
 const getStudent = () => axios.get(API + '/getstudent');
+const gettStudent = () => axios.get(API + '/gettstudent');
 const countStudent = () => axios.get(API + '/count-student');
+const counttStudent = () => axios.get(API + '/countt-student');
 const countMale = () => axios.get(API + '/count-male');
 const countFemale = () => axios.get(API + '/count-female');
 const countGenderByClass = () => axios.get(API + '/count-gender-class');
@@ -236,6 +238,7 @@ const updateStudent = (id, data) => axios.put(API + '/updatstudent/' + id, data)
 
 const addFee = (data) => axios.post(API + '/addfee', data);
 const getFee = () => axios.get(API + '/getfee');
+const gettFee = () => axios.get(API + '/gettfee');
 const deleteFee = (id) => axios.delete(API + '/deletfee/' + id);
 const editFee = (id) => axios.get(API + '/editfee/' + id);
 const updateFee = (id, data) => axios.put(API + '/updatfee/' + id, data);
@@ -249,10 +252,15 @@ const updateFee = (id, data) => axios.put(API + '/updatfee/' + id, data);
 // --------- PAYMENT AXIOS -----------
 
 const getPay = () => axios.get(API + '/getpay');
+const gettPay = () => axios.get(API + '/gettpay');
 const sumPay = () => axios.get(API + '/count-payments');
+const sumtPay = () => axios.get(API + '/count-tpayments');
 const sumPaymentMonth = () => axios.get(API + '/count-payment-month');
+const sumtPaymentMonth = () => axios.get(API + '/countt-payment-month');
 const getTuition = () => axios.get(API + '/get-tuition');
+const gettTuition = () => axios.get(API + '/gett-tuition');
 const getOutstanding = () => axios.get(API + '/get-outstanding');
+const gettOutstanding = () => axios.get(API + '/gett-outstanding');
 const paymentDays = () => axios.get(API + '/payment-days');
 const paidByClass = () => axios.get(API + '/payment-classes');
 const getPayee = (id) => axios.get(API + '/getpayee/' + id);
@@ -550,10 +558,12 @@ export default {
       // ------ STUDENT EXPORT -------
       addStudent,
       getStudent,
+      gettStudent,
       getSingleStudent,
       deleteStudent,
       updateStudent,
       countStudent,
+      counttStudent,
       countMale,
       countFemale,
       countGenderByClass,
@@ -566,6 +576,7 @@ export default {
        // ------ FEE EXPORT -------
        addFee,
        getFee,
+       gettFee,
        deleteFee,
        editFee,
        updateFee,
@@ -576,15 +587,20 @@ export default {
 
        // ------ PAYMENT EXPORT -------
        getPay,
+       gettPay,
        getPayee,
        addPay,
        editPay,
        updatePay,
        deletePay,
        sumPay,
+       sumtPay,
        sumPaymentMonth,
+       sumtPaymentMonth,
        getTuition,
+       gettTuition,
        getOutstanding,
+       gettOutstanding,
        paymentDays,
        paidByClass,
        // ------ PAYMENT EXPORT -------

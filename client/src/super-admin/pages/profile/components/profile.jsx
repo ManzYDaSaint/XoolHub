@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Grid, GridColumn, GridRow } from "semantic-ui-react";
 import FormInput from "../../../../components/input/formInput";
 import FormButton from "../../../../components/input/formButton";
 import { useSelector, useDispatch } from "react-redux";
@@ -127,143 +126,125 @@ const SuperProfile = () => {
   return (
     <div className="personalContainer">
       <div className="profileUpdate">
-        <h5>Super Administrator Information</h5>
-        <p>
+        <h5 className="text-lg font-bold mb-3">Super Administrator Information</h5>
+        <p className="text-md">
           Here you can update the password of the Super Administrator. <br /> The changes
           will be displayed and effective once updated.
         </p>
 
         <div className="cutter">
-          <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
-            Update Details
-          </h1>
-          <p>
+          <h1 className="text-xl py-4 text-gray-800" style={{fontFamily: '"Poppins", sans-serif'}}>Update Details</h1>
+          <p className="text-md">
             Changes that will be made will update <br />the whole system details.
           </p>
           <form onSubmit={onUpdateSubmit} autoComplete="off" className="mt-5">
-            <Grid divided="vertically">
-              <GridRow columns={2}>
-                <GridColumn>
-                  <FormInput
-                    label={"Email"}
-                    type={"email"}
-                    name={"email"}
-                    placeholder={"Type here.."}
-                    onChange={handleDetailChange}
-                    value={superDetail.email}
-                  />
-                </GridColumn>
-                <GridColumn>
-                  <FormInput
-                    label={"Phone"}
-                    type={"text"}
-                    name={"phone"}
-                    placeholder={"Type here.."}
-                    onChange={handleDetailChange}
-                    value={superDetail.phone}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"Address"}
-                    type={"text"}
-                    name={"address"}
-                    placeholder={"Type here.."}
-                    onChange={handleDetailChange}
-                    value={superDetail.address}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={2}>
-                <GridColumn>
-                  <FormInput
-                    label={"Email Address"}
-                    type={"text"}
-                    name={"email_address"}
-                    placeholder={"Type here.."}
-                    onChange={handleDetailChange}
-                    value={superDetail.email_address}
-                  />
-                </GridColumn>
-                <GridColumn>
-                  <FormInput
-                    label={"WhatsApp"}
-                    type={"text"}
-                    name={"whatsapp"}
-                    placeholder={"Type here.."}
-                    onChange={handleDetailChange}
-                    value={superDetail.whatsapp}
-                  />
-                </GridColumn>
-              </GridRow>
-            </Grid>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <FormInput
+                  label={"Email"}
+                  type={"email"}
+                  name={"email"}
+                  placeholder={"Type here.."}
+                  onChange={handleDetailChange}
+                  value={superDetail.email}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"Phone"}
+                  type={"text"}
+                  name={"phone"}
+                  placeholder={"Type here.."}
+                  onChange={handleDetailChange}
+                  value={superDetail.phone}
+                />
+              </div>
+              <div className="col-span-2">
+                <FormInput
+                  label={"Address"}
+                  type={"text"}
+                  name={"address"}
+                  placeholder={"Type here.."}
+                  onChange={handleDetailChange}
+                  value={superDetail.address}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"Email Address"}
+                  type={"text"}
+                  name={"email_address"}
+                  placeholder={"Type here.."}
+                  onChange={handleDetailChange}
+                  value={superDetail.email_address}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"WhatsApp"}
+                  type={"text"}
+                  name={"whatsapp"}
+                  placeholder={"Type here.."}
+                  onChange={handleDetailChange}
+                  value={superDetail.whatsapp}
+                />
+              </div>
+            </div>
             <FormButton label={processing ? 'Saving...' : 'Update Settings'} id="tyepButton" />
           </form>
         </div>
 
         <div className="cutter">
-          <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
-            Change Password
-          </h1>
-          <p>
+          <h1 className="text-lg py-4 text-gray-800" style={{fontFamily: '"Poppins", sans-serif'}}>Change Password</h1>
+          <p className="text-md">
             Update your password associated with your <br /> account.
           </p>
           <form onSubmit={onPasswordSubmit} autoComplete="off" className="mt-5">
-            <Grid divided="vertically">
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"Current Password"}
-                    type={"password"}
-                    name={"current"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={superPassword.current}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"New Password"}
-                    type={"password"}
-                    name={"newPassword"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={superPassword.newPassword}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"Confirm Password"}
-                    type={"password"}
-                    name={"confirm"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={superPassword.confirm}
-                  />
-                </GridColumn>
-              </GridRow>
-            </Grid>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <FormInput
+                  label={"Current Password"}
+                  type={"password"}
+                  name={"current"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={superPassword.current}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"New Password"}
+                  type={"password"}
+                  name={"newPassword"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={superPassword.newPassword}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"Confirm Password"}
+                  type={"password"}
+                  name={"confirm"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={superPassword.confirm}
+                />
+              </div>
+            </div>
             <FormButton label={processing ? 'Saving...' : 'Save'} id="tyepButton" />
           </form>
         </div>
         <div className="cutter">
-          <div className="sides">
-            <div className="left">
-              <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
-                Log out your session
-              </h1>
-              <p>
+          <div className="flex justify-between">
+            <div>
+              <h1 className="text-lg py-4 text-gray-800" style={{fontFamily: '"Poppins", sans-serif'}}>Log out your session</h1>
+              <p className="text-md">
                 Are you sure want to log out? All your <br /> unsaved data will
                 be lost.
               </p>
             </div>
-            <div className="right text-center">
+            <div className="text-center">
               <FormButton label={"Log Out"} id="nextButton" onClick={handleLogOut} />
             </div>
           </div>

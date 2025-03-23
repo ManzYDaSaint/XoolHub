@@ -171,21 +171,21 @@ const EntryForm = () => {
                 <table className="table customisedTable">
                   <thead>
                     <tr>
-                      <th width='10%'>Sr</th>
-                      <th width='60%'>Student Name</th>
-                      <th width='30%'>Score</th>
+                      <th width='10%' className='py-3 px-3 text-left'>Sr</th>
+                      <th width='60%' className='py-3 px-3 text-left'>Student Name</th>
+                      <th width='30%' className='py-3 px-3 text-left'>Score</th>
                     </tr>
                   </thead>
                   <tbody>
                     {students.map((student, index) => (
-                      <tr key={student.id}>
-                        <td>{index+1}</td>
+                      <tr key={student.id} className='text-left'>
+                        <td className='py-3 px-3 text-left'>{index+1}</td>
                         <td>{student.name}</td>
                         <td>
                           <input 
                             type="text" 
                             placeholder='Type score here..' 
-                            className='scoreInput' 
+                            className='scoreInput p-2 rounded' 
                             onChange={(e) => handleEntryChange(e, student.id)}
                             name='score'
                             value={studentScores[student.id] || ''}

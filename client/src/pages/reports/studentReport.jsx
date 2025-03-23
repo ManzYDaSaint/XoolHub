@@ -310,50 +310,56 @@ const StudentReport = () => {
                                 </h4>
                                 <h4 class="detail">
                                   Term: &nbsp;{" "}
-                                  <span class="text-dark">{item.term}</span>
+                                  <span class="text-dark">
+                                    <p className="text-sm">{item.term}</p>
+                                  </span>
                                 </h4>
                               </div>
                               <div className="left">
                                 <h4 class="detail">
                                   Exam Type: &nbsp;{" "}
-                                  <span class="text-dark ">{item.exam}</span>
+                                  <span class="text-dark ">
+                                    <p className="text-sm">{item.exam}</p>
+                                  </span>
                                 </h4>
                                 <h4 class="detail">
                                   Year: &nbsp;{" "}
-                                  <span class="text-dark ">{item.year}</span>
+                                  <span class="text-dark ">
+                                    <p className="text-sm">{item.year}</p>
+                                  </span>
                                 </h4>
                                 <h4 class="detail">
                                   Aggregate: &nbsp;{" "}
                                   <span class="text-dark ">
-                                    {item.aggregate}
+                                    <p className="text-sm">{item.aggregate}</p>
                                   </span>
                                 </h4>
                               </div>
                             </div>
                           ))
                         ) : (
-                          <p>No students available</p>
+                          <p className="text-sm">No students available</p>
                         )}
                       </div>
                     </div>
-                    <div class="panel-body mt-3">
-                      <table class="table table-bordered table-hover">
+                    <div className="mt-3">
+                      <table className="table table-bordered table-hover w-full">
                         <thead>
-                          <tr class="text-center text-muted">
-                            <th colspan="7">
+                          <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
+                            <th colspan="7" className="border p-3">
                               {" "}
                               Position: {rank} Out OF {counter}
                             </th>
                           </tr>
-                          <tr>
-                            <th>#</th>
-                            <th>Subjects</th>
-                            <th>Marks</th>
-                            <th>Grade</th>
-                            <th>Position</th>
-                            <th>Remarks</th>
-                            <th>Teacher</th>
-                          </tr>
+                          <tr className="bg-gray-100 text-gray-700 uppercase text-sm text-left">
+                      <th className="border p-3">#</th>
+                      <th className="border p-3">Subjects</th>
+                      <th className="border p-3">Marks</th>
+                      <th className="border p-3">Grade</th>
+                      <th className="border p-3">Position</th>
+                      <th className="border p-3">Remarks</th>
+                      <th className="border p-3">Teacher</th>
+                    </tr>
                         </thead>
                         <tbody>
                           {subjectInfo.map((item, index) => {
@@ -374,23 +380,23 @@ const StudentReport = () => {
                               )?.name;
 
                             return (
-                              <tr key={index}>
-                                <td>{index + 1}</td>
-                                <td>{item.subject}</td>
-                                <td>{item.score}</td>
-                                <td>{item.grade}</td>
-                                <td>
+                              <tr key={index} className="bg-gray-100 text-gray-700 uppercase text-sm text-left">
+                                <td className="border p-3">{index + 1}</td>
+                                <td className="border p-3">{item.subject}</td>
+                                <td className="border p-3">{item.score}</td>
+                                <td className="border p-3">{item.grade}</td>
+                                <td className="border p-3">
                                   {matchingRank ? matchingRank : "N/A"}/
                                   {counter}
                                 </td>
-                                <td>{item.remarks}</td>
-                                <td>{name ? name : "N/A"}</td>
+                                <td className="border p-3">{item.remarks}</td>
+                                <td className="border p-3">{name ? name : "N/A"}</td>
                               </tr>
                             );
                           })}
                           <tr>
-                            <td colspan="6">Download</td>
-                            <td>
+                            <td colspan="6" className="border p-3">Download</td>
+                            <td className="border p-3">
                               <button onClick={handleDownload}>
                                 Download PDF
                               </button>

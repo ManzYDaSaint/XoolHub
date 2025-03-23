@@ -103,6 +103,7 @@ const ExamSlice = createSlice({
       email: '',
       address: '',
       gender: '',
+      role: '',
     },
     studentFormData: {
       studentNames: '',
@@ -155,8 +156,8 @@ const ExamSlice = createSlice({
       description: '',
     },
     payFormData: {
+      studentID: '',
       paid: '',
-      amount: '',
       term: ''
     },
     scoreFormData: {

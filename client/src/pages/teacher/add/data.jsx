@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from 'semantic-ui-react'
 import FormButton from '../../../components/input/formButton.jsx'
 import api from '../../../services/apiServices.jsx'
 import { useDispatch } from 'react-redux';
@@ -7,6 +6,7 @@ import { setIsEditMode, setEditItemId, setTeacherFormData } from '../../../helpe
 import { toast } from 'react-hot-toast';
 import AddForm from './form.jsx';
 import AddTable from './table.jsx';
+import { Pencil, Plus, Trash } from 'lucide-react';
 
 const Data = () => {
   const dispatch = useDispatch();
@@ -37,14 +37,15 @@ const fetchData = async () => {
       sr: index + 1,
       name: item.name,
       gender: item.gender,
+      role: item.role,
       contact: item.contact,
       email: item.email,
       address: item.address,
       password: item.password,
       actions: (
           <div>
-          <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-          <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+          <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil size={15} className='action_edit' /></button>
+          <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash size={15} className='action_delete' /></button>
           {/* <button onClick={() => handleView(item.id)} className='action_icon'><Icon name='eye' className='action_view' /></button> */}
           </div>
       ),
@@ -67,6 +68,7 @@ useEffect(() => {
           email: res.data.edit.email,
           address: res.data.edit.address,
           gender: res.data.edit.gender,
+          role: res.data.edit.role,
       }));
       dispatch(setIsEditMode(true));
       dispatch(setEditItemId(res.data.edit.id));
@@ -88,10 +90,10 @@ useEffect(() => {
   };
   return (
     <div>
-        <div className="div" style={{ display: showAdd ? 'none' : 'block' }}>
+        <div className="div pt-5" style={{ display: showAdd ? 'none' : 'block' }}>
             <button type="button" onClick={handleAddOpen} 
                 class="add__rows__btn">
-                <Icon name='plus' className='plus' />
+                <Plus size={15} className='plus' />
                 Add
             </button>
             </div>

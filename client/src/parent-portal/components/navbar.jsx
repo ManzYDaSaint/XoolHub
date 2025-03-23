@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import { DollarSign, BookOpenCheck, House, CalendarDays } from "lucide-react";
-import './index.css';
 
 const ParentNavBar = () => {
   const location = useLocation();

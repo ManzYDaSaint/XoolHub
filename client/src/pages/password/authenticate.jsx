@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import "./auth.css";
 import Shield from "./assets/auth.png";
 import { useLocation, useNavigate } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
@@ -93,7 +92,7 @@ const Authenticate = () => {
           </div>
           <div className="body">
             <div className="dotted">
-              <h1>Authenticate Your Account</h1>
+              <h1 className="text-2xl font-bold text-center mb-4 text-gray-700">Authenticate Your Account</h1>
               <div className="dot"></div>
             </div>
             <p>
@@ -102,7 +101,7 @@ const Authenticate = () => {
               <br />
               <strong>{email}</strong>
             </p>
-            <form onSubmit={handleSubmit} className="custom_form" autoComplete="off">
+            <form onSubmit={handleSubmit} className="custom_form mt-5" autoComplete="off">
               <div className="codeBase">
                 <div id="hols" className={`one_field ${activeInputId === "5" ? "active" : ""}`}>
                   <div id="hola" className="input_right">

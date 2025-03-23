@@ -5,8 +5,6 @@ import Sidebar from "../../components/input/sidebar";
 import Navbar from "../../components/input/top";
 import FormButton from "../../components/input/formButton.jsx";
 import { useNavigate } from "react-router-dom";
-import "../fees/fees.css";
-import { Icon } from "semantic-ui-react";
 import FeesDashboard from "../fees/dashboard/fees-dashboard.jsx";
 import PAID from "../../hooks/subscription.jsx";
 
@@ -37,16 +35,15 @@ const Fees = () => {
                       <div className="headerTitle">
                         <h5>Fees Management</h5>
                       </div>
-                      <div className="groupRight">
+                      <div className="groupRight flex gap-4">
                         <FormButton
                           label={"View"}
                           id={"tyepButton"}
                           onClick={handleRedirect}
                         />
-                        <Icon
-                          name="settings"
-                          alt="fees"
-                          className="feesIcon"
+                        <FormButton
+                          label={"Create"}
+                          id={"tyepButton"}
                           onClick={handleRedirector}
                         />
                       </div>

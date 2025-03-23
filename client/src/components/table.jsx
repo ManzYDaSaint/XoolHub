@@ -87,7 +87,6 @@ function UniversalTable({ columns, data }) {
     <div className="helperDiv">
       <p className='table_note'>Note: <span className='highlight'>Click on any of the column name to sort in <br /> both <strong>ascending</strong> and <strong>descending</strong> order. Default is unsorted.</span></p>
       <Searchbar 
-        icon={'search'}
         type={'text'}
         placeholder={'Search by keyword'}
         value={searchTerm}
@@ -97,7 +96,7 @@ function UniversalTable({ columns, data }) {
         <thead>
           <tr>
             {columns.map((column, index) => (
-              <th key={index} onClick={() => handleSort(column.key)} style={{ width: column.width, textAlign: column.textAlign }}>
+              <th key={index} onClick={() => handleSort(column.key)} style={{ width: column.width, textAlign: column.textAlign }} className='py-3 px-3 text-left'>
                 {column.label}
                 {sortColumn === column && (
                   <span className="sort-icon">
@@ -112,13 +111,13 @@ function UniversalTable({ columns, data }) {
           {paginatedData.map((row, index) => (
             <tr key={index}>
               {columns.map((column, index) => (
-                <td key={index}>{row[column.key]}</td>
+                <td key={index} className='py-2 px-3 text-left'>{row[column.key]}</td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="pagination">
+      <div className="pagination flex align-center my-5">
         <button onClick={handlePreviousPage} disabled={currentPage === 1}>
           Prev
         </button>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./auth.css";
 import Reseto from "./assets/forgot.png";
 import Input from "../../components/input/input";
 import Buttonee from "../../components/input/button.jsx";
@@ -23,6 +22,8 @@ const Reset = () => {
   const handleBlur = () => {
     setActiveInputId(null);
   };
+
+  console.log(activeInputId);
 
   return (
     <div className="notFound">

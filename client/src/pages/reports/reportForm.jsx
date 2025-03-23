@@ -21,7 +21,6 @@ const ReportForm = () => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
 
-
   const handleSubmit = async (data) => {
     try {
       const res = await api.getReport({ data });
@@ -75,12 +74,7 @@ const ReportForm = () => {
   return (
     <Auth0>
       <>
-        <DeleteModal
-          open={open}
-          setOpen={setOpen}
-          reportFormData={reportFormData}
-        />
-        <form onSubmit={onSubmit} autoComplete="off">
+        <form onSubmit={onSubmit} autoComplete="off" className="mt-4">
           <div className="formGroup">
             <TermSelector
               onChange={handleChange}
@@ -106,22 +100,17 @@ const ReportForm = () => {
               label={isLoading ? "Filtering..." : "Filter"}
               id="tyepButton"
             />
+            <DeleteModal
+          open={open}
+          setOpen={setOpen}
+          reportFormData={reportFormData}
+        />
           </div>
         </form>
-        <div className="buttonSplitter">
-          <div></div>
-          <div className="report__button__container">
-            <FormButton
-              label={"Delete"}
-              id="dangerButton"
-              onClick={() => setOpen(true)}
-            />
-          </div>
-        </div>
         <table className="table customisedTable mt-3 w-100" id="fees__table">
           <thead>
-            <tr>
-              <th>Sr</th>
+            <tr className="text-left">
+              <th className="py-3 px-3 text-left">Sr</th>
               <th>Action</th>
               <th>Aggregate</th>
               <th>Student Name</th>
@@ -132,8 +121,8 @@ const ReportForm = () => {
           </thead>
           <tbody>
             {students.map((item, index) => (
-              <tr key={index}>
-                <td>{item.rank}</td>
+              <tr key={index} className="text-left">
+                <td className="py-3 px-3 text-left">{item.rank}</td>
                 <td>
                   <button
                     onClick={() => handleAcademics(item.student_id)}

@@ -110,6 +110,7 @@ const Plans = ({ fetchData }) => {
               id={'rowButton'}
               icon={'plus'}
               type={'button'}
+              label={'Add Feature'}
             />
             <FormButton label={isEditMode ? "Update Subscription Plan" : "Add Subscription Plan"} id="tyepButton" icon="plus" />
             </div>

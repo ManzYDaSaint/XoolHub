@@ -1,8 +1,5 @@
 import React, { useState } from 'react'
-import './login.css'
-import 'semantic-ui-css/semantic.min.css'
 import Input from '../../components/input/input';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Link } from 'react-router-dom';
 import { Toaster, toast } from 'react-hot-toast';
 import api from '../../services/apiServices.jsx'
@@ -24,7 +21,7 @@ const Login = () => {
             if (res.data.success === true) {
                 toast.success(res.data.message);
 
-                // Redirecting to dashboard after successful login
+                // Redirecting to administrator dashboard after successful login
                 setTimeout(() => {
                     navigate('/administrator');
                 }, 2000);
@@ -32,17 +29,39 @@ const Login = () => {
             }
             else if (res.data.tsuccess === true) {
                 toast.success(res.data.tmessage);
-
-                // Redirecting to dashboard after successful login
-                setTimeout(() => {
-                    navigate('/tdashboard');
-                }, 2000);
-                return;
+                if(res.data.role === 'Bursar') {
+                    // Redirecting to Bursar dashboard after successful login
+                    setTimeout(() => {
+                        navigate('/bursar');
+                    }, 2000);
+                    return;
+                }
+                else if(res.data.role === 'Hoa') {
+                    // Redirecting to Head of academics dashboard after successful login
+                    setTimeout(() => {
+                        navigate('/hoa');
+                    }, 2000);
+                    return;
+                }
+                else if(res.data.role === 'Hod') {
+                    // Redirecting to Head of department dashboard after successful login
+                    setTimeout(() => {
+                        navigate('/hod');
+                    }, 2000);
+                    return;
+                }
+                else {
+                    // Redirecting to Teacher dashboard after successful login
+                    setTimeout(() => {
+                        navigate('/tdashboard');
+                    }, 2000);
+                    return;
+                }
             }
             else if (res.data.ssuccess === true) {
                 toast.success(res.data.smessage);
 
-                // Redirecting to dashboard after successful login
+                // Redirecting to Super Admin dashboard after successful login
                 setTimeout(() => {
                     navigate('/super');
                 }, 2000);
@@ -87,7 +106,7 @@ const Login = () => {
             <div className='logContainer'>
                 <Toaster />
                 <div className="logSider">
-                    <p className='d-flex align-items-center justify-content-center mb-4'>
+                    <p className='flex align-center justify-center mb-8'>
                         <Link to={'/'}>
                             <img src={logo} alt="logo" />
                         </Link>

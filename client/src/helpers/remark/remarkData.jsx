@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from 'semantic-ui-react';
+import { Pencil, PencilIcon, Plus, PlusIcon, Trash, TrashIcon } from 'lucide-react'
 import api from '../../services/apiServices.jsx'
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
@@ -53,8 +53,8 @@ const RemarkData = () => {
           remark: item.remark,
           actions: (
               <div>
-              <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-              <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+              <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil size={15} className='action_edit' /></button>
+              <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash size={15} className='action_delete' /></button>
               </div>
           ),
           }));
@@ -112,8 +112,8 @@ const RemarkData = () => {
         remark: item.remark,
         actions: (
             <div>
-            <button onClick={() => handleEditr(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-            <button onClick={() => handleDeleter(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleEditr(item.id)} className='action_icon'><PencilIcon size={15} className='action_edit' /></button>
+            <button onClick={() => handleDeleter(item.id)} className='action_icon'><TrashIcon size={15} className='action_delete' /></button>
             </div>
         ),
         }));
@@ -174,10 +174,10 @@ const RemarkData = () => {
             <button className={seleTab === 1 ? "tablinko active" : "tablinko"} onClick={() => handleTaClick(1)}>MSCE </button>
         </div>
         {seleTab === 0 && <div id="JCE" class="tabcontento animate-bottom mt-4">
-            <div className="div" style={{ display: showJCE ? 'none' : 'block' }}>
+            <div className="div mt-4" style={{ display: showJCE ? 'none' : 'block' }}>
             <button type="button" onClick={handleJCEOpen} 
                 class="add__rows__btn">
-                <Icon name='plus' className='plus' />
+                <Plus size={15} className='plus' />
                 Add
             </button>
             </div>
@@ -195,10 +195,10 @@ const RemarkData = () => {
         </div>
         }
         {seleTab === 1 && <div id="MSCE" class="tabcontento animate-bottom mt-4">
-            <div className="div" style={{ display: showMSCE ? 'none' : 'block' }}>
+            <div className="div mt-4" style={{ display: showMSCE ? 'none' : 'block' }}>
             <button type="button" onClick={handleMSCEOpen} 
                 class="add__rows__btn">
-                <Icon name='plus' className='plus' />
+                <PlusIcon size={15} className='plus' />
                 Add
             </button>
             </div>

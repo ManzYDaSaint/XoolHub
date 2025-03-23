@@ -22,7 +22,7 @@ const TermSelector = ({ label, onChange, name, value }) => {
         {label && <label htmlFor={''}>{label}</label>}
         <div className="inputContainer">
           <select name={name} value={value} onChange={onChange}>
-            <option value="" selected disabled>Select an option</option>
+            <option value="" defaultValue disabled>Select an option</option>
             {options.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.name + " ( " + option.year + " ) "}

@@ -1,12 +1,4 @@
 import React from "react";
-import {
-  ModalContent,
-  ModalActions,
-  Button,
-  Header,
-  Icon,
-  Modal,
-} from "semantic-ui-react";
 import api from "../../services/apiServices";
 import toast from "react-hot-toast";
 
@@ -27,33 +19,34 @@ function DeleteModal({ modal, setModal, filterData }) {
   };
 
   return (
-    <Modal
-      basic
+    <div
+      className={`fixed inset-0 flex items-center justify-center z-50 ${modal ? 'block' : 'hidden'}`}
       onClose={() => setModal(false)}
       onOpen={() => setModal(true)}
-      open={modal}
-      size="small"
-      centered={true}
     >
-      <Header icon className="hov">
-        <Icon name="trash alternate outline" />
-        Delete Report
-      </Header>
-      <ModalContent>
-        <p>
-          Are you sure want to delete this data? <br /> This action is
-          irreversible
-        </p>
-      </ModalContent>
-      <ModalActions>
-        <Button basic color="green" inverted onClick={() => setModal(false)}>
-          <Icon name="remove" /> No
-        </Button>
-        <Button color="red" inverted onClick={() => handleDelete(filterData)}>
-          <Icon name="check" /> Delete
-        </Button>
-      </ModalActions>
-    </Modal>
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <div className="flex items-center mb-4">
+          <svg className="w-6 h-6 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          <h2 className="text-lg font-bold ml-2">Delete Report</h2>
+        </div>
+        <div className="mb-4">
+          <p>
+            Are you sure you want to delete this data? <br /> This action is
+            irreversible.
+          </p>
+        </div>
+        <div className="flex justify-end">
+          <button className="bg-green-500 text-white px-4 py-2 rounded mr-2" onClick={() => setModal(false)}>
+            No
+          </button>
+          <button className="bg-red-500 text-white px-4 py-2 rounded" onClick={() => handleDelete(filterData)}>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

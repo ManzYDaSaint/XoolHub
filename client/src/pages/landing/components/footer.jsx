@@ -49,7 +49,7 @@ const Footer = () => {
         <div className="connect">
           <h4>Let's connect</h4>
           <p>Subscribe to our newsletter for the latest updates, <br />promotions and exclusive offers.</p>
-          <form className='connect-form' onSubmit={onSubmit}>
+          <form className='connect-form mt-5' onSubmit={onSubmit}>
             <input 
               type="email" 
               placeholder="Enter your email" 
@@ -61,11 +61,11 @@ const Footer = () => {
           </form>
         </div>
         <div className="container">
-          <div className="row">
-            <div className="col-lg-3">
+          <div className="footer-context">
+            <div className="coner p-2">
               <div className="footer-container">
                 <h4>Company</h4>
-                <ul className='footer-links'>
+                <ul className='footer-links ml-5'>
                 <Link to={'/about'} className='all_links'>
 
                   <li>About Us</li>
@@ -89,10 +89,10 @@ const Footer = () => {
                 </ul>
               </div>
             </div>
-            <div className="col-lg-3">
+            <div className="coner p-2">
               <div className="footer-container">
                 <h4>Features</h4>
-                <ul className='footer-links'>
+                <ul className='footer-links ml-5'>
                   <Link to={'/schedule'} className='all_links'>
                   <li>Schedule Management</li>
                   </Link>
@@ -126,10 +126,10 @@ const Footer = () => {
                 </ul>
               </div>
             </div>
-            <div className="col-lg-3">
+            <div className="coner p-2">
               <div className="footer-container">
                 <h4>Support</h4>
-                <ul className='footer-links'>
+                <ul className='footer-links ml-5'>
                   <Link to={'/faq'} className='all_links'>
                     <li>FAQ</li>
                   </Link>
@@ -145,10 +145,10 @@ const Footer = () => {
                 </ul>
               </div>
             </div>
-            <div className="col-lg-3">
+            <div className="coner p-2">
               <div className="footer-container">
                 <h4>Quick Links</h4>
-                <ul className='footer-links'>
+                <ul className='footer-links ml-5'>
                   <Link to={'/login'} className='all_links'>
                     <li>Login</li>
                   </Link>
@@ -164,11 +164,11 @@ const Footer = () => {
           </div>
         </div>
         <div className="rights">
-          <div className="row">
-            <div className="col-lg-6">
+          <div className="flex flex-wrap align-center justify-around">
+            <div className="w-3/3 mb-5">
               <h6>All rights reserved &copy; XoolHub, Inc.</h6>
             </div>
-            <div className="col-lg-6">
+            <div className="w-3/3">
               <div className="social-icons">
                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer"><Facebook size={25} /></a>
                 <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"><Twitter size={25} /></a>

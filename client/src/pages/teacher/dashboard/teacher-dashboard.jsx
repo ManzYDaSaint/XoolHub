@@ -70,7 +70,7 @@ const TeacherBoard = () => {
             <Card
               icon={UsersRound}
               title={count}
-              description={"Teacher"}
+              description={"Users"}
             />
             <div className="card_container">
               <div className="student_count">

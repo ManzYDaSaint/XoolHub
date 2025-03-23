@@ -1,6 +1,5 @@
 import React from "react";
 import ParentNavBar from "../../components/navbar";
-import "../index.css";
 import { GraduationCap, Shapes, Megaphone } from "lucide-react";
 import TopNav from "../../components/topnav";
 

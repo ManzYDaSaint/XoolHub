@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ModalContent, Header, Modal } from "semantic-ui-react";
 import {
   setEditItemId,
   setScoreFormData,
@@ -57,42 +56,40 @@ function EditModal({ open, setOpen, classID }) {
   };
 
   return (
-    <Modal
-      basic
-      onClose={() => setOpen(false)}
-      onOpen={() => setOpen(true)}
-      open={open}
-      size="small"
-      centered={true}
-    >
-      <Header className="hov bg-gray-100 text-gray-800 font-bold text-2xl text-center p-2 gap-3" style={{ fontFamily: '"Poppins", sans-serif', display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
-      <FilePenLine size={50} />
-        Update Score
-      </Header>
-      <ModalContent className="customModalForm">
-        <form onSubmit={onSubmit} autoComplete="off">
-          <div className="formGroup">
-            <FormInput
-              label={"Score"}
-              type={"text"}
-              name="score"
-              value={scoreFormData.score}
-              onChange={handleChange}
-              placeholder={"Type here..."}
+    <div className={`fixed inset-0 z-50 flex items-center justify-center ${open ? 'block' : 'hidden'}`}>
+      <div className="fixed inset-0 bg-black opacity-50 z-40" onClick={() => setOpen(false)}></div>
+      <div className="bg-white rounded-lg shadow-lg w-1/3 z-50">
+        <div className="flex flex-col items-center justify-center p-4">
+          <FilePenLine size={50} />
+          <h2 className="text-2xl font-bold text-gray-800">Update Score</h2>
+        </div>
+        <div className="p-4">
+          <form onSubmit={onSubmit} autoComplete="off">
+            <div className="mb-4">
+              <FormInput
+                label={"Score"}
+                type={"text"}
+                name="score"
+                value={scoreFormData.score}
+                onChange={handleChange}
+                placeholder={"Type here..."}
+                className="border border-gray-300 rounded p-2 w-full"
+              />
+            </div>
+            <FormButton
+              label={loading ? "Processing.." : "Update Score"}
+              id="rowButton"
+              className="bg-blue-500 text-white rounded p-2 w-full hover:bg-blue-600"
             />
-          </div>
-          <FormButton
-            label={loading ? "Processing.." : "Update Score"}
-            id="rowButton"
-          />
-        </form>
-        {loading && (
-          <div className="loki">
-            <InfinitySpin width="200" color="#007BFE" />
-          </div>
-        )}
-      </ModalContent>
-    </Modal>
+          </form>
+          {loading && (
+            <div className="flex justify-center mt-4">
+              <InfinitySpin width="200" color="#007BFE" />
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 

@@ -1,4 +1,3 @@
-import './nopage.css';
 import React from 'react'
 
 const Nopage = () => {

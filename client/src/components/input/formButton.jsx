@@ -1,7 +1,6 @@
 import React from 'react'
-import { Icon } from 'semantic-ui-react'
 
-const FormButton = ({type, label, id, onClick, icon}) => {
+const FormButton = ({type, label, id, onClick}) => {
   return (
     <div className='formButtonContainer'>
         <button 
@@ -10,7 +9,6 @@ const FormButton = ({type, label, id, onClick, icon}) => {
             type={type}
             onClick={onClick}
         >
-          {icon && <Icon name={icon} />}
             {label}
         </button>
     </div>

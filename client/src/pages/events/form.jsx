@@ -9,7 +9,6 @@ import {
   setEditItemId,
   setEventFormData,
 } from "../../helpers/examination/examSlice.jsx";
-import { Grid, GridColumn, GridRow } from "semantic-ui-react";
 
 const Form = ({ fetchData }) => {
   const eventFormData = useSelector((state) => state.exam.eventFormData);
@@ -70,66 +69,66 @@ const Form = ({ fetchData }) => {
   };
 
   return (
-    <form onSubmit={onSubmit} autoComplete="off">
-      <Grid divided="vertically">
-        <GridRow columns={3}>
-          <GridColumn>
-            <FormInput
-              label={"Event Title"}
-              type={"text"}
-              name="title"
-              value={eventFormData.title}
-              onChange={handleChange}
-              placeholder={"Type event title"}
-            />
-          </GridColumn>
-          <GridColumn>
-            <FormInput
-              label={"Event Date"}
-              type={"date"}
-              name="date"
-              value={eventFormData.date}
-              onChange={handleChange}
-              placeholder={"Type event date"}
-            />
-          </GridColumn>
-          <GridColumn>
-            <FormInput
-              label={"Event Time"}
-              type={"text"}
-              name="time"
-              value={eventFormData.time}
-              onChange={handleChange}
-              placeholder={"Type event time (e.g. 10:00 AM - 2:45 PM)"}
-            />
-          </GridColumn>
-        </GridRow>
-        <GridRow columns={2}>
-          <GridColumn>
-            <FormInput
-              label={"Event Location"}
-              type={"text"}
-              name="location"
-              value={eventFormData.location}
-              onChange={handleChange}
-              placeholder={"Type event location"}
-            />
-          </GridColumn>
-          <GridColumn>
-            <FormInput
-              label={"Event Description"}
-              type={"text"}
-              name="description"
-              value={eventFormData.description}
-              onChange={handleChange}
-              placeholder={"Type event description"}
-            />
-          </GridColumn>
-        </GridRow>
-        <GridRow>
-          
-        </GridRow>
-      </Grid>
+    <form onSubmit={onSubmit} autoComplete="off" className="space-y-4">
+      <div className="grid grid-cols-3 gap-4">
+        <div>
+          <FormInput
+            label={"Event Title"}
+            type={"text"}
+            name="title"
+            value={eventFormData.title}
+            onChange={handleChange}
+            placeholder={"Type event title"}
+            className="border rounded p-2 w-full"
+          />
+        </div>
+        <div>
+          <FormInput
+            label={"Event Date"}
+            type={"date"}
+            name="date"
+            value={eventFormData.date}
+            onChange={handleChange}
+            placeholder={"Type event date"}
+            className="border rounded p-2 w-full"
+          />
+        </div>
+        <div>
+          <FormInput
+            label={"Event Time"}
+            type={"text"}
+            name="time"
+            value={eventFormData.time}
+            onChange={handleChange}
+            placeholder={"Type event time (e.g. 10:00 AM - 2:45 PM)"}
+            className="border rounded p-2 w-full"
+          />
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <FormInput
+            label={"Event Location"}
+            type={"text"}
+            name="location"
+            value={eventFormData.location}
+            onChange={handleChange}
+            placeholder={"Type event location"}
+            className="border rounded p-2 w-full"
+          />
+        </div>
+        <div>
+          <FormInput
+            label={"Event Description"}
+            type={"text"}
+            name="description"
+            value={eventFormData.description}
+            onChange={handleChange}
+            placeholder={"Type event description"}
+            className="border rounded p-2 w-full"
+          />
+        </div>
+      </div>
       <FormButton
         label={isEditMode ? "Update Upcoming Event" : "Add Upcoming Event"}
         id="tyepButton"

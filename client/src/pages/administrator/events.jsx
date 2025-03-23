@@ -3,18 +3,10 @@ import Auth0 from "../../hooks/auth.jsx";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "../../components/input/sidebar.jsx";
 import Navbar from "../../components/input/top.jsx";
-import FormButton from "../../components/input/formButton.jsx";
-import { useNavigate } from "react-router-dom";
-import "../students/students.css";
 import EventPage from "../events/data.jsx";
 // import PAID from "../../hooks/subscription.jsx";
 
 const Events = () => {
-  const navigate = useNavigate();
-
-  const handleRedirect = () => {
-    navigate("/addstudents");
-  };
 
   return (
     <Auth0>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from 'semantic-ui-react'
 import FormButton from '../../../../components/input/formButton.jsx'
 import api from '../../../../services/apiServices.jsx'
 import { toast } from 'react-hot-toast'
 import PlanTable from './table.jsx'
 import Plans from './plans.jsx'
-import { Pencil, Trash } from 'lucide-react'
+import { Pencil, Plus, Trash } from 'lucide-react'
 import { setSubscriptionData } from '../../../../helpers/examination/examSlice.jsx'
 import { useDispatch } from 'react-redux'
 import { setIsEditMode, setEditItemId } from '../../../../helpers/examination/examSlice.jsx'
@@ -90,7 +89,7 @@ const PlanData = () => {
         <div className="div" style={{ display: showPlan ? 'none' : 'block' }}>
             <button type="button" onClick={handlePlanOpen} 
             class="add__rows__btn">
-            <Icon name='plus' className='plus' />
+            <Plus size={15} className='plus' />
             Add
             </button>
         </div>

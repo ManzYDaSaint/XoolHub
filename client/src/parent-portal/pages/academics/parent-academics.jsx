@@ -1,6 +1,4 @@
-/*************  ✨ Codeium Command ⭐  *************/
 import React, { useState, useEffect } from 'react';
-import { Table } from 'semantic-ui-react';
 import api from '../../../services/apiServices';
 import ParentNavBar from '../../components/navbar';
 import TopNav from '../../components/topnav';
@@ -24,33 +22,34 @@ const AcademicHistory = ({ studentId }) => {
   return (
     <div className="parent_container">
       <div className="parent_content">
-    <div className="academic-history">
-        
-        <TopNav />
-      <h2>Academic History</h2>
-      <Table celled>
-        <Table.Header>
-          <Table.Row>
-            <Table.HeaderCell>Year</Table.HeaderCell>
-            <Table.HeaderCell>Class</Table.HeaderCell>
-            <Table.HeaderCell>Subject</Table.HeaderCell>
-            <Table.HeaderCell>Grade</Table.HeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>
-          {academicHistory.map((record, index) => (
-            <Table.Row key={index}>
-              <Table.Cell>{record.year}</Table.Cell>
-              <Table.Cell>{record.class}</Table.Cell>
-              <Table.Cell>{record.subject}</Table.Cell>
-              <Table.Cell>{record.grade}</Table.Cell>
-            </Table.Row>
-          ))}
-        </Table.Body>
-      </Table>
-      <ParentNavBar />
-    </div>
-    </div>
+        <div className="academic-history">
+          <TopNav />
+          <h2 className="text-2xl font-bold mb-4">Academic History</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white border border-gray-200">
+              <thead>
+                <tr className="bg-gray-100">
+                  <th className="py-2 px-4 border-b">Year</th>
+                  <th className="py-2 px-4 border-b">Class</th>
+                  <th className="py-2 px-4 border-b">Subject</th>
+                  <th className="py-2 px-4 border-b">Grade</th>
+                </tr>
+              </thead>
+              <tbody>
+                {academicHistory.map((record, index) => (
+                  <tr key={index} className="hover:bg-gray-50">
+                    <td className="py-2 px-4 border-b"><p className="text-sm">{record.year}</p></td>
+                    <td className="py-2 px-4 border-b"><p className="text-sm">{record.class}</p></td>
+                    <td className="py-2 px-4 border-b"><p className="text-sm">{record.subject}</p></td>
+                    <td className="py-2 px-4 border-b"><p className="text-sm">{record.grade}</p></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ParentNavBar />
+        </div>
+      </div>
     </div>
   );
 };

@@ -4,7 +4,7 @@ import NavBar from "../components/navbar";
 import { Toaster } from "react-hot-toast";
 import EntryData from "../data/entryData";
 import FilterData from "../data/filterData";
-import { Icon } from "semantic-ui-react";
+import { Filter, PlusIcon } from "lucide-react";
 
 const Entry = () => {
   const handleXClose = () => {
@@ -38,12 +38,12 @@ const Entry = () => {
                     </div>
                   </div>
                   <p>
-                        This page manages examination to be added into the
-                        system. <br />
-                        Filter with specified options below to prepare for
-                        entry. You can view, export and edit scores for a
-                        specific student.
-                      </p>
+                    This page manages examination to be added into the
+                    system. <br />
+                    Filter with specified options below to prepare for
+                    entry. You can view, export and edit scores for a
+                    specific student.
+                  </p>
                   <div className="entrySplitter">
                     <div
                       className="div"
@@ -62,7 +62,7 @@ const Entry = () => {
                         style={{ width: "100%" }}
                         class="add__rows__btn"
                       >
-                        <Icon name="plus" className="plus" />
+                        <PlusIcon size={15} className="plus" />
                         Add
                       </button>
                     </div>
@@ -82,7 +82,7 @@ const Entry = () => {
                         style={{ width: "100%" }}
                         class="add__rows__btn"
                       >
-                        <Icon name="filter" className="filter" />
+                        <Filter size={20} className="plus mr-3" />
                         Filter
                       </button>
                     </div>

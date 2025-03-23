@@ -4,8 +4,8 @@ import { Toaster } from 'react-hot-toast';
 import Sidebar from '../../components/input/sidebar.jsx'
 import Navbar from '../../components/input/top.jsx'
 import { useNavigate } from 'react-router-dom';
-import { Icon } from 'semantic-ui-react';
 import FeesData from './components/feesData.jsx';
+import { ArrowLeft } from 'lucide-react';
 
 const Setting = () => {
     const navigate = useNavigate();
@@ -26,8 +26,8 @@ const Setting = () => {
                             <div className="settingContent">
                                 <div className='profile_container'>
                                     <div className="splitter">
-                                        <Icon 
-                                            name='arrow left'
+                                        <ArrowLeft
+                                        size={25}
                                             onClick={handleRedirect}
                                             className='feesIcon'
                                         />

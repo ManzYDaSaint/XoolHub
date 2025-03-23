@@ -1,6 +1,4 @@
-/*************  ✨ Codeium Command ⭐  *************/
 import React, { useState, useEffect } from 'react';
-import { Table, Header, Icon, Segment } from 'semantic-ui-react';
 import api from '../../../services/apiServices';
 import TopNav from '../../components/topnav';
 import ParentNavBar from '../../components/navbar';
@@ -28,64 +26,64 @@ const ParentFees = () => {
   return (
     <div className="parent_container">
       <div className="parent_content">
-    <div className="parent-fees">
-        <TopNav />
-      <Segment>
-        <Header as="h2">
-          <Icon name="dollar sign" />
-          <Header.Content>Fees Structure</Header.Content>
-        </Header>
-        <Table celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>SR</Table.HeaderCell>
-              <Table.HeaderCell>Name</Table.HeaderCell>
-              <Table.HeaderCell>Amount</Table.HeaderCell>
-              <Table.HeaderCell>Description</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {feesStructure.map((fee, index) => (
-              <Table.Row key={index}>
-                <Table.Cell>{index + 1}</Table.Cell>
-                <Table.Cell>{fee.name}</Table.Cell>
-                <Table.Cell>{fee.amount}</Table.Cell>
-                <Table.Cell>{fee.description}</Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Segment>
+        <div className="parent-fees">
+          <TopNav />
+          <div className="bg-white shadow-md rounded-lg p-6 mb-6">
+            <h2 className="text-2xl font-bold flex items-center">
+              <span className="material-icons">attach_money</span>
+              <span className="ml-2">Fees Structure</span>
+            </h2>
+            <table className="min-w-full mt-4">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2">SR</th>
+                  <th className="px-4 py-2">Name</th>
+                  <th className="px-4 py-2">Amount</th>
+                  <th className="px-4 py-2">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                {feesStructure.map((fee, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{fee.name}</td>
+                    <td className="px-4 py-2">{fee.amount}</td>
+                    <td className="px-4 py-2"><p className="text-sm">{fee.description}</p></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-      <Segment>
-        <Header as="h2">
-          <Icon name="history" />
-          <Header.Content>Fees History</Header.Content>
-        </Header>
-        <Table celled>
-          <Table.Header>
-            <Table.Row>
-              <Table.HeaderCell>SR</Table.HeaderCell>
-              <Table.HeaderCell>Date</Table.HeaderCell>
-              <Table.HeaderCell>Amount</Table.HeaderCell>
-              <Table.HeaderCell>Status</Table.HeaderCell>
-            </Table.Row>
-          </Table.Header>
-          <Table.Body>
-            {feesHistory.map((history, index) => (
-              <Table.Row key={index}>
-                <Table.Cell>{index + 1}</Table.Cell>
-                <Table.Cell>{new Date(history.date).toLocaleDateString()}</Table.Cell>
-                <Table.Cell>{history.amount}</Table.Cell>
-                <Table.Cell>{history.status}</Table.Cell>
-              </Table.Row>
-            ))}
-          </Table.Body>
-        </Table>
-      </Segment>
-      <ParentNavBar />
-    </div>
-    </div>
+          <div className="bg-white shadow-md rounded-lg p-6">
+            <h2 className="text-2xl font-bold flex items-center">
+              <span className="material-icons">history</span>
+              <span className="ml-2">Fees History</span>
+            </h2>
+            <table className="min-w-full mt-4">
+              <thead>
+                <tr className="bg-gray-200">
+                  <th className="px-4 py-2">SR</th>
+                  <th className="px-4 py-2">Date</th>
+                  <th className="px-4 py-2">Amount</th>
+                  <th className="px-4 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {feesHistory.map((history, index) => (
+                  <tr key={index} className="border-b">
+                    <td className="px-4 py-2">{index + 1}</td>
+                    <td className="px-4 py-2">{new Date(history.date).toLocaleDateString()}</td>
+                    <td className="px-4 py-2">{history.amount}</td>
+                    <td className="px-4 py-2"><p className="text-sm">{history.status}</p></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <ParentNavBar />
+        </div>
+      </div>
     </div>
   );
 };

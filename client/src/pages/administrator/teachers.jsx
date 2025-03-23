@@ -3,11 +3,10 @@ import Auth0 from "../../hooks/auth";
 import { Toaster } from "react-hot-toast";
 import Sidebar from "../../components/input/sidebar";
 import Navbar from "../../components/input/top";
-import { Icon } from "semantic-ui-react";
 import { useNavigate } from "react-router-dom";
-import "../teacher/teacher.css";
 import TeacherBoard from "../teacher/dashboard/teacher-dashboard";
 import PAID from "../../hooks/subscription";
+import FormButton from "../../components/input/formButton";
 
 const Teachers = () => {
   const navigate = useNavigate();
@@ -30,12 +29,12 @@ const Teachers = () => {
                   <div className="teacher_container">
                     <div className="splitter">
                       <div className="headerTitle">
-                        <h5>Teacher Management</h5>
+                        <h5>User Management</h5>
                       </div>
-                      <Icon
-                        name="settings"
-                        alt="fees"
-                        className="feesIcon"
+                      <FormButton 
+                        type="button"
+                        label="Create"
+                        id={'tyepButton'}
                         onClick={handleRedirect}
                       />
                     </div>

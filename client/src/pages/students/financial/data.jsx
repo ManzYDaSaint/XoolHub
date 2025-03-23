@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from 'semantic-ui-react'
 import FormButton from '../../../components/input/formButton'
 import api from '../../../services/apiServices'
 import { useDispatch } from 'react-redux';
@@ -8,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import PfForm from './form.jsx'
 import PfTable from './table.jsx'
 import { useParams } from 'react-router-dom';
+import { Pencil, Plus, Trash } from 'lucide-react';
 
 const PfData = () => {
     const { id } = useParams();
@@ -46,8 +46,8 @@ const PfData = () => {
         balance: item.balance,
         actions: (
             <div>
-            <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-            <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil size={15} className='action_edit' /></button>
+            <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash size={15} className='action_delete' /></button>
             </div>
         ),
         }));
@@ -92,7 +92,7 @@ const PfData = () => {
         <div className="div" style={{ display: showPay ? 'none' : 'block' }}>
             <button type="button" onClick={handlePayOpen} 
             class="add__rows__btn">
-            <Icon name='plus' className='plus' />
+            <Plus size={15} className='plus' />
             Add
             </button>
         </div>
@@ -104,9 +104,7 @@ const PfData = () => {
             onClick={handlePayClose}
             />
         </div>
-        <table className="custom__table table-hover mt-3 w-100" id="year__table">
             <PfTable setShowPay={setShowPay} payData={payData} />
-        </table>
     </>
   )
 }

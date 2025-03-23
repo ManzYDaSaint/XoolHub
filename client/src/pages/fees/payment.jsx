@@ -4,10 +4,9 @@ import { Toaster } from 'react-hot-toast';
 import Sidebar from '../../components/input/sidebar.jsx'
 import Navbar from '../../components/input/top.jsx'
 import { useNavigate } from 'react-router-dom';
-import { Icon } from 'semantic-ui-react';
 import PayTable from './components/payTable.jsx';
 import api from '../../services/apiServices.jsx';
-import { Timer, CircleCheckBig } from 'lucide-react';
+import { Timer, CircleCheckBig, View, ArrowLeft } from 'lucide-react';
 
 const Payment = () => {
     const navigate = useNavigate();
@@ -64,7 +63,7 @@ const Payment = () => {
               ),
             actions: (
                 <div>
-                    <button onClick={() => handleView(item.id)} className='action_icon'><Icon name='eye' className='action_view' /></button>
+                    <button onClick={() => handleView(item.id)} className='action_icon'><View size={15} className='action_view' /></button>
                 </div>
             ),
             }));
@@ -89,8 +88,8 @@ const Payment = () => {
                             <div className="settingContent">
                                 <div className='profile_container'>
                                     <div className="splitter">
-                                        <Icon 
-                                            name='arrow left'
+                                        <ArrowLeft
+                                        size={25}
                                             onClick={handleRedirect}
                                             className='feesIcon'
                                         />

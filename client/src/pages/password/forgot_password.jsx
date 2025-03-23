@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import "./auth.css";
 import Email from "./assets/email.png";
 import Input from "../../components/input/input";
 import Buttonee from "../../components/input/button.jsx";
@@ -21,6 +20,8 @@ const Forgot = () => {
   const handleBlur = () => {
     setActiveInputId(null);
   };
+
+  console.log(activeInputId);
 
   return (
     <div className="notFound">

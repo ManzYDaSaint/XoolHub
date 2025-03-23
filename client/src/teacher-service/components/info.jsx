@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from 'semantic-ui-react'
 import api from '../../services/apiServices'
 import GenderPieChart from './genderPieChart.jsx'
+import { Accessibility } from 'lucide-react'
 
 const Info = ({setOpen}) => {
     const [cns, setCnS] = useState([])
@@ -58,7 +58,7 @@ const Info = ({setOpen}) => {
                 </ul>
                 {assign ? (
                 <div className="classTeacher">
-                    <Icon name='universal access' className='classtIcon' />
+                    <Accessibility size={15} className='classtIcon' />
                     <div className="splitLeft">
                         <h6>Class Teacher:</h6>
                         <p>{assign.class}</p>

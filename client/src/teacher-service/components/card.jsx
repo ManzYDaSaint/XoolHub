@@ -1,6 +1,6 @@
 import React from 'react'
-import { Icon } from 'semantic-ui-react'
 import CountUp from "react-countup";
+import { FlipVertical } from 'lucide-react';
 
 const DashboardCard = ({ label, figure, icon, note, dico, cardTop }) => {
 
@@ -19,7 +19,7 @@ const DashboardCard = ({ label, figure, icon, note, dico, cardTop }) => {
                 <p>{label}</p>
             </div>
             <div className="dicon">
-                {icon && <Icon name={icon} size='big' id={dico} />}
+                {icon && <FlipVertical id={dico} />}
             </div>
         </div>
         <p className='note'>{note}</p>

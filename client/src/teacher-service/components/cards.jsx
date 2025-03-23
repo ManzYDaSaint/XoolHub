@@ -8,11 +8,11 @@ import StudentCard from './studentcard'
 const Cards = () => {
   return (
     <div className='cardsContainer'>
-        <div className="row">
-            <div className="col-sm-4">
+        <div className="flex flex-wrap gap-4">
+            <div className="flex-1">
                 <StudentCard />
             </div>
-            <div className="col-sm-4">
+            <div className="flex-1">
                 <DashboardCard 
                     label={'Today Lessons'}
                     figure={'0'}
@@ -22,7 +22,7 @@ const Cards = () => {
                     dico={'ndIcon'}
                 />
             </div>
-            <div className="col-sm-4">
+            <div className="flex-1">
                 <DashboardCard 
                     label={'Messages'}
                     figure={'0'}
@@ -33,13 +33,13 @@ const Cards = () => {
                 />
             </div>
         </div>
-        <div className="row cutter">
-            <div className="col-sm-8">
+        <div className="flex flex-wrap gap-4 cutter">
+            <div className="flex-2">
                 <div className="noticeContainer">
                     <Noticeboard />
                 </div>
             </div>
-            <div className="col-sm-4">
+            <div className="flex-1">
                 <h6 className="carder">Top Students</h6>
                 <div className="topStudentContainer">
                     <Topstudent />

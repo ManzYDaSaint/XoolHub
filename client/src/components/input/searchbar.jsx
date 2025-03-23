@@ -1,10 +1,10 @@
+import { Search } from 'lucide-react'
 import React from 'react'
-import { Icon } from 'semantic-ui-react'
 
-const Searchbar = ({icon, type, placeholder, onChange}) => {
+const Searchbar = ({type, placeholder, onChange}) => {
   return (
     <div className='searchBar_Container'>
-        <Icon name={icon} className='searchIcon' />
+        <Search size={18} className='mr-3'/>
         <input 
             type={type} 
             placeholder={placeholder}

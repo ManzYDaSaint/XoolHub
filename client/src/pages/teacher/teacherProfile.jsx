@@ -7,7 +7,7 @@ import Sidebar from '../../components/input/sidebar.jsx'
 import Navbar from '../../components/input/top.jsx'
 import FormButton from '../../components/input/formButton';
 import { useNavigate } from 'react-router-dom';
-import { Icon } from 'semantic-ui-react';
+import { User } from 'lucide-react';
 
 const TeacherProfile = () => {
     const navigate = useNavigate();
@@ -74,6 +74,8 @@ const TeacherProfile = () => {
     const handleRedirect = () => {
         navigate('/config')
     }
+
+    console.log(teacherSubject)
     
     return (
         <Auth0>
@@ -85,7 +87,7 @@ const TeacherProfile = () => {
                         <Navbar />
                         <div className="settingContainer">
                             <div className="headerTitle">
-                                <h4>TEACHER PROFILE</h4>
+                                <h4>USER PROFILE</h4>
                             </div>
                             <div className="settingContent">
                                 <div className='profile_container'>
@@ -93,7 +95,6 @@ const TeacherProfile = () => {
                                         <FormButton
                                             label={'Back'}
                                             id={'tyepButton'}
-                                            icon={'arrow left'}
                                             onClick={handleRedirect}
                                         />
                                         <div></div>
@@ -102,7 +103,7 @@ const TeacherProfile = () => {
                                         <div className="profile_details">
                                             {teacher ? (
                                                 <div className='bio'>
-                                                    <Icon name='user circle outline' alt='bio_avatar' className='bio_avatar' />
+                                                    <User className='bio_avatar' />
                                                     <div className="bio_profile">
                                                         <p><strong>{teacher.name}</strong></p>
                                                         <p>{teacher.email}</p>
@@ -111,12 +112,11 @@ const TeacherProfile = () => {
                                                     <FormButton
                                                         label={'Deactivate'}
                                                         id={'dangerButton'}
-                                                        icon={'shutdown'}
                                                         onClick={handleRedirect}
                                                     />
                                                 </div>
                                             ) : (
-                                                <p>No teacher data found.</p>
+                                                <p>No user data found.</p>
                                             )}
                                         </div>
                                         <div className="profile_attributes">

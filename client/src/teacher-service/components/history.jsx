@@ -1,26 +1,44 @@
 import React from 'react'
-import { TabPane, Tab } from 'semantic-ui-react'
 import FinData from './tabs/financial/feesData'
 
 const panes = [
   {
     menuItem: 'Academics',
-    render: () => <TabPane attached={false}>
-      <h5>Academics</h5>
-    </TabPane>,
+    render: () => (
+      <div className="p-4 border-b">
+        <h5 className="text-lg font-semibold">Academics</h5>
+      </div>
+    ),
   },
   {
     menuItem: 'Fees History',
-    render: () => <TabPane attached={false}>
-      <FinData />
-    </TabPane>,
+    render: () => (
+      <div className="p-4 border-b">
+        <FinData />
+      </div>
+    ),
   },
   {
     menuItem: 'Attendance',
-    render: () => <TabPane attached={false}>Tab 3 Content</TabPane>,
+    render: () => (
+      <div className="p-4 border-b">Tab 3 Content</div>
+    ),
   },
 ]
 
-const StudentHistory = () => <Tab menu={{ pointing: true }} panes={panes} />
+const StudentHistory = () => (
+  <div className="flex flex-col">
+    <div className="flex space-x-4 border-b">
+      {panes.map((pane, index) => (
+        <button key={index} className="py-2 px-4 hover:bg-gray-200">
+          {pane.menuItem}
+        </button>
+      ))}
+    </div>
+    <div>
+      {panes[0].render()} {/* Render the first pane by default */}
+    </div>
+  </div>
+)
 
 export default StudentHistory

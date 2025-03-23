@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from 'semantic-ui-react';
 import api from '../../services/apiServices.jsx'
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
@@ -7,6 +6,7 @@ import { setIsEditMode, setEditItemId, setClassFormData } from '../examination/e
 import ClassForm from './classForm.jsx';
 import ClassTable from './classTable.jsx';
 import FormButton from '../../components/input/formButton.jsx';
+import { Pencil, Plus, Trash } from 'lucide-react';
 
 const ClassData = () => {
     const handleClassClose = () => { setShowClass(false); };
@@ -36,8 +36,8 @@ const ClassData = () => {
           name: item.name,
           actions: (
               <div>
-              <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-              <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+              <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil size={15} className='action_edit' /></button>
+              <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash size={15} className='action_delete' /></button>
               </div>
           ),
           }));
@@ -82,7 +82,7 @@ const ClassData = () => {
         <div className="div" style={{ display: showClass ? 'none' : 'block' }}>
             <button type="button" onClick={handleClassOpen} 
                 class="add__rows__btn">
-                <Icon name='plus' className='plus' />
+                <Plus size={15} className='plus' />
                 Add
             </button>
         </div>

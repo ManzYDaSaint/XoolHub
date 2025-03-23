@@ -4,7 +4,6 @@ import SuperSidebar from "../../components/navbar/navbar";
 import Menu from "../../components/Top/menu";
 import { useNavigate } from "react-router-dom";
 import FormButton from "../../../components/input/formButton";
-import './subscription.css'
 import Data from "./data";
 
 const Subsciptions = () => {

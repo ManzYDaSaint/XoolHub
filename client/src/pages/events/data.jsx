@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Clock, MapPin, Edit, Trash } from "lucide-react";
-import { Icon } from "semantic-ui-react";
+import { Calendar, Clock, MapPin, Edit, Trash, Plus } from "lucide-react";
 import FormButton from "../../components/input/formButton";
 import Form from "./form";
-import "./event.css";
 import { useDispatch } from 'react-redux';
 import api from "../../services/apiServices";
 import { setEventFormData, setIsEditMode, setEditItemId } from "../../helpers/examination/examSlice";
@@ -64,7 +62,7 @@ const EventPage = () => {
     <div className="bg-gray-50 min-h-screen py-10 px-4">
       <div className="div" style={{ display: show ? "none" : "block" }}>
         <button type="button" onClick={handleOpen} class="add__rows__btn">
-          <Icon name="plus" className="plus" />
+          <Plus size={15} className="plus" />
           Add
         </button>
         <h1 className="text-xl mt-4 text-gray-600 xoolinfo">Upcoming Events</h1>

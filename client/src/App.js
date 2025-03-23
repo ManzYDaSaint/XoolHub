@@ -1,91 +1,133 @@
-import './App.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import Login from './pages/login/login';
-import Authenticate from './pages/password/authenticate';
-import Forgot from './pages/password/forgot_password';
-import Reset from './pages/password/reset_password';
-import Register from './pages/register/register';
-import AdminDashboard from './pages/administrator/dashboard.jsx'
-import Report from './pages/administrator/report.jsx'
-import NotFound from './pages/nopage/nopage.jsx'
-import Students from './pages/administrator/students.jsx';
-import Fees from './pages/administrator/fees.jsx';
-import Teachers from './pages/administrator/teachers.jsx';
+import LoadingSpinner from './Infinity.jsx';
+import React, { Suspense, lazy } from 'react';
 import { Provider } from 'react-redux';
 import Store from './helpers/examination/examStore.jsx';
 import InactivityHandler from './hooks/activity.jsx';
-import Config from './pages/teacher/config.jsx';
-import TeacherProfile from './pages/teacher/teacherProfile.jsx';
-import AddStudents from './pages/students/config.jsx';
-import StudentProfile from './pages/students/studentProfile.jsx';
-import FeesSetting from './pages/fees/setting.jsx';
-import Payment from './pages/fees/payment.jsx';
-import TeacherDashboard from './teacher-service/dashboard.jsx';
-import TStudent from './teacher-service/pages/student.jsx';
-import Entry from './teacher-service/pages/entry.jsx';
-import StudentDetail from './teacher-service/pages/studentDetail.jsx';
-import AdminProfile from './pages/dashboard/adminProfile.jsx';
-import StudentReport from './pages/reports/studentReport.jsx';
-import Landing from './pages/landing/front.jsx';
-import Notifications from './pages/notifications/dashboard.jsx';
-import ParentFees from './parent-portal/pages/fees/parent-fees.jsx';
-import AcademicHistory from './parent-portal/pages/academics/parent-academics.jsx';
-import ParentEvents from './parent-portal/pages/events/parent-events.jsx';
-import Setting from './super-admin/pages/settings/settings.jsx';
-import SuperDashboard from './super-admin/pages/dashboard/dasboard.jsx';
-import ParentPortal from './parent-portal/pages/dashboard/dashboard.jsx';
-import ProfileSuper from './super-admin/pages/profile/profiles.jsx';
-import Schools from './super-admin/pages/schools/school.jsx';
-import Subsciptions from './super-admin/pages/subscriptions/subscription.jsx';
-import AddSubsciptions from './super-admin/pages/subscriptions/components/add.jsx';
-import Pricing from './pages/pricing/pricing.jsx';
-import Contact from './pages/contacts/contact.jsx';
-import FAQ from './pages/faq/faq.jsx';
-import About from './pages/about/about.jsx';
-import Invoicing from './pages/pricing/billing.jsx';
-import Events from './pages/administrator/events.jsx';
-import PromoteStudents from './pages/students/promotion/promotion.jsx';
-import UserProfile from './teacher-service/pages/profile.jsx';
-import Feedback from './pages/administrator/feedback.jsx';
-import Feeds from './super-admin/pages/feedback/feeds.jsx';
-import PrivacyPolicy from './pages/law/policy.jsx';
-import TermsOfService from './pages/law/terms.jsx';
+
+// Lazy load components
+const Bursar = lazy(() => import('./pages/bursar/bursar.jsx'));
+const Expenses = lazy(() => import('./pages/bursar/expense.jsx'));
+const Hoa = lazy(() => import('./pages/hoa/hoa.jsx'));
+const Hod = lazy(() => import('./pages/hod/hod.jsx'));
+const Login = lazy(() => import('./pages/login/login'));
+const Authenticate = lazy(() => import('./pages/password/authenticate'));
+const Forgot = lazy(() => import('./pages/password/forgot_password'));
+const Reset = lazy(() => import('./pages/password/reset_password'));
+const Register = lazy(() => import('./pages/register/register'));
+const AdminDashboard = lazy(() => import('./pages/administrator/dashboard.jsx'));
+const Report = lazy(() => import('./pages/administrator/report.jsx'));
+const NotFound = lazy(() => import('./pages/nopage/nopage.jsx'));
+const Students = lazy(() => import('./pages/administrator/students.jsx'));
+const Fees = lazy(() => import('./pages/administrator/fees.jsx'));
+const Teachers = lazy(() => import('./pages/administrator/teachers.jsx'));
+const Config = lazy(() => import('./pages/teacher/config.jsx'));
+const TeacherProfile = lazy(() => import('./pages/teacher/teacherProfile.jsx'));
+const AddStudents = lazy(() => import('./pages/students/config.jsx'));
+const StudentProfile = lazy(() => import('./pages/students/studentProfile.jsx'));
+const FeesSetting = lazy(() => import('./pages/fees/setting.jsx'));
+const Payment = lazy(() => import('./pages/fees/payment.jsx'));
+const TeacherDashboard = lazy(() => import('./teacher-service/dashboard.jsx'));
+const TStudent = lazy(() => import('./teacher-service/pages/student.jsx'));
+const Entry = lazy(() => import('./teacher-service/pages/entry.jsx'));
+const StudentDetail = lazy(() => import('./teacher-service/pages/studentDetail.jsx'));
+const AdminProfile = lazy(() => import('./pages/dashboard/adminProfile.jsx'));
+const StudentReport = lazy(() => import('./pages/reports/studentReport.jsx'));
+const Landing = lazy(() => import('./pages/landing/front.jsx'));
+const Notifications = lazy(() => import('./pages/notifications/dashboard.jsx'));
+const ParentFees = lazy(() => import('./parent-portal/pages/fees/parent-fees.jsx'));
+const AcademicHistory = lazy(() => import('./parent-portal/pages/academics/parent-academics.jsx'));
+const ParentEvents = lazy(() => import('./parent-portal/pages/events/parent-events.jsx'));
+const Setting = lazy(() => import('./super-admin/pages/settings/settings.jsx'));
+const SuperDashboard = lazy(() => import('./super-admin/pages/dashboard/dasboard.jsx'));
+const ParentPortal = lazy(() => import('./parent-portal/pages/dashboard/dashboard.jsx'));
+const ProfileSuper = lazy(() => import('./super-admin/pages/profile/profiles.jsx'));
+const Schools = lazy(() => import('./super-admin/pages/schools/school.jsx'));
+const Subsciptions = lazy(() => import('./super-admin/pages/subscriptions/subscription.jsx'));
+const AddSubsciptions = lazy(() => import('./super-admin/pages/subscriptions/components/add.jsx'));
+const Pricing = lazy(() => import('./pages/pricing/pricing.jsx'));
+const Contact = lazy(() => import('./pages/contacts/contact.jsx'));
+const FAQ = lazy(() => import('./pages/faq/faq.jsx'));
+const About = lazy(() => import('./pages/about/about.jsx'));
+const Invoicing = lazy(() => import('./pages/pricing/billing.jsx'));
+const Events = lazy(() => import('./pages/administrator/events.jsx'));
+const PromoteStudents = lazy(() => import('./pages/students/promotion/promotion.jsx'));
+const UserProfile = lazy(() => import('./teacher-service/pages/profile.jsx'));
+const Feedback = lazy(() => import('./pages/administrator/feedback.jsx'));
+const Feeds = lazy(() => import('./super-admin/pages/feedback/feeds.jsx'));
+const PrivacyPolicy = lazy(() => import('./pages/law/policy.jsx'));
+const TermsOfService = lazy(() => import('./pages/law/terms.jsx'));
 
 function App() {
   const router = createBrowserRouter([
+    // Bursar Section
+    {
+      path: '/bursar',
+      element: (
+        <InactivityHandler>
+            <Suspense fallback={<LoadingSpinner />}><Bursar /> </Suspense>
+          </InactivityHandler>
+        )
+      },
+      {
+        path: '/expenses',
+        element: (
+          <InactivityHandler>
+              <Suspense fallback={<LoadingSpinner />}><Expenses /> </Suspense>
+            </InactivityHandler>
+          )
+        },
+
+    // Bursar Section
+    {
+      path: '/hoa',
+      element: (
+          <InactivityHandler>
+            <Suspense fallback={<LoadingSpinner />}><Hoa /> </Suspense>
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/hod',
+      element: (
+          <InactivityHandler>
+            <Suspense fallback={<LoadingSpinner />}><Hod /> </Suspense>
+          </InactivityHandler>
+        )
+    },
     {
       path: '*',
-      element: <NotFound />
+      element: <Suspense fallback={<LoadingSpinner />}><NotFound /></Suspense>
     },
     {
       path: '/',
-      element: <Landing />
+      element: <Suspense fallback={<LoadingSpinner />}><Landing /></Suspense>
     },
     {
       path: '/login',
-      element: <Login />
+      element: <Suspense fallback={<LoadingSpinner />}><Login /></Suspense>
     },
     {
       path: '/register',
-      element: <Register />
+      element: <Suspense fallback={<LoadingSpinner />}><Register /></Suspense>
     },
     {
       path: '/forgot',
-      element: <Forgot />
+      element: <Suspense fallback={<LoadingSpinner />}><Forgot /></Suspense>
     },
     {
       path: '/reset',
-      element: <Reset />
+      element: <Suspense fallback={<LoadingSpinner />}><Reset /></Suspense>
     },
     {
       path: '/authenticate',
-      element: <Authenticate />
+      element: <Suspense fallback={<LoadingSpinner />}><Authenticate /></Suspense>
     },
     {
       path: '/administrator',
       element: (
           <InactivityHandler>
-            <AdminDashboard />
+            <Suspense fallback={<LoadingSpinner />}><AdminDashboard /></Suspense>
           </InactivityHandler>
       )
     },
@@ -93,7 +135,7 @@ function App() {
       path: '/profile',
       element: (
           <InactivityHandler>
-          <AdminProfile />
+          <Suspense fallback={<LoadingSpinner />}><AdminProfile /></Suspense>
           </InactivityHandler>
         )
     },
@@ -101,7 +143,7 @@ function App() {
       path: '/report',
       element: (
           <InactivityHandler>
-          <Report />
+          <Suspense fallback={<LoadingSpinner />}><Report /></Suspense>
           </InactivityHandler>
         )
     },
@@ -109,7 +151,7 @@ function App() {
       path: '/student',
       element: (
           <InactivityHandler>
-          <Students />
+          <Suspense fallback={<LoadingSpinner />}><Students /></Suspense>
           </InactivityHandler>
       )
     },
@@ -117,7 +159,7 @@ function App() {
       path: '/fees',
       element: (
           <InactivityHandler>
-          <Fees />
+          <Suspense fallback={<LoadingSpinner />}><Fees /></Suspense>
           </InactivityHandler>
         )
     },
@@ -125,7 +167,7 @@ function App() {
       path: '/notifications',
       element: (
           <InactivityHandler>
-          <Notifications />
+          <Suspense fallback={<LoadingSpinner />}><Notifications /></Suspense>
           </InactivityHandler>
         )
     },
@@ -133,7 +175,7 @@ function App() {
       path: '/fees_setting',
       element: (
           <InactivityHandler>
-          <FeesSetting />
+          <Suspense fallback={<LoadingSpinner />}><FeesSetting /></Suspense>
           </InactivityHandler>
         )
     },
@@ -141,7 +183,7 @@ function App() {
       path: '/payment',
       element: (
           <InactivityHandler>
-          <Payment />
+          <Suspense fallback={<LoadingSpinner />}><Payment /></Suspense>
           </InactivityHandler>
         )
     },
@@ -149,7 +191,7 @@ function App() {
       path: '/teachers',
       element: (
           <InactivityHandler>
-          <Teachers />
+          <Suspense fallback={<LoadingSpinner />}><Teachers /></Suspense>
           </InactivityHandler>
         )
     },
@@ -157,7 +199,7 @@ function App() {
       path: '/config',
       element: (
           <InactivityHandler>
-            <Config />
+            <Suspense fallback={<LoadingSpinner />}><Config /></Suspense>
           </InactivityHandler>
         )
     },
@@ -165,7 +207,7 @@ function App() {
       path: '/add-student',
       element: (
           <InactivityHandler>
-            <AddStudents />
+            <Suspense fallback={<LoadingSpinner />}><AddStudents /></Suspense>
           </InactivityHandler>
         )
     },
@@ -173,7 +215,7 @@ function App() {
       path: '/teacher_profile/:id',
       element: (
           <InactivityHandler>
-            <TeacherProfile />
+            <Suspense fallback={<LoadingSpinner />}><TeacherProfile /></Suspense>
           </InactivityHandler>
         )
     },
@@ -181,7 +223,7 @@ function App() {
       path: '/student_profile/:id',
       element: (
           <InactivityHandler>
-            <StudentProfile />
+            <Suspense fallback={<LoadingSpinner />}><StudentProfile /></Suspense>
           </InactivityHandler>
         )
     },
@@ -189,7 +231,7 @@ function App() {
       path: '/student-report/:id',
       element: (
           <InactivityHandler>
-            <StudentReport />
+            <Suspense fallback={<LoadingSpinner />}><StudentReport /></Suspense>
           </InactivityHandler>
         )
     },
@@ -197,7 +239,7 @@ function App() {
       path: '/pricing',
       element: (
           <InactivityHandler>
-            <Pricing />
+            <Suspense fallback={<LoadingSpinner />}><Pricing /></Suspense>
           </InactivityHandler>
         )
     },
@@ -205,7 +247,7 @@ function App() {
       path: '/contact',
       element: (
           <InactivityHandler>
-            <Contact />
+            <Suspense fallback={<LoadingSpinner />}><Contact /></Suspense>
           </InactivityHandler>
         )
     },
@@ -213,7 +255,7 @@ function App() {
       path: '/faq',
       element: (
           <InactivityHandler>
-            <FAQ />
+            <Suspense fallback={<LoadingSpinner />}><FAQ /></Suspense>
           </InactivityHandler>
         )
     },
@@ -221,7 +263,7 @@ function App() {
       path: '/about',
       element: (
           <InactivityHandler>
-            <About />
+            <Suspense fallback={<LoadingSpinner />}><About /></Suspense>
           </InactivityHandler>
         )
     },
@@ -229,7 +271,7 @@ function App() {
       path: '/invoicing/:plan',
       element: (
           <InactivityHandler>
-            <Invoicing />
+            <Suspense fallback={<LoadingSpinner />}><Invoicing /></Suspense>
           </InactivityHandler>
         )
     },
@@ -237,7 +279,7 @@ function App() {
       path: '/events',
       element: (
           <InactivityHandler>
-            <Events />
+            <Suspense fallback={<LoadingSpinner />}><Events /></Suspense>
           </InactivityHandler>
         )
     },
@@ -245,7 +287,7 @@ function App() {
       path: '/feedback',
       element: (
           <InactivityHandler>
-            <Feedback />
+            <Suspense fallback={<LoadingSpinner />}><Feedback /></Suspense>
           </InactivityHandler>
         )
     },
@@ -253,7 +295,7 @@ function App() {
       path: '/policy',
       element: (
           <InactivityHandler>
-            <PrivacyPolicy />
+            <Suspense fallback={<LoadingSpinner />}><PrivacyPolicy /></Suspense>
           </InactivityHandler>
         )
     },
@@ -261,7 +303,7 @@ function App() {
       path: '/terms',
       element: (
           <InactivityHandler>
-            <TermsOfService />
+            <Suspense fallback={<LoadingSpinner />}><TermsOfService /></Suspense>
           </InactivityHandler>
         )
     },
@@ -269,7 +311,7 @@ function App() {
       path: '/student-promotion',
       element: (
           <InactivityHandler>
-            <PromoteStudents />
+            <Suspense fallback={<LoadingSpinner />}><PromoteStudents /></Suspense>
           </InactivityHandler>
         )
     },
@@ -281,7 +323,7 @@ function App() {
       path: '/tdashboard/',
       element: (
           <InactivityHandler>
-            <TeacherDashboard />
+            <Suspense fallback={<LoadingSpinner />}><TeacherDashboard /></Suspense>
           </InactivityHandler>
         )
     },
@@ -289,7 +331,7 @@ function App() {
       path: '/tstudent/',
       element: (
           <InactivityHandler>
-            <TStudent />
+            <Suspense fallback={<LoadingSpinner />}><TStudent /></Suspense>
           </InactivityHandler>
         )
     },
@@ -297,7 +339,7 @@ function App() {
       path: '/entry/',
       element: (
           <InactivityHandler>
-            <Entry />
+            <Suspense fallback={<LoadingSpinner />}><Entry /></Suspense>
           </InactivityHandler>
         )
     },
@@ -305,7 +347,7 @@ function App() {
       path: '/student/:id',
       element: (
           <InactivityHandler>
-            <StudentDetail />
+            <Suspense fallback={<LoadingSpinner />}><StudentDetail /></Suspense>
           </InactivityHandler>
         )
     },
@@ -313,7 +355,7 @@ function App() {
       path: '/teacher-profile',
       element: (
           <InactivityHandler>
-            <UserProfile />
+            <Suspense fallback={<LoadingSpinner />}><UserProfile /></Suspense>
           </InactivityHandler>
         )
     },
@@ -327,25 +369,25 @@ function App() {
     {
       path: '/parent/dashboard/',
       element: (
-          <ParentPortal />
+          <Suspense fallback={<LoadingSpinner />}><ParentPortal /></Suspense>
         )
     },
     {
       path: '/parent/fees/',
       element: (
-          <ParentFees />
+          <Suspense fallback={<LoadingSpinner />}><ParentFees /></Suspense>
         )
     },
     {
       path: '/parent/academics/',
       element: (
-          <AcademicHistory />
+          <Suspense fallback={<LoadingSpinner />}><AcademicHistory /></Suspense>
         )
     },
     {
       path: '/parent/events/',
       element: (
-          <ParentEvents />
+          <Suspense fallback={<LoadingSpinner />}><ParentEvents /></Suspense>
         )
     },
     // Parent Portal Routes 
@@ -359,7 +401,7 @@ function App() {
       path: '/super',
       element: (
         <InactivityHandler>
-          <SuperDashboard />
+          <Suspense fallback={<LoadingSpinner />}><SuperDashboard /></Suspense>
         </InactivityHandler>
         )
     },
@@ -367,7 +409,7 @@ function App() {
       path: '/setting',
       element: (
         <InactivityHandler>
-          <Setting />
+          <Suspense fallback={<LoadingSpinner />}><Setting /></Suspense>
         </InactivityHandler>
       )
     },
@@ -375,7 +417,7 @@ function App() {
       path: '/suprofile',
       element: (
         <InactivityHandler>
-          <ProfileSuper />
+          <Suspense fallback={<LoadingSpinner />}><ProfileSuper /></Suspense>
         </InactivityHandler>
       )
     },
@@ -383,7 +425,7 @@ function App() {
       path: '/schools',
       element: (
         <InactivityHandler>
-          <Schools />
+          <Suspense fallback={<LoadingSpinner />}><Schools /></Suspense>
         </InactivityHandler>
       )
     },
@@ -391,7 +433,7 @@ function App() {
       path: '/subscriptions',
       element: (
         <InactivityHandler>
-          <Subsciptions />
+          <Suspense fallback={<LoadingSpinner />}><Subsciptions /></Suspense>
         </InactivityHandler>
       )
     },
@@ -399,7 +441,7 @@ function App() {
       path: '/feeds',
       element: (
         <InactivityHandler>
-          <Feeds />
+          <Suspense fallback={<LoadingSpinner />}><Feeds /></Suspense>
         </InactivityHandler>
       )
     },
@@ -407,7 +449,7 @@ function App() {
       path: '/add-subscriptions',
       element: (
         <InactivityHandler>
-          <AddSubsciptions />
+          <Suspense fallback={<LoadingSpinner />}><AddSubsciptions /></Suspense>
         </InactivityHandler>
       )
     },

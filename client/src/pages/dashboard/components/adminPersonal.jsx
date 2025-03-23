@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Grid, GridColumn, GridRow } from "semantic-ui-react";
 import FormInput from "../../../components/input/formInput";
 import FormButton from "../../../components/input/formButton";
 import api from "../../../services/apiServices";
@@ -153,10 +152,10 @@ const AdminPersonal = () => {
 //   Log Out Section
 
   return (
-    <div className="personalContainer">
+    <div className="personalContainer p-6">
       <div className="profileUpdate">
-        <h5>Administrator Information</h5>
-        <p>
+        <h5 className="text-2xl font-bold">Administrator Information</h5>
+        <p className="mt-2">
           Here you can edit information about your school. <br /> The changes
           will be displayed and effective once updated.
         </p>
@@ -170,37 +169,29 @@ const AdminPersonal = () => {
                   : logoFile
               }
               alt="Logo Preview"
-              style={{
-                width: "70px",
-                height: "70px",
-                objectFit: "cover",
-                marginTop: "20px",
-              }}
+              className="w-20 h-20 object-cover mt-5"
             />
           )}
         </div>
         <form onSubmit={onSubmit} autoComplete="off">
-          <Grid divided="vertically">
-            <GridRow columns={1}>
-              <GridColumn>
-                <label>Select Logo: </label>
-                <input
-                  type="file"
-                  name="logo"
-                  accept="image/jpeg, image/png, image/gif, image/jpg"
-                  onChange={handleFileChange}
-                />
-              </GridColumn>
-            </GridRow>
-            <GridRow columns={3}>
-              <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
-                School Information
-              </h1>
-              <p>
-                Update school information here by filling in the form. <br />{" "}
-                Then save the changes.
-              </p>
-              <GridColumn>
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium">Select Logo: </label>
+              <input
+                type="file"
+                name="logo"
+                accept="image/jpeg, image/png, image/gif, image/jpg"
+                onChange={handleFileChange}
+                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
+              />
+            </div>
+            <h1 className="text-xl mt-4 text-gray-800">School Information</h1>
+            <p>
+              Update school information here by filling in the form. <br />{" "}
+              Then save the changes.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
                 <FormInput
                   label={"Name"}
                   type={"text"}
@@ -210,16 +201,16 @@ const AdminPersonal = () => {
                   value={adminFormData.name}
                   disabled
                 />
-              </GridColumn>
-              <GridColumn>
+              </div>
+              <div>
                 <TypeSelect 
                   label={"School Type"}
                   name={"type"}
                   value={adminFormData.type}
                   onChange={handleChange}
                 />
-              </GridColumn>
-              <GridColumn>
+              </div>
+              <div>
                 <FormInput
                   label={"Address"}
                   type={"text"}
@@ -228,10 +219,10 @@ const AdminPersonal = () => {
                   onChange={handleChange}
                   value={adminFormData.address}
                 />
-              </GridColumn>
-            </GridRow>
-            <GridRow columns={3}>
-              <GridColumn>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
                 <FormInput
                   label={"City"}
                   type={"text"}
@@ -241,8 +232,8 @@ const AdminPersonal = () => {
                   value={adminFormData.city}
                   disabled
                 />
-              </GridColumn>
-              <GridColumn>
+              </div>
+              <div>
                 <FormInput
                   label={"Country"}
                   type={"text"}
@@ -251,8 +242,8 @@ const AdminPersonal = () => {
                   onChange={handleChange}
                   value={adminFormData.country}
                 />
-              </GridColumn>
-              <GridColumn>
+              </div>
+              <div>
                 <FormInput
                   label={"Email"}
                   type={"email"}
@@ -261,10 +252,10 @@ const AdminPersonal = () => {
                   onChange={handleChange}
                   value={adminFormData.email}
                 />
-              </GridColumn>
-            </GridRow>
-            <GridRow columns={2}>
-              <GridColumn>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
                 <FormInput
                   label={"Contact"}
                   type={"text"}
@@ -273,8 +264,8 @@ const AdminPersonal = () => {
                   onChange={handleChange}
                   value={adminFormData.contact}
                 />
-              </GridColumn>
-              <GridColumn>
+              </div>
+              <div>
                 <FormInput
                   label={"Slogan"}
                   type={"text"}
@@ -283,64 +274,56 @@ const AdminPersonal = () => {
                   onChange={handleChange}
                   value={adminFormData.slogan}
                 />
-              </GridColumn>
-            </GridRow>
-          </Grid>
+              </div>
+            </div>
+          </div>
           <FormButton label={loading ? "Saving..." : "Save"} id="tyepButton" />
         </form>
-        <div className="cutter">
-          <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
-            Change Password
-          </h1>
+        <div className="cutter mt-6">
+          <h1 className="text-xl mt-4 text-gray-800">Change Password</h1>
           <p>
             Update your password associated with your <br /> account.
           </p>
           <form onSubmit={onPasswordSubmit} autoComplete="off" className="mt-5">
-            <Grid divided="vertically">
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"Current Password"}
-                    type={"password"}
-                    name={"current"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={passwordFormData.current}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"New Password"}
-                    type={"password"}
-                    name={"newPassword"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={passwordFormData.newPassword}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"Confirm Password"}
-                    type={"password"}
-                    name={"confirm"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={passwordFormData.confirm}
-                  />
-                </GridColumn>
-              </GridRow>
-            </Grid>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <FormInput
+                  label={"Current Password"}
+                  type={"password"}
+                  name={"current"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={passwordFormData.current}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"New Password"}
+                  type={"password"}
+                  name={"newPassword"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={passwordFormData.newPassword}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"Confirm Password"}
+                  type={"password"}
+                  name={"confirm"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={passwordFormData.confirm}
+                />
+              </div>
+            </div>
             <FormButton label={processing ? 'Saving...' : 'Save'} id="tyepButton" />
           </form>
         </div>
-        <div className="cutter">
-          <div className="sides">
-            <div className="left">
-              <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
+        <div className="cutter mt-6">
+          <div className="flex justify-between">
+            <div>
+              <h1 className="text-xl mt-4 text-gray-800">
                 Log out your session
               </h1>
               <p>
@@ -348,15 +331,15 @@ const AdminPersonal = () => {
                 be lost.
               </p>
             </div>
-            <div className="right text-center">
+            <div className="text-center">
               <FormButton label={"Log Out"} id="nextButton" onClick={handleLogOut} />
             </div>
           </div>
         </div>
-        <div className="cutter">
-          <div className="sides">
-            <div className="left">
-              <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
+        <div className="cutter mt-6">
+          <div className="flex justify-between">
+            <div>
+              <h1 className="text-xl mt-4 text-gray-800">
                 Delete account
               </h1>
               <p>
@@ -365,7 +348,7 @@ const AdminPersonal = () => {
                 this account will be deleted permanently.
               </p>
             </div>
-            <div className="right text-center">
+            <div className="text-center">
               <FormButton label={"Yes, Delete Account"} id="dangerButton" />
             </div>
           </div>

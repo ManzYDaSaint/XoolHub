@@ -1,6 +1,4 @@
 import Slider from "react-slick"
-import "slick-carousel/slick/slick.css"
-import "slick-carousel/slick/slick-theme.css"
 import React from "react"
 import { QuoteIcon, Star } from 'lucide-react'
 import { motion } from "framer-motion"
@@ -117,14 +115,14 @@ const Testimonials = () => {
               />
             ))}
           </div>
-                  <p className="feedback text-gray-700 text-lg md:text-xl mb-6 w-100">{testi.commenti}</p>
+                  <p className="text-sm feedback text-gray-700 text-lg md:text-xl mb-6 w-100">{testi.commenti}</p>
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
                       {testi.name[0]}
                     </div>
                     <div className="ml-4">
-                      <p className="name text-gray-900 font-semibold m-0 p-0 text-left">{testi.name}</p>
-                      <p className="role text-gray-600 m-0 p-0 text-left">{testi.optioni}</p>
+                      <p className="text-sm name text-gray-900 font-semibold m-0 p-0 text-left">{testi.name}</p>
+                      <p className="text-sm role text-gray-600 m-0 p-0 text-left">{testi.optioni}</p>
                     </div>
                   </div>
                 </motion.div>

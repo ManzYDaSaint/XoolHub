@@ -1,35 +1,27 @@
 {
-  "name": "auth-service",
+  "name": "xoolhub",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Multi School Management System",
+  "main": "app.js",
   "scripts": {
-    "start:dev": "nodemon index.jsx"
+    "start": "node app.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "author": "Emmanuel Nyangazi",
+  "license": "MIT",
   "dependencies": {
     "@supabase/auth-helpers-react": "^0.5.0",
-    "@supabase/supabase-js": "^2.45.6",
+    "@supabase/supabase-js": "^2.49.1",
     "bcrypt": "^5.1.1",
-    "bcryptjs": "^2.4.3",
-    "cookie-parser": "^1.4.6",
+    "bcryptjs": "^3.0.2",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
-    "express": "^4.19.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "express-fileupload": "^1.5.1",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^1.4.5-lts.1",
     "mysql2": "^3.12.0",
-    "nodemailer": "^6.9.16",
+    "nodemailer": "^6.10.0",
     "otp-generator": "^4.0.1",
-    "pg": "^8.12.0",
-    "pg-promise": "^11.9.1",
-    "resend": "^4.1.2",
-    "uuid": "^10.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.4"
+    "uuid": "^11.1.0"
   }
 }

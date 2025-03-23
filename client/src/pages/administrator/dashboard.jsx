@@ -1,6 +1,5 @@
 import React from "react";
 import Sidebar from "../../components/input/sidebar";
-import "./dashboard.css";
 import Navbar from "../../components/input/top";
 import Auth0 from "../../hooks/auth";
 import AdminDashboard from "../dashboard/dashboard";

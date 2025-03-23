@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import Input from "../../components/input/input";
-import "react-toastify/dist/ReactToastify.css";
 import api from "../../services/apiServices.jsx";
 import { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -67,7 +66,7 @@ const Register = () => {
         <Toaster />
 
         <div className="logSider">
-          <p className="d-flex align-items-center justify-content-center mb-4">
+          <p className="flex align-center justify-center mb-8">
             <Link to={"/"}>
               <img src={logo} alt="logo" />
             </Link>

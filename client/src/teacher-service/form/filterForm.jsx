@@ -195,9 +195,7 @@ const FilterForm = () => {
         id="dangerButton"
         onClick={() => setModal(true)}
       />
-      <table className="custom__table table-hover mt-5 w-100" id="year__table">
         <FilterTable filterData={filterData} />
-      </table>
     </div>
   );
 };

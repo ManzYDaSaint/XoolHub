@@ -67,9 +67,7 @@ const StudentData = () => {
 
   return (
     <div>
-        <table class="custom__table table-hover mt-4 w-100" id="class__table">
-            <StudentTable studData={studData}/>
-        </table>
+        <StudentTable studData={studData}/>
     </div>
   )
 }

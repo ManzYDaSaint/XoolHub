@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import ReportForm from "./reportForm.jsx";
-import { Icon } from "semantic-ui-react";
 import FormButton from "../../components/input/formButton.jsx";
+import { Filter } from "lucide-react";
 
 const ReportData = () => {
   // const dispatch = useDispatch();
@@ -21,7 +21,7 @@ const ReportData = () => {
           onClick={handleReportOpen}
           className="add__rows__btn"
         >
-          <Icon name="filter" className="filter" />
+          <Filter size={15} className="plus" />
           Filter
         </button>
       </div>
@@ -29,12 +29,12 @@ const ReportData = () => {
         className="toggleDiv"
         style={{ display: showReport ? "block" : "none" }}
       >
-        <ReportForm />
         <FormButton
           label={"Close"}
           id={"closeBtn"}
           onClick={handleReportClose}
         />
+        <ReportForm />
       </div>
     </>
   );

@@ -10,7 +10,6 @@ import {
   Rss,
   CircleDollarSign,
 } from "lucide-react";
-import "./dashboard.css";
 import PaymentChart from "./components/payments";
 import YearOptions from "./components/yearSelector";
 import api from "../../../services/apiServices";

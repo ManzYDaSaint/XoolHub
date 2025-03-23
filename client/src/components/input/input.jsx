@@ -1,5 +1,4 @@
 import React from 'react'
-import './components.css'
 
 const Input = ({name, type, placeholder, value, onChange, autoComplete, icon: Icon}) => {
   return (

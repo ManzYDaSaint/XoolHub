@@ -22,11 +22,12 @@ const FeesSelectInput = ({ label, name, onChange, value }) => {
       onChange({ id: null, amount: null }); // Pass null values if needed
     }
   };
+  console.log(selectedId, selectedAmount);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await api.getFee();
+        const response = await api.gettFee();
         const data = response.data.fee;
         setOptions(data);
       } catch (error) {
@@ -41,8 +42,8 @@ const FeesSelectInput = ({ label, name, onChange, value }) => {
       <div className="formInputContainer">
         {label && <label htmlFor={''}>{label}</label>}
         <div className="inputContainer">
-          <select name={name} value={value} onChange={handleSelectChange}>
-            <option value="" selected disabled>Select an option</option>
+          <select name={name} value={value || ""} onChange={handleSelectChange}>
+            <option value="" disabled>Select an option</option>
             {options.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.name}

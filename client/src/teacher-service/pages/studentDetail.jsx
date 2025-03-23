@@ -61,7 +61,7 @@ const StudentDetail = () => {
                                 </header>
                                 <section>
                                     <h6 className='baso mt-3'>Basic Details:</h6>
-                                    <div className="row mt-4">
+                                    <div className="flex flex-wrap gap-10 mt-4">
                                         <div className="col-lg-3">
                                             <div className="chunk">
                                                 <h6 className='text-secondary'>Admission Date:</h6>
@@ -81,7 +81,7 @@ const StudentDetail = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="row mt-5">
+                                    <div className="flex flex-wrap gap-10 mt-5">
                                         <div className="col-lg-3">
                                             <div className="chunk">
                                                 <h6 className='text-secondary'>Address:</h6>

@@ -3,7 +3,6 @@ import React from 'react';
 import LandingPage from './components/landingPage';
 import Navbar from './components/navbar';
 import Footer from './components/footer';
-import './front.css';
 
 function Landing() {
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import '../front.css';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router-dom';
 import api from '../../../services/apiServices';
@@ -65,7 +64,7 @@ const Navbar = () => {
               </Link>
             ) : (
               <>
-                <Link to="/login" className="all_links ml-5 mr-5 dashbtn px-5 bg-blue-600">
+                <Link to="/login" className="all_links ml-5 mr-5 dashbtn bg-blue-600">
                   <li className={location.pathname === '/login' ? 'active' : ''}>Login</li>
                 </Link>
               </>

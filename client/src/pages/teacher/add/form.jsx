@@ -7,6 +7,7 @@ import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setTeacherFormData } from '../../../helpers/examination/examSlice.jsx';
 import GenderSelect from '../../students/components/genderSelect.jsx';
+import Roles from '../components/roles.jsx';
 
 
 const AddForm = ({ fetchData }) => {
@@ -47,6 +48,7 @@ const AddForm = ({ fetchData }) => {
             email: '',
             address: '',
             gender: '',
+            role: '',
           }));
           dispatch(setIsEditMode(false));
           dispatch(setEditItemId(null));
@@ -66,7 +68,7 @@ const AddForm = ({ fetchData }) => {
   };
 
   return (
-    <form onSubmit={onSubmit} autoComplete='off'>
+    <form onSubmit={onSubmit} autoComplete='off' className='mt-5'>
       <div className='formGroup'>
         <FormInput
           label={'Full Name'}
@@ -108,6 +110,13 @@ const AddForm = ({ fetchData }) => {
           type={'text'}
           name={'gender'}
           value={teacherFormData.gender}
+          onChange={handleChange}
+        />
+        <Roles 
+          label={'Role'}
+          type={'text'}
+          name={'role'}
+          value={teacherFormData.role}
           onChange={handleChange}
         />
       </div>

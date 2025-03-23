@@ -5,7 +5,6 @@ import FormButton from '../../../components/input/formButton.jsx'
 import { toast } from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setFeesFormData } from '../../../helpers/examination/examSlice.jsx';
-import { Grid, GridColumn, GridRow } from 'semantic-ui-react';
 
 
 const FeesForm = ({ fetchData }) => {
@@ -67,40 +66,41 @@ const FeesForm = ({ fetchData }) => {
   return (
     <form onSubmit={onSubmit} autoComplete='off'>
       <div className='formGroup'>
-        <Grid>
-          <GridRow columns={3}>
-            <GridColumn>
-              <FormInput
-                label={'Fee Name'}
-                type={'text'}
-                name='name'
-                value={feesFormData.name}
-                onChange={handleChange}
-                placeholder={'Type here...'}
-              />
-            </GridColumn>
-            <GridColumn>
-              <FormInput
-                label={'Amount'}
-                type={'text'}
-                name='amount'
-                value={feesFormData.amount}
-                onChange={handleChange}
-                placeholder={'Type here...'}
-              />
-            </GridColumn>
-            <GridColumn>
-              <FormInput
-                label={'Description'}
-                type={'text'}
-                name='description'
-                value={feesFormData.description}
-                onChange={handleChange}
-                placeholder={'Type here...'}
-              />
-            </GridColumn>
-          </GridRow>
-        </Grid>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="col-span-1">
+            <FormInput
+              label={'Fee Name'}
+              type={'text'}
+              name='name'
+              value={feesFormData.name}
+              onChange={handleChange}
+              placeholder={'Type here...'}
+              className="border rounded p-2 w-full"
+            />
+          </div>
+          <div className="col-span-1">
+            <FormInput
+              label={'Amount'}
+              type={'text'}
+              name='amount'
+              value={feesFormData.amount}
+              onChange={handleChange}
+              placeholder={'Type here...'}
+              className="border rounded p-2 w-full"
+            />
+          </div>
+          <div className="col-span-1">
+            <FormInput
+              label={'Description'}
+              type={'text'}
+              name='description'
+              value={feesFormData.description}
+              onChange={handleChange}
+              placeholder={'Type here...'}
+              className="border rounded p-2 w-full"
+            />
+          </div>
+        </div>
       </div>
       <FormButton label={isEditMode ? 'Update Fees' : 'Add Fees'} id="tyepButton" />
     </form>

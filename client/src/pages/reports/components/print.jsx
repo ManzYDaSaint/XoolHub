@@ -31,19 +31,19 @@ const PrintComp = forwardRef(
       // Add School Name
       doc.setFontSize(16);
       doc.setFont("Arial", "bold");
-      doc.text(school.name, 105, 20, { align: "center" });
+      doc.text(school.name || "", 105, 20, { align: "center" });
 
       doc.setFontSize(12);
       doc.setFont("Arial", "bold");
-      doc.text(school.address, 105, 25, { align: "center" });
-      doc.text(school.contact, 105, 30, { align: "center" });
-      doc.text(school.email, 105, 35, { align: "center" });
+      doc.text(school.address || "", 105, 25, { align: "center" });
+      doc.text(school.contact || "", 105, 30, { align: "center" });
+      doc.text(school.email || "", 105, 35, { align: "center" });
 
       // Add Report Info
       doc.setFontSize(12);
       doc.setFont("Arial", "bold");
       doc.text(
-        `${student.year} ${student.term} ${student.exam} Report Card`,
+        `${student.year || ""} ${student.term || ""} ${student.exam || ""} Report Card`,
         105,
         45,
         { align: "center" }
@@ -52,18 +52,18 @@ const PrintComp = forwardRef(
       // Add Student Info
       doc.setFontSize(10);
       doc.setFont("Arial", "bold");
-      doc.text(`Name of Student`, 60, 55);
+      doc.text("Name of Student", 60, 55);
 
       doc.setFont("Arial", "normal");
-      doc.text(`${student.studentname}`, 60, 60);
+      doc.text(student.studentname || "", 60, 60);
 
       // Class Information
       doc.setFontSize(10);
       doc.setFont("Arial", "bold");
-      doc.text(`Class`, 130, 55);
+      doc.text("Class", 130, 55);
 
       doc.setFont("Arial", "normal");
-      doc.text(`${student.class}`, 130, 60);
+      doc.text(student.class || "", 130, 60);
 
       // Table Header and Rows
       const tableColumns = [
@@ -87,11 +87,11 @@ const PrintComp = forwardRef(
 
         return [
           index + 1,
-          item.subject,
-          item.score,
-          item.grade,
+          item.subject || "",
+          item.score || "",
+          item.grade || "",
           matchingRank ? `${matchingRank}/${counter}` : "N/A",
-          item.remarks,
+          item.remarks || "",
           teacherName || "N/A",
         ];
       });
@@ -115,39 +115,39 @@ const PrintComp = forwardRef(
       // Aggregate and Position
       const Y = doc.lastAutoTable.finalY + 5;
       doc.setFont("Arial", "bold");
-      doc.text(`Aggregate:`, 40, Y);
+      doc.text("Aggregate:", 40, Y);
       doc.setFont("Arial", "normal");
-      doc.text(`${student.aggregate}`, 60, Y);
+      doc.text(`${student.aggregate || ""}`, 60, Y);
 
       doc.setFont("Arial", "bold");
-      doc.text(`Position:`, 120, Y);
+      doc.text("Position:", 120, Y);
       doc.setFont("Arial", "normal");
-      doc.text(`${rank} Out Of ${counter}`, 137, Y);
+      doc.text(`${rank || ""} Out Of ${counter || ""}`, 137, Y);
 
       // Add Class Teacher(s) Remarks
       doc.setFont("Arial", "bold");
-      doc.text(`Teacher's Remarks:`, 20, Y + 10);
+      doc.text("Teacher's Remarks:", 20, Y + 10);
       doc.setFont("Arial", "normal");
-      doc.text(`${remarks}`, 55, Y + 10);
+      doc.text(`${remarks || ""}`, 55, Y + 10);
 
       // Add Class Teacher(s) Remarks
       const X = doc.lastAutoTable.finalY + 20;
       const teachers = ct.map((teacher) => teacher.name).join(", ");
       doc.setFont("Arial", "bold");
-      doc.text(`Class Teacher(s):`, 20, X);
+      doc.text("Class Teacher(s):", 20, X);
       doc.setFont("Arial", "normal");
-      doc.text(`${teachers}`, 50, X);
+      doc.text(`${teachers || ""}`, 50, X);
 
       // Add Footer
       const finalY = doc.lastAutoTable.finalY + 25;
       doc.setFont("Arial", "bold");
-      doc.text(`Head Teacher Signature:`, 20, finalY);
+      doc.text("Head Teacher Signature:", 20, finalY);
 
-      //Grading System MSCE
+      // Grading System MSCE
       const Grade = doc.lastAutoTable.finalY + 35;
       doc.setFontSize(10);
       doc.setFont("Arial", "bold");
-      doc.text(`MSCE GRADING SYSTEM`, 15, Grade);
+      doc.text("MSCE GRADING SYSTEM", 15, Grade);
 
       doc.setFont("Arial", "normal");
       const gradesRow = grade.map((item) => `${item.roof} - ${item.floor}`);
@@ -198,7 +198,7 @@ const PrintComp = forwardRef(
       const JGrade = doc.lastAutoTable.finalY + 10;
       doc.setFontSize(10);
       doc.setFont("Arial", "bold");
-      doc.text(`JCE GRADING SYSTEM`, 15, JGrade);
+      doc.text("JCE GRADING SYSTEM", 15, JGrade);
 
       doc.setFont("Arial", "normal");
       const JRow = Jgrade.map((item) => `${item.roof} - ${item.floor}`);
@@ -247,10 +247,10 @@ const PrintComp = forwardRef(
 
       doc.setFont("Arial", "italic");
       const slogan = doc.lastAutoTable.finalY + 10;
-      doc.text(`"${school.slogan}"`, 105, slogan, { align: "center" });
+      doc.text(`"${school.slogan || ""}"`, 105, slogan, { align: "center" });
 
       // Save or Preview PDF
-      doc.save(`${student.studentname}.pdf`);
+      doc.save(`${student.studentname || "report"}.pdf`);
     };
 
     // Expose the generatePdf function to the parent via ref

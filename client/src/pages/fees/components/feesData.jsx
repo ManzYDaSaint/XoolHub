@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react'
 import FeesForm from './feesForm.jsx'
 import FeesTable from './feesTable.jsx'
-import { Icon } from 'semantic-ui-react'
 import FormButton from '../../../components/input/formButton.jsx'
 import api from '../../../services/apiServices.jsx'
 import { useDispatch } from 'react-redux';
 import { setIsEditMode, setEditItemId, setFeesFormData } from '../../../helpers/examination/examSlice.jsx';
 import { toast } from 'react-hot-toast';
+import { Pencil, Plus, Trash } from 'lucide-react'
 
 const FeesData = () => {
     const dispatch = useDispatch();
@@ -37,8 +37,8 @@ const FeesData = () => {
         description: item.description,
         actions: (
             <div>
-            <button onClick={() => handleEdit(item.id)} className='action_icon'><Icon name='pencil' className='action_edit' /></button>
-            <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+            <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil className='action_edit' /></button>
+            <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash className='action_delete' /></button>
             </div>
         ),
         }));
@@ -83,7 +83,7 @@ const FeesData = () => {
         <div className="div" style={{ display: showFees ? 'none' : 'block' }}>
             <button type="button" onClick={handleFeesOpen} 
             class="add__rows__btn">
-            <Icon name='plus' className='plus' />
+            <Plus size={15} className='plus' />
             Add
             </button>
         </div>
@@ -95,9 +95,7 @@ const FeesData = () => {
               onClick={handleFeesClose}
             />
         </div>
-        <table className="custom__table table-hover mt-3 w-100" id="fees__table">
             <FeesTable setShowFees={setShowFees} feesData={feesData} fetchData={fetchData} />
-        </table>
     </>
   )
 }

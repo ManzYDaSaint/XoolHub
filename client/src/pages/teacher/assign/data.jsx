@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Icon } from 'semantic-ui-react'
 import FormButton from '../../../components/input/formButton.jsx'
 import api from '../../../services/apiServices.jsx'
 import { toast } from 'react-hot-toast';
 import AssignForm from './form.jsx';
 import AssignTable from './table.jsx';
+import { Plus, Trash } from 'lucide-react';
 
 const AssignData = () => {
   const [assignTeacherData, setAssignTeacherData] = useState([]);
@@ -34,7 +34,7 @@ const fetchData = async () => {
       subject: item.subject,
       actions: (
           <div>
-          <button onClick={() => handleDelete(item.id)} className='action_icon'><Icon name='trash alternate' className='action_delete' /></button>
+          <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash size={15} className='action_delete' /></button>
           </div>
       ),
       }));
@@ -63,10 +63,10 @@ useEffect(() => {
   };
   return (
     <div>
-        <div className="div" style={{ display: showAssign ? 'none' : 'block' }}>
+        <div className="div pt-5" style={{ display: showAssign ? 'none' : 'block' }}>
             <button type="button" onClick={handleAssignOpen} 
                 class="add__rows__btn">
-                <Icon name='plus' className='plus' />
+                <Plus size={15} className='plus' />
                 Add
             </button>
             </div>

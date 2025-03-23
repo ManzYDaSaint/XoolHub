@@ -50,7 +50,7 @@ const ClassTForm = ({ fetchData }) => {
   };
 
   return (
-    <form onSubmit={onSubmit} autoComplete='off'>
+    <form onSubmit={onSubmit} autoComplete='off' className='mt-5'>
       <div className='formGroup'>
         <TeacherSelectInput 
           label={'Teacher'}

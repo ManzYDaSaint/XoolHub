@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Grid, GridColumn, GridRow } from "semantic-ui-react";
 import FormInput from "../../../components/input/formInput";
 import FormButton from "../../../components/input/formButton";
 import api from "../../../services/apiServices";
@@ -92,113 +91,107 @@ const Profile = () => {
     <div className="personalContainer">
       <LogOutModal open={open} setOpen={setOpen} />
       <div className="profileUpdate">
-        <h5>Profile Information</h5>
-        <p>
+        <h5 className="text-lg font-semibold py-4">Profile Information</h5>
+        <p className="text-gray-600">
           Here you can view information about yourself. <br /> You can not
           change any of the information displayed here.
         </p>
         <form autoComplete="off" className="mt-5">
           {teacher && (
-            <Grid divided="vertically">
-              <GridRow columns={3}>
-                <GridColumn>
-                  <FormInput
-                    label={"Full Name:"}
-                    type={"text"}
-                    name={"name"}
-                    placeholder={"Type here.."}
-                    value={teacher.name}
-                    disabled
-                  />
-                </GridColumn>
-                <GridColumn>
-                  <FormInput
-                    label={"Contact:"}
-                    type={"text"}
-                    name={"address"}
-                    placeholder={"Type here.."}
-                    value={teacher.contact}
-                  />
-                </GridColumn>
-                <GridColumn>
-                  <FormInput
-                    label={"Gender:"}
-                    type={"text"}
-                    name={"address"}
-                    placeholder={"Type here.."}
-                    value={teacher.gender}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={2}>
-                <GridColumn>
-                  <FormInput
-                    label={"Email Address:"}
-                    type={"text"}
-                    name={"address"}
-                    placeholder={"Type here.."}
-                    value={teacher.email}
-                  />
-                </GridColumn>
-                <GridColumn>
-                  <FormInput
-                    label={"Address:"}
-                    type={"text"}
-                    placeholder={"Type here.."}
-                    value={teacher.address}
-                    disabled
-                  />
-                </GridColumn>
-              </GridRow>
-            </Grid>
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <FormInput
+                  label={"Full Name:"}
+                  type={"text"}
+                  name={"name"}
+                  placeholder={"Type here.."}
+                  value={teacher.name}
+                  disabled
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"Contact:"}
+                  type={"text"}
+                  name={"address"}
+                  placeholder={"Type here.."}
+                  value={teacher.contact}
+                />
+                <p className="text-sm">{teacher.contact}</p>
+              </div>
+              <div>
+                <FormInput
+                  label={"Gender:"}
+                  type={"text"}
+                  name={"address"}
+                  placeholder={"Type here.."}
+                  value={teacher.gender}
+                />
+                <p className="text-sm">{teacher.gender}</p>
+              </div>
+              <div className="col-span-2">
+                <FormInput
+                  label={"Email Address:"}
+                  type={"text"}
+                  name={"address"}
+                  placeholder={"Type here.."}
+                  value={teacher.email}
+                />
+                <p className="text-sm">{teacher.email}</p>
+              </div>
+              <div>
+                <FormInput
+                  label={"Address:"}
+                  type={"text"}
+                  placeholder={"Type here.."}
+                  value={teacher.address}
+                  disabled
+                />
+                <p className="text-sm">{teacher.address}</p>
+              </div>
+            </div>
           )}
         </form>
         <div className="cutter">
-          <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
+          <h1 className="text-xl mt-4 text-gray-800 xoolinfo py-5">
             Change Password
           </h1>
           <p>
             Update your password associated with your <br /> account.
           </p>
           <form onSubmit={onPasswordSubmit} autoComplete="off" className="mt-5">
-            <Grid divided="vertically">
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"Current Password"}
-                    type={"password"}
-                    name={"current"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={passwordFormData.current}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"New Password"}
-                    type={"password"}
-                    name={"newPassword"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={passwordFormData.newPassword}
-                  />
-                </GridColumn>
-              </GridRow>
-              <GridRow columns={1}>
-                <GridColumn>
-                  <FormInput
-                    label={"Confirm Password"}
-                    type={"password"}
-                    name={"confirm"}
-                    placeholder={"Type here.."}
-                    onChange={handlePasswordChange}
-                    value={passwordFormData.confirm}
-                  />
-                </GridColumn>
-              </GridRow>
-            </Grid>
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <FormInput
+                  label={"Current Password"}
+                  type={"password"}
+                  name={"current"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={passwordFormData.current}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"New Password"}
+                  type={"password"}
+                  name={"newPassword"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={passwordFormData.newPassword}
+                />
+              </div>
+              <div>
+                <FormInput
+                  label={"Confirm Password"}
+                  type={"password"}
+                  name={"confirm"}
+                  placeholder={"Type here.."}
+                  onChange={handlePasswordChange}
+                  value={passwordFormData.confirm}
+                />
+              </div>
+            </div>
             <FormButton
               label={processing ? "Saving..." : "Save"}
               id="tyepButton"
@@ -206,9 +199,9 @@ const Profile = () => {
           </form>
         </div>
         <div className="cutter">
-          <div className="sides">
+          <div className="flex justify-between">
             <div className="left">
-              <h1 className="text-xl mt-4 text-gray-800 xoolinfo">
+              <h1 className="text-xl mt-4 text-gray-800 xoolinfo py-5">
                 Log out your session
               </h1>
               <p>

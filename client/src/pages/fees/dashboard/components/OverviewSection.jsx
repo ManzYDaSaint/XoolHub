@@ -15,7 +15,7 @@ const OverviewSection = () => {
 
   const fethCount = async () => {
     try {
-      const res = await api.sumPay();
+      const res = await api.sumtPay();
       const data = res.data.sum;
       setSum(data.count);
     } catch (error) {
@@ -29,7 +29,7 @@ const OverviewSection = () => {
 
   const fetchSumMonth = async () => {
     try {
-      const res = await api.sumPaymentMonth();
+      const res = await api.sumtPaymentMonth();
       const data = res.data.sum;
       setPayMonth(data.count);
     } catch (error) {
@@ -43,7 +43,7 @@ const OverviewSection = () => {
 
   const fetchCount = async () => {
     try {
-      const res = await api.countStudent();
+      const res = await api.counttStudent();
       const data = res.data.counter;
       setCount(data.count);
     } catch (error) {
@@ -57,11 +57,11 @@ const OverviewSection = () => {
 
   const fetchTuition = async () => {
     try {
-      const res = await api.getTuition();
-      const data = res.data.tuition;
+      const res = await api.gettTuition();
+      const data = res.data.tuition || { amount: 0 };
       setTuition(data.amount);
     } catch (error) {
-      console.error("Error fetching student count:", error);
+      console.error("Error fetching tuition:", error);
     }
   };
 
@@ -71,7 +71,7 @@ const OverviewSection = () => {
 
   const fetchOutstand = async () => {
     try {
-      const res = await api.getOutstanding();
+      const res = await api.gettOutstanding();
       const data = res.data.outstand;
       setOut(data.count);
     } catch (error) {
