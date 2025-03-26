@@ -27,16 +27,6 @@ const Notifications = () => {
           <span className="text-gray-400 text-xs ml-6 pt-1">1 day ago</span>
         </li>
       </ul>
-      {/* <h4 className="text-md font-semibold mb-2">Upcoming Payrolls</h4>
-      <ul className="space-y-2 text-sm">
-        <li className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Calendar className="w-4 h-4 text-green-500" />
-            <span>Payroll processing for March</span>
-          </div>
-          <span className="text-gray-400 text-xs">in 3 days</span>
-        </li>
-      </ul> */}
     </Card>
   );
 };

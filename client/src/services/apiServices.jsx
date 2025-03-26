@@ -377,8 +377,35 @@ const getFeedbackRating = () => axios.get(API + '/get-feedback-rating');
 
 
 
+// --------- EXPENSE AXIOS -----------
+const insertExpense = (data) => axios.post(API + '/add-expense', data);
+const getExpense = () => axios.get(API + '/get-expense');
+const editExpense = (id) => axios.get(API + '/edit-expense/' + id);
+const updateExpense = (id, data) => axios.put(API + '/update-expense/' + id, data);
+const deleteExpense = (id) => axios.delete(API + '/delete-expense/' + id);
+const sumExpense = () => axios.get(API + '/sum-expense');
+const countExpense = () => axios.get(API + '/count-expense');
+const avgExpense = () => axios.get(API + '/avg-expense');
+// --------- EXPENSE AXIOS -----------
+
+
+
+
 // eslint-disable-next-line
 export default {
+  // ------ EXPENSE EXPORT -------
+  insertExpense,
+  getExpense,
+  editExpense,
+  updateExpense,
+  deleteExpense,
+  sumExpense,
+  countExpense,
+  avgExpense,
+  // ------ EXPENSE EXPORT -------
+
+
+
   // ------ SCHOOL EXPORT -------
   countXuls,
   countAllTeacher,

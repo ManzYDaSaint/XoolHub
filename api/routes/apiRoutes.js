@@ -185,6 +185,14 @@ const {
     gettPays,
     gettFees,
     gettStudents,
+    insertExpense,
+    getExpenses,
+    editExpenses,
+    updateExpenses,
+    deleteExpenses,
+    sumExpenses,
+    countExpenses,
+    AvgMonthly,
 } = require('../controller/apiController.js');
 
 
@@ -585,6 +593,20 @@ router.route('/insert-feedback').post(insertFeedback);
 router.route('/get-feedback').get(getFeedbacko);
 router.route('/get-feedback-rating').get(getFeedbackRating);
 // ------- FEEDBACK ROUTES -----------
+
+
+
+
+// ------- EXPENSE ROUTES -----------
+router.route('/add-expense').post(insertExpense);
+router.route('/get-expense').get(getExpenses);
+router.route('/edit-expense/:id').get(editExpenses);
+router.route('/update-expense/:id').put(updateExpenses);
+router.route('/delete-expense/:id').delete(deleteExpenses);
+router.route('/sum-expense').get(sumExpenses);
+router.route('/count-expense').get(countExpenses);
+router.route('/avg-expense').get(AvgMonthly);
+// ------- EXPENSE ROUTES -----------
 
 
 

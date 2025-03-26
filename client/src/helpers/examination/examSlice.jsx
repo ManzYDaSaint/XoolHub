@@ -67,6 +67,12 @@ const ExamSlice = createSlice({
       denom: '',
       className: '',
     },
+    expenseFormData: {
+      date: '',
+      description: '',
+      category: '',
+      amount: '',
+    },
     contactData: {
       name: '',
       email: '',
@@ -206,6 +212,9 @@ const ExamSlice = createSlice({
     setClassFormData: (state, action) => {
       state.classFormData = action.payload;
     },
+    setExpenseFormData: (state, action) => {
+      state.expenseFormData = action.payload;
+    },
     setContactData: (state, action) => {
       state.contactData = action.payload;
     },
@@ -285,6 +294,7 @@ export const {
   setLoginData, 
   setYearFormData, 
   setClassFormData,
+  setExpenseFormData,
   setTermFormData,
   setGradeFormData,
   setJCEFormData,

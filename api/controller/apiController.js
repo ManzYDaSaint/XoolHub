@@ -211,6 +211,14 @@ const {
     updateAdmin,
     addContacts,
     OTPVerification,
+    addExpense,
+    updateExpense,
+    getExpense,
+    deleteExpense,
+    editExpense,
+    sumExpense,
+    countExpense,
+    monthlyAverage,
 } = require('../model/apiModel.js');
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
@@ -3602,7 +3610,6 @@ const addPay = async (req, res) => {
                 success: false,
                 message: "Please fill up all the fields"
             });
-
         }
         else if(isNaN(paid)) {
             return res.json({
@@ -6639,8 +6646,244 @@ const getFeedbacko = async (req, res) => {
 
 
 
+// ----------------------- EXPENSE CONTROLLER -----------------------
+const insertExpense = async (req, res) => {
+    const { date, description, category, amount } = req.body;
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    try {
+        if(!date || !description || !category || !amount) {
+            return res.json({
+                success: false,
+                message: 'Please fill in the blank fields',
+            });
+        }
+
+        const add = await addExpense(sid, date, description, category, amount);
+        if(add) {
+            return res.json({
+                success: true,
+                message: 'Expense submitted successfully, waiting for approval',
+            });
+        }
+        else {
+            return res.json({
+                success: false,
+                message: 'Failed to submit expense',
+            });
+        }
+    } catch (error) {
+        return res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+
+const getExpenses = async(req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    try {
+        const expense = await getExpense(sid);
+        if(expense) {
+            res.json({
+                success: true,
+                expense,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed fetching expense'
+            });
+        }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
+}
+
+const sumExpenses = async(req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    try {
+        const sum = await sumExpense(sid);
+        if(sum) {
+            res.json({
+                success: true,
+                sum,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed fetching expense'
+            });
+        }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
+}
+
+const countExpenses = async(req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    try {
+        const count = await countExpense(sid);
+        if(count) {
+            res.json({
+                success: true,
+                count,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed fetching expense'
+            });
+        }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
+}
+
+const AvgMonthly = async(req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    try {
+        const avg = await monthlyAverage(sid);
+        if(avg) {
+            res.json({
+                success: true,
+                avg,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed fetching expense'
+            });
+        }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
+}
+
+const deleteExpenses = async(req, res) => {
+    const { id } = req.params;
+
+    try {
+        const del = await deleteExpense(id);
+        if(del) {
+            res.json({
+                success: true,
+                message: 'Expense deleted successfully'
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Deletion failed'
+            });
+        }
+    }
+    catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const editExpenses = async(req, res) => {
+    const { id } = req.params;
+    try {
+        const edit = await editExpense(id);
+        if(edit) {
+            res.json({ 
+                success: true,
+                edit,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Retrieving expense data failed..",
+            });
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+
+const updateExpenses = async(req, res) => {
+    const { id } = req.params;
+    const { date, description, category, amount } = req.body;
+
+    try {
+        const update = await updateExpense(id, date, description, category, amount);
+        if(update) {
+            res.json({
+                success: true,
+                message: "Expense updated successfully",
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: "Expense updating failed..",
+            });
+        }
+    } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+    }
+}
+// ----------------------- EXPENSE CONTROLLER -----------------------
+
+
+
 
 module.exports = { 
+    // ----- EXPENSE EXPORTS ------
+    insertExpense,
+    getExpenses,
+    editExpenses,
+    deleteExpenses,
+    updateExpenses,
+    sumExpenses,
+    countExpenses,
+    AvgMonthly,
+    // ----- EXPENSE EXPORTS ------
+
+
     // ----- SCHOOL EXPORTS ------
     countXuls,
     countOTeachers,

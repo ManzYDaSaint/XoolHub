@@ -56,7 +56,6 @@ const Sidebar = () => {
     Bursar: [
       { path: "/bursar", icon: <LayoutDashboard size={23} />, label: "Dashboard" },
       { path: "/expenses", icon: <CreditCard size={23} />, label: "Expenses" },
-      { path: "/report", icon: <File size={23} />, label: "Reports" },
     ],
     Hoa: [
       { path: "/dashboard", icon: <House size={23} />, label: "Dashboard" },

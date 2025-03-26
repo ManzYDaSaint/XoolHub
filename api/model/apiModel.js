@@ -2424,7 +2424,96 @@ const getFeedback = async () => {
 
 
 
+
+// // --------------------------------------- EXPENSES CRUD ------------------------------------------------
+
+const addExpense = async (sid, date, description, category, amount) => {
+  const query = `INSERT INTO expense (sid, date, description, category, amount) VALUES (?, ?, ?, ?, ?)`;
+  const values = [sid, date, description, category, amount];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res.affectedRows > 0;
+}
+
+const getExpense = async (sid) => {
+  const sql = 'SELECT * FROM expense WHERE sid = ? ORDER BY date DESC';
+  const value = [sid];
+  const [res] = await conn.query(sql, value); // Changed to async/await
+  return res;
+};
+
+const deleteExpense = async (id) => {
+  const query = `DELETE FROM expense WHERE id = ?`;
+  const value = [id];
+  const [res] = await conn.query(query, value); // Changed to async/await
+  return res; // Adjusted for MySQL
+};
+
+const editExpense = async (id) => {
+  const query = "SELECT * FROM expense WHERE id = ?";
+  const value = [id];
+  const [res] = await conn.query(query, value); // Changed to async/await
+  return res[0]; // Adjusted for MySQL
+};
+
+// Updating object
+const updateExpense = async (id, date, description, category, amount) => {
+  const query =
+    "UPDATE expense SET date = ?, description = ?, category = ?, amount = ? WHERE id = ?";
+  const values = [date, description, category, amount, id];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res; // Adjusted for MySQL
+};
+
+const sumExpense = async (sid) => {
+  const query =
+    "SELECT SUM(amount) AS sam FROM expense WHERE status = 'Approved' AND sid = ?";
+  const values = [sid];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res[0]; // Adjusted for MySQL
+};
+
+const countExpense = async (sid) => {
+  const query =
+    "SELECT COUNT(id) AS conta FROM expense WHERE status = 'Pending' AND sid = ?";
+  const values = [sid];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res[0]; // Adjusted for MySQL
+};
+
+const monthlyAverage = async(sid) => {
+  const query = `SELECT 
+    AVG(amount) AS average
+FROM expense
+WHERE sid = ?
+AND status = 'Approved'
+AND YEAR(date) = YEAR(CURDATE()) 
+AND MONTH(date) = MONTH(CURDATE());
+
+  `;
+  const value = [sid];
+  const [res] = await conn.query(query, value);
+  return res[0];
+}
+
+// // --------------------------------------- EXPENSES CRUD ------------------------------------------------
+
+
+
+
 module.exports = {
+//   // ----- EXPENSE SECTION -----
+addExpense,
+getExpense,
+editExpense,
+updateExpense,
+deleteExpense,
+sumExpense,
+countExpense,
+monthlyAverage,
+//   // ----- EXPENSE SECTION -----
+
+
+
 //   // ----- SCHOOLS SECTION -----
   countSchools,
   countAllTeachers,
