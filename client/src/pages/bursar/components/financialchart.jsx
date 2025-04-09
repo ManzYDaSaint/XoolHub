@@ -1,14 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts";
+import api from "../../../services/apiServices";
 
 const FinancialChart = () => {
-  const data = [
-    { name: "Jan", income: 40000, expenses: 30000 },
-    { name: "Feb", income: 50000, expenses: 35000 },
-    { name: "Mar", income: 70000, expenses: 45000 },
-    { name: "Apr", income: 60000, expenses: 50000 },
-    { name: "May", income: 75000, expenses: 55000 },
-  ];
+  const [data, setData] = useState([]);
+
+  const fetchChart = async() => {
+    const res = await api.LineChart();
+    const chartData = res.data.line || [];
+    setData(chartData);
+  }
+
+  useEffect(() => {
+    fetchChart();
+  }, []);
 
   const Card = ({ children, className = "" }) => (
     <div className={`bg-white p-4 shadow rounded-lg ${className}`}>{children}</div>

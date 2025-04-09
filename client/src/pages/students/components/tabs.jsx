@@ -23,7 +23,7 @@ const Tabs = () => {
     <div class="tab">
       <button class={selectedTab === 0 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(0)}>Profile <img src={Profile} alt="tabIcon" className='tabeIcon' /></button>
       {/* <button class={selectedTab === 1 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(1)}>Academic <img src={Academic} alt="tabIcon" className='tabeIcon' /></button> */}
-      <button class={selectedTab === 1 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(2)}>Financial <img src={Fees} alt="tabIcon" className='tabeIcon' /></button>
+      <button class={selectedTab === 2 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(2)}>Financial <img src={Fees} alt="tabIcon" className='tabeIcon' /></button>
       {/* <button class={selectedTab === 3 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(3)}>Miscellaneous <img src={Misc} alt="tabIcon" className='tabeIcon' /></button> */}
     </div>
     {selectedTab === 0 && <div id="Personal" class="tabcontent animate-bottom">

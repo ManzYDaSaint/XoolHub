@@ -1,16 +1,16 @@
 import React from "react";
 import AuthT from "../../hooks/tauth";
 import Sidebar from "../../components/input/sidebar";
-import Howa from "./components/hoa";
+import Events from "../administrator/events";
 
-const Hoa = () => {
+const HEvents = () => {
   return (
     <AuthT>
       <div className="dashboard__container">
         <div className="dashboard__content">
           <Sidebar />
           <div className="dashboard">
-            <Howa />
+            <Events />
           </div>
         </div>
       </div>
@@ -18,4 +18,4 @@ const Hoa = () => {
   )
 }
 
-export default Hoa
+export default HEvents;

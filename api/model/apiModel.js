@@ -2427,9 +2427,9 @@ const getFeedback = async () => {
 
 // // --------------------------------------- EXPENSES CRUD ------------------------------------------------
 
-const addExpense = async (sid, date, description, category, amount) => {
-  const query = `INSERT INTO expense (sid, date, description, category, amount) VALUES (?, ?, ?, ?, ?)`;
-  const values = [sid, date, description, category, amount];
+const addExpense = async (termid, sid, date, description, category, amount) => {
+  const query = `INSERT INTO expense (termid, sid, date, description, category, amount) VALUES (?, ?, ?, ?, ?, ?)`;
+  const values = [termid, sid, date, description, category, amount];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res.affectedRows > 0;
 }
@@ -2495,6 +2495,48 @@ AND MONTH(date) = MONTH(CURDATE());
   return res[0];
 }
 
+const getTransactions = async(sid) => {
+  const query = `SELECT 'Income' AS type, 'Fee Payment' AS fees, DATE(payment.created_at) AS date, payment.paid AS amount FROM payment 
+    INNER JOIN students ON students.id = payment.studentid 
+    INNER JOIN history ON history.studentid = students.id 
+    INNER JOIN class ON class.id = history.classid 
+    UNION ALL
+    SELECT 'Expense' AS type, category, date, amount FROM expense 
+    WHERE sid = ?
+    ORDER BY date DESC`;
+  const value = [sid];
+  const [res] = await conn.query(query, value);
+  return res;
+}
+
+const getLineChart = async(sid) => {
+  const query = `  SELECT 
+      m.name AS name,
+      COALESCE(p.income, 0) AS income,
+      COALESCE(e.expense, 0) AS expenses
+  FROM 
+      (SELECT DISTINCT MONTHNAME(created_at) AS name, DATE_FORMAT(created_at, '%Y-%m') AS month 
+       FROM payment 
+       UNION 
+       SELECT DISTINCT MONTHNAME(created_at), DATE_FORMAT(created_at, '%Y-%m') FROM expense) AS m
+  LEFT JOIN 
+      (SELECT MONTHNAME(created_at) AS name, DATE_FORMAT(created_at, '%Y-%m') AS month, SUM(paid) AS income 
+       FROM payment 
+       WHERE payment.sid = ?
+       GROUP BY name, month) AS p 
+      ON p.month = m.month
+  LEFT JOIN 
+      (SELECT MONTHNAME(created_at) AS name, DATE_FORMAT(created_at, '%Y-%m') AS month, SUM(amount) AS expense
+       FROM expense
+       WHERE expense.status = 'Approved'
+       GROUP BY name, month) AS e 
+      ON e.month = m.month
+  ORDER BY STR_TO_DATE(m.name, '%M')`;
+  const value = [sid];
+  const [res] = await conn.query(query, value);
+  return res;
+}
+
 // // --------------------------------------- EXPENSES CRUD ------------------------------------------------
 
 
@@ -2510,6 +2552,8 @@ deleteExpense,
 sumExpense,
 countExpense,
 monthlyAverage,
+getTransactions,
+getLineChart,
 //   // ----- EXPENSE SECTION -----
 
 

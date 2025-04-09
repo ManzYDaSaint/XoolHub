@@ -19,7 +19,6 @@ const fethBest = async () => {
   try {
     const res = await api.getBestStudents();
     const data = res.data.best || [];
-    console.log(data)
     setBest(data);
   } catch (error) {
     console.error("Error fetching student count:", error);
@@ -121,65 +120,64 @@ useEffect(() => {
       
 
   return (
-    <div className="student_section">
-      <div className="student_section_container">
-        <div className="box">
-          <div className="flexer">
-            <Card
-              icon={UsersRound}
-              title={count}
-              description={"Student Count"}
-            />
-            <div className="card_container">
-              <div className="student_count">
-                <div className="counter">
-                  <UsersRound size={30} className="card_icon" />
-                  <div className="card_detail">
-                    <h4>{male}</h4>
-                    <p>Male</p>
-                  </div>
+    <div className="p-6">
+    <div className="p-6 bg-white shadow-lg rounded-lg flex gap-4">
+      <div className="flex-1">
+        <div className="flex justify-between align-center gap-3">
+          <Card
+            icon={UsersRound}
+            title={count}
+            description={"Student Count"}
+          />
+          <div className="card_container">
+            <div className="flex justify-between align-center gap-3">
+              <div className="counter">
+                <UsersRound size={30} className="card_icon" />
+                <div className="card_detail">
+                  <h4>{male}</h4>
+                  <p>Male</p>
                 </div>
-                <div className="vr"></div>
-                <div className="counter">
-                  <Users size={30} className="card_icon" />
-                  <div className="card_detail">
-                    <h4>{female}</h4>
-                    <p>Female</p>
-                  </div>
+              </div>
+              <div className="vr"></div>
+              <div className="counter">
+                <Users size={30} className="card_icon" />
+                <div className="card_detail">
+                  <h4>{female}</h4>
+                  <p>Female</p>
                 </div>
               </div>
             </div>
           </div>
-          <div className="graph_card mt-5">
-            <h4 className="graph_title">Student Count</h4>
-            <StudentBarChart data={reshapedData} />
-          </div>
-          <div className="pie_card mt-5">
-            <h4 className="pie_title">Gender Distribution</h4>
-            <GenderPieChart />
-          </div>
         </div>
-        <div className="box">
-          <h4 className="top_performing_title">Top performance this term</h4>
-          <div className="top_performing">
-            {best.map((item, index) => (
-              <TopPerforming
-                key={index}
-                icon={GraduationCap}
-                score={item.agg}
-                student={item.student}
-                term={item.term}
-                exam={item.exam}
-                form={item.class}
+        <div className="graph_card mt-5">
+          <h4 className="graph_title">Student Count</h4>
+          <StudentBarChart data={reshapedData} />
+        </div>
+        <div className="pie_card mt-5">
+          <h4 className="pie_title">Gender Distribution</h4>
+          <GenderPieChart />
+        </div>
+      </div>
+      <div className="flex-1">
+        <h4 className="top_performing_title">Top performance this term</h4>
+        <div className="top_performing">
+          {best.map((item, index) => (
+            <TopPerforming
+              key={index}
+              icon={GraduationCap}
+              score={item.agg}
+              student={item.student}
+              term={item.term}
+              exam={item.exam}
+              form={item.class}
             />
-            ))}
-
-          </div>
-          <div className="worst_students">
-            <h4 className="worst_performing_title">
-              Worst performance this term
-            </h4>
-            <div className="top_performing">
+          ))}
+        </div>
+        <div className="worst_students">
+          <h4 className="worst_performing_title">
+            Worst performance this term
+          </h4>
+          <div className="top_performing">
             {worst.map((item, index) => (
               <TopPerforming
                 key={index}
@@ -191,11 +189,11 @@ useEffect(() => {
                 form={item.class}
               />
             ))}
-            </div>
           </div>
         </div>
       </div>
     </div>
+  </div>
   );
 };
 

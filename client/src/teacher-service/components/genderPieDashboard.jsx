@@ -56,7 +56,6 @@ const DashPieChart = ({ id }) => {
   const fetchData = async () => {
     try {
       const res = await api.getStudentByGender();
-      console.log(res)
       const formattedData = res.data.studentGender.map(item => ({
         name: item.studentGender.charAt(0).toUpperCase() + item.studentGender.slice(1),
         value: parseInt(item.count, 10)

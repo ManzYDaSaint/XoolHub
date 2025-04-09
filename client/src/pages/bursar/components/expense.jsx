@@ -350,11 +350,11 @@ const ExpensesPage = () => {
                       <p className="text-2xl font-semibold text-gray-900">
                         {/* {item.value} */}
                         <CountUp
-          start={0}
-          end={item.value}
-          duration={2.5}
-          separator=","
-        />
+                          start={0}
+                          end={item.value}
+                          duration={2.5}
+                          separator=","
+                        />
                       </p>
                       <p className="ml-2 text-sm font-medium text-green-600">
                         {item.trend}

@@ -6,6 +6,8 @@ import Store from './helpers/examination/examStore.jsx';
 import InactivityHandler from './hooks/activity.jsx';
 
 // Lazy load components
+const BStudent = lazy(() => import('./pages/bursar/student.jsx'));
+const BProfile = lazy(() => import('./pages/bursar/profile.jsx'));
 const Bursar = lazy(() => import('./pages/bursar/bursar.jsx'));
 const Expenses = lazy(() => import('./pages/bursar/expense.jsx'));
 const Hoa = lazy(() => import('./pages/hoa/hoa.jsx'));
@@ -16,10 +18,8 @@ const Forgot = lazy(() => import('./pages/password/forgot_password'));
 const Reset = lazy(() => import('./pages/password/reset_password'));
 const Register = lazy(() => import('./pages/register/register'));
 const AdminDashboard = lazy(() => import('./pages/administrator/dashboard.jsx'));
-const Report = lazy(() => import('./pages/administrator/report.jsx'));
+const HReports = lazy(() => import('./pages/hod/report.jsx'));
 const NotFound = lazy(() => import('./pages/nopage/nopage.jsx'));
-const Students = lazy(() => import('./pages/administrator/students.jsx'));
-const Fees = lazy(() => import('./pages/administrator/fees.jsx'));
 const Teachers = lazy(() => import('./pages/administrator/teachers.jsx'));
 const Config = lazy(() => import('./pages/teacher/config.jsx'));
 const TeacherProfile = lazy(() => import('./pages/teacher/teacherProfile.jsx'));
@@ -28,8 +28,7 @@ const StudentProfile = lazy(() => import('./pages/students/studentProfile.jsx'))
 const FeesSetting = lazy(() => import('./pages/fees/setting.jsx'));
 const Payment = lazy(() => import('./pages/fees/payment.jsx'));
 const TeacherDashboard = lazy(() => import('./teacher-service/dashboard.jsx'));
-const TStudent = lazy(() => import('./teacher-service/pages/student.jsx'));
-const Entry = lazy(() => import('./teacher-service/pages/entry.jsx'));
+const BEntry = lazy(() => import('./pages/bursar/entry.jsx'));
 const StudentDetail = lazy(() => import('./teacher-service/pages/studentDetail.jsx'));
 const AdminProfile = lazy(() => import('./pages/dashboard/adminProfile.jsx'));
 const StudentReport = lazy(() => import('./pages/reports/studentReport.jsx'));
@@ -50,7 +49,7 @@ const Contact = lazy(() => import('./pages/contacts/contact.jsx'));
 const FAQ = lazy(() => import('./pages/faq/faq.jsx'));
 const About = lazy(() => import('./pages/about/about.jsx'));
 const Invoicing = lazy(() => import('./pages/pricing/billing.jsx'));
-const Events = lazy(() => import('./pages/administrator/events.jsx'));
+const HEvents = lazy(() => import('./pages/hod/events.jsx'));
 const PromoteStudents = lazy(() => import('./pages/students/promotion/promotion.jsx'));
 const UserProfile = lazy(() => import('./teacher-service/pages/profile.jsx'));
 const Feedback = lazy(() => import('./pages/administrator/feedback.jsx'));
@@ -62,7 +61,15 @@ function App() {
   const router = createBrowserRouter([
     // Bursar Section
     {
-      path: '/bursar',
+      path: '/bursar/profile',
+      element: (
+        <InactivityHandler>
+            <Suspense fallback={<LoadingSpinner />}><BProfile /> </Suspense>
+          </InactivityHandler>
+        )
+      },
+    {
+      path: '/bursar/dashboard',
       element: (
         <InactivityHandler>
             <Suspense fallback={<LoadingSpinner />}><Bursar /> </Suspense>
@@ -70,17 +77,37 @@ function App() {
         )
       },
       {
-        path: '/expenses',
+        path: '/bursar/expenses',
         element: (
           <InactivityHandler>
               <Suspense fallback={<LoadingSpinner />}><Expenses /> </Suspense>
             </InactivityHandler>
           )
         },
+        {
+          path: '/entry/',
+          element: (
+              <InactivityHandler>
+                <Suspense fallback={<LoadingSpinner />}><BEntry /></Suspense>
+              </InactivityHandler>
+            )
+        },
+        {
+          path: '/tstudents',
+          element: (
+              <InactivityHandler>
+                <Suspense fallback={<LoadingSpinner />}><BStudent /></Suspense>
+              </InactivityHandler>
+            )
+        },
 
     // Bursar Section
+
+
+
+
     {
-      path: '/hoa',
+      path: '/hoa/dashboard',
       element: (
           <InactivityHandler>
             <Suspense fallback={<LoadingSpinner />}><Hoa /> </Suspense>
@@ -88,7 +115,7 @@ function App() {
         )
     },
     {
-      path: '/hod',
+      path: '/hod/dashboard',
       element: (
           <InactivityHandler>
             <Suspense fallback={<LoadingSpinner />}><Hod /> </Suspense>
@@ -143,23 +170,7 @@ function App() {
       path: '/report',
       element: (
           <InactivityHandler>
-          <Suspense fallback={<LoadingSpinner />}><Report /></Suspense>
-          </InactivityHandler>
-        )
-    },
-    {
-      path: '/student',
-      element: (
-          <InactivityHandler>
-          <Suspense fallback={<LoadingSpinner />}><Students /></Suspense>
-          </InactivityHandler>
-      )
-    },
-    {
-      path: '/fees',
-      element: (
-          <InactivityHandler>
-          <Suspense fallback={<LoadingSpinner />}><Fees /></Suspense>
+          <Suspense fallback={<LoadingSpinner />}><HReports /></Suspense>
           </InactivityHandler>
         )
     },
@@ -279,7 +290,7 @@ function App() {
       path: '/events',
       element: (
           <InactivityHandler>
-            <Suspense fallback={<LoadingSpinner />}><Events /></Suspense>
+            <Suspense fallback={<LoadingSpinner />}><HEvents /></Suspense>
           </InactivityHandler>
         )
     },
@@ -324,22 +335,6 @@ function App() {
       element: (
           <InactivityHandler>
             <Suspense fallback={<LoadingSpinner />}><TeacherDashboard /></Suspense>
-          </InactivityHandler>
-        )
-    },
-    {
-      path: '/tstudent/',
-      element: (
-          <InactivityHandler>
-            <Suspense fallback={<LoadingSpinner />}><TStudent /></Suspense>
-          </InactivityHandler>
-        )
-    },
-    {
-      path: '/entry/',
-      element: (
-          <InactivityHandler>
-            <Suspense fallback={<LoadingSpinner />}><Entry /></Suspense>
           </InactivityHandler>
         )
     },

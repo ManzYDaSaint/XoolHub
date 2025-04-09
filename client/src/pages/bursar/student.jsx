@@ -1,34 +1,41 @@
 import React from "react";
-import Sidebar from "../../components/input/sidebar.jsx";
-import Tabs from "./components/tabs.jsx";
-import AuthT from "../../hooks/tauth.jsx";
+import StudentData from "../../teacher-service/data/studentData";
 import { Toaster } from "react-hot-toast";
+import AuthT from "../../hooks/tauth";
+import Sidebar from "../../components/input/sidebar";
 
-const StudentProfile = () => {
+const BStudent = () => {
   return (
     <AuthT>
       <div className="dashboard__container">
-        <Toaster />
         <div className="dashboard__content">
           <Sidebar />
           <div className="dashboard">
             <div className="flex bg-gray-100 pb-3">
+              <Toaster />
               <div className="flex-1 flex flex-col">
-                <div className="mb-8 sm:items-center shadow p-4">
+                {/* Header */}
+                <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-4">
                   <div>
                     <h1
                       className="text-lg font-semibold"
                       style={{ fontFamily: "'Poppins', san-serif" }}
                     >
-                      Update Student Information
+                      Student Management
                     </h1>
                     <p className="mt-1 text-sm text-gray-500">
-                      Manage fees, edit and update student information.
+                      Manage and update student information
                     </p>
                   </div>
                   <div className="mt-4 sm:mt-0"></div>
                 </div>
-                <Tabs />
+
+                {/* Profile Information */}
+                <div className="p-6">
+                  <div className="p-6 bg-white shadow-lg rounded-lg">
+                    <StudentData />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -38,4 +45,4 @@ const StudentProfile = () => {
   );
 };
 
-export default StudentProfile;
+export default BStudent;

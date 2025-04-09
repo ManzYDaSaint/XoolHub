@@ -1,13 +1,10 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
-import EventPage from "../events/data.jsx";
-import AuthT from "../../hooks/tauth.jsx";
+import ProTabs from "../../../teacher-service/components/profileTas/protabs";
 
-const Events = () => {
-
+const Profile = () => {
   return (
-    <AuthT>
-      <div className="flex bg-gray-100 pb-3">
+    <div className="flex bg-gray-100 pb-3">
       <Toaster />
       <div className="flex-1 flex flex-col">
         {/* Header */}
@@ -17,21 +14,20 @@ const Events = () => {
               className="text-lg font-semibold"
               style={{ fontFamily: "'Poppins', san-serif" }}
             >
-              Events Management
+              Profile Management
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              Manage and update school events.
+              Manage and update profile information
             </p>
           </div>
           <div className="mt-4 sm:mt-0"></div>
         </div>
 
-        {/* Report Information */}
-        <EventPage />
+        {/* Profile Information */}
+        <ProTabs />
       </div>
     </div>
-    </AuthT>
   );
 };
 
-export default Events;
+export default Profile;

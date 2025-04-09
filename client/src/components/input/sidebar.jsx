@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
-import { DollarSign, File, GraduationCap, House, User, CalendarDays, LayoutDashboard, CreditCard } from "lucide-react";
+import { useLocation } from "react-router-dom";
+import { File, GraduationCap, House, User, CalendarDays, LayoutDashboard, CreditCard, FolderSearch } from "lucide-react";
 import api from "../../services/apiServices";
+import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -42,32 +43,35 @@ const Sidebar = () => {
   const navLinks = {
     admin: [
       { path: "/administrator", icon: <House size={23} />, label: "Dashboard" },
-      { path: "/students", icon: <GraduationCap size={23} />, label: "Students" },
       { path: "/teachers", icon: <User size={23} />, label: "Teachers" },
-      { path: "/fees", icon: <DollarSign size={23} />, label: "Fees" },
-      { path: "/report", icon: <File size={23} />, label: "Report" },
-      { path: "/events", icon: <CalendarDays size={23} />, label: "Events" },
+      { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
     ],
     Teacher: [
+      { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
       { path: "/dashboard", icon: <House size={23} />, label: "Dashboard" },
       { path: "/students", icon: <GraduationCap size={23} />, label: "Students" },
-      { path: "/report", icon: <File size={23} />, label: "Report" },
+      { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
     ],
     Bursar: [
-      { path: "/bursar", icon: <LayoutDashboard size={23} />, label: "Dashboard" },
-      { path: "/expenses", icon: <CreditCard size={23} />, label: "Expenses" },
+      { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
+      { path: "/bursar/dashboard", icon: <LayoutDashboard size={23} />, label: "Dashboard" },
+      { path: "/entry", icon: <File size={23} />, label: "Entry" },
+      { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
+      { path: "/bursar/expenses", icon: <CreditCard size={23} />, label: "Expenses" },
     ],
     Hoa: [
-      { path: "/dashboard", icon: <House size={23} />, label: "Dashboard" },
-      { path: "/students", icon: <GraduationCap size={23} />, label: "Students" },
-      { path: "/teachers", icon: <User size={23} />, label: "Teachers" },
-      { path: "/report", icon: <File size={23} />, label: "Report" },
+      { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
+      { path: "/hoa/dashboard", icon: <House size={23} />, label: "Dashboard" },
+      { path: "/entry", icon: <File size={23} />, label: "Entry" },
+      { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
     ],
     Hod: [
-      { path: "/dashboard", icon: <House size={23} />, label: "Dashboard" },
-      { path: "/students", icon: <GraduationCap size={23} />, label: "Students" },
-      { path: "/teachers", icon: <User size={23} />, label: "Teachers" },
-      { path: "/report", icon: <File size={23} />, label: "Report" },
+      { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
+      { path: "/hod/dashboard", icon: <House size={23} />, label: "Dashboard" },
+      { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
+      { path: "/entry", icon: <File size={23} />, label: "Entry" },
+      { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
+      { path: "/events", icon: <CalendarDays size={23} />, label: "Events" },
     ],
     student: [
       { path: "/dashboard", icon: <House size={23} />, label: "Dashboard" },

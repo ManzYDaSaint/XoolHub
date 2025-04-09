@@ -32,28 +32,28 @@ const Login = () => {
                 if(res.data.role === 'Bursar') {
                     // Redirecting to Bursar dashboard after successful login
                     setTimeout(() => {
-                        navigate('/bursar');
+                        navigate('/bursar/dashboard');
                     }, 2000);
                     return;
                 }
                 else if(res.data.role === 'Hoa') {
                     // Redirecting to Head of academics dashboard after successful login
                     setTimeout(() => {
-                        navigate('/hoa');
+                        navigate('/hoa/dashboard');
                     }, 2000);
                     return;
                 }
                 else if(res.data.role === 'Hod') {
                     // Redirecting to Head of department dashboard after successful login
                     setTimeout(() => {
-                        navigate('/hod');
+                        navigate('/hod/dashboard');
                     }, 2000);
                     return;
                 }
                 else {
                     // Redirecting to Teacher dashboard after successful login
                     setTimeout(() => {
-                        navigate('/tdashboard');
+                        navigate('/teacher/dashboard');
                     }, 2000);
                     return;
                 }

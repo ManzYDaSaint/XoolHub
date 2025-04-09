@@ -423,20 +423,6 @@
 .profilePicture {
     width: 2.7rem;
 }
-.settingContent {
-    padding: 1rem 3rem;
-    background-color: #fff;
-    background: linear-gradient(to right bottom, 
-  rgba(255,255,255,0.5),
-   rgba(255,255,255,0.5));
-   z-index: 10;
-   backdrop-filter: blur(1rem);
-   margin-top: 1rem;
-   border-radius: 0.5rem;
-   width: 100%;
-   display: block;
-   display: flex;
-}
 .pageContainer {
     padding: 1rem 3rem;
     background-color: #fff;

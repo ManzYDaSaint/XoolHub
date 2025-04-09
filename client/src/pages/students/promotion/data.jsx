@@ -6,7 +6,7 @@ import Table from "./table";
 import api from "../../../services/apiServices";
 import ToggleSwitch from "./toggle";
 import { InfinitySpin } from "react-loader-spinner";
-import { toast } from 'react-hot-toast'
+import { toast } from "react-hot-toast";
 
 const PromotionData = () => {
   const [students, setStudents] = useState([]);
@@ -19,40 +19,36 @@ const PromotionData = () => {
   const filterData = async (data) => {
     try {
       setIsLoading(true);
-      const res = await api.getStudentPromotion({data});
+      const res = await api.getStudentPromotion({ data });
       const info = res.data.info;
-      if(info.length === 0) {
+      if (info.length === 0) {
+        const students = info.map(() => ({
+          sr: "",
+          tick: "",
+          name: "No records found...",
+          exam: "",
+          agg: "",
+          remark: "",
+        }));
+        setStudents(students);
+      } else {
         const students = info.map((item, index) => ({
-        sr: "",
-        tick: '',
-        name: "No records found...",
-        exam: "",
-        agg: "",
-        remark: "",
-      }));
-      setStudents(students);
-    } else {
-      const students = info.map((item, index) => ({
-        sr: item.rank,
-        tick: (
-          <div>
-            <ToggleSwitch 
-              id={item.studentid}
-              onToggle={handleToggle}
-            />
-          </div>
-        ),
-        name: item.student,
-        exam: item.exam,
-        agg: item.agg,
-        remark: item.remarks,
-      }));
-      setStudents(students);
-    }
+          sr: item.rank,
+          tick: (
+            <div>
+              <ToggleSwitch id={item.studentid} onToggle={handleToggle} />
+            </div>
+          ),
+          name: item.student,
+          exam: item.exam,
+          agg: item.agg,
+          remark: item.remarks,
+        }));
+        setStudents(students);
+      }
     } catch (error) {
       console.error("Error fetching data:", error);
-    }
-    finally {
+    } finally {
       setIsLoading(false);
     }
   };
@@ -67,116 +63,157 @@ const PromotionData = () => {
     } // eslint-disable-next-line
   }, [currentClass]);
 
-
   const handleToggle = (studentId) => {
-    setStudentIDs((prevSelected) =>
-      prevSelected.includes(studentId)
-        ? prevSelected.filter((id) => id !== studentId) // Remove if already selected
-        : [...prevSelected, studentId] // Add if not selected
+    setStudentIDs(
+      (prevSelected) =>
+        prevSelected.includes(studentId)
+          ? prevSelected.filter((id) => id !== studentId) // Remove if already selected
+          : [...prevSelected, studentId] // Add if not selected
     );
   };
 
   const onSubmit = (e) => {
     e.preventDefault();
     handleSubmit(studentIDs, currentClass, nextClass, nextYear);
-  }
-  const handleSubmit = async (studentIDs, currentClass, nextClass, nextYear) => {
-    if (studentIDs.length === 0 || currentClass === "" || nextClass === "" || nextYear === "") {
+  };
+  const handleSubmit = async (
+    studentIDs,
+    currentClass,
+    nextClass,
+    nextYear
+  ) => {
+    if (
+      studentIDs.length === 0 ||
+      currentClass === "" ||
+      nextClass === "" ||
+      nextYear === ""
+    ) {
       toast.error("Please select all fields.");
       return;
     }
 
     try {
-      const res = await api.updatePro({studentIDs, currentClass, nextClass, nextYear});
-    if (res.data.success === true) {
-      toast.success("Students promoted successfully.");
-      setStudentIDs([]);
-      setCurrentClass("");
-      setNextClass("");
-      setNextYear("");
-    } else {
-      toast.error("An error occurred. Please try again.");
-    } 
+      const res = await api.updatePro({
+        studentIDs,
+        currentClass,
+        nextClass,
+        nextYear,
+      });
+      if (res.data.success === true) {
+        toast.success("Students promoted successfully.");
+        setStudentIDs([]);
+        setCurrentClass("");
+        setNextClass("");
+        setNextYear("");
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
     } catch (error) {
       error.response.data.errors.forEach((error) => {
         toast.error(error.message);
       });
     }
-  }
+  };
 
   return (
+    <div className="flex bg-gray-100 pb-3">
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="mb-8 sm:items-center shadow p-4">
+          <div>
+            <h1
+              className="text-lg font-semibold"
+              style={{ fontFamily: "'Poppins', san-serif" }}
+            >
+              Student Promotion
+            </h1>
+            <p className="mt-1 text-sm text-gray-500">
+              Promote students from one class to another.
+            </p>
+          </div>
+        </div>
     <form onSubmit={onSubmit}>
-    <div className="">
-      <div className="mb-6">
-        <div className="promotion-content">
-          <div className="flex flex-wrap gap-4 w-100">
-            <div className="current">
-              <h6
-                className="mb-2 text-gray-600 text-lg"
-                style={{ fontFamily: "'Poppins', sans-serif" }}
-              >
-                Promoted Class
-              </h6>
-              <div className="formGroup">
-                <ClassSelector
-                  label="Current Class:"
-                  onChange={(e) => {
-                    setCurrentClass(e.target.value);
-                  }}
-                  name="currentClass"
-                  value={currentClass}
-                />
-              </div>
-            </div>
-            <div class="w-px bg-gray-400"></div>
-            <div className="nextYear">
-              <h6
-                className="mb-2 text-gray-600 text-lg ml-3"
-                style={{ fontFamily: "'Poppins', sans-serif" }}
-              >
-                Target Academic Year and Class
-              </h6>
-              
-              <div className="formGroup ml-3">
-                <YearSelectInput
-                  label={"Next Academic Year"}
-                  onChange={(e) => {
-                    setNextYear(e.target.value);
-                  }}
-                  name={"nextYear"}
-                  value={nextYear}
-                />
-                <ClassSelector
-                  label={"Next Class:"}
-                  onChange={(e) => {
-                    setNextClass(e.target.value);
-                  }}
-                  name={"nextClass"}
-                  value={nextClass}
-                />
+      <div className="px-6">
+        <div className="p-6 bg-white shadow-lg rounded-lg">
+          <div className="mb-6">
+            <div className="promotion-content">
+              <div className="flex flex-wrap gap-4 w-100">
+                <div className="current">
+                  <h6
+                    className="mb-2 text-gray-600 text-lg"
+                    style={{ fontFamily: "'Poppins', sans-serif" }}
+                  >
+                    Promoted Class
+                  </h6>
+                  <div className="formGroup">
+                    <ClassSelector
+                      label="Current Class:"
+                      onChange={(e) => {
+                        setCurrentClass(e.target.value);
+                      }}
+                      name="currentClass"
+                      value={currentClass}
+                    />
+                  </div>
+                </div>
+                <div class="w-px bg-gray-400"></div>
+                <div className="nextYear">
+                  <h6
+                    className="mb-2 text-gray-600 text-lg ml-3"
+                    style={{ fontFamily: "'Poppins', sans-serif" }}
+                  >
+                    Target Academic Year and Class
+                  </h6>
+
+                  <div className="formGroup ml-3">
+                    <YearSelectInput
+                      label={"Next Academic Year"}
+                      onChange={(e) => {
+                        setNextYear(e.target.value);
+                      }}
+                      name={"nextYear"}
+                      value={nextYear}
+                    />
+                    <ClassSelector
+                      label={"Next Class:"}
+                      onChange={(e) => {
+                        setNextClass(e.target.value);
+                      }}
+                      name={"nextClass"}
+                      value={nextClass}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
+          <div className="promote-table">
+            {isLoading ? (
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <InfinitySpin width="150" color="#007BFE" />
+              </div>
+            ) : (
+              <Table data={students} />
+            )}
+          </div>
+          <FormButton
+            className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg"
+            label={"Promote Students"}
+            id={"tyepButton"}
+            type={"submit"}
+          />
         </div>
       </div>
-
-      <div className="promote-table">
-        {isLoading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                        <InfinitySpin width='150' color="#007BFE" />
-                      </div>
-        ) : (
-          <Table data={students} />
-        )}
-      </div>
-      <FormButton
-        className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg"
-        label={"Promote Students"}
-        id={"tyepButton"}
-        type={"submit"}
-      />
-    </div>
     </form>
+    </div>
+    </div>
   );
 };
 

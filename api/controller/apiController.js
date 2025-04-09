@@ -219,6 +219,8 @@ const {
     sumExpense,
     countExpense,
     monthlyAverage,
+    getTransactions,
+    getLineChart,
 } = require('../model/apiModel.js');
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
@@ -541,9 +543,9 @@ const signup = async (req, res) => {
 };
 
 const getSchool = async (req, res) => {
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
     try {
         const details = await editSchool(sid);
         if(details) {
@@ -673,7 +675,7 @@ const TeacherPasswordUpdates = async(req, res) => {
     const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherid = decoded.id;
+    const teacherid = decoded.teacherid;
 
     try {
         if(current === '' || newPassword === '' || confirm === '') {
@@ -995,7 +997,7 @@ const login = async(req, res) => {
             const token = jwt.sign(
                 { 
                     sid: teacher[0].sid,
-                    id: teacher[0].id,
+                    teacherid: teacher[0].id,
                     role: teacher[0].role
                 },
                 process.env.JWT_SECRET,
@@ -3240,9 +3242,9 @@ const deleteClassTeachers = async(req, res) => {
 
 const addStudent = async (req, res) => {
     const { studentNames, classid, yearid } = req.body.data;
-    const token = req.cookies.schoolToken;
+    const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const id = decoded.id;
+    const id = decoded.sid;
 
     try {
         // Validate the inputs
@@ -3298,9 +3300,9 @@ const addStudent = async (req, res) => {
 
 const getSingleStudents = async (req, res) => {
     const { id } = req.params;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.sid;
     try {
         const studentid = await getSingleStudent(sid, id);
         if(studentid) {
@@ -3325,9 +3327,9 @@ const getSingleStudents = async (req, res) => {
 
 
 const getStudents = async (req, res) => {
-    const token = req.cookies.schoolToken
+    const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.sid;
     try {
         const student = await getStudent(sid);
         if(student) {
@@ -3404,9 +3406,9 @@ const updateStudents = async(req, res) => {
 
 
 const StudentCounter = async(req, res) => { 
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
     try {
         const counter = await countStudents(sid);
 
@@ -3432,9 +3434,9 @@ const StudentCounter = async(req, res) => {
 
 
 const countMales = async(req, res) => { 
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
     try {
         const counter = await countMale(sid);
         if(counter) {
@@ -3459,9 +3461,10 @@ const countMales = async(req, res) => {
 
 
 const countFemales = async(req, res) => { 
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
+
     try {
         const counter = await countFemale(sid);
         if(counter) {
@@ -3485,9 +3488,9 @@ const countFemales = async(req, res) => {
 }
 
 const countGenderForClass = async(req, res) => { 
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
     try {
         const counter = await countGenderAndClass(sid);
         if(counter) {
@@ -3512,9 +3515,9 @@ const countGenderForClass = async(req, res) => {
 
 
 const genderByPercentage = async(req, res) => { 
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken; 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
     try {
         const counter = await genderPercentage(sid);
         if(counter) {
@@ -3572,9 +3575,9 @@ const getPays = async (req, res) => {
 
 const getPayees = async (req, res) => {
     const { id } = req.params;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.sid;
     try {
         const payee = await getPayee(sid, id);
         if(payee) {
@@ -4402,7 +4405,7 @@ const getClassesTeacher = async (req, res) => {
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherID = decoded.id;
+    const teacherID = decoded.teacherid;
     try {
         const ct = await getClassByTeacherID(sid, teacherID);
         if(ct) {
@@ -4429,7 +4432,7 @@ const getSubjectsTeacher = async (req, res) => {
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherID = decoded.id;
+    const teacherID = decoded.teacherid;
     try {
         const st = await getSubjectByTeacherID(sid, teacherID, id);
         if(st) {
@@ -4882,7 +4885,7 @@ const getClassStudents = async(req, res) => {
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherid = decoded.id;
+    const teacherid = decoded.teacherid;
     try {
         const cs = await getClassStudent(sid, teacherid)
         if(cs) {
@@ -4974,7 +4977,7 @@ const getSingleTeacher4Dashboard = async (req, res) => {
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const id = decoded.id;
+    const id = decoded.teacherid;
     try {
         const teacher = await getSingleTeacher(sid, id);
         if(teacher) {
@@ -5001,7 +5004,7 @@ const getClassNSubjects = async (req, res) => {
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const id = decoded.id;
+    const id = decoded.teacherid;
     try {
         const CnS = await getClassNSubject(sid, id);
         if(CnS) {
@@ -5028,7 +5031,7 @@ const dashboardClassTeachers = async (req, res) => {
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const id = decoded.id;
+    const id = decoded.teacherid;
     try {
         const dct = await dashboardClassTeacher(sid, id);
         if(dct) {
@@ -5062,7 +5065,7 @@ const getGenderPieTeacher = async (req, res) => {
     const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherid = decoded.id;
+    const teacherid = decoded.teacherid;
 
     try {
         const CnS = await getClassNSubject(sid, teacherid);
@@ -5099,7 +5102,7 @@ const getTopStudents = async (req, res) => {
     const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherid = decoded.id;
+    const teacherid = decoded.teacherid;
 
     try {
         const CnS = await getClassNSubject(sid, teacherid);
@@ -5139,7 +5142,7 @@ const getAverageScoreBySubject = async (req, res) => {
     const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherid = decoded.id;
+    const teacherid = decoded.teacherid;
 
     try {
         const CnS = await getClassNSubject(sid, teacherid);
@@ -5179,7 +5182,7 @@ const countStudentByTeacher = async (req, res) => {
     const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
-    const teacherid = decoded.id;
+    const teacherid = decoded.teacherid;
 
     try {
         const CnS = await getClassNSubject(sid, teacherid);
@@ -5226,9 +5229,9 @@ const countStudentByTeacher = async (req, res) => {
 
 const updatePromotions = async (req, res) => {
     const { studentIDs, currentClass, nextClass, nextYear } = req.body;
-    const token = req.cookies.schoolToken;
+    const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.sid;
 
     const status = 'Promoted';
 
@@ -5256,9 +5259,9 @@ const updatePromotions = async (req, res) => {
 
 const getReport = async (req, res) => {
     const { termid, typeid, classid} = req.body.data;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         if(!termid || !typeid || !classid) {
@@ -5360,9 +5363,9 @@ const getReport = async (req, res) => {
 
 const insertPromotion = async (req, res) => {
     const { termid, typeid, classid } = req.body.data;
-    const token = req.cookies.schoolToken;
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     if (!termid || !typeid || !classid) {
         return res.json({
@@ -5466,9 +5469,9 @@ const insertPromotion = async (req, res) => {
 
 const getStudentPromos = async (req, res) => {
     const { data } = req.body;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.sid;
     
     if(!data) {
         res.json({
@@ -5496,9 +5499,9 @@ const getStudentPromos = async (req, res) => {
 
 const getStudentReport = async (req, res) => {
     const { termid, typeid, classid, id} = req.body;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         if(!termid || !typeid || !classid || !id) {
@@ -5551,9 +5554,9 @@ const getStudentReport = async (req, res) => {
 
 const getCount = async (req, res) => {
     const { termid, typeid, classid} = req.body.data;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         if(!termid || !typeid || !classid) {
@@ -5585,9 +5588,9 @@ const getCount = async (req, res) => {
 
 const getCT4Report = async (req, res) => {
     const { classid} = req.body.data;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         if(!classid) {
@@ -5619,9 +5622,9 @@ const getCT4Report = async (req, res) => {
 
 const getSubjectPos = async (req, res) => {
     const { termid, typeid, classid, id } = req.body;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         if(!termid || !typeid || !classid) {
@@ -5653,9 +5656,9 @@ const getSubjectPos = async (req, res) => {
 
 const realPosition = async (req, res) => {
     const { termid, typeid, classid, id } = req.body;
-    const token = req.cookies.schoolToken;
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         if (!termid || !typeid || !classid) {
@@ -5696,9 +5699,9 @@ const realPosition = async (req, res) => {
 
 const getTByS = async (req, res) => {
     const { id } = req.body;
-    const token = req.cookies.schoolToken;
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
 
@@ -5735,9 +5738,9 @@ const getTByS = async (req, res) => {
 
 const getRemarksByClassID = async (req, res) => {
     const { id } = req.body;
-    const token = req.cookies.schoolToken;
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     const classid = Number(id);
     try {
@@ -5774,9 +5777,9 @@ const getRemarksByClassID = async (req, res) => {
 
 const deleteReports = async(req, res) => {
     const { yearid, termid, typeid, classid } = req.body;
-    const token = req.cookies.schoolToken;
+    const token = req.cookies.schoolToken || req.cokkies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         if(!yearid || !termid || !typeid || !classid) {
@@ -5834,9 +5837,10 @@ const countTermlyReports = async(req, res) => {
 }
 
 const getBestStudents = async(req, res) => {
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
+
     try {
         const best = await bestStudents(sid);
         if(best.length > 0) {
@@ -5860,9 +5864,10 @@ const getBestStudents = async(req, res) => {
 }
 
 const getWorstStudents = async(req, res) => {
-    const token = req.cookies.schoolToken
+   const token = req.cookies.schoolToken || req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
+
     try {
         const worst = await worstStudents(sid);
         if(worst) {
@@ -5887,9 +5892,9 @@ const getWorstStudents = async(req, res) => {
 
 const avSubjectbyClassID = async(req, res) => {
     const { classID } = req.body;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.schoolToken || req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.id || decoded.sid;
 
     try {
         const get = await avSubByClass(sid, classID);
@@ -5923,9 +5928,9 @@ const avSubjectbyClassID = async(req, res) => {
 
 const insertEvent = async (req, res) => {
     const { title, date, time, location, description } = req.body.data;
-    const token = req.cookies.schoolToken
+    const token = req.cookies.teacherToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.sid;
 
     try {
         if(!title || !date || !time || !location || !description) {
@@ -5962,9 +5967,9 @@ const insertEvent = async (req, res) => {
 }
 
 const getEvent = async(req, res) => {
-    const token = req.cookies.schoolToken
+    const token = req.cookies.teacherToken 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.id;
+    const sid = decoded.sid;
 
     try {
         const event = await getEvents(sid);
@@ -6653,6 +6658,14 @@ const insertExpense = async (req, res) => {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.sid;
 
+    const todayDate = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
     try {
         if(!date || !description || !category || !amount) {
             return res.json({
@@ -6661,7 +6674,17 @@ const insertExpense = async (req, res) => {
             });
         }
 
-        const add = await addExpense(sid, date, description, category, amount);
+        // Get the Term as of today
+    const term = await getTerm();
+    if (term && term.length > 0) {
+        const tdate = new Date(todayDate());       // Ensure todayDate is a Date object
+
+        for(const tr of term) {
+
+        if (tdate >= new Date(tr.start_date) && tdate <= new Date(tr.end_date)) {
+            const termid = tr.id;
+
+            const add = await addExpense(termid, sid, date, description, category, amount);
         if(add) {
             return res.json({
                 success: true,
@@ -6674,6 +6697,9 @@ const insertExpense = async (req, res) => {
                 message: 'Failed to submit expense',
             });
         }
+        }
+    }
+}
     } catch (error) {
         return res.json({
             message: "Internal Server Error. Please try again later.",
@@ -6791,6 +6817,59 @@ const AvgMonthly = async(req, res) => {
       }
 }
 
+const Transactions = async(req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    try {
+        const trans = await getTransactions(sid);
+        if(trans) {
+            res.json({
+                success: true,
+                trans,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed fetching transactions'
+            });
+        }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
+}
+
+const getChartLiner = async(req, res) => {
+    const token = req.cookies.teacherToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+
+    try {
+        const line = await getLineChart(sid);
+        if(line) {
+            res.json({
+                success: true,
+                line,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed fetching chart'
+            });
+        }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
+}
+
 const deleteExpenses = async(req, res) => {
     const { id } = req.params;
 
@@ -6881,6 +6960,8 @@ module.exports = {
     sumExpenses,
     countExpenses,
     AvgMonthly,
+    Transactions,
+    getChartLiner,
     // ----- EXPENSE EXPORTS ------
 
 

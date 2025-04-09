@@ -117,7 +117,6 @@ const Profile = () => {
                   placeholder={"Type here.."}
                   value={teacher.contact}
                 />
-                <p className="text-sm">{teacher.contact}</p>
               </div>
               <div>
                 <FormInput
@@ -127,7 +126,6 @@ const Profile = () => {
                   placeholder={"Type here.."}
                   value={teacher.gender}
                 />
-                <p className="text-sm">{teacher.gender}</p>
               </div>
               <div className="col-span-2">
                 <FormInput
@@ -137,7 +135,6 @@ const Profile = () => {
                   placeholder={"Type here.."}
                   value={teacher.email}
                 />
-                <p className="text-sm">{teacher.email}</p>
               </div>
               <div>
                 <FormInput
@@ -147,7 +144,6 @@ const Profile = () => {
                   value={teacher.address}
                   disabled
                 />
-                <p className="text-sm">{teacher.address}</p>
               </div>
             </div>
           )}

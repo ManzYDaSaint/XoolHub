@@ -193,6 +193,8 @@ const {
     sumExpenses,
     countExpenses,
     AvgMonthly,
+    Transactions,
+    getChartLiner,
 } = require('../controller/apiController.js');
 
 
@@ -606,6 +608,8 @@ router.route('/delete-expense/:id').delete(deleteExpenses);
 router.route('/sum-expense').get(sumExpenses);
 router.route('/count-expense').get(countExpenses);
 router.route('/avg-expense').get(AvgMonthly);
+router.route('/transactions').get(Transactions);
+router.route('/get-liner').get(getChartLiner);
 // ------- EXPENSE ROUTES -----------
 
 

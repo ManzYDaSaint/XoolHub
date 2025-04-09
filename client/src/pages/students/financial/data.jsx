@@ -1,21 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import FormButton from '../../../components/input/formButton'
 import api from '../../../services/apiServices'
-import { useDispatch } from 'react-redux';
-import { setIsEditMode, setEditItemId, setPayFormData } from '../../../helpers/examination/examSlice.jsx';
-import { toast } from 'react-hot-toast';
-import PfForm from './form.jsx'
 import PfTable from './table.jsx'
 import { useParams } from 'react-router-dom';
-import { Pencil, Plus, Trash } from 'lucide-react';
 
 const PfData = () => {
     const { id } = useParams();
-    const dispatch = useDispatch();
     const [payData, setPayData] = useState([]);
-    const [showPay, setShowPay] = useState(false);
-    const handlePayOpen = () => { setShowPay(true); };
-    const handlePayClose = () => { setShowPay(false); };
 
       // Fetch all the exams
   const fetchData = async () => {
@@ -23,7 +13,7 @@ const PfData = () => {
 
     const data = res.data.payee;
     if(data.length === 0) {
-        const payData = data.map((item, index) => ({
+        const payData = data.map(() => ({
         sr: "",
         date: "",
         fee: "No records found...",
@@ -31,7 +21,6 @@ const PfData = () => {
         amount: "",
         paid: "",
         balance: "",
-        actions: ""
         }));
         setPayData(payData);
     }
@@ -44,12 +33,6 @@ const PfData = () => {
         amount: item.amount,
         paid: item.paid,
         balance: item.balance,
-        actions: (
-            <div>
-            <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil size={15} className='action_edit' /></button>
-            <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash size={15} className='action_delete' /></button>
-            </div>
-        ),
         }));
         setPayData(payData);
     }
@@ -58,53 +41,10 @@ const PfData = () => {
   useEffect(() => {
       fetchData();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
-    // Get One exam
-    const handleEdit = async(id) => {
-        setShowPay(true);
-        const res = await api.editPay(id);
-        dispatch(setPayFormData({
-            paid: res.data.edit.paid,
-            amount: res.data.edit.amount,
-            term: res.data.edit.termid,
-        }));
-        dispatch(setIsEditMode(true));
-        dispatch(setEditItemId(res.data.edit.id));
-    };
       
-    //   Handle Delete
-    const handleDelete = async (id) => {
-        try {
-            const res = await api.deletePay(id);
-            if (res.data.success === true) {
-                fetchData();
-                toast.success(res.data.message);
-            } else {
-                toast.error(res.data.message);
-            }
-        } catch (error) {
-            toast.error('An error occurred. Please try again.');
-        }
-    };
-
   return (
     <>
-        <div className="div" style={{ display: showPay ? 'none' : 'block' }}>
-            <button type="button" onClick={handlePayOpen} 
-            class="add__rows__btn">
-            <Plus size={15} className='plus' />
-            Add
-            </button>
-        </div>
-        <div className="toggleDiv" style={{ display: showPay ? 'block' : 'none' }}>
-            <PfForm fetchData={fetchData} />
-            <FormButton 
-            label={'Close'}
-            id={'closeBtn'}
-            onClick={handlePayClose}
-            />
-        </div>
-            <PfTable setShowPay={setShowPay} payData={payData} />
+      <PfTable payData={payData} />
     </>
   )
 }

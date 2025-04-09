@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import Auth0 from "../../hooks/auth";
 import Sidebar from "../../components/input/sidebar";
 import Navbar from "../../components/input/top";
 import { useSelector } from "react-redux";
@@ -8,6 +7,7 @@ import api from "../../services/apiServices";
 import { useNavigate } from "react-router-dom";
 import FormButton from "../../components/input/formButton";
 import PrintComp from "./components/print";
+import AuthT from "../../hooks/tauth";
 
 const StudentReport = () => {
   const { id } = useParams();
@@ -251,7 +251,7 @@ const StudentReport = () => {
   }, [remarks, agg]);
 
   return (
-    <Auth0>
+    <AuthT>
       <div className="dashboard__container">
         <div className="dashboard__content">
           <Sidebar />
@@ -280,20 +280,20 @@ const StudentReport = () => {
                               <div className="right">
                                 <h4 class="detail">
                                   Student Name: &nbsp;{" "}
-                                  <span class="text-dark">
+                                  <span class="text-gray-500">
                                     {item.studentname}
                                   </span>
                                 </h4>
                                 <h4 class="detail">
                                   Class: &nbsp;{" "}
-                                  <span class="text-dark">{item.class}</span>
+                                  <span class="text-gray-500">{item.class}</span>
                                 </h4>
                                 <h4 class="detail">
                                   Class Teacher(s): &nbsp;
                                   {ct.map((it, index) => (
                                     <span
                                       key={it.id || index}
-                                      className="text-dark"
+                                      className="text-gray-500"
                                     >
                                       {Array.isArray(it.name)
                                         ? it.name.join(", ")
@@ -310,7 +310,7 @@ const StudentReport = () => {
                                 </h4>
                                 <h4 class="detail">
                                   Term: &nbsp;{" "}
-                                  <span class="text-dark">
+                                  <span class="text-gray-500">
                                     <p className="text-sm">{item.term}</p>
                                   </span>
                                 </h4>
@@ -318,19 +318,19 @@ const StudentReport = () => {
                               <div className="left">
                                 <h4 class="detail">
                                   Exam Type: &nbsp;{" "}
-                                  <span class="text-dark ">
+                                  <span class="text-gray-500 ">
                                     <p className="text-sm">{item.exam}</p>
                                   </span>
                                 </h4>
                                 <h4 class="detail">
                                   Year: &nbsp;{" "}
-                                  <span class="text-dark ">
+                                  <span class="text-gray-500 ">
                                     <p className="text-sm">{item.year}</p>
                                   </span>
                                 </h4>
                                 <h4 class="detail">
                                   Aggregate: &nbsp;{" "}
-                                  <span class="text-dark ">
+                                  <span class="text-gray-500 ">
                                     <p className="text-sm">{item.aggregate}</p>
                                   </span>
                                 </h4>
@@ -380,7 +380,7 @@ const StudentReport = () => {
                               )?.name;
 
                             return (
-                              <tr key={index} className="bg-gray-100 text-gray-700 uppercase text-sm text-left">
+                              <tr key={index} className="bg-gray-100 text-gray-700 text-sm text-left">
                                 <td className="border p-3">{index + 1}</td>
                                 <td className="border p-3">{item.subject}</td>
                                 <td className="border p-3">{item.score}</td>
@@ -426,7 +426,7 @@ const StudentReport = () => {
           </div>
         </div>
       </div>
-    </Auth0>
+    </AuthT>
   );
 };
 

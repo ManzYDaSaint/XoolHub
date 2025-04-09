@@ -1,13 +1,10 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
-import EventPage from "../events/data.jsx";
-import AuthT from "../../hooks/tauth.jsx";
+import AverageScore from "../../reports/dashboard/components/averagescore";
 
-const Events = () => {
-
+const Howa = () => {
   return (
-    <AuthT>
-      <div className="flex bg-gray-100 pb-3">
+    <div className="flex bg-gray-100 pb-3">
       <Toaster />
       <div className="flex-1 flex flex-col">
         {/* Header */}
@@ -17,21 +14,24 @@ const Events = () => {
               className="text-lg font-semibold"
               style={{ fontFamily: "'Poppins', san-serif" }}
             >
-              Events Management
+              Head Of Academics Dashboard
             </h1>
             <p className="mt-1 text-sm text-gray-500">
-              Manage and update school events.
+              Manage, edit and update your academics.
             </p>
           </div>
           <div className="mt-4 sm:mt-0"></div>
         </div>
 
-        {/* Report Information */}
-        <EventPage />
+        {/* Profile Information */}
+        <div className="px-6">
+          <div className="p-6 bg-white shadow-lg rounded-lg">
+            <AverageScore />
+          </div>
+        </div>
       </div>
     </div>
-    </AuthT>
   );
 };
 
-export default Events;
+export default Howa;

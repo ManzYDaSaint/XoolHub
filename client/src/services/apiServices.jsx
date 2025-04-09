@@ -386,6 +386,8 @@ const deleteExpense = (id) => axios.delete(API + '/delete-expense/' + id);
 const sumExpense = () => axios.get(API + '/sum-expense');
 const countExpense = () => axios.get(API + '/count-expense');
 const avgExpense = () => axios.get(API + '/avg-expense');
+const Transactions = () => axios.get(API + '/transactions');
+const LineChart = () => axios.get(API + '/get-liner');
 // --------- EXPENSE AXIOS -----------
 
 
@@ -402,6 +404,8 @@ export default {
   sumExpense,
   countExpense,
   avgExpense,
+  LineChart,
+  Transactions,
   // ------ EXPENSE EXPORT -------
 
 
