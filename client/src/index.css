@@ -949,7 +949,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 2rem;
-    /* align-items: center; */
 }
 
 .fees_deatils_container h4 {

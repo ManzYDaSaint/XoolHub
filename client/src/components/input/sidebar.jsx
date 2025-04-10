@@ -44,13 +44,12 @@ const Sidebar = () => {
     admin: [
       { path: "/administrator", icon: <House size={23} />, label: "Dashboard" },
       { path: "/teachers", icon: <User size={23} />, label: "Teachers" },
-      { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
+      { path: "/admin-report", icon: <FolderSearch size={23} />, label: "Report" },
     ],
     Teacher: [
       { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
-      { path: "/dashboard", icon: <House size={23} />, label: "Dashboard" },
-      { path: "/students", icon: <GraduationCap size={23} />, label: "Students" },
-      { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
+      { path: "/entry", icon: <File size={23} />, label: "Entry" },
+      { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
     ],
     Bursar: [
       { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
@@ -71,10 +70,6 @@ const Sidebar = () => {
       { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
       { path: "/entry", icon: <File size={23} />, label: "Entry" },
       { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
-      { path: "/events", icon: <CalendarDays size={23} />, label: "Events" },
-    ],
-    student: [
-      { path: "/dashboard", icon: <House size={23} />, label: "Dashboard" },
       { path: "/events", icon: <CalendarDays size={23} />, label: "Events" },
     ],
   };

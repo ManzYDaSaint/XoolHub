@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import Sidebar from "../../components/input/sidebar";
-import Navbar from "../../components/input/top";
 import { useSelector } from "react-redux";
 import api from "../../services/apiServices";
 import { useNavigate } from "react-router-dom";
-import FormButton from "../../components/input/formButton";
 import PrintComp from "./components/print";
-import AuthT from "../../hooks/tauth";
 
 const StudentReport = () => {
   const { id } = useParams();
@@ -94,7 +91,7 @@ const StudentReport = () => {
     try {
       const res = await api.getStudentReport({ ...data, id });
       if (res.data.success === false) {
-        navigate("/report");
+        navigate("/admin-report");
       }
       const info = res.data.studentInfo;
       setStudentInfo(info);
@@ -139,7 +136,7 @@ const StudentReport = () => {
   const countStudents = async (data) => {
     try {
       const res = await api.countResult({ data });
-      const respo = res.data.count[0].count;
+      const respo = res.data.count[0].count || 0;
       setCounter(respo);
     } catch (error) {
       console.error("Error fetching individual:", error);
@@ -251,23 +248,15 @@ const StudentReport = () => {
   }, [remarks, agg]);
 
   return (
-    <AuthT>
       <div className="dashboard__container">
         <div className="dashboard__content">
           <Sidebar />
           <div className="dashboard">
-            <Navbar />
             <div className="settingContainer">
               <div className="settingContent">
                 <div className="student_container">
                   <div className="splitter">
                     <div className="headerTitle">
-                      <FormButton
-                        label={"Back"}
-                        id={"tyepButton"}
-                        icon={"arrow left"}
-                        onClick={() => navigate("/report")}
-                      />
                       <h5>Student Academic Report</h5>
                     </div>
                   </div>
@@ -426,7 +415,6 @@ const StudentReport = () => {
           </div>
         </div>
       </div>
-    </AuthT>
   );
 };
 

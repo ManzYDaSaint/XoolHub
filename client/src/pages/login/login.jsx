@@ -53,7 +53,7 @@ const Login = () => {
                 else {
                     // Redirecting to Teacher dashboard after successful login
                     setTimeout(() => {
-                        navigate('/teacher/dashboard');
+                        navigate('/entry');
                     }, 2000);
                     return;
                 }

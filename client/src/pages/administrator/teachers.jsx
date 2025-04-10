@@ -26,7 +26,7 @@ const Teachers = () => {
               <Navbar />
               <div className="settingContainer">
                 <div className="settingContent">
-                  <div className="teacher_container">
+                  <div className="teacher_container shadow-lg rounded-lg p-5 bg-gray-100">
                     <div className="splitter">
                       <div className="headerTitle">
                         <h5>User Management</h5>

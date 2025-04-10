@@ -6,6 +6,7 @@ import Store from './helpers/examination/examStore.jsx';
 import InactivityHandler from './hooks/activity.jsx';
 
 // Lazy load components
+const Report = lazy(() => import('./pages/administrator/report.jsx'));
 const BStudent = lazy(() => import('./pages/bursar/student.jsx'));
 const BProfile = lazy(() => import('./pages/bursar/profile.jsx'));
 const Bursar = lazy(() => import('./pages/bursar/bursar.jsx'));
@@ -171,6 +172,14 @@ function App() {
       element: (
           <InactivityHandler>
           <Suspense fallback={<LoadingSpinner />}><HReports /></Suspense>
+          </InactivityHandler>
+        )
+    },
+    {
+      path: '/admin-report',
+      element: (
+          <InactivityHandler>
+          <Suspense fallback={<LoadingSpinner />}><Report /></Suspense>
           </InactivityHandler>
         )
     },

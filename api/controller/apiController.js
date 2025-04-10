@@ -6844,9 +6844,9 @@ const Transactions = async(req, res) => {
 }
 
 const getChartLiner = async(req, res) => {
-    const token = req.cookies.teacherToken;
+    const token = req.cookies.teacherToken || req.cookies.schoolToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.sid;
+    const sid = decoded.sid || decoded.id;
 
     try {
         const line = await getLineChart(sid);
