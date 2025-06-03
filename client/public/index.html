@@ -1,41 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/logo.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
 
-<head>
-  <meta charset="utf-8" />
-  <link rel="icon" href="%PUBLIC_URL%/logo.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="description"
-    content="A comprehensive multi-school information management system for efficient administration and communication." />
-  <meta name="keywords" content="school, management, information, system, multi-school" />
-  <meta name="author" content="XoolHub" />
+    <!-- SEO Meta -->
+    <meta name="description" content="XoolHub is a powerful multi-school information management system designed to streamline student data, classes, subjects, and scheduling." />
+    <meta name="keywords" content="XoolHub, school management system, multi-school, education software, student information system, class scheduling" />
+    <meta name="author" content="XoolHub" />
+    <meta name="application-name" content="XoolHub" />
 
-  <!-- Open Graph Tags -->
-  <meta property="og:title" content="Multi-School Information Management System" />
-  <meta property="og:description"
-    content="A comprehensive multi-school information management system for efficient administration and communication." />
-  <meta property="og:image" content="%PUBLIC_URL%/logo.png" />
-  <meta property="og:url" content="https://xoolhub.com" />
-  <meta property="og:type" content="website" />
+    <!-- Open Graph (Facebook + others) -->
+    <meta property="og:title" content="XoolHub – Multi-School Information Management System" />
+    <meta property="og:description" content="Manage student data, schedules, and communication across multiple schools with XoolHub." />
+    <meta property="og:image" content="%PUBLIC_URL%/logo.png" />
+    <meta property="og:url" content="https://xoolhub.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="XoolHub" />
 
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="XoolHub – Multi-School Information Management System" />
+    <meta name="twitter:description" content="A complete system for managing schools, students, classes, and more across multiple institutions." />
+    <meta name="twitter:image" content="%PUBLIC_URL%/logo.png" />
 
-  <!-- Google Fonts -->
+    <!-- Schema: Website -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "XoolHub",
+      "url": "https://xoolhub.com",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://xoolhub.com/search?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Passion+One:wght@400;700;900&family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
-    rel="stylesheet">
-  <!-- Google Fonts -->
+    <!-- Schema: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "XoolHub",
+      "url": "https://xoolhub.com",
+      "logo": "https://xoolhub.com/logo.png"
+    }
+    </script>
 
-  <title>Multi-School Information Management System</title>
-</head>
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
-<body>
-  <noscript>You need to enable JavaScript to run this app.</noscript>
-  <div id="root"></div>
-</body>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Passion+One:wght@400;700;900&family=Pacifico&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet" />
 
+    <title>XoolHub – Multi-School Information Management System</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+  </body>
 </html>

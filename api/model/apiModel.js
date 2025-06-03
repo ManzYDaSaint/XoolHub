@@ -2542,7 +2542,39 @@ const getLineChart = async(sid) => {
 
 
 
+// // --------------------------------------- WHATSAPP API ------------------------------------------------
+
+const getFeeBalance = async(phone) => {
+  const query = `SELECT balance, term.name AS term FROM payment
+    INNER JOIN students ON students.id = payment.studentid
+    INNER JOIN term ON term.id = payment.termid
+    WHERE students.contact = ?`;
+  const value = [phone];
+  const [res] = await conn.query(query, value);
+  return res[0];
+}
+
+const getStudentNameByContact = async(phone) => {
+  const query = `SELECT name FROM students WHERE contact = ?`;
+  const value = [phone];
+  const [res] = await conn.query(query, value);
+  return res[0];
+}
+
+
+// // --------------------------------------- WHATSAPP API ------------------------------------------------
+
+
+
+
 module.exports = {
+//   // ----- WHATSAPP API -----
+  getFeeBalance,
+  getStudentNameByContact,
+//   // ----- WHATSAPP API -----
+
+
+
 //   // ----- EXPENSE SECTION -----
 addExpense,
 getExpense,

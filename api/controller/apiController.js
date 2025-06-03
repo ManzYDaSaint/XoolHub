@@ -221,12 +221,15 @@ const {
     monthlyAverage,
     getTransactions,
     getLineChart,
+    getFeeBalance,
+    getStudentNameByContact,
 } = require('../model/apiModel.js');
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
 // Supabase Configuration
 const { createClient } = require('@supabase/supabase-js');
+const { sendParentNotification } = require('./waNotify.js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
@@ -922,6 +925,7 @@ const insertContacts = async(req, res) => {
 
 const login = async(req, res) => {
     const { schoolEmail, schoolPassword } = req.body;
+    await sendParentNotification('265993533315', 'This is a test whatsApp notification');
 
     try {
         if(!schoolEmail || !schoolPassword) {
@@ -966,7 +970,7 @@ const login = async(req, res) => {
                 // Set the token as an HTTP-only cookie
                 res.cookie('administratorToken', superToken, {
                     httpOnly: true,
-                    // secure: true,
+                    secure: true,
                     sameSite: 'Lax',
                     maxAge: 60 * 60 * 1000, // 1 hour
                 });
@@ -1007,7 +1011,7 @@ const login = async(req, res) => {
             // Set the token as an HTTP-only cookie
             res.cookie('teacherToken', token, {
                 httpOnly: true,
-                // secure: true,
+                secure: true,
                 sameSite: 'Lax',
                 maxAge: 60 * 60 * 1000, // 1 hour
             });
@@ -1074,7 +1078,7 @@ const login = async(req, res) => {
         // Set the token as an HTTP-only cookie
         res.cookie('schoolToken', token, {
             httpOnly: true,
-            // secure: true,
+            secure: true,
             sameSite: 'Lax',
             maxAge: 60 * 60 * 1000, // 1 hour
         });
@@ -6946,7 +6950,6 @@ const updateExpenses = async(req, res) => {
     }
 }
 // ----------------------- EXPENSE CONTROLLER -----------------------
-
 
 
 

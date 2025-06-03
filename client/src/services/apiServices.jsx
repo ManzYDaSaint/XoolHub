@@ -3,6 +3,7 @@ import axios from 'axios';
 axios.defaults.withCredentials = true;
 const API = 'http://localhost:5000/api';
 
+
 const countXuls = () => axios.get(API + '/count-schools');
 const countAllTeacher = () => axios.get(API + '/count-o-teachers');
 const countAllStudent = () => axios.get(API + '/count-o-students');
@@ -395,6 +396,12 @@ const LineChart = () => axios.get(API + '/get-liner');
 
 // eslint-disable-next-line
 export default {
+  apiFee,
+getWebhook,
+postWebhook,
+testNet,
+
+
   // ------ EXPENSE EXPORT -------
   insertExpense,
   getExpense,

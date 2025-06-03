@@ -3,6 +3,7 @@ const api = require('./routes/apiRoutes.js')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
+const whatsAppController = require('./controller/whatsAppController.js');
 
 const app = express();
 app.use(fileUpload());
@@ -31,6 +32,9 @@ app.get('/', (req, res) => {
 
 // All routes goes here
 app.use('/api/', api);
+
+// WhatsApp routes goes here
+app.use('/webhook', whatsAppController);
 
 app.use('*', (req, res, next) => {
   res.status(404).json({
