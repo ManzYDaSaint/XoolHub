@@ -67,7 +67,7 @@ const FeePayments = () => {
           <>
             {item.status === "Pending" ? (
               <>
-                <Timer size={16} className="iconLucide" color="orange" />{" "}
+                <Timer size={16} className="iconLucide" color="orange" />
                 Ongoing
               </>
             ) : item.status === "Complete" ? (
@@ -76,7 +76,7 @@ const FeePayments = () => {
                   size={15}
                   className="iconLucide"
                   color="green"
-                />{" "}
+                />
                 Complete
               </>
             ) : (
@@ -86,8 +86,18 @@ const FeePayments = () => {
         ),
         actions: (
           <div className="flex items-center gap-1 justify-center">
-            <button onClick={() => handlePayEdit(item.id)} className='action_icon'><FilePen size={18} className='action_edit' /></button>
-            <button onClick={() => handlePayDelete(item.id)} className='action_icon'><Trash2 size={18} className='action_delete' /></button>
+            <button
+              onClick={() => handlePayEdit(item.id)}
+              className="action_icon"
+            >
+              <FilePen size={18} className="action_edit" />
+            </button>
+            <button
+              onClick={() => handlePayDelete(item.id)}
+              className="action_icon"
+            >
+              <Trash2 size={18} className="action_delete" />
+            </button>
           </div>
         ),
       }));
@@ -168,33 +178,34 @@ const FeePayments = () => {
     }
   };
 
+  const handlePayEdit = async (id) => {
+    setIsModalOpen(true);
+    const res = await api.editPay(id);
+    dispatch(
+      setPayFormData({
+        paid: res.data.edit.paid,
+        term: res.data.edit.termid,
+        feeid: res.data.edit.feeid,
+      })
+    );
+    dispatch(setIsEditMode(true));
+    dispatch(setEditItemId(res.data.edit.id));
+  };
 
- const handlePayEdit = async(id) => {
-          setIsModalOpen(true);
-          const res = await api.editPay(id);
-          dispatch(setPayFormData({
-              paid: res.data.edit.paid,
-              term: res.data.edit.termid,
-              feeid: res.data.edit.feeid,
-          }));
-          dispatch(setIsEditMode(true));
-          dispatch(setEditItemId(res.data.edit.id));
-      };
-        
-      //   Handle Delete
-      const handlePayDelete = async (id) => {
-          try {
-              const res = await api.deletePay(id);
-              if (res.data.success === true) {
-                  fetchData();
-                  toast.success(res.data.message);
-              } else {
-                  toast.error(res.data.message);
-              }
-          } catch (error) {
-              toast.error('An error occurred. Please try again.');
-          }
-      };
+  //   Handle Delete
+  const handlePayDelete = async (id) => {
+    try {
+      const res = await api.deletePay(id);
+      if (res.data.success === true) {
+        fetchData();
+        toast.success(res.data.message);
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    }
+  };
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg">

@@ -110,7 +110,7 @@ const PfForm = ({ fetchData, setIsModalOpen }) => {
           onSuggestionSelected={handleSuggestionSelected}
           onChange={handleChange}
           name="student"
-          placeholder="Type here..."
+          placeholder="Type student name here..."
         />
       </div>
       <div className="formGroup mt-4">

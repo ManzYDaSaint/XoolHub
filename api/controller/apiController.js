@@ -223,6 +223,7 @@ const {
     getLineChart,
     getFeeBalance,
     getStudentNameByContact,
+    updateStatusExpense,
 } = require('../model/apiModel.js');
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
@@ -5932,9 +5933,9 @@ const avSubjectbyClassID = async(req, res) => {
 
 const insertEvent = async (req, res) => {
     const { title, date, time, location, description } = req.body.data;
-    const token = req.cookies.teacherToken
+    const token = req.cookies.schoolToken
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.sid;
+    const sid = decoded.id;
 
     try {
         if(!title || !date || !time || !location || !description) {
@@ -5971,9 +5972,9 @@ const insertEvent = async (req, res) => {
 }
 
 const getEvent = async(req, res) => {
-    const token = req.cookies.teacherToken 
+    const token = req.cookies.schoolToken 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const sid = decoded.sid;
+    const sid = decoded.id;
 
     try {
         const event = await getEvents(sid);
@@ -6740,6 +6741,77 @@ const getExpenses = async(req, res) => {
       }
 }
 
+const getAdminExpenses = async(req, res) => {
+    const token = req.cookies.schoolToken;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+
+    try {
+        const expense = await getExpense(sid);
+        if(expense) {
+            res.json({
+                success: true,
+                expense,
+            });
+        }
+        else {
+            res.json({
+                success: false,
+                message: 'Failed fetching expense'
+            });
+        }
+      } catch (error) {
+        res.json({
+            message: "Internal Server Error. Please try again later.",
+            error: error.message,
+        });
+      }
+}
+
+const updateStatusEx = async (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+
+    try {
+        // Validate input
+        if (!id || !status) {
+            return res.status(400).json({
+                success: false,
+                message: 'Missing required parameters: id, status',
+            });
+        }
+
+        // Update subscription status
+        const resultOne = await updateStatusExpense(id, status);
+        if (resultOne.affectedRows === 0) {
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to update expense status',
+            });
+        }
+
+        // Success response
+        if( status === 'Approved') {
+            return res.json({
+            success: true,
+            message: 'Expense has been approved successfully',
+        });
+        }
+        else {
+            return res.json({
+            success: true,
+            message: 'Expense has been unapproved successfully',
+        });
+        }
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Internal Server Error. Please try again later.',
+            error: error.message,
+        });
+    }
+};
+
 const sumExpenses = async(req, res) => {
     const token = req.cookies.teacherToken;
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -6957,6 +7029,8 @@ module.exports = {
     // ----- EXPENSE EXPORTS ------
     insertExpense,
     getExpenses,
+    getAdminExpenses,
+    updateStatusEx,
     editExpenses,
     deleteExpenses,
     updateExpenses,

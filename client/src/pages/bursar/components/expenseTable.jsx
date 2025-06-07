@@ -13,7 +13,6 @@ const XpenseTable = ({ Data }) => {
     { key: 'action', label: 'Action', width: '10%' }
   ];
 
-
   return (
     <div>
         <UniversalTable columns={Column} data={Data} />

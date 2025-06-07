@@ -1,12 +1,12 @@
 import React from "react";
 import { Toaster } from "react-hot-toast";
 import EventPage from "../events/data.jsx";
-import AuthT from "../../hooks/tauth.jsx";
+import Auth0 from "../../hooks/auth.jsx";
 
 const Events = () => {
 
   return (
-    <AuthT>
+    <Auth0>
       <div className="flex bg-gray-100 pb-3">
       <Toaster />
       <div className="flex-1 flex flex-col">
@@ -27,10 +27,10 @@ const Events = () => {
         </div>
 
         {/* Report Information */}
-        <EventPage />
+        {/* <EventPage /> */}
       </div>
     </div>
-    </AuthT>
+    </Auth0>
   );
 };
 

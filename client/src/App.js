@@ -4,6 +4,7 @@ import React, { Suspense, lazy } from 'react';
 import { Provider } from 'react-redux';
 import Store from './helpers/examination/examStore.jsx';
 import InactivityHandler from './hooks/activity.jsx';
+import Expense from './pages/administrator/expense.jsx';
 
 // Lazy load components
 const Report = lazy(() => import('./pages/administrator/report.jsx'));
@@ -156,6 +157,14 @@ function App() {
       element: (
           <InactivityHandler>
             <Suspense fallback={<LoadingSpinner />}><AdminDashboard /></Suspense>
+          </InactivityHandler>
+      )
+    },
+    {
+      path: '/expenses',
+      element: (
+          <InactivityHandler>
+            <Suspense fallback={<LoadingSpinner />}><Expense /></Suspense>
           </InactivityHandler>
       )
     },

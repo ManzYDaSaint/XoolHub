@@ -199,6 +199,8 @@ const {
     getWebhook,
     postWebhook,
     testnet,
+    getAdminExpenses,
+    updateStatusEx,
 } = require('../controller/apiController.js');
 
 
@@ -606,6 +608,8 @@ router.route('/get-feedback-rating').get(getFeedbackRating);
 // ------- EXPENSE ROUTES -----------
 router.route('/add-expense').post(insertExpense);
 router.route('/get-expense').get(getExpenses);
+router.route('/get-admin-expense').get(getAdminExpenses);
+router.route('/update-expense-status/:id').put(updateStatusEx);
 router.route('/edit-expense/:id').get(editExpenses);
 router.route('/update-expense/:id').put(updateExpenses);
 router.route('/delete-expense/:id').delete(deleteExpenses);

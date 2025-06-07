@@ -2441,6 +2441,13 @@ const getExpense = async (sid) => {
   return res;
 };
 
+const updateStatusExpense = async (id, status) => {
+  const sql = 'UPDATE expense SET status = ? WHERE id = ?';
+  const value = [status, id];
+  const [res] = await conn.query(sql, value); // Changed to async/await
+  return res;
+};
+
 const deleteExpense = async (id) => {
   const query = `DELETE FROM expense WHERE id = ?`;
   const value = [id];
@@ -2510,28 +2517,45 @@ const getTransactions = async(sid) => {
 }
 
 const getLineChart = async(sid) => {
-  const query = `  SELECT 
-      m.name AS name,
-      COALESCE(p.income, 0) AS income,
-      COALESCE(e.expense, 0) AS expenses
-  FROM 
-      (SELECT DISTINCT MONTHNAME(created_at) AS name, DATE_FORMAT(created_at, '%Y-%m') AS month 
-       FROM payment 
-       UNION 
-       SELECT DISTINCT MONTHNAME(created_at), DATE_FORMAT(created_at, '%Y-%m') FROM expense) AS m
-  LEFT JOIN 
-      (SELECT MONTHNAME(created_at) AS name, DATE_FORMAT(created_at, '%Y-%m') AS month, SUM(paid) AS income 
-       FROM payment 
-       WHERE payment.sid = ?
-       GROUP BY name, month) AS p 
-      ON p.month = m.month
-  LEFT JOIN 
-      (SELECT MONTHNAME(created_at) AS name, DATE_FORMAT(created_at, '%Y-%m') AS month, SUM(amount) AS expense
-       FROM expense
-       WHERE expense.status = 'Approved'
-       GROUP BY name, month) AS e 
-      ON e.month = m.month
-  ORDER BY STR_TO_DATE(m.name, '%M')`;
+  const query = `SELECT 
+    m.name AS name,
+    COALESCE(p.income, 0) AS income,
+    COALESCE(e.expense, 0) AS expenses
+FROM 
+    (
+        SELECT DISTINCT 
+            MONTHNAME(created_at) AS name, 
+            DATE_FORMAT(created_at, '%Y-%m') AS month 
+        FROM payment 
+        UNION 
+        SELECT DISTINCT 
+            MONTHNAME(created_at), 
+            DATE_FORMAT(created_at, '%Y-%m') 
+        FROM expense
+    ) AS m
+LEFT JOIN 
+    (
+        SELECT 
+            MONTHNAME(created_at) AS name, 
+            DATE_FORMAT(created_at, '%Y-%m') AS month, 
+            SUM(paid) AS income 
+        FROM payment 
+        WHERE payment.sid = ?
+        GROUP BY name, month
+    ) AS p 
+    ON p.month = m.month
+LEFT JOIN 
+    (
+        SELECT 
+            MONTHNAME(created_at) AS name, 
+            DATE_FORMAT(created_at, '%Y-%m') AS month, 
+            SUM(amount) AS expense
+        FROM expense
+        WHERE expense.status = 'Approved'
+        GROUP BY name, month
+    ) AS e 
+    ON e.month = m.month
+ORDER BY m.month`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -2578,6 +2602,7 @@ module.exports = {
 //   // ----- EXPENSE SECTION -----
 addExpense,
 getExpense,
+updateStatusExpense,
 editExpense,
 updateExpense,
 deleteExpense,

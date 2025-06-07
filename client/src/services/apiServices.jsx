@@ -381,6 +381,8 @@ const getFeedbackRating = () => axios.get(API + '/get-feedback-rating');
 // --------- EXPENSE AXIOS -----------
 const insertExpense = (data) => axios.post(API + '/add-expense', data);
 const getExpense = () => axios.get(API + '/get-expense');
+const getAdminExpense = () => axios.get(API + '/get-admin-expense');
+const updateStatusEx = (id, data) => axios.put(API + '/update-expense-status/' + id, data);
 const editExpense = (id) => axios.get(API + '/edit-expense/' + id);
 const updateExpense = (id, data) => axios.put(API + '/update-expense/' + id, data);
 const deleteExpense = (id) => axios.delete(API + '/delete-expense/' + id);
@@ -396,15 +398,11 @@ const LineChart = () => axios.get(API + '/get-liner');
 
 // eslint-disable-next-line
 export default {
-  apiFee,
-getWebhook,
-postWebhook,
-testNet,
-
-
   // ------ EXPENSE EXPORT -------
   insertExpense,
   getExpense,
+  getAdminExpense,
+  updateStatusEx,
   editExpense,
   updateExpense,
   deleteExpense,
