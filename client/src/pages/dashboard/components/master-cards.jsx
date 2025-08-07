@@ -82,9 +82,9 @@ const MasterCards = () => {
     fetchOutstand();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   return (
-    <div className="overview-section">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 px-4 my-8">
       <Card icon={GraduationCap} title={count} description="Total Students" />
-      <Card icon={UsersRound} title={tCount} description="Total Teachers" />
+      <Card icon={UsersRound} title={tCount} description="Total Teachers" link={'/teachers'} />
       <Card
         icon={DollarSign}
         title={sum}

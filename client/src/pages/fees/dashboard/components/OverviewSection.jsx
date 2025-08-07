@@ -84,7 +84,7 @@ const OverviewSection = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="overview-section">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 p-4">
       <Card
         icon={DollarSign}
         title={sum}

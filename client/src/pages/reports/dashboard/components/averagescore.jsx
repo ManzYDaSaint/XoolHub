@@ -22,9 +22,9 @@ const AverageScore = () => {
   }, [classID]);
 
   return (
-    <div className="average_container mt-4">
-      <div className="average_header">
-        <h5>Average Score By Subject</h5>
+    <div className="px-6 py-4 border-2 border-gray-300 rounded-lg mx-4">
+      <div className="flex items-center justify-between border-b-2 border-gray-300 mb-4">
+        <h5 className="text-sm font-medium text-gray-700">Average Score By Subject</h5>
         <div className="average_gender">
             <ClassSelector 
               onChange={(e) => {

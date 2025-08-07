@@ -210,9 +210,9 @@ const FeePayments = () => {
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg">
       <Toaster />
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 border-b-2 border-gray-300 pb-4">
         <div>
-          <h2 className="text-xl font-semibold mb-2">Fee Payments</h2>
+          <h2 className="text-xl font-semibold">Fee Payments</h2>
           <p className="text-sm text-gray-500">View all recent fee payments</p>
         </div>
         <div className="flex justify-between items-center gap-4">
@@ -233,11 +233,12 @@ const FeePayments = () => {
         </div>
       </div>
       <div
-        className="toggleDiv"
+        className="border-2 border-gray-300 rounded-lg px-6 py-4 pb-4 mb-6"
         style={{ display: showFees ? "block" : "none" }}
       >
         <FeesForm fetchData={fetchDa} />
         <FormButton label={"Close"} id={"closeBtn"} onClick={handleFeesClose} />
+        <hr className="my-4" />
         <FeesTable
           setShowFees={setShowFees}
           feesData={feesData}

@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
-import Sidebar from "../../components/input/sidebar";
 import { useSelector } from "react-redux";
 import api from "../../services/apiServices";
 import { useNavigate } from "react-router-dom";
 import PrintComp from "./components/print";
+import { ChevronLeft } from "lucide-react";
 
 const StudentReport = () => {
   const { id } = useParams();
@@ -248,173 +248,165 @@ const StudentReport = () => {
   }, [remarks, agg]);
 
   return (
-      <div className="dashboard__container">
-        <div className="dashboard__content">
-          <Sidebar />
-          <div className="dashboard">
-            <div className="settingContainer">
-              <div className="settingContent">
-                <div className="student_container">
-                  <div className="splitter">
-                    <div className="headerTitle">
-                      <h5>Student Academic Report</h5>
+    <div className="border-2 border-gray-300 rounded-lg m-4">
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
+        className="inline-flex items-center rounded-md space-x-2 cursor-pointer text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2 mr-2 mb-2"
+      >
+        <ChevronLeft className="w-4 h-4" /> Back
+      </button>
+
+      <div className="px-6 py-4">
+        <div className="splitter">
+          <div className="text-center">
+            <h5 className="text-xl text-gray-700 font-semibold border-b-2 border-gray-300 pb-4">
+              Student Academic Report
+            </h5>
+          </div>
+        </div>
+        <div className="panel">
+          <div className="panel-heading">
+            <div className="panel-title text-muted mt-5 mb-5">
+              {students.length > 0 ? (
+                students.map((item, index) => (
+                  <div className="flex items-center gap-4" key={index}>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <h4 class="flex flex-col text-sm font-medium">
+                        Student Name: &nbsp;{" "}
+                        <span class="text-gray-500">{item.studentname}</span>
+                      </h4>
+                      <h4 class="flex flex-col text-sm font-medium">
+                        Class: &nbsp;{" "}
+                        <span class="text-gray-500">{item.class}</span>
+                      </h4>
+                      <h4 class="flex flex-col text-sm font-medium">
+                        Class Teacher(s): &nbsp;
+                        {ct.map((it, index) => (
+                          <span key={it.id || index} className="text-gray-500">
+                            {Array.isArray(it.name)
+                              ? it.name.join(", ")
+                              : it.name}
+                            {index < ct.length - 1 &&
+                            it.name &&
+                            (Array.isArray(it.name) || ct[index + 1].name)
+                              ? ", "
+                              : ""}{" "}
+                            {/* Comma logic */}
+                          </span>
+                        ))}
+                      </h4>
+                      <h4 class="flex flex-col text-sm font-medium">
+                        Term: &nbsp;{" "}
+                        <span class="text-gray-500">
+                          <p className="text-sm">{item.term}</p>
+                        </span>
+                      </h4>
+                      <h4 class="flex flex-col text-sm font-medium">
+                        Exam Type: &nbsp;{" "}
+                        <span class="text-gray-500 ">
+                          <p className="text-sm">{item.exam}</p>
+                        </span>
+                      </h4>
+                      <h4 class="flex flex-col text-sm font-medium">
+                        Year: &nbsp;{" "}
+                        <span class="text-gray-500 ">
+                          <p className="text-sm">{item.year}</p>
+                        </span>
+                      </h4>
+                      <h4 class="flex flex-col">
+                        Aggregate: &nbsp;{" "}
+                        <span class="text-gray-500 ">
+                          <p className="text-sm">{item.aggregate}</p>
+                        </span>
+                      </h4>
                     </div>
                   </div>
-                  <div className="panel">
-                    <div className="panel-heading">
-                      <div className="panel-title text-muted mt-5 mb-5">
-                        {students.length > 0 ? (
-                          students.map((item, index) => (
-                            <div className="studentInfo" key={index}>
-                              <div className="right">
-                                <h4 class="detail">
-                                  Student Name: &nbsp;{" "}
-                                  <span class="text-gray-500">
-                                    {item.studentname}
-                                  </span>
-                                </h4>
-                                <h4 class="detail">
-                                  Class: &nbsp;{" "}
-                                  <span class="text-gray-500">{item.class}</span>
-                                </h4>
-                                <h4 class="detail">
-                                  Class Teacher(s): &nbsp;
-                                  {ct.map((it, index) => (
-                                    <span
-                                      key={it.id || index}
-                                      className="text-gray-500"
-                                    >
-                                      {Array.isArray(it.name)
-                                        ? it.name.join(", ")
-                                        : it.name}
-                                      {index < ct.length - 1 &&
-                                      it.name &&
-                                      (Array.isArray(it.name) ||
-                                        ct[index + 1].name)
-                                        ? ", "
-                                        : ""}{" "}
-                                      {/* Comma logic */}
-                                    </span>
-                                  ))}
-                                </h4>
-                                <h4 class="detail">
-                                  Term: &nbsp;{" "}
-                                  <span class="text-gray-500">
-                                    <p className="text-sm">{item.term}</p>
-                                  </span>
-                                </h4>
-                              </div>
-                              <div className="left">
-                                <h4 class="detail">
-                                  Exam Type: &nbsp;{" "}
-                                  <span class="text-gray-500 ">
-                                    <p className="text-sm">{item.exam}</p>
-                                  </span>
-                                </h4>
-                                <h4 class="detail">
-                                  Year: &nbsp;{" "}
-                                  <span class="text-gray-500 ">
-                                    <p className="text-sm">{item.year}</p>
-                                  </span>
-                                </h4>
-                                <h4 class="detail">
-                                  Aggregate: &nbsp;{" "}
-                                  <span class="text-gray-500 ">
-                                    <p className="text-sm">{item.aggregate}</p>
-                                  </span>
-                                </h4>
-                              </div>
-                            </div>
-                          ))
-                        ) : (
-                          <p className="text-sm">No students available</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-3">
-                      <table className="table table-bordered table-hover w-full">
-                        <thead>
-                          <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
-                            <th colspan="7" className="border p-3">
-                              {" "}
-                              Position: {rank} Out OF {counter}
-                            </th>
-                          </tr>
-                          <tr className="bg-gray-100 text-gray-700 uppercase text-sm text-left">
-                      <th className="border p-3">#</th>
-                      <th className="border p-3">Subjects</th>
-                      <th className="border p-3">Marks</th>
-                      <th className="border p-3">Grade</th>
-                      <th className="border p-3">Position</th>
-                      <th className="border p-3">Remarks</th>
-                      <th className="border p-3">Teacher</th>
-                    </tr>
-                        </thead>
-                        <tbody>
-                          {subjectInfo.map((item, index) => {
-                            // Get Rank
-                            const matchingRank = pos
-                              ?.flat()
-                              ?.find(
-                                (i) =>
-                                  i.subjectid === item.subjectid &&
-                                  i.score === item.score
-                              )?.rank;
-
-                            // Get teacher
-                            const name = teacher
-                              ?.flat()
-                              ?.find(
-                                (i) => i.subjectid === item.subjectid
-                              )?.name;
-
-                            return (
-                              <tr key={index} className="bg-gray-100 text-gray-700 text-sm text-left">
-                                <td className="border p-3">{index + 1}</td>
-                                <td className="border p-3">{item.subject}</td>
-                                <td className="border p-3">{item.score}</td>
-                                <td className="border p-3">{item.grade}</td>
-                                <td className="border p-3">
-                                  {matchingRank ? matchingRank : "N/A"}/
-                                  {counter}
-                                </td>
-                                <td className="border p-3">{item.remarks}</td>
-                                <td className="border p-3">{name ? name : "N/A"}</td>
-                              </tr>
-                            );
-                          })}
-                          <tr>
-                            <td colspan="6" className="border p-3">Download</td>
-                            <td className="border p-3">
-                              <button onClick={handleDownload}>
-                                Download PDF
-                              </button>
-                              <PrintComp
-                                ref={printRef}
-                                school={school}
-                                student={students[0] || {}}
-                                ct={ct}
-                                subjectInfo={subjectInfo}
-                                rank={rank}
-                                counter={counter}
-                                pos={pos}
-                                teacher={teacher}
-                                remarks={rem}
-                                grade={msce}
-                                Jgrade={jce}
-                              />
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                ))
+              ) : (
+                <p className="text-sm">No students available</p>
+              )}
             </div>
+          </div>
+          <div className="mt-3">
+            <table className="table table-bordered table-hover w-full text-sm">
+              <thead>
+                <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
+                  <th colspan="7" className="border p-3">
+                    {" "}
+                    Position: {rank} Out OF {counter}
+                  </th>
+                </tr>
+                <tr className="bg-gray-100 text-gray-700 uppercase text-sm text-left">
+                  <th className="border p-3">#</th>
+                  <th className="border p-3">Subjects</th>
+                  <th className="border p-3">Marks</th>
+                  <th className="border p-3">Grade</th>
+                  <th className="border p-3">Position</th>
+                  <th className="border p-3">Remarks</th>
+                  <th className="border p-3">Teacher</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subjectInfo.map((item, index) => {
+                  // Get Rank
+                  const matchingRank = pos
+                    ?.flat()
+                    ?.find(
+                      (i) =>
+                        i.subjectid === item.subjectid && i.score === item.score
+                    )?.rank;
+
+                  // Get teacher
+                  const name = teacher
+                    ?.flat()
+                    ?.find((i) => i.subjectid === item.subjectid)?.name;
+
+                  return (
+                    <tr
+                      key={index}
+                      className="bg-gray-100 text-gray-700 text-sm text-left"
+                    >
+                      <td className="border p-3">{index + 1}</td>
+                      <td className="border p-3">{item.subject}</td>
+                      <td className="border p-3">{item.score}</td>
+                      <td className="border p-3">{item.grade}</td>
+                      <td className="border p-3">
+                        {matchingRank ? matchingRank : "N/A"}/{counter}
+                      </td>
+                      <td className="border p-3">{item.remarks}</td>
+                      <td className="border p-3">{name ? name : "N/A"}</td>
+                    </tr>
+                  );
+                })}
+                <tr>
+                  <td colspan="6" className="border p-3">
+                    Download
+                  </td>
+                  <td className="border p-3">
+                    <button onClick={handleDownload}>Download PDF</button>
+                    <PrintComp
+                      ref={printRef}
+                      school={school}
+                      student={students[0] || {}}
+                      ct={ct}
+                      subjectInfo={subjectInfo}
+                      rank={rank}
+                      counter={counter}
+                      pos={pos}
+                      teacher={teacher}
+                      remarks={rem}
+                      grade={msce}
+                      Jgrade={jce}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
+    </div>
   );
 };
 

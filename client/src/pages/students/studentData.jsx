@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
 import FormButton from "../../components/input/formButton.jsx";
 import api from "../../services/apiServices.jsx";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import StudentForm from "./studentForm.jsx";
 import StudentTable from "./studentTable.jsx";
 import { useNavigate } from "react-router-dom";
-import { FilePenLine, Plus, Trash } from "lucide-react";
-import { Toaster } from "react-hot-toast";
+import { ChevronLeft, FilePenLine, Plus, Trash } from "lucide-react";
 
 const StudentData = () => {
   const navigate = useNavigate();
@@ -43,15 +42,15 @@ const StudentData = () => {
         gender: item.gender,
         address: item.address,
         actions: (
-          <div>
+          <div className="flex items-center space-x-2">
             <button
               onClick={() => handleDelete(item.id)}
               className="action_icon"
             >
-              <Trash size={18} className="action_delete" />
+              <Trash size={18} color="red" />
             </button>
             <button onClick={() => handleView(item.id)} className="action_icon">
-              <FilePenLine size={18} className="action_edit" />
+              <FilePenLine size={18} color="green" />
             </button>
           </div>
         ),
@@ -84,55 +83,59 @@ const StudentData = () => {
   };
 
   return (
-    <div className="flex bg-gray-100 pb-3">
+    <div className="bg-gray-100 pb-3">
       <Toaster />
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="mb-8 sm:items-center shadow p-4">
-          <div>
-            <h1
-              className="text-lg font-semibold"
-              style={{ fontFamily: "'Poppins', san-serif" }}
-            >
-              Student Admission
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage, add and update student information.
-            </p>
-          </div>
+      {/* Header */}
+      <div className="mb-8 sm:items-center shadow p-2 flex items-center sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
+        <button
+          type="button"
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center rounded-md space-x-2 cursor-pointer text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2 mr-2 mb-2"
+        >
+          <ChevronLeft className="w-4 h-4" /> Back
+        </button>
+        <div className="border-l-2 border-gray-300 ml-4 pl-4">
+          <h1
+            className="text-lg font-semibold"
+            style={{ fontFamily: "'Poppins', san-serif" }}
+          >
+            Student Admission
+          </h1>
+          <p className="text-sm text-gray-500">
+            Manage, add and update student information.
+          </p>
         </div>
-        <div className="px-6">
-          <div className="p-6 bg-white shadow-lg rounded-lg">
-            <div
-              className="div"
-              style={{ display: showStudent ? "none" : "block" }}
+      </div>
+
+      {/* Table */}
+      <div className="px-6">
+        <div className="p-6 bg-white shadow-lg rounded-lg">
+          <div
+            className="div"
+            style={{ display: showStudent ? "none" : "block" }}
+          >
+            <button
+              type="button"
+              onClick={handleStudentOpen}
+              class="bg-gradient-to-r from-blue-700 via-gray-500 to-green-600 text-white hover:bg-gradient-to-br transition duration-300 focus:ring-2 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-3"
             >
-              <button
-                type="button"
-                onClick={handleStudentOpen}
-                class="add__rows__btn"
-              >
-                <Plus size={15} className="plus" />
-                Add
-              </button>
-            </div>
-            <div
-              className="toggleDiv"
-              style={{ display: showStudent ? "block" : "none" }}
-            >
-              <StudentForm fetchData={fetchData} />
-              <FormButton
-                label={"Close"}
-                id={"closeBtn"}
-                onClick={handleStudentClose}
-              />
-            </div>
-            <table
-              className="custom__table table-hover mt-3"
-              id="student__table"
-            >
-              <StudentTable studentData={studentData} />
-            </table>
+              <Plus size={15} className="plus" />
+              Add Student(s)
+            </button>
+          </div>
+          <div
+            className="toggleDiv"
+            style={{ display: showStudent ? "block" : "none" }}
+          >
+            <StudentForm fetchData={fetchData} />
+            <FormButton
+              label={"Close"}
+              id={"closeBtn"}
+              onClick={handleStudentClose}
+            />
+          </div>
+          <div className="border-2 border-gray-300 rounded-lg mt-4">
+            <StudentTable studentData={studentData} />
           </div>
         </div>
       </div>

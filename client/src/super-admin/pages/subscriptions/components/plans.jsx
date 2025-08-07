@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import api from '../../../../services/apiServices';
 import toast from 'react-hot-toast';
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,27 +9,8 @@ import FormButton from '../../../../components/input/formButton';
 const Plans = ({ fetchData }) => {
     const isEditMode = useSelector((state) => state.exam.isEditMode);
     const editItemId = useSelector((state) => state.exam.editItemId);
-    const [features, setFeatures] = useState(['']);
-    const subscriptionData = useSelector((state) => state.exam.subscriptionData || { name: '', price: '', features: [] });
+    const subscriptionData = useSelector((state) => state.exam.subscriptionData || { name: '', price: '', max: '' });
     const dispatch = useDispatch();
-
-    useEffect(() => {
-        setFeatures(subscriptionData.features || ['']);
-    }, [subscriptionData.features]);
-    
-    const handleFeatureChange = (index, value) => {
-        const updatedFeatures = [...features];
-        updatedFeatures[index] = value;
-        setFeatures(updatedFeatures);
-        dispatch(
-            setSubscriptionData({
-                ...subscriptionData,
-                features: updatedFeatures,
-            })
-        );
-    };
-
-    const addFeatureField = () => setFeatures([...features, '']);
     
     const handleSubmit = async (data) => {
         if(isEditMode) {
@@ -40,8 +21,7 @@ const Plans = ({ fetchData }) => {
             } else {
                 toast.error(res.data.message);
             }
-            dispatch(setSubscriptionData({ name: '', price: '', features: [''] }));
-            setFeatures(['']);
+            dispatch(setSubscriptionData({ name: '', price: '', max: '' }));
             dispatch(setIsEditMode(false));
             dispatch(setEditItemId(null));
         } else {
@@ -52,8 +32,7 @@ const Plans = ({ fetchData }) => {
             } else {
                 toast.error(res.data.message);
             }
-            dispatch(setSubscriptionData({ name: '', price: '', features: [''] }));
-            setFeatures(['']);
+            dispatch(setSubscriptionData({ name: '', price: '', max: '' }));
         }
     };
 
@@ -74,8 +53,8 @@ const Plans = ({ fetchData }) => {
 
     return (
         <>
-        <form onSubmit={onSubmit}>
-            <div className="formGroup">
+        <form onSubmit={onSubmit} className='w-1/2 space-y-4 pb-4'>
+            <div className="grid grid-cols-3 gap-4">
                 <FormInput
                     type="text"
                     name="name"
@@ -92,26 +71,17 @@ const Plans = ({ fetchData }) => {
                     label="Price (MK)"
                     placeholder={'0.00'}
                 />
-            </div>
-            {features.map((feature, index) => (
-            <div className="formGroup mt-3">
                 <FormInput 
-                    type="text"
-                    value={features[index]}
-                    onChange={(e) => handleFeatureChange(index, e.target.value)}
-                    label={'Features'}
-                    placeholder={'Type feature'}
+                    type="number"
+                    name="max"
+                    value={subscriptionData.max}
+                    onChange={handleChange}
+                    label="Maximum Students"
+                    placeholder={'0'}
                 />
             </div>
-            ))}
+
             <div className="button_group">
-            <FormButton
-              onClick={addFeatureField}
-              id={'rowButton'}
-              icon={'plus'}
-              type={'button'}
-              label={'Add Feature'}
-            />
             <FormButton label={isEditMode ? "Update Subscription Plan" : "Add Subscription Plan"} id="tyepButton" icon="plus" />
             </div>
         </form>

@@ -142,15 +142,15 @@ const FilterForm = () => {
   };
 
   return (
-    <div>
+    <div className="space-y-4">
       <DeleteModal modal={modal} setModal={setModal} filterData={modalData} />
       <EditModal open={open} setOpen={setOpen} classID={classID} />
-      <form onSubmit={handleFilter}>
+      <form onSubmit={handleFilter} className="w-1/2">
         <div className="multi_step mt-3">
-          <h3>
-            <span className="m-3">Step 1:</span> Filter the students
+          <h3 className="mb-4 text-sm font-semibold text-gray-700 border-b-2 border-gray-300 pb-4">
+            <span className="m-3 bg-blue-600 text-white px-3 py-1 rounded-lg">Step 1:</span> Filter the students
           </h3>
-          <div className="formGroup">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 gap-4">
             <TermSelector
               onChange={handleChange}
               label={"Term"}
@@ -163,8 +163,6 @@ const FilterForm = () => {
               name={"typeid"}
               value={xFormData.typeid}
             />
-          </div>
-          <div className="formGroup mt-4">
             <ClassSelector
               onChange={handleChange}
               label={"Class"}

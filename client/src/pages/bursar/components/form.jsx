@@ -103,8 +103,7 @@ const PfForm = ({ fetchData, setIsModalOpen }) => {
   };
 
   return (
-    <form onSubmit={onSubmit} autoComplete="off">
-      <div className="formGroup">
+    <form onSubmit={onSubmit} autoComplete="off" className="py-4 w-full">
         <AutoSuggestInput
           suggestions={students}
           onSuggestionSelected={handleSuggestionSelected}
@@ -112,8 +111,7 @@ const PfForm = ({ fetchData, setIsModalOpen }) => {
           name="student"
           placeholder="Type student name here..."
         />
-      </div>
-      <div className="formGroup mt-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <FeesSelectInput
           label={"Fee category"}
           value={feeid}
@@ -127,8 +125,6 @@ const PfForm = ({ fetchData, setIsModalOpen }) => {
           onChange={handleChange}
           placeholder={"Type here..."}
         />
-      </div>
-      <div className="formGroup mt-4">
         <TermSelector
           label={"Term"}
           onChange={handleChange}

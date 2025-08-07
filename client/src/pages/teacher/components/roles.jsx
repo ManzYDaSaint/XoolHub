@@ -2,10 +2,9 @@ import React from "react";
 
 const Roles = ({ label, type, name, value, onChange }) => {
   return (
-    <div className="formInputContainer">
-      {label && <label htmlFor={name}>{label}</label>}
-      <div className="inputContainer">
-        <select type={type} name={name} value={value} onChange={onChange}>
+    <div className="bg-gray-100 px-4 py-2 rounded-lg flex flex-col mb-4">
+      {label && <label htmlFor={name} className="text-sm font-medium text-gray-700 py-2">{label}</label>}
+        <select type={type} name={name} value={value} onChange={onChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2">
           <option value={""} disabled selected>
             --select option--
           </option>
@@ -15,7 +14,6 @@ const Roles = ({ label, type, name, value, onChange }) => {
           <option value={"Hod"}>Head of Department</option>
         </select>
       </div>
-    </div>
   );
 };
 

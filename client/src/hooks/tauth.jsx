@@ -34,7 +34,7 @@ function AuthT({ children }) {
               <InfinitySpin width='200' color="#007BFE" />
             </div>;
   }
-
+ 
   if (!isAuthenticated) {
     return <Navigate to={'/login'} />;
   }

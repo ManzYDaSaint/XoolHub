@@ -55,7 +55,7 @@ const paymentChart = async (year) => {
         billing
     WHERE
         status = 'successful'
-        AND YEAR(created_at) = 2025
+        AND YEAR(created_at) = ?
     GROUP BY
         month, month_number
     ORDER BY
@@ -958,20 +958,6 @@ const insertStudentHistory = async (sid, yearid, classid, studentIDs) => {
   }
 };
 
-
-// const insertStudentHistory = async (sid, yearid, classid, studentIDs) => {
-//   const insertHistory = [];
-//   const query =
-//     "INSERT INTO history(sid, yearid, classid, studentid) VALUES ($1, $2, $3, $4)";
-
-//   // Insert each student one by one
-//   for (const id of studentIDs) {
-//     const result = await conn.query(query, [sid, yearid, classid, id]);
-//     insertHistory.push(result);
-//   }
-//   return insertHistory;
-// };
-
 // // Get all object
 const getStudent = async (sid) => {
   const query = `SELECT s.id, s.name, class.name AS class, s.dob, s.gender, s.address FROM history
@@ -1757,7 +1743,7 @@ top_6_subjects AS (
         classid,
         SUM(score) AS total_score
     FROM student_scores
-    WHERE subject_rank <= 6  -- Only consider the top 6 subjects per student
+    WHERE subject_rank <= 6
     GROUP BY studentid, classid
 ),
 ranked_students AS (
@@ -1859,8 +1845,11 @@ const getReportByStudentMSCE = async (sid, termid, typeid, classid) => {
         studentid,
         classid,
         subjectid,
-        CAST(grade AS BIGINT) AS grade,
-        ROW_NUMBER() OVER (PARTITION BY studentid, classid ORDER BY CAST(grade AS BIGINT) DESC) AS subject_rank
+        CAST(grade AS UNSIGNED) AS grade,
+        ROW_NUMBER() OVER (
+            PARTITION BY studentid, classid 
+            ORDER BY CAST(grade AS UNSIGNED) DESC
+        ) AS subject_rank
     FROM results
     WHERE results.termid = ?
         AND results.typeid = ?
@@ -1899,7 +1888,7 @@ FROM ranked_students rs
 JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
 JOIN students st ON st.id = r.studentid
 LEFT JOIN subject ON subject.id = r.subjectid
-ORDER BY r.classid, rs.rank, st.name
+ORDER BY r.classid, rs.rank, st.name;
 `;
   const value = [termid, typeid, classid, sid];
   const [res] = await conn.query(query, value);
@@ -1910,21 +1899,25 @@ const getStudentCardMSCE = async (sid, termid, typeid, classid, studentid) => {
   const query = `WITH student_scores AS (
     SELECT 
         studentid,
-        CAST(grade AS BIGINT) AS grade,
-        ROW_NUMBER() OVER (PARTITION BY studentid ORDER BY CAST(grade AS BIGINT) DESC) AS subject_rank
+        CAST(grade AS UNSIGNED) AS grade,
+        ROW_NUMBER() OVER (
+            PARTITION BY studentid 
+            ORDER BY CAST(grade AS UNSIGNED) DESC
+        ) AS subject_rank
     FROM results
-    WHERE results.termid = ?
-        AND results.typeid = ?
-        AND results.classid = ?
-        AND results.sid = ?
-        AND results.studentid = ?
+    WHERE termid = ?
+        AND typeid = ?
+        AND classid = ?
+        AND sid = ?
+        AND studentid = ?
+        AND grade REGEXP '^[0-9]+$'  -- Ensure only numeric grades are processed
 ),
 top_6_subjects AS (
     SELECT 
         studentid,
         SUM(grade) AS total_score
     FROM student_scores
-    WHERE subject_rank <= 6  -- Only consider the top 6 subjects
+    WHERE subject_rank <= 6
     GROUP BY studentid
 ),
 ranked_students AS (
@@ -1935,21 +1928,22 @@ ranked_students AS (
     FROM top_6_subjects
 )
 SELECT 
-    DISTINCT(st.name) AS studentname,  
+    DISTINCT st.name AS studentname,  
     rs.total_score AS aggregate,
     ac.name AS year,
     t.name AS term,
     e.name AS exam,
     c.name AS class,
-    c.classid
+    c.id
 FROM ranked_students rs
 JOIN results r ON r.studentid = rs.studentid
 JOIN students st ON st.id = r.studentid
 JOIN term t ON t.id = r.termid
-JOIN acyear ac ON ac.yearid = t.yearid
+JOIN acyear ac ON ac.id = t.yearid
 JOIN exam e ON e.id = r.typeid
-JOIN class c ON c.classid = r.classid
-ORDER BY st.name
+JOIN class c ON c.id = r.classid
+ORDER BY st.name;
+
 `;
   const value = [termid, typeid, classid, sid, studentid];
   const [res] = await conn.query(query, value);
@@ -2221,9 +2215,9 @@ const deleteEvent = async (id) => {
 
 // // --------------------------------------- SUPER ADMIN CRUD ------------------------------------------------
 
-const insertFeatures = async (name, price, features) => {
+const insertFeatures = async (name, price, max) => {
   const query = `INSERT INTO subscription_plans (name, price, features) VALUES (?, ?, ?)`;
-  const value = [name, price, features];
+  const value = [name, price, max];
   const [res] = await conn.query(query, value); // Changed to async/await
   return res.affectedRows > 0; // Adjusted for MySQL
 };
@@ -2249,10 +2243,10 @@ const editPlan = async (id) => {
 };
 
 // Updating object
-const updatePlan = async (id, name, price, features, update) => {
+const updatePlan = async (id, name, price, max, update) => {
   const query =
     "UPDATE subscription_plans SET name = ?, price = ?, features = ?, created_at = ? WHERE id = ?";
-  const values = [name, price, features, update, id];
+  const values = [name, price, max, update, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res; // Adjusted for MySQL
 };
@@ -2269,6 +2263,13 @@ const getSubs = async (plan) => {
   const values = [plan];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res[0]; // Adjusted for MySQL
+}
+
+const getPlanByID = async (id) => {
+  const query = 'SELECT * FROM subscription_plans WHERE id = ?'; // Changed to ?
+  const values = [id];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res[0]; // Adjusted for MySQL
 } 
 
 const addSubscription = async (id, sid, planid, strata, period) => {
@@ -2277,6 +2278,25 @@ const addSubscription = async (id, sid, planid, strata, period) => {
   const values = [id, sid, planid, strata, period];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
+}
+const checkSubToCancel = async (sid) => {
+  const query = `SELECT * FROM subscriptions WHERE status = 'Active' AND sid = ?`;
+  const values = [sid];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res[0];
+}
+const cancelSubscription = async (status, sid) => {
+  const query = `UPDATE subscriptions SET status = ? WHERE status = 'Active' AND sid = ?`;
+  const values = [status, sid];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res;
+}
+
+const cancelBilling = async (status, subscriptionid) => {
+  const query = `UPDATE billing SET status = ? WHERE subscriptionid = ?`;
+  const values = [status, subscriptionid];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res.affectedRows > 0;
 }
 
 const addBilling = async (subscriptionid, amount, strata, expiry) => {
@@ -2288,7 +2308,7 @@ const addBilling = async (subscriptionid, amount, strata, expiry) => {
 }
 
 const checkSubscription = async (sid) => {
-  const query = `SELECT * FROM subscriptions WHERE sid = ? AND status = 'active'`;
+  const query = `SELECT * FROM subscriptions WHERE sid = ? AND status = 'Active'`;
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
@@ -2304,8 +2324,9 @@ const checkSubscriptionStatus = async (sid) => {
 }
 
 const checkSubsByID = async (sid) => {
-  const query = `SELECT *, sp.name FROM subscriptions
+  const query = `SELECT *, sp.name, billing.expiry FROM subscriptions
     INNER JOIN subscription_plans sp ON sp.id = subscriptions.planid      
+    INNER JOIN billing ON billing.subscriptionid = subscriptions.id      
     WHERE sid = ? ORDER BY subscriptions.created_at ASC`;
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
@@ -2321,7 +2342,7 @@ WHERE s.id = b.subscriptionid
   const values = [status, sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
-}
+} 
 
 const checkPaid = async (sid, status) => {
   const query = `SELECT status FROM subscriptions WHERE sid = ? AND status = ?`;
@@ -2551,7 +2572,7 @@ LEFT JOIN
             DATE_FORMAT(created_at, '%Y-%m') AS month, 
             SUM(amount) AS expense
         FROM expense
-        WHERE expense.status = 'Approved'
+        WHERE expense.status = 'Approved' AND expense.sid = ?
         GROUP BY name, month
     ) AS e 
     ON e.month = m.month
@@ -2882,8 +2903,12 @@ addContacts,
 
 //   // ----- SUBSCRIPTION SECTION -----
   getSubs,
+  getPlanByID,
   addSubscription,
   addBilling,
+  cancelSubscription,
+  checkSubToCancel,
+  cancelBilling,
   checkSubscription,
   checkSubscriptionStatus,
   checkSubsByID,

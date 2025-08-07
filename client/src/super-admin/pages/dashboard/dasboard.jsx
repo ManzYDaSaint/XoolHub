@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import SuperSidebar from "../../components/navbar/navbar";
-import Menu from "../../components/Top/menu";
 import SuperAuth0 from "../../../hooks/superauth";
 import Card from "../../../pages/students/dashboard/components/card";
 import {
@@ -15,11 +14,11 @@ import YearOptions from "./components/yearSelector";
 import api from "../../../services/apiServices";
 
 const SuperDashboard = () => {
-  const [ count, setCount ] = useState(0);
-  const [ publico, setPublic ] = useState(0);
-  const [ privato, setPrivate ] = useState(0);
-  const [ subscribe, setSubscribe ] = useState(0);
-  const [ sum, setSum ] = useState(0);
+  const [count, setCount] = useState(0);
+  const [publico, setPublic] = useState(0);
+  const [privato, setPrivate] = useState(0);
+  const [subscribe, setSubscribe] = useState(0);
+  const [sum, setSum] = useState(0);
 
   const fetchCount = async () => {
     try {
@@ -34,7 +33,6 @@ const SuperDashboard = () => {
   useEffect(() => {
     fetchCount();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
 
   const fetchPrivate = async () => {
     try {
@@ -98,9 +96,8 @@ const SuperDashboard = () => {
         <div className="dashboard__content">
           <SuperSidebar />
           <div className="dashboard">
-            <Menu />
             <div className="settingContainer">
-              <div className="super__cards">
+              <div className="grid grid-cols-5 gap-4 py-6 px-4">
                 <Card icon={School} title={count} description="Schools" />
                 <Card
                   icon={LayoutDashboard}
@@ -118,16 +115,22 @@ const SuperDashboard = () => {
               </div>
 
               {/* LIne Chart */}
-              <div className="payment__container">
-                <div className="top__divider">
-                  <div className="cutter_container">
-
-                  <h2>Subsciption Payments</h2>
-                  <p>The line graph shows the total amount of payments that have been made for the whole year</p>
+              <div className="p-6">
+                <div className="border-2 border-gray-300 rounded-lg shadow-lg p-6 mb-6">
+                  <div className="mb-4 ">
+                    <h2 className="text-md font-semibold mb-4 text-gray-700 border-b-2 border-gray-300 pb-3">
+                      Subsciption Payments
+                    </h2>
+                    <p className="text-sm text-gray-500 mb-4">
+                      The line graph shows the total amount of payments that
+                      have been made for the whole year
+                    </p>
                   </div>
-                  <YearOptions />
+                  <div className="border-2 border-gray-300 rounded-lg shadow-lg p-6 mb-6">
+                    <YearOptions />
+                    <PaymentChart />
+                  </div>
                 </div>
-                <PaymentChart />
               </div>
               {/* LIne Chart */}
             </div>

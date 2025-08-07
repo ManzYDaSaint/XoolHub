@@ -8,7 +8,7 @@ const BillingData = () => {
 
   const fetchData = async () => {
     const res = await api.getSubsByID();
-    const data = res.data.subs;
+    const data = res.data.subs || [];
     
     const info = data.map((item, index) => {
       return {
@@ -17,6 +17,7 @@ const BillingData = () => {
         period: item.period,
         status: item.status,
         price: item.price,
+        expiry: item.expiry,
       };
     });
     setBillingData(info);

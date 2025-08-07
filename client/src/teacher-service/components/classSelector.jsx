@@ -37,10 +37,10 @@ const ClassSelector = ({ label, selectedClass, handleClassChange, handleSubjectC
 
   return (
     <>
-      <div className="formInputContainer">
-        {label && <label htmlFor={''}>{label}</label>}
+      <div className="bg-gray-100 px-4 py-2 rounded-lg flex flex-col mb-4">
+        {label && <label htmlFor={''} className="text-sm font-medium text-gray-700 py-2">{label}</label>}
         <div className="inputContainer">
-          <select name={name} value={value} onChange={handleClassChange}>
+          <select name={name} value={value} onChange={handleClassChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2">
             <option value="" selected disabled>Select an option</option>
             {classs.map((clas) => (
               <option key={clas.id} value={clas.id}>
@@ -50,10 +50,10 @@ const ClassSelector = ({ label, selectedClass, handleClassChange, handleSubjectC
           </select>
         </div>
       </div>
-      <div className="formInputContainer">
-        {labell && <label htmlFor={''}>{labell}</label>}
+      <div className="bg-gray-100 px-4 py-2 rounded-lg flex flex-col mb-4">
+        {labell && <label htmlFor={''} className="text-sm font-medium text-gray-700 py-2">{labell}</label>}
         <div className="inputContainer">
-          <select name={namee} value={valuee} onChange={handleSubjectChange} disabled={!selectedClass}>
+          <select name={namee} value={valuee} onChange={handleSubjectChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2" disabled={!selectedClass}>
             <option value="" selected disabled>Select an option</option>
             {subject.map((code) => (
               <option key={code.subjectid} value={code.subjectid}>

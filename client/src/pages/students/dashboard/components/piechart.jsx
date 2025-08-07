@@ -39,8 +39,7 @@ const GenderPieChart = () => {
   }, []);
 
   return (
-    <div className="chart-container" style={{ width: '100%', height: '350px' }}>
-      <ResponsiveContainer>
+      <ResponsiveContainer className={'text-sm text-gray-700'} width="100%" height={300}>
         {data.length > 0 ? (
           <PieChart>
             <Pie
@@ -65,7 +64,6 @@ const GenderPieChart = () => {
           <p>Loading...</p>
         )}
       </ResponsiveContainer>
-    </div>
   );
 };
 

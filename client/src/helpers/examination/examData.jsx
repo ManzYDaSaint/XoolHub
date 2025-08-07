@@ -9,7 +9,7 @@ import { setIsEditMode, setEditItemId, setFormData } from './examSlice.jsx';
 import { Pencil, Plus, Trash } from 'lucide-react'
 
 const ExamData = () => {
-
+ 
     const dispatch = useDispatch();
     const [examData, setExamData] = useState([]);
     const handleClose = () => { setShowType(false); };
@@ -36,8 +36,8 @@ const ExamData = () => {
           percentage: item.percentage,
           actions: (
               <div>
-              <button onClick={() => handleEdit(item.id)} className='action_icon'><Pencil size={15} className='action_edit' /></button>
-              <button onClick={() => handleDelete(item.id)} className='action_icon'><Trash size={15} className='action_delete' /></button>
+              <button onClick={() => handleEdit(item.id)} className='mr-3'><Pencil size={15} color='green' /></button>
+              <button onClick={() => handleDelete(item.id)}><Trash size={15} color='red' /></button>
               </div>
           ),
           }));
@@ -82,12 +82,12 @@ const ExamData = () => {
     <>
         <div className="div" style={{ display: showType ? 'none' : 'block' }}>
             <button type="button" onClick={handleOpen} 
-            class="add__rows__btn">
+            className="flex items-center bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 px-4 py-2 text-white text-sm gap-2 rounded-md">
             <Plus size={15} className='plus' />
             Add
             </button>
         </div>
-        <div className="toggleDiv" style={{ display: showType ? 'block' : 'none' }}>
+        <div className="mb-6" style={{ display: showType ? 'block' : 'none' }}>
             <ExamForm fetchData={fetchData}/>
             <FormButton 
             label={'Close'}
@@ -95,9 +95,9 @@ const ExamData = () => {
             onClick={handleClose}
             />
         </div>
-        <table class="custom__table table-hover mt-3" id="grade__table">
+
             <ExamTable setShowType={setShowType} examData={examData} />
-        </table>
+    
     </>
   )
 }

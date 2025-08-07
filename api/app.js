@@ -1,27 +1,35 @@
-const express = require('express');
-const api = require('./routes/apiRoutes.js')
+const express = require('express')
 const cors = require('cors')
+const api = require('./routes/apiRoutes.js')
+const whatsAppController = require('./controller/whatsAppController.js');
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
-const whatsAppController = require('./controller/whatsAppController.js');
 
-const app = express();
+const app = express()
 app.use(fileUpload());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: 'http://localhost:3000',
+  origin: 'http://localhost:3000', // Replace with your frontend URL
   credentials: true,
 };
 
+// ✅ Just this is enough:
 app.use(cors(corsOptions));
-app.options('*', cors());
 
-// Middleware to parse JSON bodies
+// Middleware to parse JSON and form data
 app.use(express.json());
-
-// Middleware to parse URL-encoded bodies (for form submissions)
 app.use(express.urlencoded({ extended: true }));
+
+// In app.js or your API routes middleware
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
+
 
 app.get('/', (req, res) => {
   res.status(200).json({
@@ -30,22 +38,29 @@ app.get('/', (req, res) => {
   });
 });
 
-// All routes goes here
+// All routes go here
 app.use('/api/', api);
-
-// WhatsApp routes goes here
 app.use('/webhook', whatsAppController);
 
-app.use('*', (req, res, next) => {
+// 404 handler
+app.use((req, res, next) => {
   res.status(404).json({
     status: 'error',
     message: 'Route not found',
   });
 });
 
+// General error handler
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    status: 'error',
+    message: 'Internal server error',
+  });
+});
+
 const port = process.env.PORT || 5000;
 
-// All routes goes here
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });

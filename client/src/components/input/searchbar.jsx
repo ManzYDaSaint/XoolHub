@@ -3,12 +3,12 @@ import React from 'react'
 
 const Searchbar = ({type, placeholder, onChange}) => {
   return (
-    <div className='searchBar_Container'>
-        <Search size={18} className='mr-3'/>
+    <div className='inline-flex items-center border-2 border-gray-300 p-2 rounded-lg text-sm px-4'>
+        <Search className='mr-2 text-gray-600'/>
         <input 
             type={type} 
             placeholder={placeholder}
-            className='searchInput'
+            className='outline-none bg-transparent'
             onChange={onChange}
         />
     </div>

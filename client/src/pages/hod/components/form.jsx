@@ -39,13 +39,12 @@ const ReportForm = () => {
     }
   };
 
-  const handlePromote = async(data) => {
+  const handlePromote = async (data) => {
     try {
       const res = await api.insertPromotion({ data });
       if (res.data.success === false) {
         toast.error(res.data.message);
-      }
-      else {
+      } else {
         toast.success(res.data.message);
       }
     } catch (error) {
@@ -53,7 +52,7 @@ const ReportForm = () => {
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -74,41 +73,45 @@ const ReportForm = () => {
   return (
     <AuthT>
       <>
-        <form onSubmit={onSubmit} autoComplete="off" className="mt-4">
-          <div className="formGroup">
-            <TermSelector
-              onChange={handleChange}
-              label="Term"
-              name="termid"
-              value={reportFormData.termid}
-            />
-            <ExamSelector
-              onChange={handleChange}
-              label="Exam Type"
-              name="typeid"
-              value={reportFormData.typeid}
-            />
-            <ClassSelector
-              onChange={handleChange}
-              label="Class"
-              name="classid"
-              value={reportFormData.classid}
-            />
-          </div>
-          <div className="buttonSplitter">
-            <FormButton
-              label={isLoading ? "Filtering..." : "Filter"}
-              id="tyepButton"
-            />
-            <Modal
-          open={open}
-          setOpen={setOpen}
-          reportFormData={reportFormData}
-        />
-          </div>
-        </form>
-        <table className="table customisedTable mt-3 w-100" id="fees__table">
-          <thead>
+        <div className="border-2 border-gray-300 rounded-lg p-4 my-4">
+          <form onSubmit={onSubmit} autoComplete="off" className="mt-4 w-1/2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <TermSelector
+                onChange={handleChange}
+                label="Term"
+                name="termid"
+                value={reportFormData.termid}
+              />
+              <ExamSelector
+                onChange={handleChange}
+                label="Exam Type"
+                name="typeid"
+                value={reportFormData.typeid}
+              />
+              <ClassSelector
+                onChange={handleChange}
+                label="Class"
+                name="classid"
+                value={reportFormData.classid}
+              />
+            </div>
+            <div className="flex justify-end mt-4 gap-4">
+              <FormButton
+                label={isLoading ? "Filtering..." : "Filter"}
+                id="tyepButton"
+              />
+              <Modal
+                open={open}
+                setOpen={setOpen}
+                reportFormData={reportFormData}
+              />
+            </div>
+          </form>
+        </div>
+
+        <div className="border-2 border-gray-300 rounded-lg">
+        <table className="w-full">
+          <thead className="text-sm text-gray-700 bg-gray-200">
             <tr className="text-left">
               <th className="py-3 px-3 text-left">Sr</th>
               <th>Action</th>
@@ -119,9 +122,9 @@ const ReportForm = () => {
               ))}
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-sm">
             {students.map((item, index) => (
-              <tr key={index} className="text-left">
+              <tr key={index} className="py-3 px-3 text-left border-b border-gray-300">
                 <td className="py-3 px-3 text-left">{item.rank}</td>
                 <td>
                   <button
@@ -144,6 +147,7 @@ const ReportForm = () => {
             ))}
           </tbody>
         </table>
+        </div>
       </>
     </AuthT>
   );

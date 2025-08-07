@@ -1,9 +1,10 @@
 import React, { useState } from "react";
+import HeaderBtn from "../landing/components/ui/headerBtn";
 
 const faqData = [
   {
-    question: "What is included in the Basic plan?",
-    answer: "The Basic plan includes access to essential features like attendance tracking and grade management.",
+    question: "What is included in the Starter plan?",
+    answer: "The Starter plan is essential for schools that are just being introduced and have fewer students.",
   },
   {
     question: "Can I upgrade my subscription at any time?",
@@ -11,7 +12,7 @@ const faqData = [
   },
   {
     question: "Is there a free trial available?",
-    answer: "Yes, we offer a 14-day free trial for all subscription plans.",
+    answer: "Yes, we offer a One (1)-term free trial for all subscription plans.",
   },
   {
     question: "Do you provide support for all plans?",
@@ -32,23 +33,24 @@ const FAQ = () => {
 
   return (
     <div className="p-8 bg-gray-100 min-h-screen plans mt-5">
-      <div className="text-center mt-5">
-
-        <h2>FAQ</h2>
-        <h5>Our Frequently Asked Questions</h5>
-        <p>Check out our frequently asked questions that might help you get answers to most of the <br /> questions which most people have already been answered.</p>
+      <div className="text-center mt-5 space-y-4">
+        <h2 className="inline-flex">
+          <HeaderBtn>FAQ</HeaderBtn>
+          </h2>
+        <h5 className="text-xl font-bold text-blue-900 md:text-4xl">Our Frequently Asked Questions</h5>
+        <p className="text-gray-700 text-md md:text-lg">Check out our frequently asked questions that might help you get answers to most of the <br /> questions which most people have already been answered.</p>
     </div>
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto mt-8">
         {faqData.map((faq, index) => (
           <div
             key={index}
-            className="mb-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm"
+            className="mb-4 text-md border border-gray-300 rounded-lg overflow-hidden shadow-sm"
           >
             <button
               className="w-full p-4 text-left bg-white flex justify-between items-center focus:outline-none"
               onClick={() => toggleFAQ(index)}
             >
-              <span className="text-lg font-medium text-gray-700">{faq.question}</span>
+              <span className="text-md font-medium text-gray-700">{faq.question}</span>
               <span className="text-gray-500">{activeIndex === index ? "-" : "+"}</span>
             </button>
             {activeIndex === index && (

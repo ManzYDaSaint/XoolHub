@@ -131,11 +131,11 @@ const EntryForm = () => {
 
   return (
     <div>
-      <form onSubmit={handleFilter}>
+      <form onSubmit={handleFilter} className='w-1/2'>
         {step === 1 && (
           <div className="multi_step">
-            <h3 style={{fontFamily: "'Poppins', san-serif"}}><span className='m-3'>Step 1:</span> Specify students to add results.</h3>
-            <div className="formGroup">
+            <h3 className='mb-4 text-sm font-semibold text-gray-700 border-b-2 border-gray-300 pb-4' style={{fontFamily: "'Poppins', san-serif"}}><span className='m-3 bg-blue-600 text-white px-3 py-1 rounded-lg'>Step 1:</span> Specify students to add results.</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                 <TypeSelector 
                     onChange={handleChange}
                     label={'Examination Type'}
@@ -160,25 +160,25 @@ const EntryForm = () => {
               icon={'arrow right'}
               id={'nextButton'}
             />
-          </div>
+         </div>
         )}
       </form>
       <form onSubmit={onSubmit}>
         {step === 2 && (
           <div className="multi_step mt-3">
-            <h3 style={{fontFamily: "'Poppins', san-serif"}}><span className='m-3'>Step 2:</span> Enter Examination Scores</h3>
-              <div>
-                <table className="table customisedTable">
-                  <thead>
+            <h3 className='mb-4 text-sm font-semibold text-gray-700 border-b-2 border-gray-300 pb-4' style={{fontFamily: "'Poppins', san-serif"}}><span className='m-3 bg-blue-600 text-white px-3 py-1 rounded-lg'>Step 2:</span> Enter Examination Scores</h3>
+              <div className='border-2 border-gray-300 rounded-lg mb-4'>
+                <table className="w-full">
+                  <thead className='text-sm text-gray-700 bg-gray-200'>
                     <tr>
                       <th width='10%' className='py-3 px-3 text-left'>Sr</th>
                       <th width='60%' className='py-3 px-3 text-left'>Student Name</th>
                       <th width='30%' className='py-3 px-3 text-left'>Score</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className='text-sm'>
                     {students.map((student, index) => (
-                      <tr key={student.id} className='text-left'>
+                      <tr key={student.id} className='py-3 px-3 text-left border-b border-gray-300'>
                         <td className='py-3 px-3 text-left'>{index+1}</td>
                         <td>{student.name}</td>
                         <td>

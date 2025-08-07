@@ -15,7 +15,7 @@ function Auth0({ children }) {
         const response = await api.Verify();
         if (response.data.success === true) {
           setIsAuthenticated(true);
-        }
+        } 
         else {
           <Navigate to={'/login'} />
         }

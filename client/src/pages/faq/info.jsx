@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import HeaderBtn from "../landing/components/ui/headerBtn";
 
 const faqData = [
   {
@@ -37,44 +38,56 @@ const FAQPage = () => {
   };
 
   return (
-    <div className="bg-gray-100 min-h-screen p-8 mt-12">
-      <div className="max-w-6xl mx-auto plans mt-5">
-        <div className="text-center">
-
-<h2>FAQ</h2>
-<h5>Frequently Asked Questions</h5>
-<p>Check out our frequently asked questions that might help you get answers to most of the <br /> questions which most people have already been answered.</p>
-</div>
+    <div className="bg-gray-100 min-h-screen p-8">
+      <div className="max-w-6xl mx-auto plans mt-20">
+        <div className="text-center pt-10 pb-5">
+          <h2 className="inline-flex mb-4"><HeaderBtn>FAQ</HeaderBtn></h2>
+          <h5 className="text-3xl font-semibold text-blue-900 mb-4">Frequently Asked Questions</h5>
+          <p className="text-lg text-slate-600 mb-8 leading-relaxed">
+            Check out our frequently asked questions that might help you get
+            answers to most of the <br /> questions which most people have
+            already been answered.
+          </p>
+        </div>
 
         <section>
           <div className="max-w-4xl mx-auto">
-        {faqData.map((faq, index) => (
-          <div
-            key={index}
-            className="mb-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm"
-          >
-            <button
-              className="w-full p-4 text-left bg-white flex justify-between items-center focus:outline-none"
-              onClick={() => toggleFAQ(index)}
-            >
-              <span className="text-lg font-medium text-gray-700">{faq.question}</span>
-              <span className="text-gray-500">{activeIndex === index ? "-" : "+"}</span>
-            </button>
-            {activeIndex === index && (
-              <div className="p-4 bg-gray-50 text-gray-600">{faq.answer}</div>
-            )}
+            {faqData.map((faq, index) => (
+              <div
+                key={index}
+                className="mb-4 border border-gray-300 rounded-lg overflow-hidden shadow-sm"
+              >
+                <button
+                  className="w-full p-4 text-left bg-white flex justify-between items-center focus:outline-none"
+                  onClick={() => toggleFAQ(index)}
+                >
+                  <span className="text-lg font-medium text-gray-700">
+                    {faq.question}
+                  </span>
+                  <span className="text-gray-500">
+                    {activeIndex === index ? "-" : "+"}
+                  </span>
+                </button>
+                {activeIndex === index && (
+                  <div className="p-4 bg-gray-50 text-gray-600">
+                    {faq.answer}
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
         </section>
 
         <section className="mt-12 text-center p-5">
           <h2 className="text-3xl text-gray-800 mb-4">Need More Help?</h2>
           <p className="text-gray-600 mb-6">
-            If you have additional questions or need assistance, <br />feel free to contact our support team.
+            If you have additional questions or need assistance, <br />
+            feel free to contact our support team.
           </p>
           <button className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mb-5">
-            <Link to={'/contact'} className="text-decoration-none text-white">Contact Support</Link>
+            <Link to={"/contact"} className="text-decoration-none text-white">
+              Contact Support
+            </Link>
           </button>
         </section>
       </div>

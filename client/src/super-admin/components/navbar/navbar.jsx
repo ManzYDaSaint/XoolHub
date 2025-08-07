@@ -1,84 +1,89 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
-import { CircleDollarSign, Cog, House, LayoutGrid, MessageSquareDiff } from "lucide-react";
 
 const SuperSidebar = () => {
   const location = useLocation();
-  const [closeMenu, setCloseMenu] = useState(true);
-
-  const handleCloseMenu = () => {
-    setCloseMenu(!closeMenu);
-  };
 
   return (
-    <div className={closeMenu === false ? "sidebarMenu" : "sidebarMenu active"}>
-      <div className="logoContainer">
-
+    <nav className="sticky top-0 z-30 bg-white/70 backdrop-blur-lg shadow-lg border-b border-gray-200">
+      <div className="max-w-7xl mx-auto px-6 flex items-center justify-center h-16">
+        <ul className="flex space-x-6">
+          <li>
+            <Link
+              to="/super"
+              className={`px-3 py-2 rounded-md transition font-medium ${
+                location.pathname === "/super"
+                  ? "bg-blue-100 text-blue-700 shadow"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-700"
+              }`}
+            >
+              Dashboard
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/schools"
+              className={`px-3 py-2 rounded-md transition font-medium ${
+                location.pathname === "/schools"
+                  ? "bg-blue-100 text-blue-700 shadow"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-700"
+              }`}
+            >
+              Schools
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/subscriptions"
+              className={`px-3 py-2 rounded-md transition font-medium ${
+                location.pathname === "/subscriptions"
+                  ? "bg-blue-100 text-blue-700 shadow"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-700"
+              }`}
+            >
+              Subscriptions
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/feeds"
+              className={`px-3 py-2 rounded-md transition font-medium ${
+                location.pathname === "/feeds"
+                  ? "bg-blue-100 text-blue-700 shadow"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-700"
+              }`}
+            >
+              Feedback
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/setting"
+              className={`px-3 py-2 rounded-md transition font-medium ${
+                location.pathname === "/setting"
+                  ? "bg-blue-100 text-blue-700 shadow"
+                  : "text-gray-700 hover:bg-gray-100 hover:text-blue-700"
+              }`}
+            >
+              Settings
+            </Link>
+          </li>
+        </ul>
+        <div className="ml-auto">
+          <Link
+            to="/suprofile"
+            className={`px-3 py-2 rounded-md transition font-medium ${
+              location.pathname === "/suprofile"
+                ? "bg-blue-100 text-blue-700 shadow"
+                : "text-gray-700 hover:bg-gray-100 hover:text-blue-700"
+            }`}
+          >
+            Profile
+          </Link>
+        </div>
       </div>
-      <div className="burgerTrigger" onClick={handleCloseMenu}></div>
-      <div className="burgerMenu"></div>
-      <ul>
-        <Link to={"/super"} className="Links">
-          <li
-            className={
-              location.pathname === "/super"
-                ? "sideItem active"
-                : "sideItem"
-            }
-          >
-            <p className="sideIcons"><House size={23} /></p>
-            <p className="actualP">Dashboard</p>
-          </li>
-        </Link>
-        <Link to={"/schools"} className="Links">
-          <li
-            className={
-              location.pathname === "/schools"
-                ? "sideItem active"
-                : "sideItem"
-            }
-          >
-            <p className="sideIcons"><LayoutGrid size={23} /></p>
-            <p className="actualP">Schools</p>
-          </li>
-        </Link>
-        <Link to={"/subscriptions"} className="Links">
-          <li
-            className={
-              location.pathname === "/subscriptions"
-                ? "sideItem active"
-                : "sideItem"
-            }
-          >
-            <p className="sideIcons"><CircleDollarSign size={23} /></p>
-            <p className="actualP">Subscriptions</p>
-          </li>
-        </Link>
-        <Link to={"/feeds"} className="Links">
-          <li
-            className={
-              location.pathname === "/feeds"
-                ? "sideItem active"
-                : "sideItem"
-            }
-          >
-            <p className="sideIcons"><MessageSquareDiff size={23} /></p>
-            <p className="actualP">Feedback</p>
-          </li>
-        </Link>
-        <Link to={"/setting"} className="Links">
-          <li
-            className={
-              location.pathname === "/setting" ? "sideItem active" : "sideItem"
-            }
-          >
-            <p className="sideIcons"><Cog size={23} /></p>
-            <p className="actualP">Settings</p>
-          </li>
-        </Link>
-      </ul>
-    </div>
+    </nav>
   );
 };
 

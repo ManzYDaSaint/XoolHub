@@ -68,8 +68,8 @@ const TermForm = ({ fetchData }) => {
   };
 
   return (
-    <form onSubmit={onSubmit} autoComplete='off'>
-      <div className='formGroup'>
+    <form onSubmit={onSubmit} autoComplete='off' className='w-1/2 py-4'>
+      <div className='grid grid-cols-2 gap-4'>
         <FormInput
           label={'Term'}
           type={'text'}

@@ -1,34 +1,43 @@
-import React from 'react';
-import Auth0 from '../../hooks/auth.jsx'
-import { Toaster } from 'react-hot-toast';
-import Sidebar from '../../components/input/sidebar.jsx'
-import Navbar from '../../components/input/top.jsx'
-import AdminTabs from './components/adminTabs.jsx';
+import React, { useState } from "react";
+import Layout from "../../components/layout.jsx";
+import AdminPersonal from "./components/adminPersonal.jsx";
+import Billing from "./components/billing.jsx";
+import Navbar from "../../components/input/top.jsx";
+import Tabs from "../../components/tabs.jsx";
 
 const AdminProfile = () => {
-
-    return (
-        <Auth0>
-            <div className='dashboard__container'>
-                <Toaster />
-                <div className="dashboard__content">
-                    <Sidebar />
-                    <div className="dashboard">
-                        <Navbar />
-                        <div className="settingContainer">
-                            <div className="settingContent">
-                                <div className='profile_container'>
-                                    <div>
-                                        <AdminTabs />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+  const [selectedTab, setSelectedTab] = useState("Profile");
+  return (
+    <Layout>
+      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+        <div className="flex h-16 items-center gap-4 px-6">
+          <div className="flex items-center justify-between w-full">
+            <div className="ml-16 border-l-2 border-blue-600 pl-6">
+              <h1 className="text-lg bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent font-semibold">
+                School Information Management
+              </h1>
             </div>
-        </Auth0>
-    );
+            <Navbar />
+          </div>
+        </div>
+      </header>
+
+      <main className="p-6 border-2 border-gray-300 rounded-lg m-5">
+        <h1 className="text-xl font-bold">{selectedTab}</h1>
+        <Tabs
+          tabs={["Profile", "Billing"]}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+        />
+        {selectedTab === "Profile" && (
+          <div className="border-2 border-gray-300 rounded-lg p-6 shadow-lg bg-white">
+            <AdminPersonal />
+          </div>
+        )}
+        {selectedTab === "Billing" && <Billing />}
+      </main>
+    </Layout>
+  );
 };
 
 export default AdminProfile;

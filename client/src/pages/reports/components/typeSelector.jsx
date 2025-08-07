@@ -19,10 +19,9 @@ const ExamSelector = ({ label, onChange, name, value }) => {
   }, []);
 
   return (
-      <div className="formInputContainer">
-        {label && <label htmlFor={''}>{label}</label>}
-        <div className="inputContainer">
-          <select name={name} value={value} onChange={onChange}>
+      <div className="bg-gray-100 px-4 py-2 rounded-lg flex flex-col mb-4">
+        {label && <label htmlFor={''} className="text-sm font-medium text-gray-700 py-2">{label}</label>}
+          <select name={name} value={value} onChange={onChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2">
             <option value="" selected disabled>Select an option</option>
             {options.map((option) => (
               <option key={option.id} value={option.id}>
@@ -30,7 +29,6 @@ const ExamSelector = ({ label, onChange, name, value }) => {
               </option>
             ))}
           </select>
-        </div>
       </div>
   );
 };

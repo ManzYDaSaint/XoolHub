@@ -11,7 +11,7 @@ const Forgot = () => {
 
   const handleEmail = (event) => {
     setEmail(event.target.value);
-  };
+  }; 
 
   const handleFocus = (event) => {
     setActiveInputId(event.target.id);

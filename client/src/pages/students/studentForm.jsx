@@ -76,12 +76,12 @@ const StudentForm = ({ fetchData }) => {
   };
 
   return (
-    <div>
-      <form onSubmit={onSubmit}>
+    <div className='mb-4'>
+      <form onSubmit={onSubmit} className='w-1/2'>
         {step === 1 && (
-          <div className="multi_step">
-            <h3 style={{fontFamily: "'Poppins', san-serif"}} className='my-5'><span>Step 1:</span> Select Year and Class</h3>
-            <div className="formGroup">
+          <div className="border-2 border-gray-300 rounded-lg p-4">
+            <h3 className="mb-4 text-sm font-semibold text-gray-700 border-b-2 border-gray-300 pb-4" style={{fontFamily: "'Poppins', san-serif"}}><span className='m-3 bg-blue-600 text-white px-3 py-1 rounded-lg'>Step 1:</span> Select Year and Class</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <ClassSelectInput
                 handleChange={handleChange}
                 label={'Class'}
@@ -105,8 +105,8 @@ const StudentForm = ({ fetchData }) => {
         )}
 
         {step === 2 && (
-          <div className="multi_step">
-            <h3 style={{fontFamily: "'Poppins', san-serif"}} className='my-5'><span>Step 2:</span> Enter Student Names</h3>
+          <div className="border-2 border-gray-300 rounded-lg p-4">
+            <h3 style={{fontFamily: "'Poppins', san-serif"}} className='mb-4 text-sm font-semibold text-gray-700 border-b-2 border-gray-300 pb-4'><span className='m-3 bg-blue-600 text-white px-3 py-1 rounded-lg'>Step 2:</span> Enter Student Names</h3>
             {studentNames.map((student, index) => (
               <div key={index}>
                 <div className="mb-3">
@@ -126,6 +126,7 @@ const StudentForm = ({ fetchData }) => {
               type={'button'}
               label={'Add row'}
             />
+            <div className="py-2"></div>
             <FormButton label={'Add Students'} id="tyepButton" />
           </div>
         )}

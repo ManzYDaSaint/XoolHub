@@ -57,10 +57,13 @@ const Transactions = () => {
 
   return (
     <div className="p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-xl font-semibold mb-2">Recent Transactions</h2>
+      <div className="border-b-2 border-gray-300">
+
+      <h2 className="text-xl font-semibold">Recent Transactions</h2>
       <p className="text-sm text-gray-500 mb-4">
         View all income and expense transactions
       </p>
+      </div>
       <TransTable Data={data} />
     </div>
   );

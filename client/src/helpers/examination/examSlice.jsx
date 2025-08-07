@@ -175,7 +175,7 @@ const ExamSlice = createSlice({
     subscriptionData: {
       name: '',
       price: '',
-      features: '',
+      max: '',
     },
   },
   reducers: {

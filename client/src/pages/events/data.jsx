@@ -59,19 +59,13 @@ const EventPage = () => {
     };
 
   return (
-    <>
-    <div className="bg-gray-50 min-h-screen py-10 px-4">
+    <div className="px-6 py-4">
+    <div className="p-4 border-2 border-gray-300 rounded-lg">
       <div className="div" style={{ display: show ? "none" : "block" }}>
-        <button type="button" onClick={handleOpen} class="add__rows__btn">
+        <button type="button" onClick={handleOpen} className="bg-gradient-to-r from-blue-700 via-gray-500 to-green-600 text-white hover:bg-gradient-to-br transition duration-300 focus:ring-2 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-3">
           <Plus size={15} className="plus" />
-          Add
+          Add Event
         </button>
-        <h1 className="text-xl mt-4 text-gray-600 xoolinfo">Upcoming Events</h1>
-        <p>
-          This section helps you add, edit and delete events. <br /> Those with
-          a <strong>New</strong> tag means their date hasn't passed yet, and
-          those without means they already happened.
-        </p>
       </div>
       <div className="toggleDiv" style={{ display: show ? "block" : "none" }}>
         <Form fetchData={fetchData} />
@@ -79,26 +73,27 @@ const EventPage = () => {
       </div>
 
       {/* Event List */}
-      <div className="event-container">
+      <div className="border-2 border-gray-300 rounded-lg p-4 mt-6">
+        <h5 className="text-gray-700 text-md font-medium p-2 border-b-2 border-gray-300 mb-4">All active events are listed below, <br /> Feel free to edit or delete these active events</h5>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {events.map((event) => (
             <div
               key={event.id}
-              className="rounded-lg p-8 relative"
+              className="rounded-lg p-4 relative"
               style={{
                 backgroundColor: "#E8ECEF",
                 border: "2px solid #CDCCCC",
               }}
             >
-              <div className="circle1"></div>
-              <div className="circle2"></div>
-              <div className="circle3"></div>
-              <div className="circle4"></div>
-              <div className="circle5"></div>
-              <div className="circle6"></div>
-              <div className="divider flex justify-between items-center">
+              <div className="absolute -top-3 -left-3 w-8 h-8 rounded-full bg-white"></div>
+              <div className="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-white"></div>
+              <div className="absolute -bottom-3 -left-3 w-8 h-8 rounded-full bg-white"></div>
+              <div className="absolute -bottom-3 -right-3 w-8 h-8 rounded-full bg-white"></div>
+              <div className="absolute top-[4.4rem] -left-4 w-8 h-8 rounded-full bg-white"></div>
+              <div className="absolute top-[4.4rem] -right-4 w-8 h-8 rounded-full bg-white"></div>
+              <div className="border-b-2 border-gray-300 mb-2 flex justify-between items-center">
                 <h3
-                  className="text-lg font-semibold text-gray-600 mb-2"
+                  className="text-md font-semibold text-gray-600 mb-2"
                   style={{ fontFamily: "'Poppins', sans-serif" }}
                 >
                   {event.title}
@@ -136,7 +131,7 @@ const EventPage = () => {
         </div>
       </div>
     </div>
-    </>
+    </div>
   );
 };
 

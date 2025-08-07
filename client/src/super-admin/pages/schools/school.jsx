@@ -4,7 +4,6 @@ import SuperAuth0 from "../../../hooks/superauth.jsx";
 import SchoolTable from "./table.jsx";
 import toast, { Toaster } from "react-hot-toast";
 import SuperSidebar from "../../components/navbar/navbar.jsx";
-import Menu from "../../components/Top/menu.jsx";
 import ToggleSwitch from "./toggle.jsx";
 
 const Schools = () => {
@@ -80,10 +79,9 @@ const Schools = () => {
         <div className="dashboard__content">
           <SuperSidebar />
           <div className="dashboard">
-            <Menu />
             <div className="settingContainer">
               <div className="settingContent">
-                <div className="flex bg-gray-100 pb-3">
+                <div className="flex pb-3">
                   <div className="flex-1 flex flex-col">
                     {/* Header */}
                     <div className="mb-1 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-4">
@@ -103,7 +101,7 @@ const Schools = () => {
 
                     {/* Content */}
                     <div className="px-5">
-                      <div className="p-5 bg-gray-100 rounded-lg shadow-lg">
+                      <div className="p-5 rounded-lg shadow-lg">
                         <SchoolTable data={school} />
                       </div>
                     </div>

@@ -119,43 +119,44 @@ const Overview = () => {
   return (
     <div className="p-6">
       <div className="p-6 bg-white shadow-lg rounded-lg flex gap-4">
-        <div className="flex-1">
-          <div className="flex justify-between align-center gap-3">
+        <div className="w-3/4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Card
               icon={UsersRound}
               title={count}
               description={"Student Count"}
             />
-            <div className="card_container">
-              <div className="flex justify-between align-center gap-3">
-                <div className="counter">
-                  <UsersRound size={30} className="card_icon" />
-                  <div className="card_detail">
-                    <h4>{male}</h4>
-                    <p>Male</p>
-                  </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+              <div className="border-2 border-gray-300 p-2 py-7 rounded-lg flex items-center gap-4">
+                <p className="p-2 rounded-lg bg-blue-600">
+                  <UsersRound size={30} className="w-6 h-6 text-white" />
+                </p>
+                <div className="card_detail">
+                  <p className="text-sm text-gray-700">Male</p>
+                  <h4>{male}</h4>
                 </div>
-                <div className="vr"></div>
-                <div className="counter">
-                  <Users size={30} className="card_icon" />
-                  <div className="card_detail">
-                    <h4>{female}</h4>
-                    <p>Female</p>
-                  </div>
+              </div>
+              <div className="w-full border-2 border-gray-300 p-2 py-7 rounded-lg flex items-center gap-4">
+                <p className="p-2 rounded-lg bg-blue-600">
+                  <Users size={30} className="w-6 h-6 text-white" />
+                </p>
+                <div className="card_detail">
+                  <p className="text-sm text-gray-700">Female</p>
+                  <h4>{female}</h4>
                 </div>
               </div>
             </div>
           </div>
-          <div className="graph_card mt-5">
-            <h4 className="graph_title">Student Count</h4>
+          <div className="p-4 border-2 border-gray-300 rounded-lg w-full mt-4">
+            <h4 className="text-gray-500 font-semibold mt-4 border-b-2 border-gray-300 pb-2 text-md mb-4">Student Count</h4>
             <StudentBarChart data={reshapedData} />
           </div>
-          <div className="pie_card mt-5">
-            <h4 className="pie_title">Gender Distribution</h4>
+          <div className="p-4 border-2 border-gray-300 rounded-lg w-full mt-4">
+            <h4 className="text-gray-500 font-semibold mt-4 border-b-2 border-gray-300 pb-2 text-md mb-4">Gender Distribution</h4>
             <GenderPieChart />
           </div>
         </div>
-        <div className="flex-1">
+        <div className="border-l-2 border-gray-300 pl-4 w-1/4">
           <h4 className="top_performing_title">Top performance this term</h4>
           <div className="top_performing">
             {best.map((item, index) => (

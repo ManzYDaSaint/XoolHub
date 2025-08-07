@@ -19,7 +19,7 @@ import {
   setEditItemId,
 } from "../../../helpers/examination/examSlice.jsx";
 import api from "../../../services/apiServices";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import CountUp from "react-countup";
 
 // Sample data for expenses
@@ -302,18 +302,17 @@ const ExpensesPage = () => {
 
   return (
     <div className="flex bg-gray-100 pb-3">
-      <Toaster />
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-4">
-          <div>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-2 sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
+          <div className="ml-16">
             <h1
               className="text-lg font-semibold"
               style={{ fontFamily: "'Poppins', san-serif" }}
             >
               Expenses Management
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="text-sm text-gray-500">
               Track and manage all school expenses
             </p>
           </div>
@@ -391,88 +390,91 @@ const ExpensesPage = () => {
             </span>
             <div className="inline-block transform overflow-hidden rounded-lg bg-white text-left align-bottom shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:align-middle">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div className="sm:flex sm:items-start py-5">
+                <div className="flex items-center gap-4 py-5 w-full">
                   <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
                     <CreditCard className="h-6 w-6 text-blue-600" />
                   </div>
-                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <h3 className="text-lg font-medium leading-6 text-gray-900 mb-5">
-                      Add New Expense
-                    </h3>
-                    <div className="mt-2">
-                      <form onSubmit={handleSubmit} className="space-y-4">
-                        <div className="formGroup">
-                          <FormInput
-                            label={"Date"}
-                            type="date"
-                            name="date"
-                            required
-                            value={expenseFormData.date}
-                            onChange={handleInputChange}
-                          />
-                          <FormInput
-                            label={"Amount (MK)"}
-                            type="number"
-                            name="amount"
-                            required
-                            value={expenseFormData.amount}
-                            onChange={handleInputChange}
-                            placeholder={"0.00"}
-                          />
-                        </div>
-                        <div className="formInputContainer">
-                          <label htmlFor={"Category"}>Category</label>
-                          <div className="inputContainer">
-                            <select
-                              id="category"
-                              name="category"
-                              required
-                              value={expenseFormData.category}
-                              onChange={handleInputChange}
-                            >
-                              <option value="">Select a category</option>
-                              <option value="supplies">Supplies</option>
-                              <option value="equipment">Equipment</option>
-                              <option value="transportation">
-                                Transportation
-                              </option>
-                              <option value="utilities">Utilities</option>
-                              <option value="maintenance">Maintenance</option>
-                              <option value="other">Other</option>
-                            </select>
-                          </div>
-                        </div>
-
+                  <h3 className="text-lg font-medium leading-6 text-gray-900 mb-5 border-b-2 border-gray-300 pb-3">
+                    Add New Expense
+                  </h3>
+                </div>
+                <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                  <div className="mt-2">
+                    <form onSubmit={handleSubmit} className="space-y-4 w-full">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <FormInput
-                          label={"Description"}
-                          type="text"
-                          name="description"
+                          label={"Date"}
+                          type="date"
+                          name="date"
                           required
-                          value={expenseFormData.description}
+                          value={expenseFormData.date}
                           onChange={handleInputChange}
-                          placeholder={"Type description here..."}
                         />
-                      </form>
-                    </div>
+                        <FormInput
+                          label={"Amount (MK)"}
+                          type="number"
+                          name="amount"
+                          required
+                          value={expenseFormData.amount}
+                          onChange={handleInputChange}
+                          placeholder={"0.00"}
+                        />
+                      </div>
+                      <div className="bg-gray-100 px-4 py-2 rounded-lg flex flex-col mb-4">
+                        <label
+                          htmlFor={"Category"}
+                          className="text-sm font-medium text-gray-700 py-2"
+                        >
+                          Category
+                        </label>
+                        <select
+                          id="category"
+                          name="category"
+                          required
+                          value={expenseFormData.category}
+                          onChange={handleInputChange}
+                          className="w-full bg-transparent text-sm outline-none px-4 pb-2"
+                        >
+                          <option value="">Select a category</option>
+                          <option value="supplies">Supplies</option>
+                          <option value="equipment">Equipment</option>
+                          <option value="transportation">Transportation</option>
+                          <option value="utilities">Utilities</option>
+                          <option value="maintenance">Maintenance</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </div>
+
+                      <FormInput
+                        label={"Description"}
+                        type="text"
+                        name="description"
+                        required
+                        value={expenseFormData.description}
+                        onChange={handleInputChange}
+                        placeholder={"Type description here..."}
+                      />
+                    </form>
                   </div>
                 </div>
               </div>
-              <div className="bg-gray-50 px-4 pb-5 sm:flex sm:flex-row-reverse sm:px-6">
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                >
-                  {isEditMode ? "Update Expense" : "Add Expense"}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleCloseModal}
-                  className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:w-auto sm:text-sm"
-                >
-                  Cancel
-                </button>
-              </div>
+            
+            <div className="bg-gray-50 px-4 pb-5 sm:flex sm:flex-row-reverse sm:px-6">
+              <button
+                type="button"
+                onClick={handleSubmit}
+                className="inline-flex w-full justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+              >
+                {isEditMode ? "Update Expense" : "Add Expense"}
+              </button>
+              <button
+                type="button"
+                onClick={handleCloseModal}
+                className="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:mt-0 sm:w-auto sm:text-sm"
+              >
+                Cancel
+              </button>
+            </div>
             </div>
           </div>
         </div>

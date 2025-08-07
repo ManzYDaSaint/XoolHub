@@ -1,7 +1,6 @@
 import React from "react";
 import SuperAuth0 from "../../../hooks/superauth";
 import SuperSidebar from "../../components/navbar/navbar";
-import Menu from "../../components/Top/menu";
 import { useNavigate } from "react-router-dom";
 import FormButton from "../../../components/input/formButton";
 import Data from "./data";
@@ -21,7 +20,6 @@ const Subsciptions = () => {
         <div className="dashboard__content">
           <SuperSidebar />
           <div className="dashboard">
-            <Menu />
             <div className="settingContainer">
               <div className="settingContent">
                 <div className="flex bg-gray-100 pb-3">
@@ -51,7 +49,7 @@ const Subsciptions = () => {
 
                     {/* Content */}
                     <div className="px-5">
-                      <div className="p-5 bg-gray-100 rounded-lg shadow-lg">
+                      <div className="p-5 rounded-lg shadow-lg">
                       <Data />
                       </div>
                     </div>

@@ -2,10 +2,10 @@ import { useState } from "react";
 import Navbar from "./navbar";
 import FinancialChart from "./financialchart";
 import Notifications from "./notifications";
-import Tabs from "./tabs";
 import Transactions from "./transactions";
 import FeePayments from "./payments";
 import OverviewSection from "../../fees/dashboard/components/OverviewSection";
+import Tabs from "../../../components/tabs";
 
 const Dashboard = () => {
   const [selectedTab, setSelectedTab] = useState("Overview");
@@ -16,7 +16,7 @@ const Dashboard = () => {
         <Navbar />
         <main className="p-6">
           <h1 className="text-xl font-bold">{selectedTab}</h1>
-          <Tabs selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+          <Tabs tabs={['Overview', 'Transactions', 'Fee Payments']} selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
           {selectedTab === "Overview" && (
             <div className="p-6 bg-white shadow-lg rounded-lg">
               <OverviewSection />

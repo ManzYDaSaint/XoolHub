@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const { route } = require('../app.js');
 const { 
     signup, 
     login, 
@@ -80,7 +79,6 @@ const {
     updatePays,
     deletePays,
     tverify,
-    tLogout,
     getClassesTeacher,
     getSubjectsTeacher,
     getExamsTeacher,
@@ -133,7 +131,6 @@ const {
     countTermlyReports,
     PasswordUpdates,
     superVerify,
-    superLogout,
     PasswordSuper,
     countXuls,
     getXuls,
@@ -155,7 +152,6 @@ const {
     countSubscribedXuls,
     sumAmounts,
     paymentLineChart,
-    sendOTP,
     insertEvent,
     getEvent,
     editEvents,
@@ -196,11 +192,9 @@ const {
     AvgMonthly,
     Transactions,
     getChartLiner,
-    getWebhook,
-    postWebhook,
-    testnet,
     getAdminExpenses,
     updateStatusEx,
+    cancSubscription,
 } = require('../controller/apiController.js');
 
 
@@ -213,14 +207,12 @@ router.route('/count-subscribed').get(countSubscribedXuls);
 router.route('/sum-amount').get(sumAmounts);
 router.route('/get-schools').get(getXuls);
 router.route('/payment-linechart').get(paymentLineChart);
-router.route('/send-otp').post(sendOTP);
 
 // ***** POST Methods
 // router.route('/authenticate').post((req, res) => res.end());
 
 
 // ***** GET Methods
-router.route('/school/:username').get();
 router.route('/verifyOTP').post(verifyOTP);
 router.route('/resendOTP').post(resendOTP);
 router.route('/createResetSession').get(createResetSession);
@@ -252,6 +244,7 @@ router.route('/add-billing').post(insertSubscription);
 router.route('/check-subscription-status').get(checkSubStatus);
 router.route('/check-paid-status').get(checkPaidStatus);
 router.route('/update-suspended-status').put(updateSuspended);
+router.route('/cancel-subscription').put(cancSubscription);
 router.route('/get-subscription-payments').get(gotSubscriptionPayments);
 router.route('/update-statuses/:id').put(updateStatuses);
 router.route('/update-school-status/:id').put(updateSchoolStatuses);
@@ -287,8 +280,6 @@ router.route('/login').post(login);
 router.route('/verify').post(verify);
 router.route('/tverify').post(tverify);
 router.route('/superverify').post(superVerify);
-router.route('/superlogout').post(superLogout);
-router.route('/tlogout').post(tLogout);
 router.route('/logout').post(Logout);
 
 // ------- LOGIN ROUTES -----------
@@ -515,7 +506,6 @@ router.route('/insertresults').post(insertResults);
 // ------- FILTER ROUTES -----------
 router.route('/getx').post(getXs);
 router.route('/deleteresult').delete(deleteResults);
-router.route('/getscore/:id').get(getScores);
 router.route('/getscore/:id').get(getScores);
 router.route('/updatscore/:id').put(updateScores);
 // ------- FILTER ROUTES -----------

@@ -84,21 +84,22 @@ function UniversalTable({ columns, data }) {
   }
 
   return (
-    <div className="helperDiv">
-      <p className='table_note'>Note: <span className='highlight'>Click on any of the column name to sort in <br /> both <strong>ascending</strong> and <strong>descending</strong> order. Default is unsorted.</span></p>
+    <div className="w-full p-4 space-y-4">
+      <p className='text-sm font-semibold text-gray-700'>Note: <span className='highlight'>Click on any of the column name to sort in <br /> both <strong>ascending</strong> and <strong>descending</strong> order. Default is unsorted.</span></p>
       <Searchbar 
         type={'text'}
         placeholder={'Search by keyword'}
         value={searchTerm}
         onChange={handleSearch}
       />
-      <table className="table customisedTable">
-        <thead>
+      <div className="border-2 border-gray-300 rounded-lg">
+      <table className="w-full">
+        <thead className='text-sm text-gray-700 bg-gray-200'>
           <tr>
             {columns.map((column, index) => (
-              <th key={index} onClick={() => handleSort(column.key)} style={{ width: column.width, textAlign: column.textAlign }} className='py-3 px-3 text-left'>
+              <th key={index} onClick={() => handleSort(column.key)} style={{ width: column.width, textAlign: column.textAlign }} className='py-4 px-3 text-left'>
                 {column.label}
-                {sortColumn === column && (
+                {sortColumn === column.key && (
                   <span className="sort-icon">
                     {sortOrder === 'asc' ? '▲' : '▼'}
                   </span>
@@ -107,32 +108,33 @@ function UniversalTable({ columns, data }) {
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className='text-sm'>
           {paginatedData.map((row, index) => (
             <tr key={index}>
               {columns.map((column, index) => (
-                <td key={index} className='py-2 px-3 text-left'>{row[column.key]}</td>
+                <td key={index} className='py-3 px-3 text-left border-b border-gray-300'>{row[column.key]}</td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
-      <div className="pagination flex align-center my-5">
-        <button onClick={handlePreviousPage} disabled={currentPage === 1}>
-          Prev
+      <div className="flex items-center justify-between px-16 border-t border-gray-300 py-2">
+        <button onClick={handlePreviousPage} disabled={currentPage === 1} className='cursor-pointer border-2 border-gray-300 px-3 py-1 text-gray-600 text-sm font-medium rounded-lg'>
+          Previous
         </button>
         {pageNumbers.map((pageNumber) => (
           <button
             key={pageNumber}
             onClick={() => handlePageClick(pageNumber)}
-            className={pageNumber === currentPage ? 'active-page' : ''}
+            className={pageNumber === currentPage ? 'cursor-pointer border-2 border-blue-600 px-3 py-1 text-blue-600 text-sm font-medium rounded-lg' : ''}
           >
             {pageNumber}
           </button>
         ))}
-        <button onClick={handleNextPage} disabled={currentPage === totalPages}>
+        <button onClick={handleNextPage} disabled={currentPage === totalPages} className='cursor-pointer border-2 border-gray-300 px-3 py-1 text-gray-600 text-sm font-medium rounded-lg'>
           Next
         </button>
+      </div>
       </div>
     </div>
   );

@@ -4,49 +4,46 @@ import { Check, X } from "lucide-react";
 const subscriptionPlans = [
   {
     name: "Basic",
-    features: [true, false, false, false, true, true, true, true, false, false, true, false, false, false, false],
+    features: [true, true, true, false, true, true, false, false, false, false, true, false, false, false, false, false, false, false],
   },
   {
     name: "Pro",
-    features: [true, false, true, false, true, true, true, true, true, false, true, false, true, false, false],
+    features: [true, true, true, false, true, true, true, true, true, true, true, true, false, false, false, true, true, true],
   },
   {
     name: "Enterprise",
-    features: [true, true, true, false, true, true, true, true, true, true, true, true, true, false, false],
+    features: [true, true, true, true, true, true, true, true, true, true, true, true, true, false, true, true, true, true],
   },
   {
     name: "Custom",
-    features: [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
+    features: [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true],
   },
 ];
 
 const featuresList = [
-  "Access to basic features",
-  "Priority Support",
+  "Student Information Management",
+  "Basic Attendance Tracking",
+  "Class Scheduling",
+  "Parent Communication Portal",
+  "Basic Reportiing",
+  "Email Support",
+  "Bulk Student Management",
   "Advanced Analytics",
-  "Custom Integrations",
-  "Student Management",
-  "Teacher Management",
-  "Results Management",
-  "Examinations Management",
-  "File Export and Import",
-  "Parents Portal",
+  "White-label Branding",
+  "Staff & Teacher Management",
   "Fees Management",
-  "Academic Settings",
-  "Timetable",
-  "Dedicated account manager",
-  "API Intergration"
+  "Downloadable Reports Cards",
+  "Priority Support",
+  "API Access & Integrations",
+  "WhatsApp Integrations",
+  "Dedicated Accounts Managements",
+  "Bulk Data Import/Export",
+  "24/7 Phone Support",
 ];
 
 const SubscriptionPlans = () => {
   return (
     <div className="p-8 bg-gray-100 min-h-screen plans">
-      <div className="text-center">
-
-      <h2>SUBSCRIPTIONS</h2>
-      <h5>Our subscriptions plans</h5>
-      <p>Check out our subscription plans and their features and choose the best<br /> plan that suits your school.</p>
-      </div>
       <div className="overflow-x-auto">
         <table className="w-full table-auto border-collapse border border-gray-300 bg-white shadow-md rounded-lg">
           <thead>

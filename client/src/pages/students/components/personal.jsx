@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { setStudentUpdateFormData } from '../../../helpers/examination/examSlice'
 import { toast } from 'react-hot-toast';
 import FormInput from '../../../components/input/formInput'
-
+ 
 const Personal = () => {
     const { id } = useParams();
     const dispatch = useDispatch();
@@ -71,8 +71,11 @@ const Personal = () => {
     return (
         <div className='personalContainer p-6'>
             <div className="profileUpdate">
-                <h5 className="text-lg font-bold py-4"><strong>Profile Information</strong></h5>
-                <p className="text-gray-600 pb-5">Here you can edit information about yourself. <br /> The changes will be displaced and effective once it's updated.</p>
+                <div className="border-b-2 border-gray-300 pb-4 mb-5">
+
+                <h5 className="text-lg font-bold"><strong>Profile Information</strong></h5>
+                <p className="text-gray-700 text-sm">Here you can edit information about yourself. <br /> The changes will be displaced and effective once it's updated.</p>
+                </div>
                 <form onSubmit={onSubmit} autoComplete='off' className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>

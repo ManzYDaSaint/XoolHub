@@ -17,7 +17,7 @@ const Reset = () => {
 
   const handleFocus = (event) => {
     setActiveInputId(event.target.id);
-  };
+  }; 
 
   const handleBlur = () => {
     setActiveInputId(null);

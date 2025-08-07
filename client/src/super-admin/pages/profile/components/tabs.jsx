@@ -1,32 +1,25 @@
-import React, { useState } from 'react'
-import { UserRoundPen, Presentation } from 'lucide-react'
-import SuperProfile from './profile'
+import React, { useState } from "react";
+import SuperProfile from "./profile";
+import Tabs from "../../../../components/tabs";
 
 const SuperTabs = () => {
-    const [selectedTab, setSelectedTab] = useState(0);
-    const [active, setActive] = useState(0);
-    
-    const handleTabClick = (index) => {
-      setSelectedTab(index);
-      setActive(!active);
-    };
+  const [selectedTab, setSelectedTab] = useState("Profile");
 
   return (
-    <div class="settingContent">
-    <div class="tab">
-      <button class={selectedTab === 0 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(0)}>Profile <UserRoundPen size={22} className='adminIcon' /></button>
-      <button class={selectedTab === 1 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(1)}>Notice Board <Presentation size={22} className='adminIcon' /></button>
-    </div>
-    {selectedTab === 0 && <div id="Personal" class="tabcontent animate-bottom">
-        <SuperProfile />
-    </div> 
-    }
-    {selectedTab === 1 &&<div id="Academic" class="tabcontent animate-bottom">
-        {/* <Academical /> */}
-    </div>
-    }
-  </div>
-  )
-}
+    <>
+      <Tabs
+        tabs={["Profile", "Notice Board"]}
+        selectedTab={selectedTab}
+        setSelectedTab={setSelectedTab}
+      />
+      {selectedTab === "Profile" && <SuperProfile />}
+      {selectedTab === "Notice Board" && (
+        <div className="w-full h-full flex items-center justify-center">
+          <h1 className="text-2xl font-bold">Notice Board Coming Soon!</h1>
+        </div>
+      )}
+    </>
+  );
+};
 
-export default SuperTabs
+export default SuperTabs;

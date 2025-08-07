@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const Profile = () => {
+const ProfileData = () => {
   const navigate = useNavigate();
   const [teacher, setTeacher] = useState("");
   const [open, setOpen] = useState(false);
@@ -35,7 +35,7 @@ const Profile = () => {
   //   Log Out Section
 
   const handleLogOut = async () => {
-    const res = await api.tLogout();
+    const res = await api.Logout();
     if (res.data.success === true) {
       toast.success(res.data.message);
 
@@ -91,8 +91,8 @@ const Profile = () => {
     <div className="personalContainer">
       <LogOutModal open={open} setOpen={setOpen} />
       <div className="profileUpdate">
-        <h5 className="text-lg font-semibold py-4">Profile Information</h5>
-        <p className="text-gray-600">
+        <h5 className="text-lg font-semibold py-2">Profile Information</h5>
+        <p className="text-gray-600 text-sm">
           Here you can view information about yourself. <br /> You can not
           change any of the information displayed here.
         </p>
@@ -148,15 +148,15 @@ const Profile = () => {
             </div>
           )}
         </form>
-        <div className="cutter">
-          <h1 className="text-xl mt-4 text-gray-800 xoolinfo py-5">
+        <div className="border-t-2 border-gray-300 my-5">
+          <h1 className="text-lg font-semibold mt-4 text-gray-800 py-3">
             Change Password
           </h1>
-          <p>
+          <p className="text-gray-600 text-sm">
             Update your password associated with your <br /> account.
           </p>
           <form onSubmit={onPasswordSubmit} autoComplete="off" className="mt-5">
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <FormInput
                   label={"Current Password"}
@@ -194,13 +194,13 @@ const Profile = () => {
             />
           </form>
         </div>
-        <div className="cutter">
-          <div className="flex justify-between">
+        <div className="border-t-2 border-gray-300 my-5">
+          <div className="flex justify-between items-center">
             <div className="left">
-              <h1 className="text-xl mt-4 text-gray-800 xoolinfo py-5">
+              <h1 className="text-lg font-semibold mt-4 text-gray-800 py-3">
                 Log out your session
               </h1>
-              <p>
+              <p className="text-gray-600 text-sm">
                 Are you sure want to log out? All your <br /> unsaved data will
                 be lost.
               </p>
@@ -219,4 +219,4 @@ const Profile = () => {
   );
 };
 
-export default Profile;
+export default ProfileData;

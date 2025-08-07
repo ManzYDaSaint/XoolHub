@@ -61,7 +61,7 @@ const PieChartComponent = () => {
       ];
       
   return (
-    <PieChart width={400} height={300}>
+    <PieChart width={400} height={300} className='text-sm'>
       <Pie
         data={data}
         dataKey="value"

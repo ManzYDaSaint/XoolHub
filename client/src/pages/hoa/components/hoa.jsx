@@ -1,22 +1,19 @@
 import React from "react";
-import { Toaster } from "react-hot-toast";
 import AverageScore from "../../reports/dashboard/components/averagescore";
 
 const Howa = () => {
   return (
-    <div className="flex bg-gray-100 pb-3">
-      <Toaster />
-      <div className="flex-1 flex flex-col">
+    <div className="bg-gray-100 pb-3">
         {/* Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-4">
-          <div>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-2 sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
+          <div className="ml-16">
             <h1
               className="text-lg font-semibold"
               style={{ fontFamily: "'Poppins', san-serif" }}
             >
               Head Of Academics Dashboard
             </h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="text-sm text-gray-500">
               Manage, edit and update your academics.
             </p>
           </div>
@@ -30,7 +27,6 @@ const Howa = () => {
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

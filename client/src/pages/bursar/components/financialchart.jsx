@@ -15,14 +15,10 @@ const FinancialChart = () => {
     fetchChart();
   }, []);
 
-  const Card = ({ children, className = "" }) => (
-    <div className={`bg-white p-4 shadow rounded-lg ${className}`}>{children}</div>
-  );
-
   return (
-    <Card className="p-5 mt-6">
-      <h3 className="text-lg font-semibold mb-4 pt-3">Monthly Overview</h3>
-      <ResponsiveContainer width="100%" height={300}>
+    <div className="p-6 border-2 border-gray-300 rounded-lg w-full">
+      <h3 className="text-gray-500 font-semibold mt-4 border-b-2 border-gray-300 pb-2 text-md">Monthly Overview</h3>
+      <ResponsiveContainer width="100%" height={300} className={'text-sm mt-4'}>
         <AreaChart data={data}>
           <XAxis dataKey="name" />
           <YAxis />
@@ -31,7 +27,7 @@ const FinancialChart = () => {
           <Area type="monotone" dataKey="expenses" stroke="#EF4444" fill="#EF444430" />
         </AreaChart>
       </ResponsiveContainer>
-    </Card>
+    </div>
   );
 };
 

@@ -19,8 +19,8 @@ const YearOptions = ({ onChange, name, value }) => {
   }, []);
 
   return (
-        <div className="selectorInput">
-          <select name={name} value={value} onChange={onChange}>
+        <div className="flex items-center justify-end mb-4">
+          <select name={name} value={value} onChange={onChange} className='bg-blue-600 rounded-md px-3 py-1 text-white'>
             {options.map((option) => (
               <option key={option.yearid} value={option.yearid}>
                 {option.name}

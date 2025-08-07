@@ -53,8 +53,8 @@ const AssignForm = ({ fetchData }) => {
   };
 
   return (
-    <form onSubmit={onSubmit} autoComplete='off' className='mt-5'>
-      <div className='formGroup'>
+    <form onSubmit={onSubmit} autoComplete='off' className='w-1/2 py-4'>
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         <TeacherSelectInput 
           label={'Teacher'}
           handleChange={handleChange}

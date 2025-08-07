@@ -51,7 +51,7 @@ const ContactForm = () => {
                 placeholder="Your Message"
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-              />
+              /> 
               {errors.message && <p className="error">{errors.message}</p>}
               
               <button type="submit">Send Message</button>

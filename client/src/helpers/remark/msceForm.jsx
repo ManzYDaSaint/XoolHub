@@ -64,8 +64,8 @@ const MsceForm = ({ fetchData }) => {
 
 
   return (
-    <form onSubmit={onSubmit} autoComplete='off'>
-      <div className='formGroup'>
+    <form onSubmit={onSubmit} autoComplete='off' className='w-1/2 py-4'>
+      <div className='grid grid-cols-2 gap-4'>
         <div className="outSide">
           <div className="inSide">
             <FormInput 

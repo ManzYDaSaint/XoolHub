@@ -2,9 +2,12 @@ import React, { useState, useEffect } from "react";
 import FormInput from "../../../../components/input/formInput";
 import FormButton from "../../../../components/input/formButton";
 import { useSelector, useDispatch } from "react-redux";
-import { setSuperPassword, setSuperDetail } from "../../../../helpers/examination/examSlice";
+import {
+  setSuperPassword,
+  setSuperDetail,
+} from "../../../../helpers/examination/examSlice";
 import { toast } from "react-hot-toast";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import api from "../../../../services/apiServices";
 
 const SuperProfile = () => {
@@ -15,27 +18,27 @@ const SuperProfile = () => {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-      try {
-        const res = await api.getAdmin();
-        const data = res.data.checker;
+    try {
+      const res = await api.getAdmin();
+      const data = res.data.checker;
 
-        dispatch(
-          setSuperDetail({
-            email: data.email || "",
-            phone: data.phone || "",
-            address: data.address || "",
-            email_address: data.email_address || "",
-            whatsapp: data.whatsapp || "",
-          })
-        );
-      } catch (error) {
-        console.error("Error fetching individual:", error);
-      }
-    };
-  
-    useEffect(() => {
-      fetchData(); // eslint-disable-next-line
-    }, []);
+      dispatch(
+        setSuperDetail({
+          email: data.email || "",
+          phone: data.phone || "",
+          address: data.address || "",
+          email_address: data.email_address || "",
+          whatsapp: data.whatsapp || "",
+        })
+      );
+    } catch (error) {
+      console.error("Error fetching individual:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(); // eslint-disable-next-line
+  }, []);
 
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
@@ -70,16 +73,17 @@ const SuperProfile = () => {
       toast.error("An error occurred. Please try again.");
     } finally {
       setProcessing(false);
-      dispatch(setSuperPassword({
-        current: "",
-        newPassword: "",
-        confirm: "",
-      }));
+      dispatch(
+        setSuperPassword({
+          current: "",
+          newPassword: "",
+          confirm: "",
+        })
+      );
     }
   };
 
   const handleDetail = async (data) => {
-
     try {
       const res = await api.updateAdmin(data);
 
@@ -107,35 +111,45 @@ const SuperProfile = () => {
     handleDetail(superDetail);
   };
 
-//   Log Out Section
-    
-    const handleLogOut = async() => {
-        const res = await api.superLogout();
-        if(res.data.success === true) {
-            toast.success(res.data.message);
+  //   Log Out Section
 
-            setTimeout(() => {
-                navigate('/login');
-            }, 1000);
-            return;
-        }
+  const handleLogOut = async () => {
+    const res = await api.Logout();
+    if (res.data.success === true) {
+      toast.success(res.data.message);
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 1000);
+      return;
     }
+  };
 
-//   Log Out Section
+  //   Log Out Section
 
   return (
-    <div className="personalContainer">
+    <div className="border-2 border-gray-300 rounded-lg p-6">
       <div className="profileUpdate">
-        <h5 className="text-lg font-bold mb-3">Super Administrator Information</h5>
-        <p className="text-md">
-          Here you can update the password of the Super Administrator. <br /> The changes
-          will be displayed and effective once updated.
-        </p>
+        <div className="border-b-2 border-gray-300 pb-3">
+          <h5 className="text-lg font-semibold text-gray-600">
+            Super Administrator Information
+          </h5>
+          <p className="text-sm text-gray-600">
+            Here you can update the password of the Super Administrator. <br />{" "}
+            The changes will be displayed and effective once updated.
+          </p>
+        </div>
 
-        <div className="cutter">
-          <h1 className="text-xl py-4 text-gray-800" style={{fontFamily: '"Poppins", sans-serif'}}>Update Details</h1>
-          <p className="text-md">
-            Changes that will be made will update <br />the whole system details.
+        <div className="mt-10">
+          <h1
+            className="text-lg font-semibold text-gray-600"
+            style={{ fontFamily: '"Poppins", sans-serif' }}
+          >
+            Update Details
+          </h1>
+          <p className="text-sm">
+            Changes that will be made will update <br />
+            the whole system details.
           </p>
           <form onSubmit={onUpdateSubmit} autoComplete="off" className="mt-5">
             <div className="grid grid-cols-2 gap-4">
@@ -190,18 +204,26 @@ const SuperProfile = () => {
                 />
               </div>
             </div>
-            <FormButton label={processing ? 'Saving...' : 'Update Settings'} id="tyepButton" />
+            <FormButton
+              label={processing ? "Saving..." : "Update Settings"}
+              id="tyepButton"
+            />
           </form>
         </div>
 
-        <div className="cutter">
-          <h1 className="text-lg py-4 text-gray-800" style={{fontFamily: '"Poppins", sans-serif'}}>Change Password</h1>
-          <p className="text-md">
+        <div className="border-t-2 border-gray-300 mt-10 pt-6">
+          <h1
+            className="text-lg font-semibold text-gray-800"
+            style={{ fontFamily: '"Poppins", sans-serif' }}
+          >
+            Change Password
+          </h1>
+          <p className="text-sm">
             Update your password associated with your <br /> account.
           </p>
           <form onSubmit={onPasswordSubmit} autoComplete="off" className="mt-5">
-            <div className="grid grid-cols-1 gap-4">
-              <div>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="">
                 <FormInput
                   label={"Current Password"}
                   type={"password"}
@@ -232,20 +254,32 @@ const SuperProfile = () => {
                 />
               </div>
             </div>
-            <FormButton label={processing ? 'Saving...' : 'Save'} id="tyepButton" />
+            <FormButton
+              label={processing ? "Saving..." : "Save"}
+              id="tyepButton"
+            />
           </form>
         </div>
-        <div className="cutter">
+        <div className="border-t-2 border-gray-300 mt-10 pt-6">
           <div className="flex justify-between">
             <div>
-              <h1 className="text-lg py-4 text-gray-800" style={{fontFamily: '"Poppins", sans-serif'}}>Log out your session</h1>
-              <p className="text-md">
+              <h1
+                className="text-lg font-semibold text-gray-800"
+                style={{ fontFamily: '"Poppins", sans-serif' }}
+              >
+                Log out your session
+              </h1>
+              <p className="text-sm">
                 Are you sure want to log out? All your <br /> unsaved data will
                 be lost.
               </p>
             </div>
             <div className="text-center">
-              <FormButton label={"Log Out"} id="nextButton" onClick={handleLogOut} />
+              <FormButton
+                label={"Log Out"}
+                id="nextButton"
+                onClick={handleLogOut}
+              />
             </div>
           </div>
         </div>

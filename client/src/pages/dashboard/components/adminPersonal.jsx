@@ -150,12 +150,12 @@ const AdminPersonal = () => {
     }
 
 //   Log Out Section
-
+ 
   return (
     <div className="personalContainer p-6">
       <div className="profileUpdate">
-        <h5 className="text-2xl font-bold">Administrator Information</h5>
-        <p className="mt-2">
+        <h5 className="text-lg font-semibold">Administrator Information</h5>
+        <p className="text-gray-600 text-sm">
           Here you can edit information about your school. <br /> The changes
           will be displayed and effective once updated.
         </p>
@@ -173,7 +173,7 @@ const AdminPersonal = () => {
             />
           )}
         </div>
-        <form onSubmit={onSubmit} autoComplete="off">
+        <form onSubmit={onSubmit} autoComplete="off" className="p-4">
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-medium">Select Logo: </label>
@@ -185,8 +185,8 @@ const AdminPersonal = () => {
                 className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring focus:ring-opacity-50"
               />
             </div>
-            <h1 className="text-xl mt-4 text-gray-800">School Information</h1>
-            <p>
+            <h1 className="text-lg font-semibold mt-4 text-gray-800">School Information</h1>
+            <p className="text-gray-600 text-sm">
               Update school information here by filling in the form. <br />{" "}
               Then save the changes.
             </p>
@@ -279,13 +279,14 @@ const AdminPersonal = () => {
           </div>
           <FormButton label={loading ? "Saving..." : "Save"} id="tyepButton" />
         </form>
-        <div className="cutter mt-6">
-          <h1 className="text-xl mt-4 text-gray-800">Change Password</h1>
-          <p>
+
+        <div className="border-t-2 border-gray-300 mt-12">
+          <h1 className="text-lg font-semibold mt-4 text-gray-800">Change Password</h1>
+          <p className="text-gray-600 text-sm">
             Update your password associated with your <br /> account.
           </p>
           <form onSubmit={onPasswordSubmit} autoComplete="off" className="mt-5">
-            <div className="grid grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <FormInput
                   label={"Current Password"}
@@ -320,13 +321,14 @@ const AdminPersonal = () => {
             <FormButton label={processing ? 'Saving...' : 'Save'} id="tyepButton" />
           </form>
         </div>
-        <div className="cutter mt-6">
-          <div className="flex justify-between">
+
+        <div className="border-t-2 border-gray-300 mt-12">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-xl mt-4 text-gray-800">
+              <h1 className="text-lg font-semibold mt-4 text-gray-800">
                 Log out your session
               </h1>
-              <p>
+              <p className="text-gray-600 text-sm">
                 Are you sure want to log out? All your <br /> unsaved data will
                 be lost.
               </p>
@@ -336,15 +338,15 @@ const AdminPersonal = () => {
             </div>
           </div>
         </div>
-        <div className="cutter mt-6">
-          <div className="flex justify-between">
-            <div>
-              <h1 className="text-xl mt-4 text-gray-800">
+        <div className="border-t-2 border-gray-300 mt-12">
+          <div className="flex justify-between items-center">
+            <div className="pt-4">
+              <h1 className="text-lg font-semibold text-gray-800">
                 Delete account
               </h1>
-              <p>
+              <p className="text-gray-600 text-sm">
                 No longer want to use our service? You can delete your account
-                here. This action is not reversible. All information related to
+                here. <br />This action is not reversible. All information related to
                 this account will be deleted permanently.
               </p>
             </div>

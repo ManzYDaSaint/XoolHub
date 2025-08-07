@@ -7,7 +7,7 @@ function LogOutModal({ open, setOpen }) {
     const navigate = useNavigate();
     
     const handleLogOut = async() => {
-        const res = await api.tLogout();
+        const res = await api.Logout();
         if(res.data.success === true) {
             toast.success(res.data.message);
 

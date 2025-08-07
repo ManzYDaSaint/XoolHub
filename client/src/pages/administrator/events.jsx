@@ -1,36 +1,29 @@
 import React from "react";
-import { Toaster } from "react-hot-toast";
 import EventPage from "../events/data.jsx";
-import Auth0 from "../../hooks/auth.jsx";
+import Layout from "../../components/layout.jsx";
+import Navbar from "../../components/input/top.jsx";
 
 const Events = () => {
-
   return (
-    <Auth0>
-      <div className="flex bg-gray-100 pb-3">
-      <Toaster />
-      <div className="flex-1 flex flex-col">
-        {/* Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-4">
-          <div>
-            <h1
-              className="text-lg font-semibold"
-              style={{ fontFamily: "'Poppins', san-serif" }}
-            >
-              Events Management
-            </h1>
-            <p className="mt-1 text-sm text-gray-500">
-              Manage and update school events.
-            </p>
+    <>
+      <Layout>
+        <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200">
+          <div className="flex h-16 items-center gap-4 px-6">
+            <div className="flex items-center justify-between w-full">
+              <div className="ml-16 border-l-2 border-blue-600 pl-6">
+                <h1 className="text-lg bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent font-semibold">
+                  Events Management
+                </h1>
+              </div>
+              <Navbar />
+            </div>
           </div>
-          <div className="mt-4 sm:mt-0"></div>
-        </div>
+        </header>
+      </Layout>
 
-        {/* Report Information */}
-        {/* <EventPage /> */}
-      </div>
-    </div>
-    </Auth0>
+      {/* Main Content */}
+      <EventPage />
+    </>
   );
 };
 

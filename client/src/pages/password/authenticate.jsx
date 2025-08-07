@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
-import Shield from "./assets/auth.png";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import api from "../../services/apiServices";
+import logo from "../../logo.png";
 
 const Authenticate = () => {
   const navigate = useNavigate();
@@ -83,28 +83,28 @@ const Authenticate = () => {
   };
 
   return (
-    <div className="notFound">
-      <Toaster />
-      <div className="logContainer">
-        <div className="logSider">
-          <div className="header">
-            <img src={Shield} alt="My" className="pass__master__icon" />
-          </div>
+    <div className="flex justify-center items-center h-screen w-screen space-y-4 bg-gradient-to-tr from-blue-900 via-purple-900 to-blue-900 md:bg-none">
+        <Toaster />
+        <div className="bg-none md:bg-gradient-to-tr from-blue-900 via-purple-900 to-blue-900 text-white px-6 py-5 text-center rounded-lg w-[400px]">
+          <Link to={"/"}>
+                    <p className="inline-flex my-6 md:my-7 px-1 md:px-1 py-2 bg-white rounded-lg md:rounded-xl border-0 md:border-4 border-blue-600">
+                      <img src={logo} alt="logo" className="h-6 md:h-10" />
+                    </p>
+                  </Link>
           <div className="body">
             <div className="dotted">
-              <h1 className="text-2xl font-bold text-center mb-4 text-gray-700">Authenticate Your Account</h1>
+              <h1 className="text-md md:text-xl font-bold text-center mb-4 text-gray-100">Authenticate Your Account</h1>
               <div className="dot"></div>
             </div>
-            <p>
-              Protecting your tickets is our priority. Please confirm your{" "}
-              <br /> account by entering the authorization code sent to{" "}
-              <br />
+            <p className="text-sm md:text-md text-gray-300 mt-3">
+              Protecting your tickets is our priority. Please confirm your
+               account by entering the authorization code sent to {" "} <br />
               <strong>{email}</strong>
             </p>
-            <form onSubmit={handleSubmit} className="custom_form mt-5" autoComplete="off">
+            <form onSubmit={handleSubmit} className="mt-5 w-full" autoComplete="off">
               <div className="codeBase">
                 <div id="hols" className={`one_field ${activeInputId === "5" ? "active" : ""}`}>
-                  <div id="hola" className="input_right">
+                  <div id="hola" className="flex justify-between items-center gap-2">
                     {inputs.map((input, index) => (
                       <input
                         key={index}
@@ -113,7 +113,7 @@ const Authenticate = () => {
                         maxLength="1"
                         onFocus={handleFocus}
                         onBlur={handleBlur}
-                        className="auth_code"
+                        className="w-12 h-12 text-2xl text-gray-700 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                         onChange={(event) => handleChange(index, event)}
                         ref={(el) => (inputRefs.current[index] = el)}
                       />
@@ -121,20 +121,19 @@ const Authenticate = () => {
                   </div>
                 </div>
               </div>
-              <div className="mt-5 flex items-center gap-5">
-                <p className="mt-3">
-                  It may take a minute to receive your code. <br /> Haven't received it?{" "}
-                  <span className="text-blue-600 cursor-pointer" onClick={handleResendCode}>{isResending ? "Resending..." : "Resend a new code"}</span>
-                </p>
-                <button type="submit" className="form_button" id="resetBtn">
+              <button type="submit" className="mt-5 w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition-colors duration-300">
                   Verify
                 </button>
+              <div className="mt-5 gap-5">
+                <p className="mt-1 text-sm md:text-md text-gray-300">
+                  Check the Spam folder if you can't find it. <br /> Haven't received it?{" "}
+                  <span className="text-blue-600 cursor-pointer" onClick={handleResendCode}>{isResending ? "Resending..." : "Resend a new code"}</span>
+                </p>
               </div>
             </form>
           </div>
         </div>
       </div>
-    </div>
   );
 };
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import api from "../../../services/apiServices.jsx";
 import SuperAuth0 from "../../../hooks/superauth.jsx";
 import SuperSidebar from "../../components/navbar/navbar.jsx";
-import Menu from "../../components/Top/menu.jsx";
 import Table from "./table.jsx";
 
 const Feeds = () => {
@@ -47,7 +46,6 @@ const Feeds = () => {
         <div className="dashboard__content">
           <SuperSidebar />
           <div className="dashboard">
-            <Menu />
             <div className="settingContainer">
               <div className="settingContent">
                 <div className="flex bg-gray-100 pb-3">

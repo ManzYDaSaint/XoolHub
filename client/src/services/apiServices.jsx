@@ -13,7 +13,6 @@ const countSubscribed = () => axios.get(API + '/count-subscribed');
 const sumAmount = () => axios.get(API + '/sum-amount');
 const paymentLineChart = () => axios.get(API + '/payment-linechart');
 const getXuls = () => axios.get(API + '/get-schools');
-const sendOTP = (data) => axios.post(API + '/send-otp', data);
 
 // --------- SUPER ADMIN AXIOS -----------
 const addSubscription = (data) => axios.post(API + '/add-subscriptions', data);
@@ -26,6 +25,7 @@ const addBilling = (data) => axios.post(API + '/add-billing', data);
 const checkSubscriptionStatus = () => axios.get(API + '/check-subscription-status');
 const checkPaidStatus = () => axios.get(API + '/check-paid-status');
 const updateSubscriptionStatus = (data) => axios.put(API + '/update-suspended-status', data);
+const cancelSubscription = () => axios.put(API + '/cancel-subscription');
 const getSubscriptionPayment = () => axios.get(API + '/get-subscription-payments');
 const updateStatus = (id, data) => axios.put(API + '/update-statuses/' + id, data);
 const updateSchoolStatus = (id, data) => axios.put(API + '/update-school-status/' + id, data);
@@ -63,8 +63,6 @@ const Logon = (data) => axios.post(API + '/login', data);
 const Verify = () => axios.post(API + '/verify');
 const tVerify = () => axios.post(API + '/tverify');
 const superVerify = () => axios.post(API + '/superverify');
-const superLogout = () => axios.post(API + '/superlogout');
-const tLogout = () => axios.post(API + '/tlogout');
 const Logout = () => axios.post(API + '/logout');
 const VerifyOTP = (data) => axios.post(API + '/verifyOTP', data);
 const ResendOTP = (data) => axios.post(API + '/resendOTP', data);
@@ -106,6 +104,7 @@ const editSubject = (id) => axios.get(API + '/editsubject/' + id);
 const updateSubject = (id, data) => axios.put(API + '/updatsubject/' + id, data);
 
 // --------- SUBJECT AXIOS -----------
+
 
 
 // --------- CLASS AXIOS -----------
@@ -425,7 +424,6 @@ export default {
   sumAmount,
   paymentLineChart,
   getXuls,
-  sendOTP,
   // ------ SCHOOL EXPORT -------
 
 
@@ -440,6 +438,7 @@ export default {
   checkSubscriptionStatus,
   checkPaidStatus,
   updateSubscriptionStatus,
+  cancelSubscription,
   getSubscriptionPayment,
   updateStatus,
   updateSchoolStatus,
@@ -468,10 +467,8 @@ export default {
   Verify,
   tVerify,
   superVerify,
-  superLogout,
   Logon,
   Logout,
-  tLogout,
   VerifyOTP,
   ResendOTP,
   // ------ LOGIN EXPORT -------

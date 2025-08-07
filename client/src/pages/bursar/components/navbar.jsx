@@ -5,15 +5,15 @@ import { CalendarDateRangePicker } from "./date-picker";
 const Navbar = () => {
 
   return (
-    <div className="flex justify-between items-center shadow p-4">
-      <div className="left">
+    <div className="flex justify-between items-center shadow py-2 px-4 sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
+      <div className="ml-16">
         <h2
           className="text-lg font-semibold"
           style={{ fontFamily: "'Poppins', san-serif" }}
         >
           Financial Dashboard
         </h2>
-        <p className="mt-1 text-sm text-gray-500">Overview of all the finances</p>
+        <p className="text-sm text-gray-500">Overview of all the finances</p>
       </div>
       <div className="flex justify-between items-center space-x-8">
         <div className="flex items-center space-x-2 py-2 px-10 border border-gray-300 rounded-xl">

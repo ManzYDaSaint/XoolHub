@@ -2,9 +2,9 @@ import React from 'react'
 
 const FormButton = ({type, label, id, onClick}) => {
   return (
-    <div className='formButtonContainer'>
+    <div className=''>
         <button 
-            className='formButton'
+            className='bg-gradient-to-r from-blue-600 to-green-600 outline-none px-3 py-2 rounded-lg text-white text-sm'
             id={id}
             type={type}
             onClick={onClick}

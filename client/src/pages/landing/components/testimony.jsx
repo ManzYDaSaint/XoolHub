@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { useState } from "react"
 import api from "../../../services/apiServices"
 import { useEffect } from "react"
+import HeaderBtn from "./ui/headerBtn"
 
 const Testimonials = () => {
   const [testimonials, setTestimony] = useState([]);
@@ -12,10 +13,11 @@ const Testimonials = () => {
   const fetchData = async() => {
     try {
       const res = await api.getFeedbackRating();
-      const data = res.data.rating;
+      const data = Array.isArray(res.data.rating) ? res.data.rating : [];
       setTestimony(data);
     } catch (error) {
       console.error('Error fetching individual:', error);
+      setTestimony([]); // fallback to empty array on error
     }
   }
 
@@ -62,30 +64,33 @@ const Testimonials = () => {
 
   return (
     <section
-      className="testimonials bg-gradient-to-br from-purple-600 to-blue-500 py-20 px-4 md:px-8 lg:px-16 relative overflow-hidden"
+      className="py-20 px-4 md:px-8 lg:px-16 relative overflow-hidden bg-gray-100"
       id="testimonials"
     >
       <div className="absolute inset-0 bg-white/10 backdrop-blur-lg"></div>
-      <div className="relative z-10 max-w-6xl mx-auto">
+      <div className="relative z-10 max-w-6xl mx-auto px-14 py-6 my-4 space-y-8 text-center">
         <motion.h2
-          className="text-4xl md:text-2xl text-uppercase text-white text-center mb-4"
+          className="text-center mb-4"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           style={{ textShadow: "0 2px 4px rgba(0,0,0,0.2)", fontFamily: "'Poppins', sans-serif" }}
         >
-          What Our Clients Say
+          <p className='inline-flex'>
+
+          <HeaderBtn>Testominals</HeaderBtn>
+          </p>
         </motion.h2>
         <motion.h5
-          className="text-xl md:text-2xl font-semibold text-white text-center mb-2"
+          className="text-xl font-bold text-blue-900 md:text-4xl"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          Hear from our happy clients
+          Hear What Our Users Are Saying
         </motion.h5>
         <motion.p
-          className="text-lg text-white text-center mb-12"
+          className="text-gray-700 text-md md:text-lg mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
@@ -114,7 +119,7 @@ const Testimonials = () => {
                 }`}
               />
             ))}
-          </div>
+            </div>
                   <p className="text-sm feedback text-gray-700 text-lg md:text-xl mb-6 w-100">{testi.commenti}</p>
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xl">

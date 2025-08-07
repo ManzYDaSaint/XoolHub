@@ -1,11 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
 import api from "../../../services/apiServices";
 import XpenseTable from "../../bursar/components/expenseTable";
 import ToggleSwitch from "../../../super-admin/pages/schools/toggle";
-
 
 const ExpenseSection = () => {
   const [data, setData] = useState([]);
@@ -24,15 +23,12 @@ const ExpenseSection = () => {
         toast.error(res.data.message);
       }
 
-
       // Refresh the table data
       fetchData();
     } catch (error) {
       console.error("Error updating the data:", error);
     }
   };
-
-
 
   const fetchData = async () => {
     const res = await api.getAdminExpense();
@@ -68,13 +64,15 @@ const ExpenseSection = () => {
             {item.status}
           </span>
         ),
-        action: (<span>
-            <ToggleSwitch 
-                id={item.id}
-                onToggle={handleToggle}
-                status={item.status}
+        action: (
+          <span>
+            <ToggleSwitch
+              id={item.id}
+              onToggle={handleToggle}
+              status={item.status}
             />
-            </span>)
+          </span>
+        ),
       }));
       setData(info);
     }
@@ -85,14 +83,9 @@ const ExpenseSection = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="flex bg-gray-100 pb-3 mt-16">
-        <Toaster />
-      <div className="flex-1 flex flex-col mt-16">
-
-        {/* Expenses Table */}
-        <div className="p-6 bg-white shadow-lg rounded-lg mx-10">
+    <div className="px-6 py-4">
+      <div className="p-4 border-2 border-gray-300 rounded-lg">
           <XpenseTable Data={data} />
-        </div>
       </div>
     </div>
   );

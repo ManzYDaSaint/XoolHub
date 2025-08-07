@@ -1,44 +1,26 @@
-import React, { useState } from "react";
-import { UserRoundPen } from "lucide-react";
-import Profile from "./profile";
+import React from "react";
 
-const ProTabs = () => {
-  const [selectedTab, setSelectedTab] = useState(0);
-  const [active, setActive] = useState(0);
-
-  const handleTabClick = (index) => {
-    setSelectedTab(index);
-    setActive(!active);
-  };
-
+const ProTabs = ({ selectedTab, setSelectedTab, children }) => {
+  const tabs = ["Profile"];
   return (
-    <div className="settingContent">
-      <div className="tab">
-        <button
-          className={selectedTab === 0 ? "tablinks active" : "tablinks"}
-          onClick={() => handleTabClick(0)}
-        >
-          Profile <UserRoundPen size={22} className="adminIcon" />
-        </button>
-        {/* <button className={selectedTab === 1 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(1)}>Messages <MessageCircleMore size={22} className='adminIcon' /></button> */}
-        {/* <button className={selectedTab === 2 ? "tablinks active" : "tablinks"} onClick={() => handleTabClick(2)}>Notifications <BellRing size={22} className='adminIcon' /></button> */}
+    <>
+      <div className="flex space-x-4 bg-gray-300 p-1 rounded-lg border-b border-gray-200 mt-4">
+        {tabs.map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setSelectedTab(tab)}
+            className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+              selectedTab === tab
+                ? "border-black text-black bg-white rounded-md"
+                : "border-transparent text-gray-500 hover:text-black"
+            }`}
+          >
+            {tab}
+          </button>
+        ))}
       </div>
-      {selectedTab === 0 && (
-        <div id="Personal" className="tabcontent animate-bottom">
-          <Profile />
-        </div>
-      )}
-      {selectedTab === 1 && (
-        <div id="Academic" className="tabcontent animate-bottom">
-          {/* <Billing /> */}
-        </div>
-      )}
-      {selectedTab === 2 && (
-        <div id="Academic" className="tabcontent animate-bottom">
-          {/* <Academical /> */}
-        </div>
-      )}
-    </div>
+      <div className="mt-4">{children}</div>
+    </>
   );
 };
 

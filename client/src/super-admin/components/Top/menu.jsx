@@ -18,7 +18,7 @@ const Menu = () => {
         </div>
         <div className="profileContainer">
           <Link to={"/suprofile"}>
-            <img src={Logo} alt="logo" className="profilePicture" />
+            <img src={Logo} alt="logo" className="h-5" />
           </Link>
         </div>
       </div>
