@@ -355,7 +355,7 @@ const StudentReport = () => {
                     ?.find(
                       (i) =>
                         i.subjectid === item.subjectid && i.score === item.score
-                    )?.rank;
+                    )?.ranko;
 
                   // Get teacher
                   const name = teacher

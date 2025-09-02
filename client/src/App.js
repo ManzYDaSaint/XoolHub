@@ -22,6 +22,7 @@ const BStudent = lazy(() => import("./pages/bursar/student.jsx"));
 const BProfile = lazy(() => import("./pages/bursar/profile.jsx"));
 const Bursar = lazy(() => import("./pages/bursar/bursar.jsx"));
 const Expenses = lazy(() => import("./pages/bursar/expense.jsx"));
+const Attendance = lazy(() => import("./pages/attendance/attendance.jsx"));
 const Hoa = lazy(() => import("./pages/hoa/hoa.jsx"));
 const Hod = lazy(() => import("./pages/hod/hod.jsx"));
 const Login = lazy(() => import("./pages/login/login"));
@@ -190,6 +191,20 @@ function App() {
             <InactivityHandler>
               <Suspense fallback={<LoadingSpinner />}>
                 <Hod />{" "}
+              </Suspense>
+            </InactivityHandler>
+          </TPAID>
+        </AuthT>
+      ),
+    },
+    {
+      path: "/attendance",
+      element: (
+        <AuthT>
+          <TPAID>
+            <InactivityHandler>
+              <Suspense fallback={<LoadingSpinner />}>
+                <Attendance />{" "}
               </Suspense>
             </InactivityHandler>
           </TPAID>

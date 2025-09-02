@@ -1,83 +1,85 @@
 import React from "react";
 import HeaderBtn from "./ui/headerBtn";
-import App from "../assets/WhatsApp-about.jpg";
-import Ex from "../assets/em.jpg";
-import SM from "../assets/sm.jpg";
-import FM from "../assets/fm.jpg";
-import CM from "../assets/cm.jpg";
-import EMA from "../assets/ema.jpg";
+import {
+  GraduationCap,
+  Layers3,
+  Wallet,
+  ClipboardList,
+  MessageSquare,
+  CalendarClock,
+  CreditCard,
+} from "lucide-react";
 
 const features = [
-  {
-    title: "Student Management",
-    description: "Manage student data across multiple schools with ease.",
-    logo: SM,
-  },
-  {
-    title: "Class & Subject Management",
-    description:
-      "Organize classes, assign subjects, and streamline scheduling.",
-    logo: CM,
-  }, 
-  {
-    title: "Expenses Management",
-    description: "Efficient expenses management for the whole institution.",
-    logo: Ex,
-  },
-  {
-    title: "Fees Management",
-    description: "Automated fee collection and record-keeping.",
-    logo: FM,
-  },
-  {
-    title: "Examination Management",
-    description: "Schedule exams and manage results effortlessly.",
-    logo: EMA,
-  },
-  {
-    title: "WhatsApp Intergration",
-    description:
-      "WhatsApp for seamless communication between teachers, admins, and parents.",
-    logo: App,
-  },
+	{
+		title: "Student Management",
+		description: "Manage student data across multiple schools with ease.",
+		Icon: GraduationCap,
+	},
+	{
+		title: "Class & Subject Management",
+		description: "Organize classes, assign subjects, and streamline scheduling.",
+		Icon: Layers3,
+	},
+	{
+		title: "Expenses Management",
+		description: "Efficient expenses management for the whole institution.",
+		Icon: Wallet,
+	},
+	{
+		title: "Fees Management",
+		description: "Automated fee collection and record-keeping.",
+		Icon: CreditCard,
+	},
+	{
+		title: "Examination Management",
+		description: "Schedule exams and manage results effortlessly.",
+		Icon: ClipboardList,
+	},
+	{
+		title: "Telegram Integration",
+		description:
+			"Seamless communication between teachers, admins, and parents.",
+		Icon: MessageSquare,
+	},
 ];
 
 const FeatureSection = () => {
-  return (
-    <section className="px-14 py-6 my-20 space-y-8 text-center">
-      <p className="inline-flex">
-        <HeaderBtn>Key Features</HeaderBtn>
-      </p>
-      <h5 className="text-xl font-bold text-blue-900 md:text-4xl">
-        Explore the features that make <br />
-        our platform exceptional.
-      </h5>
-      <p className="text-gray-700 text-md md:text-lg">
-        Discover the powerful tools designed to optimize your school's <br />{" "}
-        experience and streamline operations effectively and efficiently.
-      </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-10 pt-6">
-        {features.map((ft, index) => (
-          <div
-            key={index}
-            className="shadow-md text-center rounded-lg bg-white hover:shadow-lg transition-shadow duration-300 space-y-2"
-          >
-            <div className="w-full h-[auto] bg-[#D4DBE3] flex items-center justify-center mb-4 rounded-lg shadow-inner overflow-hidden">
-              <img
-                src={ft.logo}
-                alt="class management"
-                className="max-h-[auto] max-w-[60%] object-contain shadow-md transition-transform duration-300 hover:scale-105"
-              />
-            </div>
-            <h3 className="text-md md:text-lg font-semibold text-blue-900 text-left px-12">
-              {ft.title}
-            </h3>
-            <p className="text-left px-12 pb-6">{ft.description}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
+	return (
+		<section className="px-6 md:px-14 py-6 my-20 space-y-8 text-center">
+			<p className="inline-flex">
+				<HeaderBtn>Key Features</HeaderBtn>
+			</p>
+			<h2 className="text-xl font-bold text-blue-900 md:text-4xl">
+				Explore the features that make <br /> our platform exceptional.
+			</h2>
+			<p className="text-gray-700 text-md md:text-lg">
+				Powerful tools to streamline operations and elevate your school’s experience.
+			</p>
+			<div className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 md:gap-8 pt-4">
+				{features.map((ft, index) => (
+					<div
+						key={index}
+						className="group relative overflow-hidden rounded-2xl bg-white p-6 text-left shadow-sm ring-1 ring-black/5 transition hover:shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-400"
+						tabIndex={0}
+					>
+						<div className="absolute inset-0 bg-gradient-to-br from-indigo-50 to-fuchsia-50 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+						<div className="relative flex items-start gap-4">
+							<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 ring-1 ring-indigo-200 transition-transform duration-300 group-hover:scale-105 group-hover:-translate-y-0.5">
+								{ft.Icon ? <ft.Icon className="h-6 w-6" /> : <CalendarClock className="h-6 w-6" />}
+							</div>
+							<div>
+								<h3 className="text-base md:text-lg font-semibold text-gray-900">
+									{ft.title}
+								</h3>
+								<p className="mt-1 text-sm text-gray-600">{ft.description}</p>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+		</section>
+	);
 };
 
 export default FeatureSection;

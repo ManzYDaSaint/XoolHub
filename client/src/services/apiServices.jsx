@@ -4,6 +4,10 @@ axios.defaults.withCredentials = true;
 const API = 'http://localhost:5000/api';
 
 
+// --------- ATTENDANCE AXIOS -----------
+const insertAttendance = (data) => axios.post(API + '/insert-attendance', data);
+// --------- ATTENDANCE AXIOS -----------
+
 const countXuls = () => axios.get(API + '/count-schools');
 const countAllTeacher = () => axios.get(API + '/count-o-teachers');
 const countAllStudent = () => axios.get(API + '/count-o-students');
@@ -737,4 +741,10 @@ export default {
        getFeedback,
        getFeedbackRating,
        // ------ FEEDBACK EXPORT -------
+
+
+
+       // ------ ATTENDANCE EXPORT -------
+       insertAttendance,
+       // ------ ATTENDANCE EXPORT -------
 };

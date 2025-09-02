@@ -1,5 +1,21 @@
 const conn = require('../database/mysql.js');
 
+// ------ ------------------------- ATTENDANCE BUILDER ------------------------------------------------
+
+const checkAttendance = async (date, studentids) => {
+  const sql = 'SELECT studentid FROM attendance WHERE date = ? AND studentid IN (?)';
+  const values = [date, studentids];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const addAttendance = async (values) => {
+  const insertSql = `INSERT INTO attendance (studentid, date, status, note) VALUES ?`;
+  const [res] = await conn.query(insertSql, [values]);
+  return res;
+}
+
+// ------ ------------------------- ATTENDANCE BUILDER ------------------------------------------------
 
 
 // // --------------------------------------- SCHOOL ------------------------------------------------
@@ -80,7 +96,7 @@ const getOTPCode = async (email) => {
   const [res] = await conn.query(sql, values); // Changed to async/await
   return res;
 }
-
+ 
 const updateOTPStatus = async (status) => {
   const sql = 'UPDATE schools SET status = ?';
   const values = [status];
@@ -960,11 +976,12 @@ const insertStudentHistory = async (sid, yearid, classid, studentIDs) => {
 
 // // Get all object
 const getStudent = async (sid) => {
-  const query = `SELECT s.id, s.name, class.name AS class, s.dob, s.gender, s.address FROM history
+  const query = `SELECT s.id, s.name, acyear.name AS year, class.name AS class, s.dob, s.contact, TIMESTAMPDIFF(YEAR, s.dob, CURDATE()) AS age, schools.name AS school, s.gender, s.address FROM history
     INNER JOIN students AS s ON s.id = history.studentid
     INNER JOIN acyear ON acyear.id=history.yearid
     INNER JOIN class ON class.id=history.classid
-    WHERE history.schoolid = ? AND status = 'Active'`;
+    INNER JOIN schools ON schools.id=history.schoolid
+    WHERE history.schoolid = ? AND history.status = 'Active'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -1605,7 +1622,7 @@ RankedResults AS (
         ROW_NUMBER() OVER (
             PARTITION BY results.classid, results.subjectid 
             ORDER BY results.score DESC, results.created_at DESC
-        ) AS rank
+        ) AS ranko
     FROM results
     INNER JOIN students ON students.id = results.studentid
     INNER JOIN subject ON subject.id = results.subjectid
@@ -1682,7 +1699,7 @@ const countSubjects = async (termid, typeid, classid, studentid, sid) => {
     WHERE termid = ? 
     AND typeid = ? 
     AND classid = ? 
-    AND studentid IN (?)  -- This should be an array of student IDs
+    AND studentid IN (?)
     AND sid = ?
     GROUP BY studentid
     `;
@@ -1692,7 +1709,7 @@ const countSubjects = async (termid, typeid, classid, studentid, sid) => {
 }
 
 const addPromote = async (sid, termid, typeid, classid, studentid, agg, remarks, rank) => {
-  const query = `INSERT INTO promotion(sid, termid, typeid, classid, studentid, agg, remarks, rank)
+  const query = `INSERT INTO promotion(sid, termid, typeid, classid, studentid, agg, remarks, \`rank\`)
                   VALUES(?, ?, ?, ?, ?, ?, ?, ?)`;
   const values = [sid, termid, typeid, classid, studentid, agg, remarks, rank];
   const [res] = await conn.query(query, values); // Changed to async/await
@@ -1713,7 +1730,7 @@ const checkPromote = async (sid, termid, typeid, classid, studentid) => {
 }
 
 const updatePromote = async (sid, termid, typeid, classid, studentid, agg, remarks, rank) => {
-  const query = `UPDATE promotion SET agg = ?, remarks = ?, rank = ?
+  const query = `UPDATE promotion SET agg = ?, remarks = ?, \`rank\` = ?
                 WHERE sid = ? AND termid = ? AND typeid = ? AND classid = ? AND studentid = ?`;
   const values = [agg, remarks, rank, sid, termid, typeid, classid, studentid];
   const [res] = await conn.query(query, values); // Changed to async/await
@@ -1751,12 +1768,12 @@ ranked_students AS (
         studentid, 
         classid, 
         total_score,
-        RANK() OVER (PARTITION BY classid ORDER BY total_score DESC) AS rank
+        RANK() OVER (PARTITION BY classid ORDER BY total_score DESC) AS ranko
     FROM top_6_subjects
 )
 SELECT 
     DISTINCT r.studentid,
-    rs.rank, 
+    rs.ranko, 
     st.name AS studentname,  
     rs.total_score AS aggregate,
     r.classid,
@@ -1769,7 +1786,7 @@ FROM ranked_students rs
 JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
 JOIN students st ON st.id = r.studentid
 LEFT JOIN subject ON subject.id = r.subjectid
-ORDER BY r.classid, rs.rank, st.name;`;
+ORDER BY r.classid, rs.ranko, st.name`;
   
   const value = [termid, typeid, classid, sid];
   const [res] = await conn.query(query, value); // Changed to async/await
@@ -1870,12 +1887,12 @@ ranked_students AS (
         studentid, 
         classid, 
         total_score,
-        RANK() OVER (PARTITION BY classid ORDER BY total_score ASC) AS rank
+        RANK() OVER (PARTITION BY classid ORDER BY total_score ASC) AS ranko
     FROM top_6_subjects
 )
 SELECT 
     DISTINCT r.studentid,
-    rs.rank, 
+    rs.ranko, 
     st.name AS studentname,  
     rs.total_score AS aggregate,
     r.classid,
@@ -1888,7 +1905,7 @@ FROM ranked_students rs
 JOIN results r ON r.studentid = rs.studentid AND r.classid = rs.classid
 JOIN students st ON st.id = r.studentid
 LEFT JOIN subject ON subject.id = r.subjectid
-ORDER BY r.classid, rs.rank, st.name;
+ORDER BY r.classid, rs.ranko, st.name;
 `;
   const value = [termid, typeid, classid, sid];
   const [res] = await conn.query(query, value);
@@ -1924,7 +1941,7 @@ ranked_students AS (
     SELECT 
         studentid, 
         total_score,
-        RANK() OVER (ORDER BY total_score DESC) AS rank
+        RANK() OVER (ORDER BY total_score DESC) AS ranko
     FROM top_6_subjects
 )
 SELECT 
@@ -1996,7 +2013,7 @@ const realPos = async (termid, typeid, classid, sid, subjectid) => {
   const query = `SELECT studentid, 
           subjectid, 
           score, 
-          ROW_NUMBER() OVER (ORDER BY score DESC) AS rank
+          ROW_NUMBER() OVER (ORDER BY score DESC) AS ranko
     FROM (
         SELECT results.studentid, 
               results.subjectid, 
@@ -2046,7 +2063,7 @@ const countReports = async (id) => {
       FROM 
           term
       WHERE 
-          CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
+          CURRENT_DATE BETWEEN DATE(start_date) AND DATE(end_date)
   )
   SELECT 
       COUNT(*) AS Count
@@ -2120,16 +2137,34 @@ const worstStudents = async (sid) => {
   const query = `WITH CurrentTerm AS (
     SELECT id AS termid
     FROM term
-    WHERE CURRENT_DATE BETWEEN start_date::DATE AND end_date::DATE
-  )
-  SELECT DISTINCT ON (p.classid) s.name AS student, term.name AS term, class.name AS class, exam.name AS exam, p.agg
-  FROM promotion p
-  INNER JOIN students s ON s.id = p.studentid 
-  INNER JOIN term ON term.id= p.termid
-  INNER JOIN class ON class.classid = p.classid
-  INNER JOIN exam ON exam.id = p.typeid 
-  WHERE p.termid = (SELECT termid FROM CurrentTerm) AND sid = ?
-  ORDER BY p.classid, rank DESC;`;
+    WHERE CURRENT_DATE BETWEEN DATE(start_date) AND DATE(end_date)
+),
+RankedPromotions AS (
+    SELECT 
+        p.*,
+        s.name AS student,
+        term.name AS term,
+        class.name AS class,
+        exam.name AS exam,
+        ROW_NUMBER() OVER (PARTITION BY p.classid ORDER BY p.rank DESC) AS row_num
+    FROM promotion p
+    INNER JOIN students s ON s.id = p.studentid 
+    INNER JOIN term ON term.id = p.termid
+    INNER JOIN class ON class.id = p.classid
+    INNER JOIN exam ON exam.id = p.typeid 
+    WHERE p.termid = (SELECT termid FROM CurrentTerm) 
+      AND sid = ?
+)
+SELECT 
+    classid,
+    student,
+    term,
+    class,
+    exam,
+    agg
+FROM RankedPromotions
+WHERE row_num = 1
+ORDER BY classid`;
   const value = [sid];
   const [res] = await conn.query(query, value); // Changed to async/await
   return res;
@@ -2613,6 +2648,13 @@ const getStudentNameByContact = async(phone) => {
 
 
 module.exports = {
+
+  // ----- ATTENDANCE SECTION -----
+  checkAttendance,
+  addAttendance,
+  // ----- ATTENDANCE SECTION -----
+
+
 //   // ----- WHATSAPP API -----
   getFeeBalance,
   getStudentNameByContact,

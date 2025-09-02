@@ -135,7 +135,7 @@ const Testimonials = () => {
             ))}
           </Slider>
         </div>
-      </div>
+      </div> 
     </section>
   )
 }

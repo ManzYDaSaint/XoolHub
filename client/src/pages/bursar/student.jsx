@@ -25,10 +25,11 @@ const BStudent = () => {
           </div>
 
           {/* Profile Information */}
-          <div className="p-6">
-            <div className="p-6 bg-white shadow-lg rounded-lg">
+          <div className="pl-6 pr-6 pb-6">
+            <h1 className="text-xl font-bold mb-4">Students Information</h1>
               <StudentData />
-            </div>
+            {/* <div className="p-6 shadow-lg rounded-lg">
+            </div> */}
           </div>
         </div>
       </Layout>

@@ -195,7 +195,13 @@ const {
     getAdminExpenses,
     updateStatusEx,
     cancSubscription,
+    insertAttendance,
 } = require('../controller/apiController.js');
+
+
+// ------- ATTENDANCE ROUTES -----------
+router.route('/insert-attendance').post(insertAttendance);
+// ------- ATTENDANCE ROUTES -----------
 
 
 router.route('/count-schools').get(countXuls);

@@ -19,7 +19,7 @@ function Entry() {
               style={{ fontFamily: "'Poppins', san-serif" }}
             >
               Examination Management
-            </h1>
+            </h1> 
             <p className="text-sm text-gray-500">
               Manage examinations by entering and filtering.
             </p>

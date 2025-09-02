@@ -69,6 +69,8 @@ const ReportForm = () => {
     navigate(`/student-report/${id}`);
   };
 
+  console.log(subjects, students);
+
   return (
     <>
       <div className="border-2 border-gray-300 rounded-lg mb-4 px-4 mt-3">

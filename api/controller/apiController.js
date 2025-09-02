@@ -4,6 +4,8 @@ const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const { Resend } = require("resend");
 const resend = new Resend('re_RsG2MjDa_FTbgsh6KZe38BeegqgsUb21P');
+const _ = require("lodash");
+const { pipeline } = require("@xenova/transformers");
 
 const { v4: uuidv4 } = require("uuid");
 const {
@@ -225,15 +227,247 @@ const {
   cancelBilling,
   checkSubToCancel,
   getPlanByID,
+  checkAttendance,
+  addAttendance,
 } = require("../model/apiModel.js");
 const jwt = require("jsonwebtoken");
 
 // Supabase Configuration
 const { createClient } = require("@supabase/supabase-js");
+const buildStudentContent = require("./context/aiStudent.js");
 // const { sendParentNotification } = require('./waNotify.js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+
+
+
+
+// ---------------------------------- ATTENDANCE CONTROLLER ----------------------------------
+
+const insertAttendance = async (req, res) => {
+  const { date, attendance, absentReasons = {} } = req.body;
+  const attendanceDate = new Date(date).toISOString().split("T")[0]; // YYYY-MM-DD
+  const studentIds = Object.keys(attendance);
+
+  try {
+  // 1. Check if attendance already exists for those students
+  const existing = await checkAttendance(attendanceDate, studentIds);
+
+  if (existing.length > 0) {
+    res.json({
+      success: false,
+      message: `Attendance already exists for ${existing.length} student(s) on ${attendanceDate}`,
+    });
+    return;
+  }
+
+  // 2. Build values for bulk insert
+  const values = studentIds.map(studentId => [
+    studentId,
+    attendanceDate,
+    attendance[studentId],
+    absentReasons[studentId] || null
+  ]);
+
+  const result = await addAttendance(values);
+  if (result) {
+    res.json({
+      success: true,
+      message: "Attendance inserted successfully",
+    });
+  } else {
+    res.json({
+      success: false,
+      message: "Failed to insert attendance",
+    });
+  }
+    return;
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error. Please try again later.",
+      error: error.message,
+    });
+  }
+};
+
+// ---------------------------------- ATTENDANCE CONTROLLER ----------------------------------
+
+
+
+// ---------------------------------- TRANSFORMER CONTROLLER ----------------------------------
+
+// We'll create them lazily on first use to reduce startup time.
+let qaPipeline = null;
+let embedder = null;
+let genPipeline = null;
+
+
+// QA Pipelines - DistilBERT QA distilled SQuAD — small & good for basic QA from context
+async function getQAPipeline() {
+  if (!qaPipeline) {
+    // DistilBERT QA distilled SQuAD — small & good for basic QA from context
+    qaPipeline = await pipeline("question-answering", "Xenova/distilbert-base-cased-distilled-squad");
+    console.log("QA model loaded");
+  }
+  return qaPipeline;
+}
+
+// Attempt a direct answer for contact/phone queries without running the QA model
+function tryAnswerDirect(question, students) {
+  if (!Array.isArray(students) || students.length === 0) return null;
+
+  const q = String(question || "");
+  const lowerQuestion = q.toLowerCase();
+
+  // Determine which fields are requested
+  const requested = new Set();
+  const fieldMatchers = [
+    { key: "contact", match: /(contact|phone|number|mobile|cell)/i },
+    { key: "class", match: /(class|form|grade\b)/i },
+    { key: "year", match: /(year|academic\s*year)/i },
+    { key: "school", match: /(school|campus|institution)/i },
+    { key: "age", match: /\bage\b/i },
+    { key: "gender", match: /(gender|sex\b)/i },
+    { key: "address", match: /(address|location)/i },
+    { key: "name", match: /(name|who\s+is|what\s+is\s+the\s+name)/i },
+  ];
+  for (const { key, match } of fieldMatchers) {
+    if (match.test(q)) requested.add(key);
+  }
+  const wantsDetails = /(info|details|data|profile|all\s+details)/i.test(q);
+
+  // Extract likely student name(s)
+  const capitalizedSequences = q.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*/g) || [];
+  let nameCandidates = capitalizedSequences.map((s) => s.trim()).filter(Boolean);
+  if (nameCandidates.length === 0) {
+    const m = lowerQuestion.match(/(?:for|of|about)\s+([a-z][a-z\s]+)/i);
+    if (m && m[1]) nameCandidates = [m[1].trim()];
+  }
+  if (nameCandidates.length === 0) return null;
+
+  // Find student by partial name match
+  let matchedStudent = null;
+  for (const candidate of nameCandidates) {
+    const candLower = candidate.toLowerCase();
+    const found = students.find((st) => String(st?.name || "").toLowerCase().includes(candLower));
+    if (found) { matchedStudent = found; break; }
+  }
+  if (!matchedStudent) return null;
+
+  // Normalize student fields
+  const getField = (st, keys) => {
+    for (const k of keys) {
+      const v = st?.[k];
+      if (v !== undefined && v !== null && String(v).trim() !== "") return String(v);
+    }
+    return null;
+  };
+
+  // If no specific fields requested but wants details, show a concise summary
+  const assemble = (fields) => fields.filter(Boolean).join("\n");
+
+  const parts = [];
+  const includeAll = wantsDetails || requested.size === 0; // default to full summary if unspecified
+
+  const nameVal = getField(matchedStudent, ["name"]);
+  const classVal = getField(matchedStudent, ["class", "klass", "grade"]);
+  const yearVal = getField(matchedStudent, ["year", "academicYear"]);
+  const schoolVal = getField(matchedStudent, ["school"]);
+  const contactVal = getField(matchedStudent, ["contact", "phone", "phoneNumber", "guardianPhone"]);
+  const ageVal = getField(matchedStudent, ["age"]);
+  const genderVal = getField(matchedStudent, ["gender", "sex"]);
+  const addressVal = getField(matchedStudent, ["address", "location"]);
+
+  const addIf = (cond, label, value) => { if (cond && value) parts.push(`${label}: ${value}`); };
+
+  addIf(includeAll || requested.has("name"), "Name", nameVal);
+  addIf(includeAll || requested.has("class"), "Class", classVal);
+  addIf(includeAll || requested.has("year"), "Academic Year", yearVal);
+  addIf(includeAll || requested.has("school"), "School", schoolVal);
+  addIf(includeAll || requested.has("contact"), "Contact/Phone", contactVal);
+  addIf(includeAll || requested.has("age"), "Age", ageVal);
+  addIf(includeAll || requested.has("gender"), "Gender", genderVal);
+  addIf(includeAll || requested.has("address"), "Address", addressVal);
+
+  if (parts.length === 0) return null;
+  return assemble(parts);
+}
+
+const answerQuestion = async (req, res) => { 
+  const token = req.cookies.schoolToken || req.cookies.teacherToken;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const sid = decoded.id || decoded.sid;
+  const { question } = req.body;
+
+  if (!question || question.trim() === "") {
+    return res.status(400).json({ error: "Question is required" });
+  }
+
+  try {
+    // 1. Fetch students
+    const students = await getStudent(sid);
+
+    // 2. Build context
+    const context = buildStudentContent(students);
+
+    // 2.5. Direct contact fallback for precise queries
+    const direct = tryAnswerDirect(question, students);
+    if (direct) {
+      return res.json({ answer: direct, score: 1 });
+    }
+
+    // 3. Run QA
+    const qa = await getQAPipeline();
+    const result = await qa({ question, context });
+
+    res.json({ answer: result.answer, score: result.score });
+    console.log("Question answered:", question, "->", result.answer);
+  } catch (error) {
+    console.error("Error answering question:", error);
+    res.status(500).json({ error: "Failed to answer question" });
+  }
+};
+
+const mockRes = {
+  status(code) { this.statusCode = code; return this; },
+  json(obj) { console.log("Response:", obj); return obj; }
+};
+
+// const mockReq = {
+//   body: { question: "How old is paul?" },
+//   cookies: {
+//     schoolToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIzYjYxNjk0ZS1mNTkwLTExZWYtYTNmMi01MDdiOWQ0MTk1NTEiLCJ0ZWFjaGVyaWQiOiIyNDVkZTUzNy1mNWNjLTExZWYtYTNmMi01MDdiOWQ0MTk1NTEiLCJyb2xlIjoiQnVyc2FyIiwiaWF0IjoxNzU2NDUxOTg4LCJleHAiOjE3NTY1MzgzODh9.1sMd5KdcHKab3oPV4p6TsP0XX00gBmcA7kj70drSFak" // or teacherToken
+//   }
+// };
+
+// answerQuestion(mockReq, mockRes);
+
+// QA Pipelines - DistilBERT QA distilled SQuAD — small & good for basic QA from context
+
+const getEmbedder = async() => {
+  if (!embedder) {
+    // Small sentence-transformer for embeddings
+    embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
+    console.log("Embedder loaded");
+  }
+  return embedder;
+}
+
+const getGenPipeline = async() => {
+  if (!genPipeline) {
+    // Use t5-small-like text2text for summarization / reply generation
+    genPipeline = await pipeline("text2text-generation", "Xenova/t5-small");
+    console.log("Generator loaded");
+  }
+  return genPipeline;
+}
+
+
+// ---------------------------------- TRANSFORMER CONTROLLER ----------------------------------
+
 
 // ----------------------- RESEND CONTROLLER -----------------------
 async function sendOtpEmail(to, otp) {
@@ -5063,7 +5297,7 @@ const getReport = async (req, res) => {
             if (!studentsMap.has(row.studentid)) {
               studentsMap.set(row.studentid, {
                 student_id: row.studentid,
-                rank: row.rank,
+                rank: row.ranko,
                 agg: row.aggregate,
                 student_name: row.studentname,
                 grade: row.grade,
@@ -5103,7 +5337,7 @@ const getReport = async (req, res) => {
             if (!studentsMap.has(row.studentid)) {
               studentsMap.set(row.studentid, {
                 student_id: row.studentid,
-                rank: row.rank,
+                rank: row.ranko,
                 agg: row.aggregate,
                 student_name: row.studentname,
                 grade: row.grade,
@@ -5161,8 +5395,7 @@ const insertPromotion = async (req, res) => {
       return res.json({ success: false, message: "No records found" });
     }
 
-    const getReport =
-      getClass.denom === venom ? getReportByStudent : getReportByStudentMSCE;
+    const getReport = getClass.denom === venom ? getReportByStudent : getReportByStudentMSCE;
     const codes = await getReport(sid, termid, typeid, classid);
 
     if (!codes || codes.length === 0) {
@@ -5175,7 +5408,7 @@ const insertPromotion = async (req, res) => {
       if (!studentsMap.has(row.studentid)) {
         studentsMap.set(row.studentid, {
           student_id: row.studentid,
-          rank: row.rank,
+          rank: row.ranko,
           agg: row.aggregate,
         });
       }
@@ -6816,6 +7049,11 @@ const updateExpenses = async (req, res) => {
 // ----------------------- EXPENSE CONTROLLER -----------------------
 
 module.exports = {
+
+  // ----- ATTENDANCE EXPORTS ------
+  insertAttendance,
+  // ----- ATTENDANCE EXPORTS ------
+
   // ----- EXPENSE EXPORTS ------
   insertExpense,
   getExpenses,

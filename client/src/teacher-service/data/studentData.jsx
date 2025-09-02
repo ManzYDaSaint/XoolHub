@@ -64,7 +64,7 @@ const StudentData = () => {
       const handleEdit = async(id) => {
         navigate(`/student/${id}`);
       };
-
+      
   return (
     <div>
         <StudentTable studData={studData}/>

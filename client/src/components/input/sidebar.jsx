@@ -105,13 +105,15 @@ const Sidebar = ({ open, onClose }) => {
       { path: "/bursar/dashboard", icon: <LayoutDashboard size={23} />, label: "Dashboard", active: true },
       { path: "/entry", icon: <File size={23} />, label: "Entry" },
       { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
+      { path: "/attendance", icon: <CalendarDays size={23} />, label: "Attendance" },
       { path: "/bursar/expenses", icon: <CreditCard size={23} />, label: "Expenses" },
-    ],
+    ], 
     hoa: [
       { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
       { path: "/hoa/dashboard", icon: <House size={23} />, label: "Dashboard", active: true },
       { path: "/entry", icon: <File size={23} />, label: "Entry" },
       { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
+      { path: "/attendance", icon: <CalendarDays size={23} />, label: "Attendance" },
       { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
     ],
     hod: [
@@ -119,6 +121,7 @@ const Sidebar = ({ open, onClose }) => {
       { path: "/hod/dashboard", icon: <House size={23} />, label: "Dashboard", active: true },
       { path: "/entry", icon: <File size={23} />, label: "Entry" },
       { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
+      { path: "/attendance", icon: <CalendarDays size={23} />, label: "Attendance" },
       { path: "/report", icon: <FolderSearch size={23} />, label: "Report" },
     ],
   };

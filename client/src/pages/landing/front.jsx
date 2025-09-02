@@ -102,7 +102,7 @@ function Landing() {
               staff, hardware upgrades and paper-based processes.
             </p>
           </div>
-          <div className="flex flex-col items-center text-center px-8 py-4 space-y-2 border-r-0 md:border-r-2 border-l-0 md:border-l-2 border-green-400">
+          <div className="flex flex-col items-center text-center px-8 py-4 space-y-2">
             <AlarmClockPlus className="text-green-600" size={50} />
             <h5 className="bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent text-md md:text-lg font-semibold">
               Time Savings
