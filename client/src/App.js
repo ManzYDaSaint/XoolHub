@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import LoadingSpinner from "./Infinity.jsx";
 import React, { Suspense, lazy } from "react";
 import { Provider } from "react-redux";
+import { HelmetProvider } from "react-helmet-async";
 import Store from "./helpers/examination/examStore.jsx";
 import InactivityHandler from "./hooks/activity.jsx";
 import TPAID from "./hooks/teacherSubscription.jsx";
@@ -706,11 +707,13 @@ function App() {
   ]);
 
   return (
-    <Provider store={Store}>
-      <main>
-        <RouterProvider router={router} />
-      </main>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={Store}>
+        <main>
+          <RouterProvider router={router} />
+        </main>
+      </Provider>
+    </HelmetProvider>
   );
 }
 

@@ -21,11 +21,47 @@ import Testimonials from "./components/testimony";
 import SubscriptionOptions from "./components/subscription";
 import Footer from "./components/footer";
 import PilotBanner from "./components/banner";
+import SEO from "../../components/SEO";
 import { motion } from "framer-motion";
 
 function Landing() {
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "XoolHub",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web Browser",
+    "description": "Multi-school information management system designed to streamline student data, classes, subjects, and scheduling.",
+    "url": "https://xoolhub.com",
+    "author": {
+      "@type": "Organization",
+      "name": "XoolHub"
+    },
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "MK",
+      "description": "Free trial available"
+    },
+    "featureList": [
+      "Student Information Management",
+      "Class Scheduling",
+      "Multi-School Support",
+      "Attendance Tracking",
+      "Fee Management",
+      "Report Generation"
+    ]
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <SEO 
+        title="Multi-School Information Management System"
+        description="Transform your school administration with XoolHub - the ultimate multi-school management platform. Streamline student data, scheduling, attendance, and more. Start your free trial today!"
+        keywords="school management system, multi-school platform, student information system, class scheduling, attendance tracking, school administration software, education management, school ERP, student database, academic management"
+        url="/"
+        structuredData={structuredData}
+      />
       <PilotBanner />
       
       {/* Navigation Bar */}

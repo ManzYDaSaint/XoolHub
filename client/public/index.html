@@ -17,7 +17,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow" />
+  <meta name="bingbot" content="index, follow" />
   <link rel="icon" href="%PUBLIC_URL%/logo.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo.png" />
   <link rel="canonical" href="https://xoolhub.com/" />
 
   <!-- SEO Meta -->
@@ -72,6 +75,13 @@
 
   <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
+  <!-- Performance Optimizations -->
+  <link rel="preload" href="%PUBLIC_URL%/logo.png" as="image" />
+  <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+  <link rel="dns-prefetch" href="//www.googletagmanager.com" />
+  <link rel="dns-prefetch" href="//www.google-analytics.com" />
+  
   <!-- Preload critical fonts for performance -->
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;1,700&display=swap" as="style" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
