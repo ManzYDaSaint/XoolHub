@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import logo from "../../../logo.png";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sparkles } from "lucide-react";
 import api from "../../../services/apiServices";
 
 const Navbar = () => {
   const location = useLocation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const handleToggleMenu = () => {
     setMenuOpen((prev) => !prev);
@@ -19,10 +21,11 @@ const Navbar = () => {
       const section = document.querySelector(to);
       if (section) {
         section.scrollIntoView({ behavior: "smooth" });
-        setMenuOpen(false); // close mobile menu if open
+        setMenuOpen(false);
       }
     }
   };
+
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
@@ -38,6 +41,16 @@ const Navbar = () => {
     checkAuthentication();
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const isScrolled = window.scrollY > 20;
+      setScrolled(isScrolled);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // Menu items
   const navLinks = [
     { to: "/about", label: "About" },
@@ -47,142 +60,209 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white/60 backdrop-blur-md shadow-md fixed w-full z-20">
-      <div className="max-w-7xl mx-auto px-4 flex items-center justify-between h-20">
-        {/* Logo */}
-        <div className="flex-shrink-0">
-          <Link to="/" className="flex items-center space-x-2">
-            <img src={logo} alt="logo" className="h-8 w-auto" />
-            <h2 className="font-bold text-xl md:text-2xl bg-gradient-to-r from-blue-700 to-purple-600 bg-clip-text text-transparent">
-              XoolHub
-            </h2>
-          </Link>
-        </div>
+    <motion.nav 
+      className={`fixed w-full z-50 transition-all duration-300 ${
+        scrolled 
+          ? "bg-white/95 backdrop-blur-xl shadow-2xl border-b border-white/20" 
+          : "bg-white/80 backdrop-blur-md shadow-lg"
+      }`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-20">
+          {/* Logo */}
+          <motion.div 
+            className="flex-shrink-0"
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Link to="/" className="flex items-center space-x-3">
+              <div className="relative">
+                <img src={logo} alt="XoolHub Logo" className="h-10 w-auto" />
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full opacity-20 blur-xl"
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+              </div>
+              <h2 className="font-bold text-xl md:text-2xl bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent">
+                XoolHub
+              </h2>
+            </Link>
+          </motion.div>
 
-        {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-8 items-center">
-          {navLinks.map((link) => (
-            <li key={link.to}>
-              <Link
-                to={link.to}
-                onClick={(e) => handleNavClick(e, link.to)}
-                className={`text-gray-700 hover:text-blue-700 transition text-md ${
-                  location.pathname === link.to ? "font-bold text-blue-700" : ""
-                }`}
+          {/* Desktop Menu */}
+          <ul className="hidden lg:flex space-x-8 items-center">
+            {navLinks.map((link, index) => (
+              <motion.li 
+                key={link.to}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
               >
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-        <ul className="hidden md:flex items-center space-x-4">
-          {isLoggedIn ? (
-            <li>
-              <Link
-                to="/administrator"
-                className={`bg-gradient-to-r from-blue-700 to-purple-500 rounded-full px-6 py-2 text-white ${
-                  location.pathname === "/administrator"
-                    ? "font-bold text-blue-600"
-                    : ""
-                }`}
+                <Link
+                  to={link.to}
+                  onClick={(e) => handleNavClick(e, link.to)}
+                  className={`relative text-gray-700 hover:text-blue-700 transition-all duration-300 text-md font-medium group ${
+                    location.pathname === link.to ? "text-blue-700 font-semibold" : ""
+                  }`}
+                >
+                  {link.label}
+                  <motion.div
+                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"
+                    whileHover={{ width: "100%" }}
+                  />
+                </Link>
+              </motion.li>
+            ))}
+          </ul>
+
+          {/* Desktop CTA Buttons */}
+          <div className="hidden lg:flex items-center space-x-4">
+            {isLoggedIn ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
               >
-                Dashboard
-              </Link>
-            </li>
-          ) : (
-            <div className="flex items-center space-x-6">
-              <li>
+                <Link
+                  to="/administrator"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full px-6 py-3 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                >
+                  Dashboard
+                </Link>
+              </motion.div>
+            ) : (
+              <motion.div 
+                className="flex items-center space-x-4"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+              >
                 <Link
                   to="/login"
-                  className={`text-gray-700 hover:text-blue-600 transition ${
-                    location.pathname === "/login"
-                      ? "font-bold text-blue-600"
-                      : ""
-                  }`}
+                  className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium"
                 >
                   Login
                 </Link>
-              </li>
-              <li>
                 <Link
                   to="/register"
-                  className={`bg-gradient-to-r from-blue-700 to-purple-500 rounded-full px-6 py-2 text-white ${
-                    location.pathname === "/register"
-                      ? "font-bold text-blue-600"
-                      : ""
-                  }`}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full px-6 py-3 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center space-x-2"
                 >
-                  Start Free Trial
+                  <Sparkles className="h-4 w-4" />
+                  <span>Start Free Trial</span>
                 </Link>
-              </li>
-            </div>
-          )}
-        </ul>
+              </motion.div>
+            )}
+          </div>
 
-        {/* Hamburger Button */}
-        <div className="flex md:hidden">
-          {isLoggedIn ? (
-            <li className="list-none block">
+          {/* Mobile Menu Button */}
+          <div className="lg:hidden flex items-center space-x-3">
+            {isLoggedIn ? (
               <Link
                 to="/administrator"
-                className={`bg-gradient-to-r from-blue-700 to-purple-500 rounded-full px-6 py-2 text-white ${
-                  location.pathname === "/administrator"
-                    ? "font-bold text-blue-600"
-                    : ""
-                }`}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-full px-4 py-2 text-white text-sm font-medium"
                 onClick={() => setMenuOpen(false)}
               >
                 Dashboard
               </Link>
-            </li>
-          ) : (
-            <li className="list-none block">
+            ) : (
               <Link
                 to="/login"
-                className={`block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition ${
-                  location.pathname === "/login"
-                    ? "font-bold text-blue-600"
-                    : ""
-                }`}
+                className="text-gray-700 hover:text-blue-600 transition-colors duration-300 font-medium"
                 onClick={() => setMenuOpen(false)}
               >
                 Login
               </Link>
-            </li>
-          )}
-          <button
-            className="flex items-center text-gray-700"
-            onClick={handleToggleMenu}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+            )}
+            
+            <motion.button
+              className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors duration-200"
+              onClick={handleToggleMenu}
+              whileTap={{ scale: 0.95 }}
+              aria-label="Toggle menu"
+            >
+              <AnimatePresence mode="wait">
+                {menuOpen ? (
+                  <motion.div
+                    key="close"
+                    initial={{ rotate: -90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: 90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <X size={20} className="text-gray-700" />
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="menu"
+                    initial={{ rotate: 90, opacity: 0 }}
+                    animate={{ rotate: 0, opacity: 1 }}
+                    exit={{ rotate: -90, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <Menu size={20} className="text-gray-700" />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.button>
+          </div>
         </div>
       </div>
 
       {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="md:hidden bg-white shadow-lg absolute w-full left-0 top-16 z-30">
-          <ul className="flex flex-col py-2">
-            {navLinks.map((link) => (
-              <li key={link.to}>
-                <Link
-                  to={link.to}
-                  className={`block px-6 py-3 text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition ${
-                    location.pathname === link.to
-                      ? "font-bold text-blue-600"
-                      : ""
-                  }`}
-                  onClick={() => setMenuOpen(false)}
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div 
+            className="lg:hidden bg-white/95 backdrop-blur-xl shadow-2xl border-t border-gray-100"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="px-4 py-6 space-y-4">
+              {navLinks.map((link, index) => (
+                <motion.div
+                  key={link.to}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: index * 0.1 }}
                 >
-                  {link.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-    </nav>
+                  <Link
+                    to={link.to}
+                    className={`block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 font-medium ${
+                      location.pathname === link.to ? "text-blue-600 bg-blue-50" : ""
+                    }`}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
+              ))}
+              
+              {!isLoggedIn && (
+                <motion.div
+                  className="pt-4 border-t border-gray-100"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                >
+                  <Link
+                    to="/register"
+                    className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Start Free Trial
+                  </Link>
+                </motion.div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 };
 

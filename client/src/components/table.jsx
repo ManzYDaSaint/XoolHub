@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Searchbar from "./input/searchbar";
+import Searchbar from "./input/searchbar.jsx";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -134,129 +134,160 @@ function UniversalTable({ columns, data }) {
   };
 
   return (
-    <div className="w-full space-y-4">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <p className="text-sm font-medium text-gray-700 mb-4">
-          Note:{" "}
-          <span className="text-gray-600">
-            Click on any column header to sort in{" "}
-            <strong>ascending</strong> and <strong>descending</strong> order.
-            Default is unsorted.
-          </span>
-        </p>
-        
-        {/* Search + Export Buttons */}
-        <div className="flex items-center justify-between mb-6">
-          <Searchbar
-            type={"text"}
-            placeholder={"Search by keyword"}
-            value={searchTerm}
-            onChange={handleSearch}
-          />
-          <div className="flex gap-2">
-            <button
-              onClick={exportToExcel}
-              className="bg-green-600 hover:bg-green-700 cursor-pointer text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            >
-              Excel
-            </button>
-            <button
-              onClick={exportToCSV}
-              className="bg-blue-600 hover:bg-blue-700 cursor-pointer text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            >
-              CSV
-            </button>
-            <button
-              onClick={exportToPDF}
-              className="bg-red-600 hover:bg-red-700 cursor-pointer text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-            >
-              PDF
-            </button>
+    <div className="w-full space-y-6">
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30"></div>
+        <div className="relative p-8">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">Data Table</h3>
           </div>
-        </div>
+          
+          <div className="bg-blue-50/50 border border-blue-200/50 rounded-xl p-4 mb-6">
+            <p className="text-sm font-medium text-blue-800">
+              💡 <strong>Tip:</strong>{" "}
+              <span className="text-blue-700">
+                Click on any column header to sort in{" "}
+                <strong>ascending</strong> and <strong>descending</strong> order.
+                Default is unsorted.
+              </span>
+            </p>
+          </div>
+          
+          {/* Search + Export Buttons */}
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+            <div className="w-full lg:w-auto">
+              <Searchbar
+                type={"text"}
+                placeholder={"Search by keyword"}
+                value={searchTerm}
+                onChange={handleSearch}
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={exportToExcel}
+                className="group flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Excel
+              </button>
+              <button
+                onClick={exportToCSV}
+                className="group flex items-center gap-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                CSV
+              </button>
+              <button
+                onClick={exportToPDF}
+                className="group flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+              >
+                <svg className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                PDF
+              </button>
+            </div>
+          </div>
         
-        {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                {columns.map((column, index) => (
-                  <th
-                    key={index}
-                    onClick={() => handleSort(column.key)}
-                    style={{ width: column.width, textAlign: column.textAlign }}
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors"
-                  >
-                    <div className="flex items-center gap-2">
-                      {column.label}
-                      {sortColumn === column.key && (
-                        <span className="text-gray-400">
-                          {sortOrder === "asc" ? "▲" : "▼"}
-                        </span>
-                      )}
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedData.map((row, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
+          {/* Table */}
+          <div className="overflow-x-auto rounded-xl border border-gray-200/50">
+            <table className="min-w-full divide-y divide-gray-200/50">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100/50">
+                <tr>
                   {columns.map((column, index) => (
-                    <td
+                    <th
                       key={index}
-                      className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                      onClick={() => handleSort(column.key)}
+                      style={{ width: column.width, textAlign: column.textAlign }}
+                      className="px-6 py-4 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-200/50 transition-all duration-200 group"
                     >
-                      {row[column.key]}
-                    </td>
+                      <div className="flex items-center gap-2">
+                        {column.label}
+                        {sortColumn === column.key && (
+                          <span className="text-blue-600 group-hover:scale-110 transition-transform duration-200">
+                            {sortOrder === "asc" ? "▲" : "▼"}
+                          </span>
+                        )}
+                      </div>
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        
-        {/* Pagination */}
-        <div className="flex items-center justify-between px-6 border-t border-gray-200 py-4">
-          <button
-            onClick={handlePreviousPage}
-            disabled={currentPage === 1}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              currentPage === 1
-                ? "text-gray-400 cursor-not-allowed bg-gray-100"
-                : "text-gray-700 hover:bg-gray-100 border border-gray-300 hover:border-gray-400"
-            }`}
-          >
-            Previous
-          </button>
-          
-          <div className="flex gap-1">
-            {pageNumbers.map((pageNumber) => (
-              <button
-                key={pageNumber}
-                onClick={() => handlePageClick(pageNumber)}
-                className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors ${
-                  pageNumber === currentPage
-                    ? "bg-blue-600 text-white"
-                    : "text-gray-700 hover:bg-gray-100 border border-gray-300 hover:border-gray-400"
-                }`}
-              >
-                {pageNumber}
-              </button>
-            ))}
+              </thead>
+              <tbody className="bg-white/80 backdrop-blur-sm divide-y divide-gray-200/50">
+                {paginatedData.map((row, index) => (
+                  <tr key={index} className="hover:bg-blue-50/50 transition-all duration-200 group">
+                    {columns.map((column, index) => (
+                      <td
+                        key={index}
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 group-hover:text-gray-700"
+                      >
+                        {row[column.key]}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-          
-          <button
-            onClick={handleNextPage}
-            disabled={currentPage === totalPages}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
-              currentPage === totalPages
-                ? "text-gray-400 cursor-not-allowed bg-gray-100"
-                : "text-gray-700 hover:bg-gray-100 border border-gray-300 hover:border-gray-400"
-            }`}
-          >
-            Next
-          </button>
+        
+          {/* Pagination */}
+          <div className="flex items-center justify-between px-6 border-t border-gray-200/50 py-6">
+            <button
+              onClick={handlePreviousPage}
+              disabled={currentPage === 1}
+              className={`group flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                currentPage === 1
+                  ? "text-gray-400 cursor-not-allowed bg-gray-100/50"
+                  : "text-gray-700 hover:bg-blue-50 border border-gray-300/50 hover:border-blue-300/50 hover:text-blue-700"
+              }`}
+            >
+              <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Previous
+            </button>
+            
+            <div className="flex gap-2">
+              {pageNumbers.map((pageNumber) => (
+                <button
+                  key={pageNumber}
+                  onClick={() => handlePageClick(pageNumber)}
+                  className={`px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                    pageNumber === currentPage
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg"
+                      : "text-gray-700 hover:bg-blue-50 border border-gray-300/50 hover:border-blue-300/50 hover:text-blue-700"
+                  }`}
+                >
+                  {pageNumber}
+                </button>
+              ))}
+            </div>
+            
+            <button
+              onClick={handleNextPage}
+              disabled={currentPage === totalPages}
+              className={`group flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 ${
+                currentPage === totalPages
+                  ? "text-gray-400 cursor-not-allowed bg-gray-100/50"
+                  : "text-gray-700 hover:bg-blue-50 border border-gray-300/50 hover:border-blue-300/50 hover:text-blue-700"
+              }`}
+            >
+              Next
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     </div>

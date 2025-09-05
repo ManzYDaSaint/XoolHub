@@ -6,14 +6,8 @@ import Profile from "./components/profile";
 const BProfile = () => {
   return (
     <AuthT>
-        <div className="dashboard__container">
-          <div className="dashboard__content">
-            <Sidebar />
-            <div className="dashboard">
-              <Profile />
-            </div>
-          </div>
-        </div>
+      <Sidebar />
+      <Profile />
     </AuthT>
   );
 };

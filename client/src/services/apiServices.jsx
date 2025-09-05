@@ -7,6 +7,15 @@ const API = 'http://localhost:5000/api';
 // --------- ATTENDANCE AXIOS -----------
 const insertAttendance = (data) => axios.post(API + '/insert-attendance', data);
 // --------- ATTENDANCE AXIOS -----------
+ 
+// --------- DISCIPLINARY AXIOS -----------
+const InsertDisciplinary = (data) => axios.post(API + '/add-disciplinary', data);
+const getDisciplinary = () => axios.get(API + '/get-disciplinary');
+const updateDisciplinary = (id, data) => axios.put(API + '/update-disciplinary/' + id, data);
+const deleteDisciplinary = (id) => axios.delete(API + '/delete-disciplinary/' + id);
+const getDisciplinaryById = (id) => axios.get(API + '/get-disciplinary/' + id);
+const getDisciplinaryStats = () => axios.get(API + '/disciplinary-stats');
+// --------- DISCIPLINARY AXIOS -----------
 
 const countXuls = () => axios.get(API + '/count-schools');
 const countAllTeacher = () => axios.get(API + '/count-o-teachers');
@@ -747,4 +756,13 @@ export default {
        // ------ ATTENDANCE EXPORT -------
        insertAttendance,
        // ------ ATTENDANCE EXPORT -------
+
+       // ------ DISCIPLINARY EXPORT -------
+       InsertDisciplinary,
+       getDisciplinary,
+       updateDisciplinary,
+       deleteDisciplinary,
+       getDisciplinaryById,
+       getDisciplinaryStats,
+       // ------ DISCIPLINARY EXPORT -------
 };

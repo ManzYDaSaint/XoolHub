@@ -229,6 +229,17 @@ const {
   getPlanByID,
   checkAttendance,
   addAttendance,
+  checkDisciplinary,
+  insertDisciplinary,
+  getoDisciplinary,
+  getoDisciplinaryById,
+  updatedDisciplinary,
+  deletedDisciplinary,
+  countDisciplinary,
+  statusDisciplinary,
+  severityDisciplinary,
+  categoryDisciplinary,
+  recent30DaysDisciplinary,
 } = require("../model/apiModel.js");
 const jwt = require("jsonwebtoken");
 
@@ -240,6 +251,304 @@ const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+
+
+
+
+// ---------------------------------- DISCIPLINARY CONTROLLER ----------------------------------
+
+const addDisciplinary = async (req, res) => {
+  try {
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const schoolId = decoded.id || decoded.sid;
+
+    const {
+      studentId,
+      category,
+      actionTaken,
+      remarks,
+      severityLevel,
+      incidentDate,
+      status,
+      evidence,
+      witnesses,
+      parentNotified,
+      followUpDate,
+      followUpNotes
+    } = req.body;
+
+    // Validate required fields
+    if (!studentId || !category || !actionTaken || !severityLevel || !remarks || !incidentDate || !status) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide all required fields"
+      });
+    }
+
+    // Check if student exists and belongs to the school
+    const studentCheck = await checkDisciplinary(studentId, schoolId);
+
+    if (studentCheck.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Student not found or not enrolled in this school"
+      });
+    }
+
+    // Insert disciplinary record
+    const result = await insertDisciplinary(studentId, category, actionTaken, severityLevel, incidentDate, status, remarks, evidence, witnesses, parentNotified, followUpDate, followUpNotes);
+
+    res.status(201).json({
+      success: true,
+      message: "Disciplinary record added successfully",
+      recordId: result.insertId
+    });
+
+  } catch (error) {
+    console.error('Add disciplinary error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+// Get all disciplinary records for a school
+const getDisciplinary = async (req, res) => {
+  try {
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const schoolId = decoded.id || decoded.sid;
+
+    // Get disciplinary records with related information
+    const records = await getoDisciplinary(schoolId);
+    if (!records) {
+      return res.status(404).json({
+        success: false,
+        message: "No disciplinary records found"
+      });
+    }
+
+    res.json({
+      success: true,
+      disciplinary: records
+    });
+
+  } catch (error) {
+    console.error('Get disciplinary error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+// Get disciplinary record by ID
+const getDisciplinaryById = async (req, res) => {
+  try {
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const schoolId = decoded.id || decoded.sid;
+    const { id } = req.params;
+
+    const records = await getoDisciplinaryById(id, schoolId);
+
+    if (records.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Disciplinary record not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      record: records[0]
+    });
+
+  } catch (error) {
+    console.error('Get disciplinary by ID error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+// Update disciplinary record
+const updateDisciplinary = async (req, res) => {
+  try {
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const schoolId = decoded.id || decoded.sid;
+    const { id } = req.params;
+
+    // Check if record exists and belongs to the school
+    const existingRecord = await getoDisciplinaryById(id, schoolId);
+
+    if (existingRecord.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Disciplinary record not found"
+      });
+    }
+
+    const oldValues = existingRecord[0];
+    const updateData = req.body;
+
+    // Update the record
+    const [result] = await updatedDisciplinary(updateData || oldValues, id, schoolId);
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to update disciplinary record"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Disciplinary record updated successfully"
+    });
+
+  } catch (error) {
+    console.error('Update disciplinary error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+// Delete disciplinary record
+const deleteDisciplinary = async (req, res) => {
+  try {
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const schoolId = decoded.id || decoded.sid;
+    const { id } = req.params;
+
+    // Check if record exists and belongs to the school
+    const existingRecord = await getoDisciplinaryById(id, schoolId);
+
+    if (existingRecord.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Disciplinary record not found"
+      });
+    }
+
+    // Delete the record (cascade will handle related records)
+    const result = await deletedDisciplinary(id);
+
+    if (result.affectedRows === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Failed to delete disciplinary record"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "Disciplinary record deleted successfully"
+    });
+
+  } catch (error) {
+    console.error('Delete disciplinary error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+// Get disciplinary statistics
+const getDisciplinaryStats = async (req, res) => {
+  try {
+    const token = req.cookies.schoolToken || req.cookies.teacherToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized access"
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const schoolId = decoded.id || decoded.sid;
+
+    // Get various statistics
+    const totalRecords = await countDisciplinary(schoolId);
+
+    const statusStats = await statusDisciplinary(schoolId);
+
+    const severityStats = await severityDisciplinary(schoolId);
+
+    const categoryStats = await categoryDisciplinary(schoolId);
+
+    const recentRecords = await recent30DaysDisciplinary(schoolId);
+
+    res.json({
+      success: true,
+      stats: {
+        total: totalRecords[0].total,
+        byStatus: statusStats,
+        bySeverity: severityStats,
+        byCategory: categoryStats,
+        recent30Days: recentRecords[0].count
+      }
+    });
+
+  } catch (error) {
+    console.error('Get disciplinary stats error:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+// ---------------------------------- DISCIPLINARY CONTROLLER ----------------------------------
 
 
 
@@ -7050,10 +7359,21 @@ const updateExpenses = async (req, res) => {
 
 module.exports = {
 
+  // ----- DISCIPLINARY EXPORTS ------
+  getDisciplinaryStats,
+  addDisciplinary,
+  getDisciplinary,
+  getDisciplinaryById,
+  updateDisciplinary,
+  deleteDisciplinary,
+  // ----- DISCIPLINARY EXPORTS ------
+
+
   // ----- ATTENDANCE EXPORTS ------
   insertAttendance,
   // ----- ATTENDANCE EXPORTS ------
 
+  
   // ----- EXPENSE EXPORTS ------
   insertExpense,
   getExpenses,

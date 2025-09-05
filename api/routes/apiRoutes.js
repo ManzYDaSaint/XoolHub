@@ -196,7 +196,14 @@ const {
     updateStatusEx,
     cancSubscription,
     insertAttendance,
+    addDisciplinary,
+    getDisciplinary,
+    getDisciplinaryById,
+    updateDisciplinary,
+    deleteDisciplinary,
+    getDisciplinaryStats,
 } = require('../controller/apiController.js');
+
 
 
 // ------- ATTENDANCE ROUTES -----------
@@ -615,6 +622,16 @@ router.route('/avg-expense').get(AvgMonthly);
 router.route('/transactions').get(Transactions);
 router.route('/get-liner').get(getChartLiner);
 // ------- EXPENSE ROUTES -----------
+
+
+// ------- DISCIPLINARY ROUTES -----------
+router.route('/add-disciplinary').post(addDisciplinary);
+router.route('/get-disciplinary').get(getDisciplinary);
+router.route('/get-disciplinary/:id').get(getDisciplinaryById);
+router.route('/update-disciplinary/:id').put(updateDisciplinary);
+router.route('/delete-disciplinary/:id').delete(deleteDisciplinary);
+router.route('/disciplinary-stats').get(getDisciplinaryStats); 
+// ------- DISCIPLINARY ROUTES -----------
 
 
 

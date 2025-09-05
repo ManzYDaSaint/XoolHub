@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const AutoSuggestInput = ({ suggestions, onSuggestionSelected, value, onChange, name, placeholder }) => {
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [userInput, setUserInput] = useState(value);
+  const [userInput, setUserInput] = useState(value || '');
+
+  // Sync userInput with value prop changes
+  useEffect(() => {
+    setUserInput(value || '');
+  }, [value]);
 
   const handleChange = (e) => {
     const userInput = e.currentTarget.value;

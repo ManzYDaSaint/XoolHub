@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import FormButton from "../../../components/input/formButton";
 import ClassSelector from "../../reports/components/classSelector";
 import YearSelectInput from "../components/yearSelect";
 import Table from "./table";
@@ -7,7 +6,7 @@ import api from "../../../services/apiServices";
 import ToggleSwitch from "./toggle";
 import { InfinitySpin } from "react-loader-spinner";
 import { toast } from "react-hot-toast";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, GraduationCap, ArrowRight, Users, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const PromotionData = () => {
@@ -119,106 +118,143 @@ const PromotionData = () => {
   };
 
   return (
-    <div className="bg-gray-100 pb-3">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30">
       {/* Header */}
-      <div className="flex items-center mb-8 sm:items-center shadow p-2 sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center rounded-md space-x-2 cursor-pointer text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2 mr-2 mb-2"
-        >
-          <ChevronLeft className="w-4 h-4" /> Back
-        </button>
-        <div className="border-l-2 border-gray-300 ml-4 pl-4">
-          <h1
-            className="text-lg font-semibold"
-            style={{ fontFamily: "'Poppins', san-serif" }}
-          >
-            Student Promotion
-          </h1>
-          <p className="text-sm text-gray-500">
-            Promote students from one class to another.
-          </p>
+      <div className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-lg">
+        <div className="p-6">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="group inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-blue-300/50 font-medium text-sm"
+            >
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
+              Back
+            </button>
+            
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Student Promotion
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Promote students from one class to another
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
       <form onSubmit={onSubmit}>
-        <div className="px-6">
-          <div className="p-6 bg-white shadow-lg rounded-lg">
-            <div className="mb-6">
-              <div className="promotion-content">
-                <div className="flex flex-wrap gap-4 w-100 border-b-2 border-gray-300 pb-4">
-                  <div className="current">
-                    <h6
-                      className="mb-2 text-gray-600 text-md font-medium"
-                      style={{ fontFamily: "'Poppins', sans-serif" }}
-                    >
-                      Promoted Class
-                    </h6>
-                    <div className="formGroup">
-                      <ClassSelector
-                        label="Current Class:"
-                        onChange={(e) => {
-                          setCurrentClass(e.target.value);
-                        }}
-                        name="currentClass"
-                        value={currentClass}
-                      />
-                    </div>
-                  </div>
-                  <div class="w-px bg-gray-400"></div>
-                  <div className="nextYear">
-                    <h6
-                      className="mb-2 text-gray-600 text-md font-medium ml-3"
-                      style={{ fontFamily: "'Poppins', sans-serif" }}
-                    >
-                      Target Academic Year and Class
-                    </h6>
+        <div className="p-6 space-y-6">
+          {/* Promotion Configuration Section */}
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30"></div>
+            <div className="relative p-8">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+                  <ArrowRight className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Promotion Configuration</h3>
+                  <p className="text-gray-600 text-sm">Configure the promotion details for students</p>
+                </div>
+              </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ml-3">
-                      <YearSelectInput
-                        label={"Next Academic Year"}
-                        onChange={(e) => {
-                          setNextYear(e.target.value);
-                        }}
-                        name={"nextYear"}
-                        value={nextYear}
-                      />
-                      <ClassSelector
-                        label={"Next Class:"}
-                        onChange={(e) => {
-                          setNextClass(e.target.value);
-                        }}
-                        name={"nextClass"}
-                        value={nextClass}
-                      />
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Current Class Section */}
+                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
+                      <Users className="w-4 h-4 text-white" />
                     </div>
+                    <h4 className="text-lg font-semibold text-gray-900">Current Class</h4>
+                  </div>
+                  <div className="space-y-4">
+                    <ClassSelector
+                      label="Select Current Class:"
+                      onChange={(e) => {
+                        setCurrentClass(e.target.value);
+                      }}
+                      name="currentClass"
+                      value={currentClass}
+                    />
+                  </div>
+                </div>
+
+                {/* Target Class Section */}
+                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                      <GraduationCap className="w-4 h-4 text-white" />
+                    </div>
+                    <h4 className="text-lg font-semibold text-gray-900">Target Class</h4>
+                  </div>
+                  <div className="space-y-4">
+                    <YearSelectInput
+                      label={"Next Academic Year"}
+                      onChange={(e) => {
+                        setNextYear(e.target.value);
+                      }}
+                      name={"nextYear"}
+                      value={nextYear}
+                    />
+                    <ClassSelector
+                      label={"Next Class:"}
+                      onChange={(e) => {
+                        setNextClass(e.target.value);
+                      }}
+                      name={"nextClass"}
+                      value={nextClass}
+                    />
                   </div>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div className="border-2 border-gray-300 px-4 py-2 my-4 rounded-lg">
-              {isLoading ? (
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <InfinitySpin width="150" color="#007BFE" />
+          {/* Student Selection Section */}
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/30"></div>
+            <div className="relative p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+                  <Users className="w-5 h-5 text-white" />
                 </div>
-              ) : (
-                <Table data={students} />
-              )}
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Select Students for Promotion</h3>
+                  <p className="text-gray-600 text-sm">Choose which students to promote to the next class</p>
+                </div>
+              </div>
+
+              <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 overflow-hidden">
+                {isLoading ? (
+                  <div className="flex justify-center items-center py-16">
+                    <div className="text-center">
+                      <InfinitySpin width="150" color="#6366f1" />
+                      <p className="text-gray-600 mt-4">Loading student data...</p>
+                    </div>
+                  </div>
+                ) : (
+                  <Table data={students} />
+                )}
+              </div>
             </div>
-            <FormButton
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg"
-              label={"Promote Students"}
-              id={"tyepButton"}
-              type={"submit"}
-            />
+          </div>
+
+          {/* Submit Section */}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-green-300/50 font-medium text-lg"
+            >
+              <CheckCircle className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+              Promote Selected Students
+            </button>
           </div>
         </div>
       </form>

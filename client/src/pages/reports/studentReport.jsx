@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import api from "../../services/apiServices";
 import { useNavigate } from "react-router-dom";
 import PrintComp from "./components/print";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, FileText, Download, User, GraduationCap, Award, BookOpen, Users } from "lucide-react";
 
 const StudentReport = () => {
   const { id } = useParams();
@@ -248,162 +248,226 @@ const StudentReport = () => {
   }, [remarks, agg]);
 
   return (
-    <div className="border-2 border-gray-300 rounded-lg m-4">
-      <button
-        type="button"
-        onClick={() => navigate(-1)}
-        className="inline-flex items-center rounded-md space-x-2 cursor-pointer text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2 mr-2 mb-2"
-      >
-        <ChevronLeft className="w-4 h-4" /> Back
-      </button>
-
-      <div className="px-6 py-4">
-        <div className="splitter">
-          <div className="text-center">
-            <h5 className="text-xl text-gray-700 font-semibold border-b-2 border-gray-300 pb-4">
-              Student Academic Report
-            </h5>
-          </div>
-        </div>
-        <div className="panel">
-          <div className="panel-heading">
-            <div className="panel-title text-muted mt-5 mb-5">
-              {students.length > 0 ? (
-                students.map((item, index) => (
-                  <div className="flex items-center gap-4" key={index}>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <h4 class="flex flex-col text-sm font-medium">
-                        Student Name: &nbsp;{" "}
-                        <span class="text-gray-500">{item.studentname}</span>
-                      </h4>
-                      <h4 class="flex flex-col text-sm font-medium">
-                        Class: &nbsp;{" "}
-                        <span class="text-gray-500">{item.class}</span>
-                      </h4>
-                      <h4 class="flex flex-col text-sm font-medium">
-                        Class Teacher(s): &nbsp;
-                        {ct.map((it, index) => (
-                          <span key={it.id || index} className="text-gray-500">
-                            {Array.isArray(it.name)
-                              ? it.name.join(", ")
-                              : it.name}
-                            {index < ct.length - 1 &&
-                            it.name &&
-                            (Array.isArray(it.name) || ct[index + 1].name)
-                              ? ", "
-                              : ""}{" "}
-                            {/* Comma logic */}
-                          </span>
-                        ))}
-                      </h4>
-                      <h4 class="flex flex-col text-sm font-medium">
-                        Term: &nbsp;{" "}
-                        <span class="text-gray-500">
-                          <p className="text-sm">{item.term}</p>
-                        </span>
-                      </h4>
-                      <h4 class="flex flex-col text-sm font-medium">
-                        Exam Type: &nbsp;{" "}
-                        <span class="text-gray-500 ">
-                          <p className="text-sm">{item.exam}</p>
-                        </span>
-                      </h4>
-                      <h4 class="flex flex-col text-sm font-medium">
-                        Year: &nbsp;{" "}
-                        <span class="text-gray-500 ">
-                          <p className="text-sm">{item.year}</p>
-                        </span>
-                      </h4>
-                      <h4 class="flex flex-col">
-                        Aggregate: &nbsp;{" "}
-                        <span class="text-gray-500 ">
-                          <p className="text-sm">{item.aggregate}</p>
-                        </span>
-                      </h4>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-sm">No students available</p>
-              )}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30">
+      {/* Header */}
+      <div className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-lg">
+        <div className="p-6">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="group inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-blue-300/50 font-medium text-sm"
+            >
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
+              Back
+            </button>
+            
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <FileText className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Student Academic Report
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Detailed academic performance and subject analysis
+                </p>
+              </div>
             </div>
           </div>
-          <div className="mt-3">
-            <table className="table table-bordered table-hover w-full text-sm">
-              <thead>
-                <tr className="bg-gray-100 text-gray-700 uppercase text-sm">
-                  <th colspan="7" className="border p-3">
-                    {" "}
-                    Position: {rank} Out OF {counter}
-                  </th>
-                </tr>
-                <tr className="bg-gray-100 text-gray-700 uppercase text-sm text-left">
-                  <th className="border p-3">#</th>
-                  <th className="border p-3">Subjects</th>
-                  <th className="border p-3">Marks</th>
-                  <th className="border p-3">Grade</th>
-                  <th className="border p-3">Position</th>
-                  <th className="border p-3">Remarks</th>
-                  <th className="border p-3">Teacher</th>
-                </tr>
-              </thead>
-              <tbody>
-                {subjectInfo.map((item, index) => {
-                  // Get Rank
-                  const matchingRank = pos
-                    ?.flat()
-                    ?.find(
-                      (i) =>
-                        i.subjectid === item.subjectid && i.score === item.score
-                    )?.ranko;
+        </div>
+      </div>
 
-                  // Get teacher
-                  const name = teacher
-                    ?.flat()
-                    ?.find((i) => i.subjectid === item.subjectid)?.name;
+      <div className="p-6 space-y-6">
+        {/* Student Information Section */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Student Information</h3>
+                <p className="text-gray-600 text-sm">Academic details and performance overview</p>
+              </div>
+            </div>
 
-                  return (
-                    <tr
-                      key={index}
-                      className="bg-gray-100 text-gray-700 text-sm text-left"
-                    >
-                      <td className="border p-3">{index + 1}</td>
-                      <td className="border p-3">{item.subject}</td>
-                      <td className="border p-3">{item.score}</td>
-                      <td className="border p-3">{item.grade}</td>
-                      <td className="border p-3">
-                        {matchingRank ? matchingRank : "N/A"}/{counter}
-                      </td>
-                      <td className="border p-3">{item.remarks}</td>
-                      <td className="border p-3">{name ? name : "N/A"}</td>
-                    </tr>
-                  );
-                })}
-                <tr>
-                  <td colspan="6" className="border p-3">
-                    Download
-                  </td>
-                  <td className="border p-3">
-                    <button onClick={handleDownload}>Download PDF</button>
-                    <PrintComp
-                      ref={printRef}
-                      school={school}
-                      student={students[0] || {}}
-                      ct={ct}
-                      subjectInfo={subjectInfo}
-                      rank={rank}
-                      counter={counter}
-                      pos={pos}
-                      teacher={teacher}
-                      remarks={rem}
-                      grade={msce}
-                      Jgrade={jce}
-                    />
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+            {students.length > 0 ? (
+              students.map((item, index) => (
+                <div key={index} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <User className="w-4 h-4 text-blue-600" />
+                      <span className="text-sm font-medium text-gray-600">Student Name</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{item.studentname}</p>
+                  </div>
+
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <GraduationCap className="w-4 h-4 text-green-600" />
+                      <span className="text-sm font-medium text-gray-600">Class</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{item.class}</p>
+                  </div>
+
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Users className="w-4 h-4 text-purple-600" />
+                      <span className="text-sm font-medium text-gray-600">Class Teacher(s)</span>
+                    </div>
+                    <p className="text-sm font-semibold text-gray-900">
+                      {ct.map((it, index) => (
+                        <span key={it.id || index}>
+                          {Array.isArray(it.name) ? it.name.join(", ") : it.name}
+                          {index < ct.length - 1 && ", "}
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <BookOpen className="w-4 h-4 text-orange-600" />
+                      <span className="text-sm font-medium text-gray-600">Term</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{item.term}</p>
+                  </div>
+
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <FileText className="w-4 h-4 text-indigo-600" />
+                      <span className="text-sm font-medium text-gray-600">Exam Type</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{item.exam}</p>
+                  </div>
+
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <GraduationCap className="w-4 h-4 text-cyan-600" />
+                      <span className="text-sm font-medium text-gray-600">Year</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{item.year}</p>
+                  </div>
+
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Award className="w-4 h-4 text-yellow-600" />
+                      <span className="text-sm font-medium text-gray-600">Aggregate</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">{item.aggregate}</p>
+                  </div>
+
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Award className="w-4 h-4 text-red-600" />
+                      <span className="text-sm font-medium text-gray-600">Position</span>
+                    </div>
+                    <p className="text-lg font-semibold text-gray-900">
+                      {rank} out of {counter}
+                    </p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No student information available</p>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* Subject Performance Section */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+                <BookOpen className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-gray-900">Subject Performance</h3>
+                <p className="text-gray-600 text-sm">Detailed breakdown by subject</p>
+              </div>
+            </div>
+
+            <div className="bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-green-500 to-emerald-600 text-white">
+                      <th className="px-6 py-4 text-left text-sm font-semibold">#</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold">Subject</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold">Marks</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold">Grade</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold">Position</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold">Remarks</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold">Teacher</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {subjectInfo.map((item, index) => {
+                      const matchingRank = pos
+                        ?.flat()
+                        ?.find(
+                          (i) =>
+                            i.subjectid === item.subjectid && i.score === item.score
+                        )?.ranko;
+
+                      const name = teacher
+                        ?.flat()
+                        ?.find((i) => i.subjectid === item.subjectid)?.name;
+
+                      return (
+                        <tr key={index} className="border-b border-gray-200 hover:bg-gray-50/50 transition-colors duration-200">
+                          <td className="px-6 py-4 text-sm font-medium text-gray-900">{index + 1}</td>
+                          <td className="px-6 py-4 text-sm text-gray-900">{item.subject}</td>
+                          <td className="px-6 py-4 text-sm text-gray-900 font-semibold">{item.score}</td>
+                          <td className="px-6 py-4 text-sm text-gray-900">{item.grade}</td>
+                          <td className="px-6 py-4 text-sm text-gray-900">
+                            {matchingRank ? matchingRank : "N/A"}/{counter}
+                          </td>
+                          <td className="px-6 py-4 text-sm text-gray-900">{item.remarks}</td>
+                          <td className="px-6 py-4 text-sm text-gray-900">{name ? name : "N/A"}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Download Section */}
+        <div className="flex justify-center">
+          <button
+            onClick={handleDownload}
+            className="group inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-purple-300/50 font-medium text-lg"
+          >
+            <Download className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" />
+            Download PDF Report
+          </button>
+        </div>
+
+        {/* Hidden Print Component */}
+        <div className="hidden">
+          <PrintComp
+            ref={printRef}
+            school={school}
+            student={students[0] || {}}
+            ct={ct}
+            subjectInfo={subjectInfo}
+            rank={rank}
+            counter={counter}
+            pos={pos}
+            teacher={teacher}
+            remarks={rem}
+            grade={msce}
+            Jgrade={jce}
+          />
         </div>
       </div>
     </div>

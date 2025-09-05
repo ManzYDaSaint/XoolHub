@@ -63,50 +63,102 @@ const TeacherBoard = () => {
   }, []);
 
   return (
-    <>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-8">
-        <Card icon={UsersRound} title={count} description={"Users"} />
-        <div className="flex items-center gap-4 w-full">
-          <div className="w-full border-2 border-gray-300 p-2 py-7 rounded-lg flex items-center gap-4">
-            <p className="p-2 rounded-lg bg-blue-600">
-              <UsersRound size={30} className="w-6 h-6 text-white" />
-            </p>
-            <div className="card_detail">
-              <p className="text-sm text-gray-700">Male</p>
-              <h4>{male}</h4>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 p-8">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg">
+              <Presentation className="w-8 h-8 text-white" />
             </div>
+            <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-emerald-800 to-teal-800 bg-clip-text text-transparent">
+              Teacher Dashboard
+            </h1>
           </div>
-          <div className="w-full border-2 border-gray-300 p-2 py-7 rounded-lg flex items-center gap-4">
-            <p className="p-2 rounded-lg bg-blue-600">
-              <Users size={30} className="w-6 h-6 text-white" />
-            </p>
-            <div className="card_detail">
-              <p className="text-sm text-gray-700">Female</p>
-              <h4>{female}</h4>
-            </div>
-          </div>
+          <div className="w-32 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mx-auto"></div>
         </div>
-      </div>
 
-      <div className="flex gap-4 px-6 py-4">
-        <div className="p-4 border-2 border-gray-300 rounded-lg w-full">
-          <h4 className="text-gray-500 font-semibold mt-4 border-b-2 border-gray-300 pb-2 text-md">Gender Distribution</h4>
-          <GenderPieChart />
+        {/* Teacher Statistics */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-teal-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl">
+                <UsersRound className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Teacher Statistics</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Card icon={UsersRound} title={count} description={"Total Teachers"} />
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200/50">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl">
+                    <UsersRound className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold text-gray-900">{male}</h4>
+                    <p className="text-gray-600 font-medium">Male Teachers</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-200/50">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-bold text-gray-900">{female}</h4>
+                    <p className="text-gray-600 font-medium">Female Teachers</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="p-4 border-2 border-gray-300 rounded-lg w-full">
-          <h4 className="text-gray-500 font-semibold mt-4 border-b-2 border-gray-300 pb-2 text-md mb-5">Class Teachers</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {teacher.map((item) => (
-            <Ctcard
-              icon={Presentation}
-              score={item.classs}
-              student={item.teacher}
-            />
-          ))}
+
+        {/* Charts and Class Teachers */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/30"></div>
+            <div className="relative p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+                  <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Gender Distribution</h3>
+              </div>
+              <GenderPieChart />
+            </div>
+          </div>
+          
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/50 to-blue-50/30"></div>
+            <div className="relative p-8">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl">
+                  <Presentation className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Class Teachers</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {teacher.map((item, index) => (
+                  <Ctcard
+                    key={index}
+                    icon={Presentation}
+                    score={item.classs}
+                    student={item.teacher}
+                  />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

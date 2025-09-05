@@ -177,6 +177,21 @@ const ExamSlice = createSlice({
       price: '',
       max: '',
     },
+    disciplinaryFormData: {
+      studentId: '',
+      student: '',
+      category: '',
+      severity: '',
+      date: '',
+      status: '',
+      action: '',
+      evidence: '',
+      witnesses: '',
+      remarks: '',
+      parentNotified: false,
+      followUpDate: '',
+      followUpNotes: ''
+    },
   },
   reducers: {
     setIsEditMode: (state, action) => {
@@ -281,18 +296,21 @@ const ExamSlice = createSlice({
     setSubscriptionData: (state, action) => {
       state.subscriptionData = action.payload;
     },
+    setDisciplinaryFormData: (state, action) => {
+      state.disciplinaryFormData = action.payload;
+    },
   },
 });
 
-export const { 
-  setIsEditMode, 
-  setEditItemId, 
+export const {
+  setIsEditMode,
+  setEditItemId,
   setStudentIDs,
-  setFormData, 
-  setSubjectFormData, 
-  setRegisterData, 
-  setLoginData, 
-  setYearFormData, 
+  setFormData,
+  setSubjectFormData,
+  setRegisterData,
+  setLoginData,
+  setYearFormData,
   setClassFormData,
   setExpenseFormData,
   setTermFormData,
@@ -319,5 +337,6 @@ export const {
   setSubscriptionData,
   setEventFormData,
   setSubscribeData,
+  setDisciplinaryFormData,
 } = ExamSlice.actions;
 export default ExamSlice.reducer;

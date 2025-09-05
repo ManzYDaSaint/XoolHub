@@ -14,30 +14,49 @@ const ReportData = () => {
   };
 
   return (
-    <main className="p-6">
-      <div
-        className="border-b-2 border-gray-300 pb-4 inline-flex justify-end"
-        style={{ display: showReport ? "none" : "block" }}
-      >
-        <button
-          type="button"
-          onClick={handleReportOpen}
-          className="bg-gradient-to-r from-blue-700 via-gray-500 to-green-600 text-white hover:bg-gradient-to-br transition duration-300 focus:ring-2 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-3"
+    <main className="px-8 py-8">
+      <div className="max-w-6xl mx-auto">
+        {/* Filter Button */}
+        <div
+          className="mb-8 flex justify-end"
+          style={{ display: showReport ? "none" : "block" }}
         >
-          <Filter size={15} className="plus" />
-          Filter
-        </button>
-      </div>
-      <div
-        className="toggleDiv"
-        style={{ display: showReport ? "block" : "none" }}
-      >
-        <FormButton
-          label={"Close"}
-          id={"closeBtn"}
-          onClick={handleReportClose}
-        />
-        <ReportForm />
+          <button
+            type="button"
+            onClick={handleReportOpen}
+            className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-purple-500 to-indigo-600 text-white rounded-xl hover:from-purple-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+          >
+            <Filter size={18} className="group-hover:scale-110 transition-transform duration-200" />
+            Filter Reports
+          </button>
+        </div>
+
+        {/* Report Form */}
+        <div
+          className="space-y-6"
+          style={{ display: showReport ? "block" : "none" }}
+        >
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl">
+                <Filter className="w-5 h-5 text-white" />
+              </div>
+              <h2 className="text-xl font-bold text-gray-900">Report Filters</h2>
+            </div>
+            <FormButton
+              label={"Close"}
+              id={"closeBtn"}
+              onClick={handleReportClose}
+            />
+          </div>
+          
+          <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-indigo-50/30"></div>
+            <div className="relative p-8">
+              <ReportForm />
+            </div>
+          </div>
+        </div>
       </div>
     </main>
   );

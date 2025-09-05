@@ -8,13 +8,12 @@ import TPAID from "./hooks/teacherSubscription.jsx";
 import PAID from "./hooks/subscription.jsx";
 import AuthT from "./hooks/tauth.jsx";
 import Auth0 from "./hooks/auth.jsx";
-// import Expense from './pages/administrator/expense.jsx';
-// import ReferralPage from './pages/landing/components/referral.jsx';
 
 // Lazy load components
 const ReferralPage = lazy(() =>
   import("./pages/landing/components/referral.jsx")
 );
+const Disciplinary = lazy(() => import("./pages/disciplinary/disciplinary.jsx"));
 const Expense = lazy(() => import("./pages/administrator/expense.jsx"));
 const Report = lazy(() => import("./pages/administrator/report.jsx"));
 const Events = lazy(() => import("./pages/administrator/events.jsx"));
@@ -205,6 +204,20 @@ function App() {
             <InactivityHandler>
               <Suspense fallback={<LoadingSpinner />}>
                 <Attendance />{" "}
+              </Suspense>
+            </InactivityHandler>
+          </TPAID>
+        </AuthT>
+      ),
+    },
+    {
+      path: "/disciplinary",
+      element: ( 
+        <AuthT>
+          <TPAID>
+            <InactivityHandler>
+              <Suspense fallback={<LoadingSpinner />}>
+                <Disciplinary />
               </Suspense>
             </InactivityHandler>
           </TPAID>

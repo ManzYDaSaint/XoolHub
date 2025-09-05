@@ -1,5 +1,138 @@
 const conn = require('../database/mysql.js');
 
+// ------ ------------------------- DISCIPLINARY BUILDER ------------------------------------------------
+
+const checkDisciplinary = async (studentid, schoolid) => {
+  const sql = 'SELECT id FROM students WHERE id = ? AND id IN (SELECT studentid FROM history WHERE schoolid = ? AND status = "Active")';
+  const values = [studentid, schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const insertDisciplinary = async (studentid, category, actiontaken, severitylevel, incidentdate, status, remarks, evidence, witnesses, parentnotified, followupdate, followupnotes) => {
+  const sql = `INSERT INTO disciplinary_records (student_id,
+        category, action_taken, severity_level, incident_date, status, remarks, evidence, witnesses, parent_notified,
+        follow_up_date, follow_up_notes
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  const values = [studentid, category, actiontaken, severitylevel, incidentdate, status, remarks, evidence, witnesses, parentnotified, followupdate, followupnotes];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const getoDisciplinary = async (schoolid) => {
+  const sql = `SELECT 
+        dr.id,
+        dr.student_id,
+        s.name AS studentName,
+        c.name AS studentClass,
+        dr.category,
+        dr.action_taken AS action,
+        dr.severity_level AS severity,
+        dr.status,
+        dr.remarks,
+        dr.incident_date AS date,
+        dr.evidence,
+        dr.witnesses,
+        dr.parent_notified,
+        dr.follow_up_date,
+        dr.follow_up_notes,
+        dr.created_at,
+        dr.updated_at
+      FROM disciplinary_records dr
+      JOIN students s ON dr.student_id = s.id
+      JOIN history h ON dr.student_id = h.studentid
+      JOIN class c ON h.classid = c.id
+      WHERE h.schoolid = ?
+      ORDER BY dr.incident_date DESC, dr.created_at DESC`;
+  const values = [schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const getoDisciplinaryById = async (id, schoolid) => {
+  const sql = `SELECT 
+        dr.*,
+        s.name AS studentName
+      FROM disciplinary_records dr
+      JOIN students s ON dr.student_id = s.id
+      JOIN history h ON dr.student_id = h.studentid
+      JOIN class c ON h.classid = c.id
+      WHERE dr.id = ? AND h.schoolid = ?`;
+  const values = [id, schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const updatedDisciplinary = async (data, id, schoolid) => {
+  const sql = `UPDATE disciplinary_records dr
+      JOIN students s ON dr.student_id = s.id
+      JOIN history h ON s.id = h.studentid
+      SET dr.category = ?,
+          dr.action_taken = ?,
+          dr.severity_level = ?,
+          dr.incident_date = ?,
+          dr.status = ?,
+          dr.remarks = ?,
+          dr.incident_date = ?,
+          dr.evidence = ?,
+          dr.witnesses = ?,
+          dr.parent_notified = ?,
+          dr.follow_up_date = ?,
+          dr.follow_up_notes = ?,
+          dr.updated_at = CURRENT_TIMESTAMP
+      WHERE dr.id = ? AND h.schoolid = ?`;
+  const values = [data.category, data.action_taken, data.severity_level, data.incident_date, data.status, data.remarks, data.evidence, data.witnesses, data.parent_notified, data.follow_up_date, data.follow_up_notes, id, schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const deletedDisciplinary = async (id) => {
+  const sql = 'DELETE FROM disciplinary_records WHERE id = ?';
+  const values = [id];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const countDisciplinary = async (schoolid) => {
+  const sql = `SELECT COUNT(*) as total FROM disciplinary_records dr JOIN history h ON dr.student_id = h.studentid WHERE h.schoolid = ?`;
+  const values = [schoolid];
+  const [res] = await conn.query(sql, values);
+  return res[0];
+}
+
+const statusDisciplinary = async (schoolid) => {
+  const sql = 'SELECT status, COUNT(*) as count FROM disciplinary_records dr JOIN history h ON dr.student_id = h.studentid WHERE h.schoolid = ? GROUP BY status';
+  const values = [schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const severityDisciplinary = async (schoolid) => {
+  const sql = 'SELECT severity_level, COUNT(*) as count FROM disciplinary_records dr JOIN history h ON dr.student_id = h.studentid WHERE h.schoolid = ? GROUP BY severity_level';
+  const values = [schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const categoryDisciplinary = async (schoolid) => {
+  const sql = 'SELECT category, COUNT(*) as count FROM disciplinary_records dr JOIN history h ON dr.student_id = h.studentid WHERE h.schoolid = ? GROUP BY category ORDER BY count DESC LIMIT 5';
+  const values = [schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const recent30DaysDisciplinary = async (schoolid) => {
+  const sql = 'SELECT COUNT(*) as count FROM disciplinary_records dr JOIN history h ON dr.student_id = h.studentid WHERE h.schoolid = ? AND dr.incident_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)';
+  const values = [schoolid];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+
+// ------ ------------------------- DISCIPLINARY BUILDER ------------------------------------------------
+
+
+
 // ------ ------------------------- ATTENDANCE BUILDER ------------------------------------------------
 
 const checkAttendance = async (date, studentids) => {
@@ -2648,6 +2781,21 @@ const getStudentNameByContact = async(phone) => {
 
 
 module.exports = {
+
+  // ----- DISCIPLINARY SECTION -----
+  checkDisciplinary,
+  insertDisciplinary,
+  getoDisciplinary,
+  getoDisciplinaryById,
+  updatedDisciplinary,
+  deletedDisciplinary,
+  countDisciplinary,
+  statusDisciplinary,
+  severityDisciplinary,
+  categoryDisciplinary,
+  recent30DaysDisciplinary,
+  // ----- DISCIPLINARY SECTION -----
+
 
   // ----- ATTENDANCE SECTION -----
   checkAttendance,

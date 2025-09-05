@@ -10,23 +10,26 @@ const Tabs = ({
   return (
     <>
       <div
-        className={`flex space-x-4 bg-gray-300 p-1 rounded-lg border-b border-gray-200 mt-4 ${className}`}
+        className={`flex space-x-2 bg-white/60 backdrop-blur-sm p-2 rounded-2xl border border-gray-200/50 shadow-lg mt-6 ${className}`}
       >
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setSelectedTab(tab)}
-            className={`px-4 py-2 text-sm font-medium transition-all duration-200 ${
+            className={`group relative px-6 py-3 text-sm font-semibold transition-all duration-200 rounded-xl ${
               selectedTab === tab
-                ? "border-black text-black bg-white rounded-md"
-                : "border-transparent text-gray-500 hover:text-black"
+                ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/25"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
             }`}
           >
-            {tab}
+            {selectedTab === tab && (
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl blur-sm opacity-30"></div>
+            )}
+            <span className="relative z-10">{tab}</span>
           </button>
         ))} 
       </div>
-      <div className="mt-4">{children}</div>
+      <div className="mt-6">{children}</div>
     </>
   );
 };

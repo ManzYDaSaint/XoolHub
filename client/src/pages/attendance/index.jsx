@@ -174,139 +174,178 @@ const AttendanceComponent = () => {
   const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   return (
-    <div className="flex bg-gray-100 min-h-screen">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       <Toaster />
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-2 sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
-          <div className="ml-16">
-            <h1
-              className="text-lg font-semibold"
-              style={{ fontFamily: "'Poppins', san-serif" }}
-            >
-              Subject Attendance
-            </h1>
-            <p className="text-sm text-gray-500">
-              Manage attendance by entering and filtering.
-            </p>
+        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+          <div className="px-8 py-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
+                <GraduationCap className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
+                  Subject Attendance
+                </h1>
+                <p className="text-gray-600 font-medium">
+                  Manage attendance by entering and filtering data
+                </p>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 p-6">
-          <div className="flex gap-6">
-            {/* Left Section - Filters and Table */}
-            <div className="flex-1">
-              {/* Summary Statistics */}
-              <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
-                      <GraduationCap className="w-5 h-5 text-yellow-600" />
+        <main className="px-8 py-8">
+          <div className="max-w-7xl mx-auto space-y-8">
+            {/* Summary Statistics */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/30"></div>
+                <div className="relative p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
+                      <GraduationCap className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-                      <div className="text-sm text-gray-500">Total Students</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <CheckSquare className="w-5 h-5 text-green-600" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-gray-900">{stats.present}</div>
-                      <div className="text-sm text-gray-500">Present Today</div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="bg-white rounded-lg shadow-sm p-6">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                      <Frown className="w-5 h-5 text-red-600" />
-                    </div>
-                    <div>
-                      <div className="text-2xl font-bold text-gray-900">{stats.absent}</div>
-                      <div className="text-sm text-gray-500">Absent Today</div>
+                      <div className="text-3xl font-bold text-gray-900">{stats.total}</div>
+                      <div className="text-gray-600 font-medium">Total Students</div>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Attendance Table */}
-              <div className="bg-white rounded-lg shadow-sm">
-                <AttendanceTable 
-                  attendanceData={attendanceData} 
-                  attendanceStatus={attendanceStatus}
-                  onAttendanceChange={handleAttendanceChange}
-                  onAbsentReasonChange={handleAbsentReasonChange}
-                  absentReasons={absentReasons}
-                />
-                <div className="p-4 border-t">
-                  <button 
-                    onClick={handleSaveAttendance}
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-medium py-2 px-6 rounded-md transition-colors"
-                  >
-                    Save Attendance
-                  </button>
+              <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/30"></div>
+                <div className="relative p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+                      <CheckSquare className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-gray-900">{stats.present}</div>
+                      <div className="text-gray-600 font-medium">Present Today</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-pink-50/30"></div>
+                <div className="relative p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl">
+                      <Frown className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <div className="text-3xl font-bold text-gray-900">{stats.absent}</div>
+                      <div className="text-gray-600 font-medium">Absent Today</div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Right Section - Calendar and Stats */}
-            <div className="w-80 space-y-6">
-              {/* Calendar */}
-              <div className="bg-white rounded-lg shadow-sm p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <button 
-                    onClick={() => handleMonthChange('prev')}
-                    className="p-1 hover:bg-gray-100 rounded"
-                  >
-                    <ChevronLeft size={20} />
-                  </button>
-                  <h3 className="text-lg font-semibold">
-                    {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
-                  </h3>
-                  <button 
-                    onClick={() => handleMonthChange('next')}
-                    className="p-1 hover:bg-gray-100 rounded"
-                  >
-                    <ChevronRight size={20} />
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-7 gap-1 mb-2">
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-                    <div key={day} className="text-center text-sm font-medium text-gray-500 py-1">
-                      {day}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+              {/* Attendance Table */}
+              <div className="xl:col-span-2">
+                <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30"></div>
+                  <div className="relative p-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">Attendance Records</h3>
                     </div>
-                  ))}
+                    <AttendanceTable 
+                      attendanceData={attendanceData} 
+                      attendanceStatus={attendanceStatus}
+                      onAttendanceChange={handleAttendanceChange}
+                      onAbsentReasonChange={handleAbsentReasonChange}
+                      absentReasons={absentReasons}
+                    />
+                    <div className="mt-6 flex justify-end">
+                      <button 
+                        onClick={handleSaveAttendance}
+                        className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                      >
+                        <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                        Save Attendance
+                      </button>
+                    </div>
+                  </div>
                 </div>
-                
-                <div className="grid grid-cols-7 gap-1">
-                  {days.map((day, index) => (
-                    <button
-                      key={index}
-                      onClick={() => handleDateSelect(day.date)}
-                      className={`p-2 text-sm rounded-full hover:bg-gray-100 transition-colors ${
-                        day.date.toDateString() === selectedDate.toDateString()
-                          ? 'bg-green-500 text-white hover:bg-green-600'
-                          : day.isCurrentMonth
-                          ? 'text-gray-900'
-                          : 'text-gray-400'
-                      }`}
-                    >
-                      {day.date.getDate()}
-                    </button>
-                  ))}
+              </div>
+
+              {/* Calendar */}
+              <div className="xl:col-span-1">
+                <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/30"></div>
+                  <div className="relative p-8">
+                    <div className="flex items-center gap-3 mb-6">
+                      <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900">Calendar</h3>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mb-6">
+                      <button 
+                        onClick={() => handleMonthChange('prev')}
+                        className="p-2 hover:bg-gray-100/80 rounded-xl transition-all duration-200 group"
+                      >
+                        <ChevronLeft size={20} className="text-gray-600 group-hover:text-gray-800" />
+                      </button>
+                      <h4 className="text-lg font-semibold text-gray-900">
+                        {monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}
+                      </h4>
+                      <button 
+                        onClick={() => handleMonthChange('next')}
+                        className="p-2 hover:bg-gray-100/80 rounded-xl transition-all duration-200 group"
+                      >
+                        <ChevronRight size={20} className="text-gray-600 group-hover:text-gray-800" />
+                      </button>
+                    </div>
+                    
+                    <div className="grid grid-cols-7 gap-1 mb-3">
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
+                        <div key={day} className="text-center text-sm font-medium text-gray-500 py-2">
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="grid grid-cols-7 gap-1">
+                      {days.map((day, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleDateSelect(day.date)}
+                          className={`p-2 text-sm rounded-xl hover:bg-gray-100/80 transition-all duration-200 ${
+                            day.date.toDateString() === selectedDate.toDateString()
+                              ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg'
+                              : day.isCurrentMonth
+                              ? 'text-gray-900 hover:bg-blue-50'
+                              : 'text-gray-400'
+                          }`}
+                        >
+                          {day.date.getDate()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        </main>
       </div>
     </div>
   )

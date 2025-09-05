@@ -88,59 +88,70 @@ const ProfileData = () => {
   };
 
   return (
-    <div className="personalContainer">
+    <div className="space-y-8">
       <LogOutModal open={open} setOpen={setOpen} />
-      <div className="profileUpdate">
-        <h5 className="text-lg font-semibold py-2">Profile Information</h5>
-        <p className="text-gray-600 text-sm">
-          Here you can view information about yourself. <br /> You can not
-          change any of the information displayed here.
-        </p>
-        <form autoComplete="off" className="mt-5">
+      
+      {/* Profile Information Section */}
+      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/40 shadow-xl">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">Profile Information</h3>
+            <p className="text-gray-600 text-sm">
+              View your personal information. Some fields cannot be modified.
+            </p>
+          </div>
+        </div>
+        
+        <form autoComplete="off" className="space-y-6">
           {teacher && (
-            <div className="grid grid-cols-3 gap-4">
-              <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="space-y-2">
                 <FormInput
-                  label={"Full Name:"}
+                  label={"Full Name"}
                   type={"text"}
                   name={"name"}
-                  placeholder={"Type here.."}
+                  placeholder={"Enter full name"}
                   value={teacher.name}
                   disabled
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <FormInput
-                  label={"Contact:"}
+                  label={"Contact Number"}
                   type={"text"}
-                  name={"address"}
-                  placeholder={"Type here.."}
+                  name={"contact"}
+                  placeholder={"Enter contact number"}
                   value={teacher.contact}
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <FormInput
-                  label={"Gender:"}
+                  label={"Gender"}
                   type={"text"}
-                  name={"address"}
-                  placeholder={"Type here.."}
+                  name={"gender"}
+                  placeholder={"Enter gender"}
                   value={teacher.gender}
                 />
               </div>
-              <div className="col-span-2">
+              <div className="md:col-span-2 space-y-2">
                 <FormInput
-                  label={"Email Address:"}
-                  type={"text"}
-                  name={"address"}
-                  placeholder={"Type here.."}
+                  label={"Email Address"}
+                  type={"email"}
+                  name={"email"}
+                  placeholder={"Enter email address"}
                   value={teacher.email}
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <FormInput
-                  label={"Address:"}
+                  label={"Address"}
                   type={"text"}
-                  placeholder={"Type here.."}
+                  placeholder={"Enter address"}
                   value={teacher.address}
                   disabled
                 />
@@ -148,70 +159,86 @@ const ProfileData = () => {
             </div>
           )}
         </form>
-        <div className="border-t-2 border-gray-300 my-5">
-          <h1 className="text-lg font-semibold mt-4 text-gray-800 py-3">
-            Change Password
-          </h1>
-          <p className="text-gray-600 text-sm">
-            Update your password associated with your <br /> account.
-          </p>
-          <form onSubmit={onPasswordSubmit} autoComplete="off" className="mt-5">
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <FormInput
-                  label={"Current Password"}
-                  type={"password"}
-                  name={"current"}
-                  placeholder={"Type here.."}
-                  onChange={handlePasswordChange}
-                  value={passwordFormData.current}
-                />
-              </div>
-              <div>
-                <FormInput
-                  label={"New Password"}
-                  type={"password"}
-                  name={"newPassword"}
-                  placeholder={"Type here.."}
-                  onChange={handlePasswordChange}
-                  value={passwordFormData.newPassword}
-                />
-              </div>
-              <div>
-                <FormInput
-                  label={"Confirm Password"}
-                  type={"password"}
-                  name={"confirm"}
-                  placeholder={"Type here.."}
-                  onChange={handlePasswordChange}
-                  value={passwordFormData.confirm}
-                />
-              </div>
-            </div>
-            <FormButton
-              label={processing ? "Saving..." : "Save"}
-              id="tyepButton"
-            />
-          </form>
+      </div>
+      {/* Change Password Section */}
+      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border border-white/40 shadow-xl">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">Change Password</h3>
+            <p className="text-gray-600 text-sm">
+              Update your password to keep your account secure.
+            </p>
+          </div>
         </div>
-        <div className="border-t-2 border-gray-300 my-5">
-          <div className="flex justify-between items-center">
-            <div className="left">
-              <h1 className="text-lg font-semibold mt-4 text-gray-800 py-3">
-                Log out your session
-              </h1>
-              <p className="text-gray-600 text-sm">
-                Are you sure want to log out? All your <br /> unsaved data will
-                be lost.
-              </p>
-            </div>
-            <div className="right text-center">
-              <FormButton
-                label={"Log Out"}
-                id="nextButton"
-                onClick={() => setOpen(true)}
+        
+        <form onSubmit={onPasswordSubmit} autoComplete="off" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <FormInput
+                label={"Current Password"}
+                type={"password"}
+                name={"current"}
+                placeholder={"Enter current password"}
+                onChange={handlePasswordChange}
+                value={passwordFormData.current}
               />
             </div>
+            <div className="space-y-2">
+              <FormInput
+                label={"New Password"}
+                type={"password"}
+                name={"newPassword"}
+                placeholder={"Enter new password"}
+                onChange={handlePasswordChange}
+                value={passwordFormData.newPassword}
+              />
+            </div>
+            <div className="space-y-2">
+              <FormInput
+                label={"Confirm Password"}
+                type={"password"}
+                name={"confirm"}
+                placeholder={"Confirm new password"}
+                onChange={handlePasswordChange}
+                value={passwordFormData.confirm}
+              />
+            </div>
+          </div>
+          <div className="flex justify-end pt-4">
+            <FormButton
+              label={processing ? "Saving..." : "Update Password"}
+              id="tyepButton"
+            />
+          </div>
+        </form>
+      </div>
+      {/* Logout Section */}
+      <div className="bg-gradient-to-r from-red-50/80 to-orange-50/80 backdrop-blur-sm rounded-2xl p-8 border border-red-200/40 shadow-xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-gradient-to-br from-red-500 to-orange-600 rounded-xl">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-gray-900">Log Out Session</h3>
+              <p className="text-gray-600 text-sm">
+                End your current session. All unsaved data will be lost.
+              </p>
+            </div>
+          </div>
+          <div className="flex-shrink-0">
+            <FormButton
+              label={"Log Out"}
+              id="nextButton"
+              onClick={() => setOpen(true)}
+            />
           </div>
         </div>
       </div>

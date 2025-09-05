@@ -117,65 +117,131 @@ const Overview = () => {
         }, [])
       : [];
   return (
-    <div className="p-6">
-      <div className="p-6 bg-white shadow-lg rounded-lg flex gap-4">
-        <div className="w-3/4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-8">
+      {/* Main Statistics Section */}
+      <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30"></div>
+        <div className="relative p-8">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">Student Statistics</h3>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <Card
               icon={UsersRound}
               title={count}
-              description={"Student Count"}
+              description={"Total Students"} 
             />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-              <div className="border-2 border-gray-300 p-2 py-7 rounded-lg flex items-center gap-4">
-                <p className="p-2 rounded-lg bg-blue-600">
-                  <UsersRound size={30} className="w-6 h-6 text-white" />
-                </p>
-                <div className="card_detail">
-                  <p className="text-sm text-gray-700">Male</p>
-                  <h4>{male}</h4>
+            <div className="group relative bg-white/70 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30"></div>
+              <div className="relative p-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-200">
+                    <UsersRound size={24} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-600 text-sm font-medium mb-1">Male Students</p>
+                    <h4 className="text-2xl font-bold text-gray-900">{male}</h4>
+                  </div>
                 </div>
               </div>
-              <div className="w-full border-2 border-gray-300 p-2 py-7 rounded-lg flex items-center gap-4">
-                <p className="p-2 rounded-lg bg-blue-600">
-                  <Users size={30} className="w-6 h-6 text-white" />
-                </p>
-                <div className="card_detail">
-                  <p className="text-sm text-gray-700">Female</p>
-                  <h4>{female}</h4>
+            </div>
+            <div className="group relative bg-white/70 backdrop-blur-xl rounded-2xl shadow-xl border border-white/20 overflow-hidden hover:shadow-2xl transition-all duration-300">
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-50/50 to-rose-50/30"></div>
+              <div className="relative p-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-200">
+                    <Users size={24} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-gray-600 text-sm font-medium mb-1">Female Students</p>
+                    <h4 className="text-2xl font-bold text-gray-900">{female}</h4>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-          <div className="p-4 border-2 border-gray-300 rounded-lg w-full mt-4">
-            <h4 className="text-gray-500 font-semibold mt-4 border-b-2 border-gray-300 pb-2 text-md mb-4">Student Count</h4>
+        </div>
+      </div>
+
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-50/50 to-emerald-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Student Count by Class</h3>
+            </div>
             <StudentBarChart data={reshapedData} />
           </div>
-          <div className="p-4 border-2 border-gray-300 rounded-lg w-full mt-4">
-            <h4 className="text-gray-500 font-semibold mt-4 border-b-2 border-gray-300 pb-2 text-md mb-4">Gender Distribution</h4>
+        </div>
+
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Gender Distribution</h3>
+            </div>
             <GenderPieChart />
           </div>
         </div>
-        <div className="border-l-2 border-gray-300 pl-4 w-1/4">
-          <h4 className="top_performing_title">Top performance this term</h4>
-          <div className="top_performing">
-            {best.map((item, index) => (
-              <TopPerforming
-                key={index}
-                icon={GraduationCap}
-                score={item.agg}
-                student={item.student}
-                term={item.term}
-                exam={item.exam}
-                form={item.class}
-              />
-            ))}
+      </div>
+
+      {/* Performance Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-yellow-50/50 to-orange-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl">
+                <GraduationCap className="w-5 h-5 text-white" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Top Performers</h3>
+            </div>
+            <div className="space-y-4">
+              {best.map((item, index) => (
+                <TopPerforming
+                  key={index}
+                  icon={GraduationCap}
+                  score={item.agg}
+                  student={item.student}
+                  term={item.term}
+                  exam={item.exam}
+                  form={item.class}
+                />
+              ))}
+            </div>
           </div>
-          <div className="worst_students">
-            <h4 className="worst_performing_title">
-              Worst performance this term
-            </h4>
-            <div className="top_performing">
+        </div>
+
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-pink-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Needs Improvement</h3>
+            </div>
+            <div className="space-y-4">
               {worst.map((item, index) => (
                 <TopPerforming
                   key={index}

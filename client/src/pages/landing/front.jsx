@@ -7,6 +7,9 @@ import {
   BriefcaseBusiness,
   CheckCircle,
   Video,
+  Sparkles,
+  TrendingUp,
+  Shield,
 } from "lucide-react";
 import landBG from "./assets/landBG.png";
 import CustomBtn from "./components/ui/button";
@@ -18,172 +21,332 @@ import Testimonials from "./components/testimony";
 import SubscriptionOptions from "./components/subscription";
 import Footer from "./components/footer";
 import PilotBanner from "./components/banner";
+import { motion } from "framer-motion";
 
 function Landing() {
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <PilotBanner />
+      
       {/* Navigation Bar */}
       <Navbar />
-      {/* Navigation Bar */}
 
-      {/* Header Page */}
-      <div className="p-6">
-        <header className="mt-16 pt-16 text-center space-y-8 bg-gradient-to-r from-blue-100 to-green-100 relative rounded-lg">
-          <p className="flex flex-col md:flex-row md:inline-flex items-center space-x-2 text-sm md:bg-white/40 md:backdrop-blur-md md:border-2 md:border-white/90 rounded-full px-2 py-1 text-center">
-            <span className="flex md:w-auto rounded-full bg-gradient-to-r from-blue-700 to-purple-700 px-6 py-1 md:py-0.5 text-xs mr-2 text-white">
-              Pilot
-              <ArrowRight className="h-4 w-4 md:hidden" />
-            </span>
-            We've released this version for testing and feedback!{" "}
-            <ArrowRight className="h-4 w-4 hidden md:inline" />
-          </p>
-          <h1 className="text-2xl font-bold text-blue-900 md:text-5xl">
-            Your Ultimate{" "}
-            <span className="bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent">
-              Multi-School
-            </span>{" "}
-            <br />
-            Management Solution.
-          </h1>
-          <p className="text-sm md:text-md">
-            Focus on your school's success by teaching and providing education
-            and <br />
-            let us handle the system and provide the right tools you need
-            without the hassle.
-          </p>
-          <div className="flex flex-row md:flex-row items-center justify-center gap-4 pb-10">
-            <Link to={"/register"}>
-              <CustomBtn>Start Your Free Trial</CustomBtn>
-            </Link>
-            <HeaderBtn>
-              <Video className="h-4 w-4 md:h-6 md:w-6" />
-              <span className="md:inline">Watch Demo</span>
-            </HeaderBtn>
-          </div>
-          {/* Image with fading white below */}
-          <div className="relative w-full flex justify-center">
-            <img
-              src={landBG}
-              alt="landbg"
-              className="rounded-xl flex-shrink-0"
-            />
-            <div
-              className="absolute left-0 right-0 bottom-0 h-80 rounded-b-lg pointer-events-none"
-              style={{
-                background:
-                  "linear-gradient(to bottom, rgba(255,255,255,0) 0%, #fff 100%)",
-              }}
-            />
-          </div>
-        </header>
-      </div>
-      {/* Header Page */}
-
-      {/* Trustees */}
-      <div id="Trustees">
-        <Schools />
-      </div>
-      {/* Trustees */}
-
-      {/* Why US */}
-      <div className="text-center py-20 bg-gradient-to-r from-blue-100 to-green-100 px-8">
-        <p className="inline-flex">
-          <HeaderBtn>Why Choose US</HeaderBtn>
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-4 mt-12">
-          <div className="flex flex-col items-center text-center px-8 py-4 space-y-2">
-            <BadgeDollarSign className="text-green-600" size={50} />
-            <h5 className="bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent text-md md:text-lg font-semibold">
-              Cost Efficiency
-            </h5>
-            <p className="text-gray-700 font-medium">
-              Reduces operational costs by eliminating the need for in-house IT
-              staff, hardware upgrades and paper-based processes.
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center px-8 py-4 space-y-2">
-            <AlarmClockPlus className="text-green-600" size={50} />
-            <h5 className="bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent text-md md:text-lg font-semibold">
-              Time Savings
-            </h5>
-            <p className="text-gray-700 font-medium">
-              Most of our Automation features help free up staff time for core
-              educational tasks
-            </p>
-          </div>
-          <div className="flex flex-col items-center text-center px-8 py-4 space-y-2">
-            <BriefcaseBusiness className="text-green-600" size={50} />
-            <h5 className="bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent text-md md:text-lg font-semibold">
-              Ease Administration
-            </h5>
-            <p className="text-gray-700 font-medium">
-              Reduces administrative workload by automating tasks and
-              streamlining processes
-            </p>
-          </div>
+      {/* Hero Section */}
+      <section className="relative overflow-hidden pt-40 pb-16">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{ animationDelay: '4s' }}></div>
         </div>
-      </div>
 
-      {/* Features */}
-      <div id="features">
-        <FeatureSection />
-      </div>
-      {/* Features */}
-
-      {/* Testimonials */}
-      <div id="Testimonials">
-        <Testimonials />
-      </div>
-      {/* Testimonials */}
-
-      {/* Pricing */}
-      <div id="pricing">
-        <SubscriptionOptions />
-      </div>
-      {/* Pricing */}
-
-      {/* CTA */}
-      <section className="py-20 bg-gradient-to-r from-blue-100 to-green-100">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent">
-              Transform the Way You <br /> Manage Schools
-            </h2>
-            <p className="text-md md:text-lg text-blue-900  font-semibold mb-8">
-              Experience seamless administration, real-time insights, and <br />{" "}
-              effortless collaboration—all in one platform.
-            </p>
-
-            <div className="flex flex-row sm:flex-row gap-4 justify-center items-center mb-8">
-              <Link to={"/register"}>
-                <CustomBtn>Try For Free</CustomBtn>
-              </Link>
-              <HeaderBtn>See XoolHub In Action</HeaderBtn>
-            </div>
-
-            <div className="flex flex-col text-sm md:text-md sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-8 text-blue-900">
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 mr-2" />
-                One-Term free trial
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto text-center">
+            {/* Pilot Badge */}
+            <motion.div
+              className="inline-flex items-center space-x-2 mb-8"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <div className="flex flex-col md:flex-row md:inline-flex items-center space-x-2 text-sm bg-white/80 backdrop-blur-md border-2 border-white/90 rounded-full px-4 py-2 shadow-lg">
+                <span className="flex md:w-auto rounded-full bg-gradient-to-r from-blue-700 to-purple-700 px-4 py-1 text-xs text-white font-semibold">
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  Pilot
+                  <ArrowRight className="h-3 w-3 ml-1 md:hidden" />
+                </span>
+                <span className="text-gray-700 font-medium">We've released this version for testing and feedback!</span>
+                <ArrowRight className="h-4 w-4 hidden md:inline text-blue-600" />
               </div>
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 mr-2" />
-                No credit card required
+            </motion.div>
+
+            {/* Main Heading */}
+            <motion.h1
+              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight"
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+            >
+              <span className="text-gray-900">Your Ultimate </span>
+              <span className="bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent">
+                Multi-School
+              </span>
+              <br />
+              <span className="text-gray-900">Management Solution.</span>
+            </motion.h1>
+
+            {/* Subtitle */}
+            <motion.p
+              className="text-lg md:text-xl lg:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              Focus on your school's success by teaching and providing education.{" "}
+              <span className="font-semibold text-gray-800">Let us handle the system</span> and provide the right tools you need without the hassle.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div
+              className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Link to={"/register"}>
+                  <CustomBtn>Start Your Free Trial</CustomBtn>
+                </Link>
+              </motion.div>
+              
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
+                <HeaderBtn>
+                  <Video className="h-5 w-5 mr-2" />
+                  Watch Demo
+                </HeaderBtn>
+              </motion.div>
+            </motion.div>
+
+            {/* Hero Image */}
+            <motion.div
+              className="relative w-full flex justify-center"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.8 }}
+            >
+              <div className="relative">
+                <img
+                  src={landBG}
+                  alt="XoolHub Platform Preview"
+                  className="rounded-2xl shadow-2xl border border-white/20 max-w-full h-auto"
+                />
+                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-white via-transparent to-transparent pointer-events-none" />
               </div>
-              <div className="flex items-center">
-                <CheckCircle className="h-5 w-5 mr-2" />
-                Setup in under 24 hours
-              </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
-      {/* CTA */}
+
+      {/* Trusted By Section */}
+      <section className="py-16 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div id="Trustees">
+            <Schools />
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose Us Section */}
+      <section className="py-24 relative overflow-hidden bg-gradient-to-br from-white via-blue-50 to-indigo-50">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 right-20 w-72 h-72 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+          <div className="absolute bottom-20 left-20 w-72 h-72 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '3s' }}></div>
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            className="mb-16"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <p className="inline-flex"><HeaderBtn>Why Choose Us</HeaderBtn></p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            {[
+              {
+                icon: BadgeDollarSign,
+                title: "Cost Efficiency",
+                description: "Reduces operational costs by eliminating the need for in-house IT staff, hardware upgrades and paper-based processes.",
+                color: "from-green-500 to-emerald-500",
+                delay: 0.2
+              },
+              {
+                icon: AlarmClockPlus,
+                title: "Time Savings",
+                description: "Most of our Automation features help free up staff time for core educational tasks.",
+                color: "from-blue-500 to-indigo-500",
+                delay: 0.4
+              },
+              {
+                icon: BriefcaseBusiness,
+                title: "Ease Administration",
+                description: "Reduces administrative workload by automating tasks and streamlining processes.",
+                color: "from-purple-500 to-pink-500",
+                delay: 0.6
+              }
+            ].map((feature, index) => (
+              <motion.div
+                key={index}
+                className="group relative"
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: feature.delay }}
+                whileHover={{ y: -10 }}
+              >
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl border border-white/30 hover:shadow-2xl transition-all duration-300">
+                  <div className={`w-20 h-20 bg-gradient-to-br ${feature.color} rounded-2xl flex items-center justify-center mb-6 mx-auto shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                    <feature.icon className="text-white" size={40} />
+                  </div>
+                  <h3 className="text-xl md:text-2xl font-bold mb-4 bg-gradient-to-r from-blue-700 to-purple-700 bg-clip-text text-transparent">
+                    {feature.title}
+                  </h3>
+                  <p className="text-gray-600 leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-24 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div id="features">
+            <FeatureSection />
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-24 relative">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div id="Testimonials">
+            <Testimonials />
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section className="py-24 relative bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div id="pricing">
+            <SubscriptionOptions />
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-24 relative overflow-hidden bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-20 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+          <div className="absolute bottom-10 right-20 w-80 h-80 bg-purple-200 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute top-1/2 left-1/3 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{ animationDelay: '4s' }}></div>
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="max-w-5xl mx-auto">
+            {/* Main Heading */}
+            <motion.h2 
+              className="text-4xl md:text-6xl lg:text-7xl font-bold mb-8 bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-700 bg-clip-text text-transparent leading-tight"
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+            >
+              Transform the Way You <br className="hidden md:block" />
+              <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Manage Schools
+              </span>
+            </motion.h2>
+
+            {/* Subtitle */}
+            <motion.p 
+              className="text-lg md:text-xl lg:text-2xl text-gray-700 font-medium mb-12 max-w-4xl mx-auto leading-relaxed"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
+            >
+              Experience seamless administration, real-time insights, and{" "}
+              <span className="font-semibold text-gray-800">effortless collaboration</span>—all in one powerful platform.
+            </motion.p>
+
+            {/* CTA Buttons */}
+            <motion.div 
+              className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-16"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
+            >
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Link to={"/register"}>
+                  <CustomBtn>Try For Free</CustomBtn>
+                </Link>
+              </motion.div>
+              
+              <motion.div
+                whileHover={{ scale: 1.05, y: -2 }}
+                whileTap={{ scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+              >
+                <HeaderBtn>See XoolHub In Action</HeaderBtn>
+              </motion.div>
+            </motion.div>
+
+            {/* Features List */}
+            <motion.div 
+              className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6, ease: "easeOut" }}
+            >
+              {[
+                { icon: CheckCircle, text: "One-Term free trial", color: "from-green-500 to-emerald-500" },
+                { icon: Shield, text: "No credit card required", color: "from-blue-500 to-indigo-500" },
+                { icon: TrendingUp, text: "Setup in under 24 hours", color: "from-purple-500 to-pink-500" }
+              ].map((feature, index) => (
+                <motion.div
+                  key={index}
+                  className="flex flex-col items-center p-6 bg-white/60 backdrop-blur-sm rounded-2xl border border-white/30 shadow-lg hover:shadow-xl transition-all duration-300 group"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.8 + index * 0.1 }}
+                  whileHover={{ y: -5, scale: 1.02 }}
+                >
+                  <div className={`w-16 h-16 bg-gradient-to-br ${feature.color} rounded-full flex items-center justify-center mb-4 shadow-lg group-hover:shadow-xl transition-all duration-300`}>
+                    <feature.icon className="h-8 w-8 text-white" />
+                  </div>
+                  <p className="text-gray-700 font-semibold text-center text-lg">{feature.text}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* Trust Indicators */}
+            <motion.div 
+              className="mt-16 pt-8 border-t border-gray-200/50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.2 }}
+            >
+              <p className="text-sm text-gray-500 mb-4 font-medium">Trusted by educational institutions worldwide</p>
+              <div className="flex justify-center items-center space-x-8 opacity-60">
+                <div className="w-20 h-8 bg-gray-300 rounded animate-pulse"></div>
+                <div className="w-20 h-8 bg-gray-300 rounded animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+                <div className="w-20 h-8 bg-gray-300 rounded animate-pulse" style={{ animationDelay: '1s' }}></div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <Footer />
-      {/* Footer */}
     </div>
   );
 }

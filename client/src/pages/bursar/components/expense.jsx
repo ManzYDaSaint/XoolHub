@@ -301,31 +301,40 @@ const ExpensesPage = () => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className="flex bg-gray-100 pb-3">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 pb-3">
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between shadow p-2 sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
-          <div className="ml-16">
-            <h1
-              className="text-lg font-semibold"
-              style={{ fontFamily: "'Poppins', san-serif" }}
-            >
-              Expenses Management
-            </h1>
-            <p className="text-sm text-gray-500">
-              Track and manage all school expenses
-            </p>
+        <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
+          <div className="px-8 py-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-lg">
+                  <DollarSign className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-red-800 to-pink-800 bg-clip-text text-transparent">
+                    Expenses Management
+                  </h1>
+                  <p className="text-gray-600 font-medium">
+                    Track and manage all school expenses
+                  </p>
+                </div>
+              </div>
+              <div className="mt-4 sm:mt-0">
+                <button
+                  onClick={handleAddExpense}
+                  className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+                  <span className="relative flex items-center gap-2">
+                    <PlusCircle className="w-4 h-4" />
+                    Add Expense
+                  </span>
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="mt-4 sm:mt-0">
-            <button
-              onClick={handleAddExpense}
-              className="inline-flex items-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Expense
-            </button>
-          </div>
-        </div>
+        </header>
 
         {/* Summary Cards */}
         <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 px-10">

@@ -83,58 +83,101 @@ const StudentData = () => {
   };
 
   return (
-    <div className="bg-gray-100 pb-3">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-indigo-50/20 to-purple-50/30">
       <Toaster />
+      
       {/* Header */}
-      <div className="mb-8 sm:items-center shadow p-2 flex items-center sticky top-0 z-30 bg-white/95 backdrop-blur-sm">
-        <button
-          type="button"
-          onClick={() => navigate(-1)}
-          className="inline-flex items-center rounded-md space-x-2 cursor-pointer text-white bg-blue-600 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium text-sm px-5 py-2 mr-2 mb-2"
-        >
-          <ChevronLeft className="w-4 h-4" /> Back
-        </button>
-        <div className="border-l-2 border-gray-300 ml-4 pl-4">
-          <h1
-            className="text-lg font-semibold"
-            style={{ fontFamily: "'Poppins', san-serif" }}
-          >
-            Student Admission
-          </h1>
-          <p className="text-sm text-gray-500">
-            Manage, add and update student information.
-          </p>
+      <div className="sticky top-0 z-30 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-lg">
+        <div className="p-6">
+          <div className="flex items-center gap-4">
+            <button
+              type="button"
+              onClick={() => navigate(-1)}
+              className="group inline-flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-blue-300/50 font-medium text-sm"
+            >
+              <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
+              Back
+            </button>
+            
+            <div className="flex items-center gap-4">
+              <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+                </svg>
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  Student Admission
+                </h1>
+                <p className="text-gray-600 text-sm">
+                  Manage, add and update student information
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="px-6">
-        <div className="p-6 bg-white shadow-lg rounded-lg">
-          <div
-            className="div"
-            style={{ display: showStudent ? "none" : "block" }}
-          >
-            <button
-              type="button"
-              onClick={handleStudentOpen}
-              class="bg-gradient-to-r from-blue-700 via-gray-500 to-green-600 text-white hover:bg-gradient-to-br transition duration-300 focus:ring-2 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-3"
+      {/* Main Content */}
+      <div className="p-6 space-y-6">
+        {/* Add Student Section */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/30"></div>
+          <div className="relative p-8">
+            <div
+              className="transition-all duration-300"
+              style={{ display: showStudent ? "none" : "block" }}
             >
-              <Plus size={15} className="plus" />
-              Add Student(s)
-            </button>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-xl">
+                  <Plus className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Add New Students</h3>
+              </div>
+              <button
+                type="button"
+                onClick={handleStudentOpen}
+                className="group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200 focus:ring-4 focus:ring-green-300/50 font-medium text-sm"
+              >
+                <Plus size={18} className="group-hover:rotate-90 transition-transform duration-200" />
+                Add Student(s)
+              </button>
+            </div>
+            
+            <div
+              className="transition-all duration-300"
+              style={{ display: showStudent ? "block" : "none" }}
+            >
+              <div className="flex items-center gap-3 mb-6">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl">
+                  <FilePenLine className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Student Registration Form</h3>
+              </div>
+              <StudentForm fetchData={fetchData} />
+              <div className="mt-6 flex justify-end">
+                <FormButton
+                  label={"Close"}
+                  id={"closeBtn"}
+                  onClick={handleStudentClose}
+                />
+              </div>
+            </div>
           </div>
-          <div
-            className="toggleDiv"
-            style={{ display: showStudent ? "block" : "none" }}
-          >
-            <StudentForm fetchData={fetchData} />
-            <FormButton
-              label={"Close"}
-              id={"closeBtn"}
-              onClick={handleStudentClose}
-            />
-          </div>
-          <div className="border-2 border-gray-300 rounded-lg mt-4">
+        </div>
+
+        {/* Student Table Section */}
+        <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-pink-50/30"></div>
+          <div className="relative p-8">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900">Student Records</h3>
+            </div>
             <StudentTable studentData={studentData} />
           </div>
         </div>
