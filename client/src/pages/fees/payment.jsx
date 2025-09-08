@@ -92,7 +92,7 @@ const Payment = () => {
             <div className="max-w-7xl mx-auto">
               {/* Header */}
               <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm mb-8">
-                <div className="px-8 py-6">
+                <div className="px-8 py-6 pl-20">
                   <div className="flex items-center gap-4">
                     <button
                       onClick={handleRedirect}

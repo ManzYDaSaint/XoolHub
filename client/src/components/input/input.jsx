@@ -13,7 +13,7 @@ const Input = ({
   setShowPassword,
 }) => {
   return (
-    <div className="group relative inline-flex items-center bg-white/80 backdrop-blur-sm border border-gray-200/50 p-3 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500/50">
+    <div className="group relative inline-flex items-center bg-white/80 backdrop-blur-sm border border-gray-200/50 p-3 rounded-xl text-sm shadow-lg hover:shadow-xl transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500/50 w-full">
       {Icon && (
         <Icon 
           size={18} 

@@ -131,7 +131,7 @@ const PromotionData = () => {
               <ChevronLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform duration-200" />
               Back
             </button>
-            
+
             <div className="flex items-center gap-4">
               <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg">
                 <GraduationCap className="w-6 h-6 text-white" />
@@ -149,6 +149,7 @@ const PromotionData = () => {
         </div>
       </div>
 
+      <div className="max-w-7xl mx-auto">
       <form onSubmit={onSubmit}>
         <div className="p-6 space-y-6">
           {/* Promotion Configuration Section */}
@@ -164,56 +165,55 @@ const PromotionData = () => {
                   <p className="text-gray-600 text-sm">Configure the promotion details for students</p>
                 </div>
               </div>
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Current Class Section */}
-                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
-                      <Users className="w-4 h-4 text-white" />
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Current Class Section */}
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-lg">
+                        <Users className="w-4 h-4 text-white" />
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900">Current Class</h4>
                     </div>
-                    <h4 className="text-lg font-semibold text-gray-900">Current Class</h4>
+                    <div className="space-y-4">
+                      <ClassSelector
+                        label="Select Current Class:"
+                        onChange={(e) => {
+                          setCurrentClass(e.target.value);
+                        }}
+                        name="currentClass"
+                        value={currentClass}
+                      />
+                    </div>
                   </div>
-                  <div className="space-y-4">
-                    <ClassSelector
-                      label="Select Current Class:"
-                      onChange={(e) => {
-                        setCurrentClass(e.target.value);
-                      }}
-                      name="currentClass"
-                      value={currentClass}
-                    />
+
+                  {/* Target Class Section */}
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
+                        <GraduationCap className="w-4 h-4 text-white" />
+                      </div>
+                      <h4 className="text-lg font-semibold text-gray-900">Target Class</h4>
+                    </div>
+                    <div className="space-y-4">
+                      <YearSelectInput
+                        label={"Next Academic Year"}
+                        onChange={(e) => {
+                          setNextYear(e.target.value);
+                        }}
+                        name={"nextYear"}
+                        value={nextYear}
+                      />
+                      <ClassSelector
+                        label={"Next Class:"}
+                        onChange={(e) => {
+                          setNextClass(e.target.value);
+                        }}
+                        name={"nextClass"}
+                        value={nextClass}
+                      />
+                    </div>
                   </div>
                 </div>
-
-                {/* Target Class Section */}
-                <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-white/30">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2 bg-gradient-to-br from-green-500 to-emerald-600 rounded-lg">
-                      <GraduationCap className="w-4 h-4 text-white" />
-                    </div>
-                    <h4 className="text-lg font-semibold text-gray-900">Target Class</h4>
-                  </div>
-                  <div className="space-y-4">
-                    <YearSelectInput
-                      label={"Next Academic Year"}
-                      onChange={(e) => {
-                        setNextYear(e.target.value);
-                      }}
-                      name={"nextYear"}
-                      value={nextYear}
-                    />
-                    <ClassSelector
-                      label={"Next Class:"}
-                      onChange={(e) => {
-                        setNextClass(e.target.value);
-                      }}
-                      name={"nextClass"}
-                      value={nextClass}
-                    />
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -258,6 +258,7 @@ const PromotionData = () => {
           </div>
         </div>
       </form>
+      </div>
     </div>
   );
 };

@@ -5964,7 +5964,7 @@ const getSubjectPos = async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.id || decoded.sid;
 
-  try {
+  try { 
     if (!termid || !typeid || !classid) {
       return res.json({
         success: false,
@@ -5974,6 +5974,7 @@ const getSubjectPos = async (req, res) => {
 
     // Fecthing data
     const pos = await getSubjectPosition(termid, typeid, classid, sid, id);
+    console.log(pos);
     if (pos) {
       return res.json({
         success: true,

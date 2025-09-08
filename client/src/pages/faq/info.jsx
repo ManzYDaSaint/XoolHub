@@ -39,7 +39,7 @@ const FAQPage = () => {
 
   return (
     <div className="bg-gray-100 min-h-screen p-8">
-      <div className="max-w-6xl mx-auto plans mt-20">
+      <div className="max-w-7xl mx-auto plans mt-20">
         <div className="text-center pt-10 pb-5">
           <h2 className="inline-flex mb-4"><HeaderBtn>FAQ</HeaderBtn></h2>
           <h5 className="text-3xl font-semibold text-blue-900 mb-4">Frequently Asked Questions</h5>

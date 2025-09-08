@@ -15,7 +15,7 @@ const ReportData = () => {
 
   return (
     <main className="px-8 py-8">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Filter Button */}
         <div
           className="mb-8 flex justify-end"

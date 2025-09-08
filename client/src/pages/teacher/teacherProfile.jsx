@@ -79,7 +79,7 @@ const TeacherProfile = () => {
         <Sidebar />
         <div className="dashboard">
           <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-            <div className="px-8 py-6">
+            <div className="px-8 py-6 pl-20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
@@ -99,7 +99,7 @@ const TeacherProfile = () => {
             </div>
           </header>
           <main className="px-8 py-8">
-            <div className="max-w-6xl mx-auto">
+            <div className="max-w-7xl mx-auto">
               <div className="flex justify-start mb-8">
                 <FormButton
                   label={"Back"}

@@ -6,7 +6,7 @@ const Report = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-          <div className="px-8 py-6">
+          <div className="px-8 py-6 pl-20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl shadow-lg">
@@ -17,7 +17,7 @@ const Report = () => {
                 <div>
                   <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-purple-800 to-indigo-800 bg-clip-text text-transparent">
                     Examination Report Management
-                  </h1>
+                  </h1> 
                   <p className="text-gray-600 font-medium">
                     Manage and update student examination reports
                   </p>

@@ -6,69 +6,133 @@
   xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
   xmlns:video="http://www.google.com/schemas/sitemap-video/1.1"
 >
+  <!-- Main Pages -->
   <url>
     <loc>https://xoolhub.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/features</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/pricing</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://xoolhub.com/login</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://xoolhub.com/register</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://xoolhub.com/features</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/faq</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
+  
+  <!-- Authentication Pages -->
+  <url>
+    <loc>https://xoolhub.com/login</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://xoolhub.com/register</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://xoolhub.com/forgot</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  
+  <!-- Portal Access Pages (Public-facing) -->
+  <url>
+    <loc>https://xoolhub.com/parent/dashboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://xoolhub.com/tdashboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://xoolhub.com/administrator</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://xoolhub.com/bursar/dashboard</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  
+  <!-- Legal & Support Pages -->
   <url>
     <loc>https://xoolhub.com/policy</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.5</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/feedback</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
   <url>
     <loc>https://xoolhub.com/referral</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  
+  <!-- Educational Content Pages -->
+  <url>
+    <loc>https://xoolhub.com/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://xoolhub.com/case-studies</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-01-15</lastmod>
+  </url>
+  <url>
+    <loc>https://xoolhub.com/help</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <lastmod>2024-01-15</lastmod>
   </url>
 </urlset>

@@ -17,7 +17,7 @@ const Hold = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       {/* Header */}
       <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="px-8 py-6">
+        <div className="px-8 py-6 pl-20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-lg">
@@ -53,7 +53,7 @@ const Hold = () => {
 
       {/* Content */}
       <main className="px-8 py-8">
-        <div className="max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto">
           <div className="mb-8">
             <h2 className="text-3xl font-bold text-gray-900 mb-2">Department Overview</h2>
             <div className="w-24 h-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full"></div>

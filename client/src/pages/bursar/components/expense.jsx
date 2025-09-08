@@ -305,7 +305,7 @@ const ExpensesPage = () => {
       <div className="flex-1 flex flex-col">
         {/* Header */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-          <div className="px-8 py-6">
+          <div className="px-8 py-6 pl-20">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-lg">
@@ -336,8 +336,12 @@ const ExpensesPage = () => {
           </div>
         </header>
 
+        <main className="px-8 py-8">
+          <div className="max-w-7xl mx-auto">
+            
+          
         {/* Summary Cards */}
-        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 px-10">
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {summaryData.map((item, index) => (
             <div
               key={index}
@@ -376,9 +380,11 @@ const ExpensesPage = () => {
         </div>
 
         {/* Expenses Table */}
-        <div className="p-6 bg-white shadow-lg rounded-lg mx-10">
+        <div className="">
           <XpenseTable Data={data} />
         </div>
+        </div>
+        </main>
       </div>
 
       {/* Add Expense Modal */}

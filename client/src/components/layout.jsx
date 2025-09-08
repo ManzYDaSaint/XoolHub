@@ -10,7 +10,7 @@ function SidebarTrigger({ onClick, className }) {
       }`}
       aria-label="Open sidebar"
       onClick={onClick}
-      style={{ zIndex: 60, position: "fixed", top: 20, left: 20 }}
+      style={{ zIndex: 60, position: "fixed", top: 31, left: 20 }}
     >
       <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
       <div className="relative p-3">

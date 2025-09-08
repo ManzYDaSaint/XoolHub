@@ -15,7 +15,7 @@ const Teachers = () => {
   return (
     <Layout>
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="px-8 py-6">
+        <div className="px-8 py-6 pl-20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl shadow-lg">

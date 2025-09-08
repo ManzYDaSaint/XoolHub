@@ -43,7 +43,7 @@ const AdminDashboard = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-        <div className="px-8 py-6">
+        <div className="px-8 py-6 pl-20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl shadow-lg">
@@ -54,8 +54,8 @@ const AdminDashboard = () => {
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
                   Admin Overview
-                </h1>
-                <p className="text-gray-600 font-medium">
+                </h1> 
+                <p className="text-gray-600 font-medium"> 
                   Comprehensive dashboard for school management
                 </p>
               </div>

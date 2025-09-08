@@ -8,7 +8,7 @@ const AboutUs = () => {
     <div className="bg-gray-50 min-h-screen plans aboutUS">
       {/* Hero */}
       <section className="relative pt-36 px-6 md:px-10">
-        <div className="mx-auto max-w-6xl overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-xl ring-1 ring-black/10">
+        <div className="mx-auto max-w-7xl overflow-hidden rounded-3xl bg-gradient-to-r from-indigo-600 via-violet-600 to-fuchsia-600 text-white shadow-xl ring-1 ring-black/10">
           <div className="px-8 py-12 md:px-12 md:py-16">
             <h5 className="inline-flex">
               <HeaderBtn>ABOUT XOOLHUB</HeaderBtn>
@@ -66,7 +66,7 @@ const AboutUs = () => {
 
       {/* Trust & stats */}
       <section className="mt-12 px-6 md:px-10">
-        <div className="mx-auto max-w-6xl rounded-2xl bg-white p-6 md:p-8 shadow-sm ring-1 ring-black/5">
+        <div className="mx-auto max-w-7xl rounded-2xl bg-white p-6 md:p-8 shadow-sm ring-1 ring-black/5">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="flex items-start gap-3">
               <div className="mt-1 rounded-lg bg-green-50 p-2 text-green-600">

@@ -92,6 +92,7 @@ const Feedback = lazy(() => import("./pages/administrator/feedback.jsx"));
 const Feeds = lazy(() => import("./super-admin/pages/feedback/feeds.jsx"));
 const PrivacyPolicy = lazy(() => import("./pages/law/policy.jsx"));
 const TermsOfService = lazy(() => import("./pages/law/terms.jsx"));
+const Features = lazy(() => import("./pages/features/features.jsx"));
 
 function App() {
   const router = createBrowserRouter([
@@ -545,6 +546,16 @@ function App() {
         <InactivityHandler>
           <Suspense fallback={<LoadingSpinner />}>
             <TermsOfService />
+          </Suspense>
+        </InactivityHandler>
+      ),
+    },
+    {
+      path: "/features",
+      element: (
+        <InactivityHandler>
+          <Suspense fallback={<LoadingSpinner />}>
+            <Features />
           </Suspense>
         </InactivityHandler>
       ),

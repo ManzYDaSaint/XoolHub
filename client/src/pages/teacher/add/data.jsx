@@ -103,14 +103,15 @@ const Data = () => {
   };
   return (
     <div>
-      <div style={{ display: showAdd ? "none" : "block" }}>
+      <div style={{ display: showAdd ? "none" : "block" }} className="mb-4">
         <button
           type="button"
           onClick={handleAddOpen}
-          className="bg-gradient-to-r from-blue-700 via-gray-500 to-green-600 text-white hover:bg-gradient-to-br transition duration-300 focus:ring-2 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-3"
+          className="group relative overflow-hidden bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:ring-offset-2 inline-flex items-center gap-3"
         >
-          <Plus size={15} className="plus" />
-          Add Teacher
+          <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
+          <Plus size={16} className="relative z-10 group-hover:scale-110 transition-transform duration-200" />
+          <span className="relative z-10">Add Teacher</span>
         </button>
       </div>
       <div

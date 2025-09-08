@@ -152,6 +152,7 @@ const StudentReport = () => {
       const res = await api.getSubjectPos({ ...data, id });
       const respo = res.data.pos;
 
+      console.log(respo);
       setSubjectInfo(respo);
     } catch (error) {
       console.error("Error fetching individual:", error);

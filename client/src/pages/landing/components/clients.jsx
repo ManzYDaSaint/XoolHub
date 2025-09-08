@@ -60,7 +60,7 @@ const Schools = () => {
       </div>
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           {/* Header */}
           <motion.div
             className="mb-16"

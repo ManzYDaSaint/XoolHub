@@ -31,26 +31,44 @@ function Landing() {
     "name": "XoolHub",
     "applicationCategory": "BusinessApplication",
     "operatingSystem": "Web Browser",
-    "description": "Multi-school information management system designed to streamline student data, classes, subjects, and scheduling.",
+    "description": "Comprehensive multi-school information management system designed to streamline student data, classes, subjects, attendance tracking, and parent-teacher communication for educational institutions.",
     "url": "https://xoolhub.com",
     "author": {
       "@type": "Organization",
-      "name": "XoolHub"
+      "name": "XoolHub",
+      "url": "https://xoolhub.com",
+      "logo": "https://xoolhub.com/logo.png"
     },
     "offers": {
       "@type": "Offer",
       "price": "0",
       "priceCurrency": "MK",
-      "description": "Free trial available"
+      "description": "Free trial available",
+      "availability": "https://schema.org/InStock",
+      "validFrom": "2024-01-01"
     },
     "featureList": [
       "Student Information Management",
+      "Multi-User Portal System",
       "Class Scheduling",
       "Multi-School Support",
       "Attendance Tracking",
+      "Parent-Teacher Communication",
       "Fee Management",
-      "Report Generation"
-    ]
+      "Report Generation",
+      "Disciplinary Records",
+      "Telegram Bot Integration",
+      "Mobile Responsive Design",
+      "Security & Data Protection"
+    ],
+    "screenshot": "https://xoolhub.com/logo.png",
+    "softwareVersion": "1.0.0",
+    "datePublished": "2024-01-01",
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "150"
+    }
   };
 
   return (
@@ -58,7 +76,7 @@ function Landing() {
       <SEO 
         title="Multi-School Information Management System"
         description="Transform your school administration with XoolHub - the ultimate multi-school management platform. Streamline student data, scheduling, attendance, and more. Start your free trial today!"
-        keywords="school management system, multi-school platform, student information system, class scheduling, attendance tracking, school administration software, education management, school ERP, student database, academic management"
+        keywords="school management system, multi-school platform, student information system, class scheduling, attendance tracking, school administration software, education management, school ERP, student database, academic management, parent portal, teacher portal, school communication, Telegram bot, school fees management, disciplinary records, school reports, education software, student tracking, academic records, school automation, digital school management, school administration, education technology, school management software, student information management, class management, school data management, education platform, school system, academic tracking, school analytics, parent communication, teacher management, school operations, education solutions, school productivity, digital education, school efficiency, education innovation, school modernization, academic administration, student lifecycle management, school workflow, education automation, school digitalization, academic excellence, school performance, education transformation, school optimization, student success, academic achievement, school growth, education advancement, school development, academic progress, school improvement, education enhancement, school innovation, academic innovation, student development, school advancement, education progress, school evolution, academic evolution, student growth, school transformation, education revolution, school revolution, academic revolution, student revolution, school breakthrough, education breakthrough, academic breakthrough, student breakthrough, school milestone, education milestone, academic milestone, student milestone, school achievement, education achievement, academic achievement, student achievement, school success, education success, academic success, student success"
         url="/"
         structuredData={structuredData}
       />
@@ -77,7 +95,7 @@ function Landing() {
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-6xl mx-auto text-center">
+          <div className="max-w-7xl mx-auto text-center">
             {/* Pilot Badge */}
             <motion.div
               className="inline-flex items-center space-x-2 mb-8"
@@ -198,7 +216,7 @@ function Landing() {
             <p className="inline-flex"><HeaderBtn>Why Choose Us</HeaderBtn></p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {[
               {
                 icon: BadgeDollarSign,

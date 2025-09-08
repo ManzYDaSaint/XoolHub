@@ -84,9 +84,7 @@ const ExpenseSection = () => {
 
   return (
     <div className="px-6 py-4">
-      <div className="p-4 border-2 border-gray-300 rounded-lg">
           <XpenseTable Data={data} />
-      </div>
     </div>
   );
 };

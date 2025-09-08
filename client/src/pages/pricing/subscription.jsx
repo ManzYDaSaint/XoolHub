@@ -260,7 +260,7 @@ const PlanOptions = () => {
           
 
           {/* Payment Details */}
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
           <h2 className="mt-24 text-center inline-flex">
             <HeaderBtn>Payment Details</HeaderBtn>
           </h2>
@@ -372,7 +372,7 @@ const PlanOptions = () => {
           </div>
 
           {/* Pricing Cards */}
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {plans.map((plan, index) => (
               <div
                 key={plan.name}

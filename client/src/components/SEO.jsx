@@ -17,8 +17,8 @@ const SEO = ({
   const fullImage = image.startsWith('http') ? image : `${baseUrl}${image}`;
   
   // Default values
-  const defaultDescription = "XoolHub is a powerful multi-school information management system designed to streamline student data, classes, subjects, and scheduling.";
-  const defaultKeywords = "XoolHub, school management system, multi-school, education software, student information system, class scheduling, school administration";
+  const defaultDescription = "XoolHub is a comprehensive multi-school information management system designed to streamline student data, classes, subjects, attendance tracking, and parent-teacher communication for educational institutions.";
+  const defaultKeywords = "XoolHub, school management system, multi-school platform, education software, student information system, class scheduling, school administration, attendance tracking, parent portal, teacher portal, school ERP, education management, student database, academic management, school communication, Telegram bot, school fees management, disciplinary records, school reports";
   
   const finalDescription = description || defaultDescription;
   const finalKeywords = keywords || defaultKeywords;
@@ -48,10 +48,10 @@ const SEO = ({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={finalDescription} />
-      <meta name="twitter:image" content={fullImage} />
+      <meta name="twitter:image" content={fullImage} /> 
       <meta name="twitter:site" content="@xoolhub" />
       <meta name="twitter:creator" content="@xoolhub" />
-      
+       
       {/* Additional Meta Tags */}
       <meta name="theme-color" content="#1976d2" />
       <meta name="msapplication-TileColor" content="#1976d2" />

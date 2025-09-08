@@ -7,7 +7,7 @@ const Expense = () => {
   return (
         <Layout>
           <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-gray-200/50 shadow-sm">
-            <div className="px-8 py-6">
+            <div className="px-8 py-6 pl-20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl shadow-lg">
@@ -32,7 +32,7 @@ const Expense = () => {
             <div className="max-w-7xl mx-auto">
               <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-red-50/50 to-pink-50/30"></div>
-                <div className="relative p-8">
+                <div className="relative">
                   <ExpenseSection />
                 </div>
               </div>

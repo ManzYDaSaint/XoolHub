@@ -119,6 +119,9 @@ const StudentData = () => {
       </div>
 
       {/* Main Content */}
+      <div className="max-w-7xl mx-auto">
+
+      
       <div className="p-6 space-y-6">
         {/* Add Student Section */}
         <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
@@ -181,6 +184,7 @@ const StudentData = () => {
             <StudentTable studentData={studentData} />
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
