@@ -10,59 +10,37 @@ const PlanOptions = () => {
   const [timeLeft, setTimeLeft] = useState(0);
   const [subscriptionStatus, setSubscriptionStatus] = useState("");
   const [expiryTime, setExpiryTime] = useState(0);
+  const [plans, setPlans] = useState([]);
+  const [allFeatures, setAllFeatures] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const plans = [
-    { 
-      name: "Starter",
-      description: "Perfect for small schools and academies",
-      price: "150,000",
-      students: "Up to 100",
-      studentCount: "100",
-      popular: false,
-      pricePerStudent: "1500",
-    },
-    {
-      name: "Professional",
-      description: "Ideal for growing educational institutions",
-      price: "250,000",
-      students: "Up to 250",
-      studentCount: "250",
-      popular: true,
-      pricePerStudent: "1000",
-    },
-    {
-      name: "Enterprise",
-      description: "Comprehensive solution for large institutions",
-      price: "375,000",
-      students: "Up to 500",
-      studentCount: "500",
-      popular: false,
-      pricePerStudent: "750",
-    },
-  ];
+  // Fetch pricing plans from database
+  useEffect(() => {
+    const fetchPricingPlans = async () => {
+      try {
+        setLoading(true);
+        const response = await api.getPublicPricingPlans();
+        
+        if (response.data.success) {
+          setPlans(response.data.plans);
+          // Get features from the first plan (all plans have the same features)
+          if (response.data.plans.length > 0) {
+            setAllFeatures(response.data.plans[0].features || []);
+          }
+        } else {
+          setError(response.data.message || 'failed to fetch pricing plans');
+        }
+      } catch (err) {
+        console.error('Error fetching pricing plans:', err);
+        setError('failed to load pricing plans. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const allFeatures = [
-    "Complete student information management",
-    "Comprehensive grade & assessment management",
-    "Parent & student communication portal",
-    "Staff management",
-    "Timetable & class scheduling",
-    "Fee management & invoicing",
-    "Transport & hostel management",
-    "Exam management & downloadable report cards",
-    "Custom reports & analytics dashboard",
-    "Mobile app for all users (In development)",
-    "SMS & email notifications",
-    "Multi-campus support",
-    "24/7 priority support",
-    "Data backup & security",
-    "Advanced Analytics",
-    "White-label Branding",
-    "API Access & Integrations",
-    "WhatsApp Integrations",
-    "Dedicated Accounts Managements",
-    "Bulk Data Import/Export",
-  ];
+    fetchPricingPlans();
+  }, []);
 
   const fetchStatus = async () => {
     try {
@@ -71,7 +49,7 @@ const PlanOptions = () => {
       setSubscriptionStatus(strata.status);
       setExpiryTime(strata.expiry);
 
-      if (strata.status === "Pending" && strata.expiry) {
+      if (strata.status === "pending" && strata.expiry) {
         const timeRemaining = Math.max(
           0,
           Math.floor((new Date(strata.expiry).getTime() - Date.now()) / 1000)
@@ -79,7 +57,7 @@ const PlanOptions = () => {
         setTimeLeft(timeRemaining);
       }
     } catch (error) {
-      console.error("Failed to fetch subscription status:", error);
+      console.error("failed to fetch subscription status:", error);
     }
   };
 
@@ -89,7 +67,7 @@ const PlanOptions = () => {
 
   // Countdown timer for pending status
   useEffect(() => {
-    if (subscriptionStatus === "Pending" && timeLeft > 0) {
+    if (subscriptionStatus === "pending" && timeLeft > 0) {
       const interval = setInterval(() => {
         setTimeLeft((prev) => {
           if (prev <= 1) {
@@ -103,7 +81,7 @@ const PlanOptions = () => {
     }
   }, [subscriptionStatus, timeLeft]);
 
-  // Update subscription status to Suspended
+  // Update subscription status to suspended
   useEffect(() => {
     // Calculate remaining time in milliseconds
     const calculateRemainingTime = () => {
@@ -116,7 +94,7 @@ const PlanOptions = () => {
       const timeLeft = calculateRemainingTime();
 
       // If the countdown ends, automatically suspend the subscription
-      if (timeLeft <= 0 && subscriptionStatus === "Pending") {
+      if (timeLeft <= 0 && subscriptionStatus === "pending") {
         updateStatusToSuspended();
       }
     };
@@ -129,12 +107,12 @@ const PlanOptions = () => {
 
   const updateStatusToSuspended = async () => {
     try {
-      const res = await api.updateSubscriptionStatus({ status: "Cancelled" });
+      const res = await api.updateSubscriptionStatus({ status: "cancelled" });
       if (res.data.success === true) {
         toast.error("Your Payment was suspended");
       }
     } catch (error) {
-      console.error("Failed to update subscription status:", error);
+      console.error("failed to update subscription status:", error);
     }
   };
 
@@ -202,16 +180,45 @@ const PlanOptions = () => {
     return price.toString(); // Return the original price for smaller values
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen px-14 py-6 my-20 space-y-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading pricing plans...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen px-14 py-6 my-20 space-y-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+              <p className="text-red-600">{error}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       <Toaster />
-      {subscriptionStatus === "Pending" ? (
+      {subscriptionStatus === "pending" ? (
         <div className="border-b-2 border-gray-300 pb-4 text-center pt-6">
           <h2 className="mt-24 text-center inline-flex">
             <HeaderBtn>Payment Confirmation</HeaderBtn>
           </h2>
           <p className="text-gray-700 text-md md:text-lg mt-6">
-            Please contact the System Administrator to activate your account{" "}
+            Please contact the System administrator to activate your account{" "}
             <br />
             to be able to access the features and help the <br />
             System be molded to your preferences by clicking{" "}
@@ -251,7 +258,7 @@ const PlanOptions = () => {
               ) : (
                 <p className="flex justify-center items-center col-span-4">
                   <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-700 to-green-600 bg-clip-text text-transparent">
-                    Expired!
+                    expired!
                   </h1>
                 </p>
               )}
@@ -265,7 +272,7 @@ const PlanOptions = () => {
             <HeaderBtn>Payment Details</HeaderBtn>
           </h2>
           <p className="text-gray-700 text-md md:text-lg mt-6">
-            Please make the payment to any of the payment details below before the countdown runs out, then contact the system <br /> Administrator to activate your account to be able to enjoy the services of the system.
+            Please make the payment to any of the payment details below before the countdown runs out, then contact the system <br /> administrator to activate your account to be able to enjoy the services of the system.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-6">
             <div className="border-2 border-gray-300 rounded-lg">
@@ -362,8 +369,8 @@ const PlanOptions = () => {
               <HeaderBtn>Pricing</HeaderBtn>
             </p>
             <h5 className="text-xl font-bold text-blue-900 md:text-4xl">
-              Flexible Plans to Grow with Your <br /> School either Public or
-              Private
+              Flexible Plans to Grow with Your <br /> School either public or
+              private
             </h5>
             <p className="text-gray-700 text-md md:text-lg">
               Check out our pricing options and choose the best
@@ -440,7 +447,7 @@ const PlanOptions = () => {
                   {/* Full Feature Access Badge */}
                   <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-center">
                     <div className="text-sm font-semibold text-slate-700 mb-1">
-                      🎯 Complete System Access
+                      🎯 complete System Access
                     </div>
                     <div className="text-xs text-slate-600">
                       All features included in every plan
@@ -449,7 +456,7 @@ const PlanOptions = () => {
                 </div>
 
                 <section className="px-6 pt-6">
-                  {subscriptionStatus === "Pending" ? (
+                  {subscriptionStatus === "pending" ? (
                     ""
                   ) : (
                     <button

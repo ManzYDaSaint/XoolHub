@@ -53,8 +53,8 @@ const AttendanceTable = ({ attendanceData, attendanceStatus, onAttendanceChange,
           />
         ) : (
           <span className="text-gray-400 text-sm italic">
-            {attendanceStatus[student.studentId || index] === 'present' ? 'Present' : 
-             attendanceStatus[student.studentId || index] === 'leave' ? 'On Leave' : 'Select status'}
+            {attendanceStatus[student.studentId || index] === 'present' ? 'present' : 
+             attendanceStatus[student.studentId || index] === 'leave' ? 'On leave' : 'Select status'}
           </span>
         )}
       </div>
@@ -64,9 +64,9 @@ const AttendanceTable = ({ attendanceData, attendanceStatus, onAttendanceChange,
   const columns = [
     { key: 'studentId', label: 'Student ID', width: '15%' },
     { key: 'name', label: 'Name', width: '25%' },
-    { key: 'present', label: 'Present', width: '15%' },
-    { key: 'absent', label: 'Absent', width: '15%' },
-    { key: 'leave', label: 'Leave', width: '15%' },
+    { key: 'present', label: 'present', width: '15%' },
+    { key: 'absent', label: 'absent', width: '15%' },
+    { key: 'leave', label: 'leave', width: '15%' },
     { key: 'note', label: 'Note', width: '15%' }
   ];
 

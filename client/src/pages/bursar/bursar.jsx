@@ -3,7 +3,7 @@ import AuthT from "../../hooks/tauth";
 import Dashboard from "./components/dashboard";
 import Layout from "../../components/layout";
 
-const Bursar = () => {
+const bursar = () => {
   return (
     <AuthT>
       <Layout>
@@ -13,4 +13,4 @@ const Bursar = () => {
   );
 };
 
-export default Bursar;
+export default bursar;

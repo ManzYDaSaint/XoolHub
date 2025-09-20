@@ -225,7 +225,7 @@ const AttendanceComponent = () => {
                     </div>
                     <div>
                       <div className="text-3xl font-bold text-gray-900">{stats.present}</div>
-                      <div className="text-gray-600 font-medium">Present Today</div>
+                      <div className="text-gray-600 font-medium">present today</div>
                     </div>
                   </div>
                 </div>
@@ -240,7 +240,7 @@ const AttendanceComponent = () => {
                     </div>
                     <div>
                       <div className="text-3xl font-bold text-gray-900">{stats.absent}</div>
-                      <div className="text-gray-600 font-medium">Absent Today</div>
+                      <div className="text-gray-600 font-medium">absent today</div>
                     </div>
                   </div>
                 </div>

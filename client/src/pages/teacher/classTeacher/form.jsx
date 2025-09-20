@@ -53,7 +53,7 @@ const ClassTForm = ({ fetchData }) => {
     <form onSubmit={onSubmit} autoComplete='off' className='w-1/2 py-4'>
       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
         <TeacherSelectInput 
-          label={'Teacher'}
+          label={'teacher'}
           handleChange={handleChange}
           name={'teacherid'}
           value={classTeacherFormData.teacherid}
@@ -65,7 +65,7 @@ const ClassTForm = ({ fetchData }) => {
           value={classTeacherFormData.classid}
         />
       </div>
-      <FormButton label={isEditMode ? 'Update Assigned Teacher' : 'Add Class Teacher'} id="tyepButton" />
+      <FormButton label={isEditMode ? 'Update Assigned teacher' : 'Add Class teacher'} id="tyepButton" />
     </form>
   );
 };

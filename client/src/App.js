@@ -23,8 +23,8 @@ const BProfile = lazy(() => import("./pages/bursar/profile.jsx"));
 const Bursar = lazy(() => import("./pages/bursar/bursar.jsx"));
 const Expenses = lazy(() => import("./pages/bursar/expense.jsx"));
 const Attendance = lazy(() => import("./pages/attendance/attendance.jsx"));
-const Hoa = lazy(() => import("./pages/hoa/hoa.jsx"));
-const Hod = lazy(() => import("./pages/hod/hod.jsx"));
+const HOA = lazy(() => import("./pages/hoa/hoa.jsx"));
+const HOD = lazy(() => import("./pages/hod/hod.jsx"));
 const Login = lazy(() => import("./pages/login/login"));
 const Authenticate = lazy(() => import("./pages/password/authenticate"));
 const Forgot = lazy(() => import("./pages/password/forgot_password"));
@@ -80,23 +80,28 @@ const AddSubsciptions = lazy(() =>
   import("./super-admin/pages/subscriptions/components/add.jsx")
 );
 const Pricing = lazy(() => import("./pages/pricing/pricing.jsx"));
+const PilotProgramLanding = lazy(() => import("./pages/pilot-program/PilotProgramLanding"));
+const PilotProgramAccess = lazy(() => import("./pages/pilot-program/PilotProgramAccess"));
 const Contact = lazy(() => import("./pages/contacts/contact.jsx"));
 const FAQ = lazy(() => import("./pages/faq/faq.jsx"));
 const About = lazy(() => import("./pages/about/about.jsx"));
 const Invoicing = lazy(() => import("./pages/pricing/billing.jsx"));
+const PaymentConfirmation = lazy(() => import("./pages/pricing/payment-confirmation.jsx"));
+const PaymentSuccess = lazy(() => import("./pages/pricing/payment-success.jsx"));
 const PromoteStudents = lazy(() =>
   import("./pages/students/promotion/promotion.jsx")
 );
 const UserProfile = lazy(() => import("./teacher-service/pages/profile.jsx"));
 const Feedback = lazy(() => import("./pages/administrator/feedback.jsx"));
 const Feeds = lazy(() => import("./super-admin/pages/feedback/feeds.jsx"));
+const PilotProgramDashboard = lazy(() => import("./super-admin/pages/pilot-program/PilotProgramDashboard"));
 const PrivacyPolicy = lazy(() => import("./pages/law/policy.jsx"));
 const TermsOfService = lazy(() => import("./pages/law/terms.jsx"));
 const Features = lazy(() => import("./pages/features/features.jsx"));
 
 function App() {
   const router = createBrowserRouter([
-    // Bursar Section
+    // bursar Section
     {
       path: "/bursar/profile",
       element: (
@@ -111,7 +116,7 @@ function App() {
         </AuthT>
       ),
     },
-    {
+    { 
       path: "/bursar/dashboard",
       element: (
         <AuthT>
@@ -168,7 +173,7 @@ function App() {
       ),
     },
 
-    // Bursar Section
+    // bursar Section
 
     {
       path: "/hoa/dashboard",
@@ -177,7 +182,7 @@ function App() {
           <TPAID>
             <InactivityHandler>
               <Suspense fallback={<LoadingSpinner />}>
-                <Hoa />{" "}
+                <HOA />{" "}
               </Suspense>
             </InactivityHandler>
           </TPAID>
@@ -191,7 +196,7 @@ function App() {
           <TPAID>
             <InactivityHandler>
               <Suspense fallback={<LoadingSpinner />}>
-                <Hod />{" "}
+                <HOD />{" "}
               </Suspense>
             </InactivityHandler>
           </TPAID>
@@ -457,6 +462,28 @@ function App() {
       ),
     },
     {
+      path: "/pilot-program",
+      element: (
+        <InactivityHandler>
+          <Suspense fallback={<LoadingSpinner />}>
+            <PilotProgramLanding />
+          </Suspense>
+        </InactivityHandler>
+      ),
+    },
+    {
+      path: "/pilot-program/access",
+      element: (
+        <InactivityHandler>
+          <Auth0>
+            <Suspense fallback={<LoadingSpinner />}>
+              <PilotProgramAccess />
+            </Suspense>
+          </Auth0>
+        </InactivityHandler>
+      ),
+    },
+    {
       path: "/contact",
       element: (
         <InactivityHandler>
@@ -502,6 +529,26 @@ function App() {
         <InactivityHandler>
           <Suspense fallback={<LoadingSpinner />}>
             <Invoicing />
+          </Suspense>
+        </InactivityHandler>
+      ),
+    },
+    {
+      path: "/payment-confirmation",
+      element: (
+        <InactivityHandler>
+          <Suspense fallback={<LoadingSpinner />}>
+            <PaymentConfirmation />
+          </Suspense>
+        </InactivityHandler>
+      ),
+    },
+    {
+      path: "/payment-success",
+      element: (
+        <InactivityHandler>
+          <Suspense fallback={<LoadingSpinner />}>
+            <PaymentSuccess />
           </Suspense>
         </InactivityHandler>
       ),
@@ -571,7 +618,7 @@ function App() {
       ),
     },
 
-    // Teacher Portal Routes
+    // teacher Portal Routes
 
     {
       path: "/tdashboard/",
@@ -604,9 +651,9 @@ function App() {
       ),
     },
 
-    // Teacher Portal Routes
+    // teacher Portal Routes
 
-    // Parent Portal Routes
+    // parent Portal Routes
     {
       path: "/parent/dashboard/",
       element: (
@@ -639,9 +686,9 @@ function App() {
         </Suspense>
       ),
     },
-    // Parent Portal Routes
+    // parent Portal Routes
 
-    // Super Administrator Portal Routes
+    // Super administrator Portal Routes
 
     {
       path: "/super",
@@ -704,6 +751,16 @@ function App() {
       ),
     },
     {
+      path: "/pilot-program-dashboard",
+      element: (
+        <InactivityHandler>
+          <Suspense fallback={<LoadingSpinner />}>
+            <PilotProgramDashboard />
+          </Suspense>
+        </InactivityHandler>
+      ),
+    },
+    {
       path: "/add-subscriptions",
       element: (
         <InactivityHandler>
@@ -714,7 +771,7 @@ function App() {
       ),
     },
 
-    // Super Administrator Portal Routes
+    // Super administrator Portal Routes
   ]);
 
   return (

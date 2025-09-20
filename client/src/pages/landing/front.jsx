@@ -11,7 +11,6 @@ import {
   TrendingUp,
   Shield,
 } from "lucide-react";
-import landBG from "./assets/landBG.png";
 import CustomBtn from "./components/ui/button";
 import Schools from "./components/clients";
 import Navbar from "./components/navbar";
@@ -21,6 +20,7 @@ import Testimonials from "./components/testimony";
 import SubscriptionOptions from "./components/subscription";
 import Footer from "./components/footer";
 import PilotBanner from "./components/banner";
+import ModernHeroShowcase from "./components/ModernHeroShowcase";
 import SEO from "../../components/SEO";
 import { motion } from "framer-motion";
 
@@ -53,7 +53,7 @@ function Landing() {
       "Class Scheduling",
       "Multi-School Support",
       "Attendance Tracking",
-      "Parent-Teacher Communication",
+      "parent-teacher Communication",
       "Fee Management",
       "Report Generation",
       "Disciplinary Records",
@@ -169,22 +169,8 @@ function Landing() {
               </motion.div>
             </motion.div>
 
-            {/* Hero Image */}
-            <motion.div
-              className="relative w-full flex justify-center"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 1, delay: 0.8 }}
-            >
-              <div className="relative">
-                <img
-                  src={landBG}
-                  alt="XoolHub Platform Preview"
-                  className="rounded-2xl shadow-2xl border border-white/20 max-w-full h-auto"
-                />
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-white via-transparent to-transparent pointer-events-none" />
-              </div>
-            </motion.div>
+            {/* Modern Hero Showcase */}
+            <ModernHeroShowcase />
           </div>
         </div>
       </section>
@@ -194,7 +180,7 @@ function Landing() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div id="Trustees">
             <Schools />
-          </div>
+          </div> 
         </div>
       </section>
 

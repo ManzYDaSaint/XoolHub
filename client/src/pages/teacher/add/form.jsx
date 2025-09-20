@@ -123,7 +123,7 @@ const AddForm = ({ fetchData }) => {
         />
       </div>
       <FormButton
-        label={isEditMode ? "Update Teacher" : "Add Teacher"}
+        label={isEditMode ? "Update teacher" : "Add teacher"}
       />
     </form>
   );

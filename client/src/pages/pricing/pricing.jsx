@@ -40,7 +40,7 @@ const Pricing = () => {
         "name": "Enterprise Plan",
         "price": "250,000",
         "priceCurrency": "MK",
-        "description": "Complete solution for large school districts"
+        "description": "complete solution for large school districts"
       }
     ]
   };

@@ -1,9 +1,7 @@
 const express = require('express')
 const cors = require('cors')
 const api = require('./routes/apiRoutes.js')
-const whatsAppController = require('./controller/whatsAppController.js');
-const { initParentTelegramBot } = require('./controller/parentTelegramBot.js');
-const { initTeacherTelegramBot } = require('./controller/teacherTelegramBot.js');
+const { initEnhancedParentTelegramBot } = require('./controller/enhancedParentTelegramBot.js');
 const cookieParser = require('cookie-parser')
 const fileUpload = require('express-fileupload');
 const fs = require('fs');
@@ -45,7 +43,6 @@ app.get('/', (req, res) => {
 
 // All routes go here
 app.use('/api/', api);
-app.use('/webhook', whatsAppController);
 
 // 404 handler
 app.use((req, res, next) => {
@@ -66,71 +63,15 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 5000;
 
-// Function to setup database tables automatically
-async function setupDatabaseTables() {
-  const tables = [
-    { name: 'conversation', file: 'conversation_tables.sql' },
-    { name: 'attendance', file: 'attendance_tables.sql' }
-  ];
-
-  for (const table of tables) {
-    try {
-      const SQL_FILE = path.join(__dirname, 'database', table.file);
-      
-      if (!fs.existsSync(SQL_FILE)) {
-        console.log(`⚠️  ${table.name} tables SQL file not found, skipping setup`);
-        continue;
-      }
-
-      const sqlContent = fs.readFileSync(SQL_FILE, 'utf8');
-      const statements = sqlContent
-        .split(';')
-        .map(stmt => stmt.trim())
-        .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
-
-      console.log(`🔧 Setting up ${table.name} feature database tables...`);
-
-      for (let i = 0; i < statements.length; i++) {
-        const statement = statements[i];
-        try {
-          await db.query(statement);
-        } catch (error) {
-          if (error.code === 'ER_TABLE_EXISTS_ERROR') {
-            // Table already exists, this is fine
-          } else {
-            console.error(`❌ Error setting up ${table.name} tables:`, error.message);
-            break;
-          }
-        }
-      }
-      
-      console.log(`✅ ${table.name} tables setup completed`);
-    } catch (error) {
-      console.error(`❌ Failed to setup ${table.name} tables:`, error.message);
-    }
-  }
-}
-
 app.listen(port, async () => {
   console.log(`Server is running on port ${port}`);
   
-  // Setup database tables automatically
-  await setupDatabaseTables();
-  
-  // Initialize Parent Telegram Bot (if token is configured)
+  // Initialize Enhanced parent Telegram Bot (if token is configured)
   try { 
-    initParentTelegramBot && initParentTelegramBot(); 
-    console.log('✅ Parent Telegram Bot initialized');
+    initEnhancedParentTelegramBot && initEnhancedParentTelegramBot(); 
+    console.log('✅ AI-Enhanced parent Telegram Bot initialized');
   } catch (e) { 
-    console.error('❌ Parent bot init error:', e); 
-  }
-  
-  // Initialize Teacher Telegram Bot (if token is configured)
-  try { 
-    initTeacherTelegramBot && initTeacherTelegramBot(); 
-    console.log('✅ Teacher Telegram Bot initialized');
-  } catch (e) { 
-    console.error('❌ Teacher bot init error:', e); 
+    console.error('❌ Enhanced parent bot init error:', e); 
   }
   
   console.log('🚀 XoolHub is ready!');

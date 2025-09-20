@@ -8,10 +8,10 @@ const Roles = ({ label, type, name, value, onChange }) => {
           <option value={""} disabled selected>
             --select option--
           </option>
-          <option value={"Teacher"}>Teacher</option>
-          <option value={"Bursar"}>Bursar</option>
-          <option value={"Hoa"}>Head of Academics</option>
-          <option value={"Hod"}>Head of Department</option>
+          <option value={"teacher"}>teacher</option>
+          <option value={"bursar"}>bursar</option>
+          <option value={"hoa"}>Head of Academics</option>
+          <option value={"hod"}>Head of Department</option>
         </select>
       </div>
   );

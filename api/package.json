@@ -29,6 +29,7 @@
     "natural": "^8.1.0",
     "node-schedule": "^2.1.1",
     "node-telegram-bot-api": "^0.66.0",
+    "onnxruntime-node": "^1.22.0-rev",
     "otp-generator": "^4.0.1",
     "resend": "^4.6.0",
     "sentiment": "^5.0.2",

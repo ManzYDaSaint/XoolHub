@@ -154,7 +154,7 @@ const AdminPersonal = () => {
   return (
     <div className="personalContainer p-6">
       <div className="profileUpdate">
-        <h5 className="text-lg font-semibold">Administrator Information</h5>
+        <h5 className="text-lg font-semibold">administrator Information</h5>
         <p className="text-gray-600 text-sm">
           Here you can edit information about your school. <br /> The changes
           will be displayed and effective once updated.

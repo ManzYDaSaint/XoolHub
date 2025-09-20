@@ -3,7 +3,7 @@ import AuthT from "../../hooks/tauth";
 import Hold from "./components/hod";
 import Layout from "../../components/layout";
 
-const Hod = () => {
+const hod = () => {
   return (
     <AuthT>
       <Layout>
@@ -13,4 +13,4 @@ const Hod = () => {
   );
 };
 
-export default Hod;
+export default hod;

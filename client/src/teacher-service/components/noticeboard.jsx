@@ -1,5 +1,4 @@
 import React from 'react'
-// import { Presentation } from 'lucide-react'
 
 const Noticeboard = () => {
   // const [activeIndex, setActiveIndex] = useState(0)

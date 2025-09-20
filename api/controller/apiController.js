@@ -3,9 +3,10 @@
 const bcrypt = require("bcryptjs");
 require("dotenv").config();
 const { Resend } = require("resend");
-const resend = new Resend('re_RsG2MjDa_FTbgsh6KZe38BeegqgsUb21P');
+const resend = new Resend(process.env.RESEND_API_KEY);
 const _ = require("lodash");
 const { pipeline } = require("@xenova/transformers");
+const { sendSuperAdminNotification, sendSchoolApprovalEmail } = require("../emails/paymentNotificationEmail");
 
 const { v4: uuidv4 } = require("uuid");
 const {
@@ -240,6 +241,21 @@ const {
   severityDisciplinary,
   categoryDisciplinary,
   recent30DaysDisciplinary,
+  statStudents,
+  statCountry,
+  // Password Reset Functions
+  findUserByEmail,
+  storePasswordResetToken,
+  validatePasswordResetToken,
+  updateUserPassword,
+  storePasswordHistory,
+  markPasswordResetTokenAsUsed,
+  getPasswordResetTokenByEmail,
+  cleanupExpiredTokens,
+  getPasswordResetStats,
+  getSubscriptionByID,
+  checkResentSubscriptionStatus,
+  getPilotProgramBySchoolId
 } = require("../model/apiModel.js");
 const jwt = require("jsonwebtoken");
 
@@ -433,7 +449,7 @@ const updateDisciplinary = async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(400).json({
         success: false,
-        message: "Failed to update disciplinary record"
+        message: "failed to update disciplinary record"
       });
     }
 
@@ -483,7 +499,7 @@ const deleteDisciplinary = async (req, res) => {
     if (result.affectedRows === 0) {
       return res.status(400).json({
         success: false,
-        message: "Failed to delete disciplinary record"
+        message: "failed to delete disciplinary record"
       });
     }
 
@@ -561,37 +577,37 @@ const insertAttendance = async (req, res) => {
   const studentIds = Object.keys(attendance);
 
   try {
-  // 1. Check if attendance already exists for those students
-  const existing = await checkAttendance(attendanceDate, studentIds);
+    // 1. Check if attendance already exists for those students
+    const existing = await checkAttendance(attendanceDate, studentIds);
 
-  if (existing.length > 0) {
-    res.json({
-      success: false,
-      message: `Attendance already exists for ${existing.length} student(s) on ${attendanceDate}`,
-    });
-    return;
-  }
+    if (existing.length > 0) {
+      res.json({
+        success: false,
+        message: `Attendance already exists for ${existing.length} student(s) on ${attendanceDate}`,
+      });
+      return;
+    }
 
-  // 2. Build values for bulk insert
-  const values = studentIds.map(studentId => [
-    studentId,
-    attendanceDate,
-    attendance[studentId],
-    absentReasons[studentId] || null
-  ]);
+    // 2. Build values for bulk insert
+    const values = studentIds.map(studentId => [
+      studentId,
+      attendanceDate,
+      attendance[studentId],
+      absentReasons[studentId] || null
+    ]);
 
-  const result = await addAttendance(values);
-  if (result) {
-    res.json({
-      success: true,
-      message: "Attendance inserted successfully",
-    });
-  } else {
-    res.json({
-      success: false,
-      message: "Failed to insert attendance",
-    });
-  }
+    const result = await addAttendance(values);
+    if (result) {
+      res.json({
+        success: true,
+        message: "Attendance inserted successfully",
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "failed to insert attendance",
+      });
+    }
     return;
   } catch (error) {
     res.status(500).json({
@@ -608,172 +624,6 @@ const insertAttendance = async (req, res) => {
 
 // ---------------------------------- TRANSFORMER CONTROLLER ----------------------------------
 
-// We'll create them lazily on first use to reduce startup time.
-let qaPipeline = null;
-let embedder = null;
-let genPipeline = null;
-
-
-// QA Pipelines - DistilBERT QA distilled SQuAD — small & good for basic QA from context
-async function getQAPipeline() {
-  if (!qaPipeline) {
-    // DistilBERT QA distilled SQuAD — small & good for basic QA from context
-    qaPipeline = await pipeline("question-answering", "Xenova/distilbert-base-cased-distilled-squad");
-    console.log("QA model loaded");
-  }
-  return qaPipeline;
-}
-
-// Attempt a direct answer for contact/phone queries without running the QA model
-function tryAnswerDirect(question, students) {
-  if (!Array.isArray(students) || students.length === 0) return null;
-
-  const q = String(question || "");
-  const lowerQuestion = q.toLowerCase();
-
-  // Determine which fields are requested
-  const requested = new Set();
-  const fieldMatchers = [
-    { key: "contact", match: /(contact|phone|number|mobile|cell)/i },
-    { key: "class", match: /(class|form|grade\b)/i },
-    { key: "year", match: /(year|academic\s*year)/i },
-    { key: "school", match: /(school|campus|institution)/i },
-    { key: "age", match: /\bage\b/i },
-    { key: "gender", match: /(gender|sex\b)/i },
-    { key: "address", match: /(address|location)/i },
-    { key: "name", match: /(name|who\s+is|what\s+is\s+the\s+name)/i },
-  ];
-  for (const { key, match } of fieldMatchers) {
-    if (match.test(q)) requested.add(key);
-  }
-  const wantsDetails = /(info|details|data|profile|all\s+details)/i.test(q);
-
-  // Extract likely student name(s)
-  const capitalizedSequences = q.match(/[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*/g) || [];
-  let nameCandidates = capitalizedSequences.map((s) => s.trim()).filter(Boolean);
-  if (nameCandidates.length === 0) {
-    const m = lowerQuestion.match(/(?:for|of|about)\s+([a-z][a-z\s]+)/i);
-    if (m && m[1]) nameCandidates = [m[1].trim()];
-  }
-  if (nameCandidates.length === 0) return null;
-
-  // Find student by partial name match
-  let matchedStudent = null;
-  for (const candidate of nameCandidates) {
-    const candLower = candidate.toLowerCase();
-    const found = students.find((st) => String(st?.name || "").toLowerCase().includes(candLower));
-    if (found) { matchedStudent = found; break; }
-  }
-  if (!matchedStudent) return null;
-
-  // Normalize student fields
-  const getField = (st, keys) => {
-    for (const k of keys) {
-      const v = st?.[k];
-      if (v !== undefined && v !== null && String(v).trim() !== "") return String(v);
-    }
-    return null;
-  };
-
-  // If no specific fields requested but wants details, show a concise summary
-  const assemble = (fields) => fields.filter(Boolean).join("\n");
-
-  const parts = [];
-  const includeAll = wantsDetails || requested.size === 0; // default to full summary if unspecified
-
-  const nameVal = getField(matchedStudent, ["name"]);
-  const classVal = getField(matchedStudent, ["class", "klass", "grade"]);
-  const yearVal = getField(matchedStudent, ["year", "academicYear"]);
-  const schoolVal = getField(matchedStudent, ["school"]);
-  const contactVal = getField(matchedStudent, ["contact", "phone", "phoneNumber", "guardianPhone"]);
-  const ageVal = getField(matchedStudent, ["age"]);
-  const genderVal = getField(matchedStudent, ["gender", "sex"]);
-  const addressVal = getField(matchedStudent, ["address", "location"]);
-
-  const addIf = (cond, label, value) => { if (cond && value) parts.push(`${label}: ${value}`); };
-
-  addIf(includeAll || requested.has("name"), "Name", nameVal);
-  addIf(includeAll || requested.has("class"), "Class", classVal);
-  addIf(includeAll || requested.has("year"), "Academic Year", yearVal);
-  addIf(includeAll || requested.has("school"), "School", schoolVal);
-  addIf(includeAll || requested.has("contact"), "Contact/Phone", contactVal);
-  addIf(includeAll || requested.has("age"), "Age", ageVal);
-  addIf(includeAll || requested.has("gender"), "Gender", genderVal);
-  addIf(includeAll || requested.has("address"), "Address", addressVal);
-
-  if (parts.length === 0) return null;
-  return assemble(parts);
-}
-
-const answerQuestion = async (req, res) => { 
-  const token = req.cookies.schoolToken || req.cookies.teacherToken;
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const sid = decoded.id || decoded.sid;
-  const { question } = req.body;
-
-  if (!question || question.trim() === "") {
-    return res.status(400).json({ error: "Question is required" });
-  }
-
-  try {
-    // 1. Fetch students
-    const students = await getStudent(sid);
-
-    // 2. Build context
-    const context = buildStudentContent(students);
-
-    // 2.5. Direct contact fallback for precise queries
-    const direct = tryAnswerDirect(question, students);
-    if (direct) {
-      return res.json({ answer: direct, score: 1 });
-    }
-
-    // 3. Run QA
-    const qa = await getQAPipeline();
-    const result = await qa({ question, context });
-
-    res.json({ answer: result.answer, score: result.score });
-    console.log("Question answered:", question, "->", result.answer);
-  } catch (error) {
-    console.error("Error answering question:", error);
-    res.status(500).json({ error: "Failed to answer question" });
-  }
-};
-
-const mockRes = {
-  status(code) { this.statusCode = code; return this; },
-  json(obj) { console.log("Response:", obj); return obj; }
-};
-
-// const mockReq = {
-//   body: { question: "How old is paul?" },
-//   cookies: {
-//     schoolToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzaWQiOiIzYjYxNjk0ZS1mNTkwLTExZWYtYTNmMi01MDdiOWQ0MTk1NTEiLCJ0ZWFjaGVyaWQiOiIyNDVkZTUzNy1mNWNjLTExZWYtYTNmMi01MDdiOWQ0MTk1NTEiLCJyb2xlIjoiQnVyc2FyIiwiaWF0IjoxNzU2NDUxOTg4LCJleHAiOjE3NTY1MzgzODh9.1sMd5KdcHKab3oPV4p6TsP0XX00gBmcA7kj70drSFak" // or teacherToken
-//   }
-// };
-
-// answerQuestion(mockReq, mockRes);
-
-// QA Pipelines - DistilBERT QA distilled SQuAD — small & good for basic QA from context
-
-const getEmbedder = async() => {
-  if (!embedder) {
-    // Small sentence-transformer for embeddings
-    embedder = await pipeline("feature-extraction", "Xenova/all-MiniLM-L6-v2");
-    console.log("Embedder loaded");
-  }
-  return embedder;
-}
-
-const getGenPipeline = async() => {
-  if (!genPipeline) {
-    // Use t5-small-like text2text for summarization / reply generation
-    genPipeline = await pipeline("text2text-generation", "Xenova/t5-small");
-    console.log("Generator loaded");
-  }
-  return genPipeline;
-}
-
 
 // ---------------------------------- TRANSFORMER CONTROLLER ----------------------------------
 
@@ -782,10 +632,144 @@ const getGenPipeline = async() => {
 async function sendOtpEmail(to, otp) {
   try {
     const data = await resend.emails.send({
-      from: "XoolHub <admin@xoolhub.com>", // use a verified sender domain
+      from: "XoolHub <noreply@xoolhub.com>", // use a verified sender domain
+      replyTo: "support@xoolhub.com", // Add reply-to for better deliverability
       to,
-      subject: "Your OTP Code",
-      html: `Your OTP code is <strong>${otp}</strong>. Please use this code to verify your email address.`,
+      subject: "Your XoolHub Verification Code",
+      // Add headers for better deliverability
+      headers: {
+        'X-Mailer': 'XoolHub System v1.0',
+        'X-Priority': '3',
+        'X-MSMail-Priority': 'Normal',
+        'Importance': 'Normal',
+        'List-Unsubscribe': '<mailto:unsubscribe@xoolhub.com>',
+        'X-Entity-Ref-ID': `xoolhub-otp-${Date.now()}`,
+        'X-Email-Type': 'verification',
+        'X-Security-Level': 'high'
+      },
+      html: `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Email Verification - XoolHub</title>
+          <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; position: relative; overflow: hidden;">
+              <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 100 100\"><defs><pattern id=\"grain\" width=\"100\" height=\"100\" patternUnits=\"userSpaceOnUse\"><circle cx=\"50\" cy=\"50\" r=\"1\" fill=\"white\" opacity=\"0.1\"/></pattern></defs><rect width=\"100\" height=\"100\" fill=\"url(%23grain)\"/></svg></div>
+              <div style="position: relative; z-index: 1;">
+                <div style="width: 80px; height: 80px; background: rgba(255, 255, 255, 0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                  <span style="font-size: 32px; color: white;">🔐</span>
+                </div>
+                <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: -0.5px;">Verify Your Email</h1>
+                <p style="color: rgba(255, 255, 255, 0.9); margin: 10px 0 0; font-size: 18px; font-weight: 400;">complete your account setup with this verification code</p>
+              </div>
+            </div>
+            
+            <!-- Content -->
+            <div style="padding: 40px 30px;">
+              <div style="text-align: center; margin-bottom: 40px;">
+                <h2 style="color: #1e293b; margin: 0 0 16px; font-size: 24px; font-weight: 600;">Your Verification Code</h2>
+                <p style="color: #64748b; font-size: 16px; line-height: 1.6; margin: 0;">
+                  We've sent you a verification code to confirm your email address. 
+                  Please enter this code in the verification form to complete your account setup.
+                </p>
+              </div>
+              
+              <!-- OTP Code Display -->
+              <div style="background: #f8fafc; border-radius: 12px; padding: 40px; margin-bottom: 30px; border: 1px solid #e2e8f0; text-align: center;">
+                <h3 style="color: #1e293b; margin: 0 0 20px; font-size: 20px; font-weight: 600; display: flex; align-items: center; justify-content: center;">
+                  <span style="width: 4px; height: 24px; background: #667eea; border-radius: 2px; margin-right: 12px;"></span>
+                  Verification Code
+                </h3>
+                <div style="background: white; border-radius: 12px; padding: 30px; border: 2px solid #667eea; box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.1);">
+                  <div style="font-size: 48px; font-weight: 700; color: #667eea; letter-spacing: 8px; font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; margin: 0;">${otp}</div>
+                  <p style="color: #64748b; font-size: 14px; margin: 16px 0 0; font-weight: 500;">This code expires in 10 minutes</p>
+                </div>
+              </div>
+              
+              <!-- Instructions -->
+              <div style="background: #eff6ff; border: 2px solid #bfdbfe; border-radius: 12px; padding: 30px; margin-bottom: 30px;">
+                <h3 style="color: #1e40af; margin: 0 0 20px; font-size: 20px; font-weight: 600; display: flex; align-items: center;">
+                  <span style="width: 4px; height: 24px; background: #3b82f6; border-radius: 2px; margin-right: 12px;"></span>
+                  How to Use This Code
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 16px;">
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="width: 24px; height: 24px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                      <span style="color: white; font-size: 12px; font-weight: bold;">1</span>
+                    </div>
+                    <div>
+                      <p style="color: #1e40af; margin: 0; font-weight: 500; font-size: 15px;">Return to XoolHub</p>
+                      <p style="color: #1d4ed8; margin: 4px 0 0; font-size: 14px; line-height: 1.5;">Go back to the verification page in your browser</p>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="width: 24px; height: 24px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                      <span style="color: white; font-size: 12px; font-weight: bold;">2</span>
+                    </div>
+                    <div>
+                      <p style="color: #1e40af; margin: 0; font-weight: 500; font-size: 15px;">Enter the Code</p>
+                      <p style="color: #1d4ed8; margin: 4px 0 0; font-size: 14px; line-height: 1.5;">Type or paste the verification code above</p>
+                    </div>
+                  </div>
+                  <div style="display: flex; align-items: flex-start; gap: 12px;">
+                    <div style="width: 24px; height: 24px; background: #3b82f6; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                      <span style="color: white; font-size: 12px; font-weight: bold;">3</span>
+                    </div>
+                    <div>
+                      <p style="color: #1e40af; margin: 0; font-weight: 500; font-size: 15px;">complete Verification</p>
+                      <p style="color: #1d4ed8; margin: 4px 0 0; font-size: 14px; line-height: 1.5;">Click verify to complete your account setup</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Security Notice -->
+              <div style="background: #fef3c7; border: 2px solid #fbbf24; border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+                <div style="display: flex; align-items: flex-start; gap: 12px;">
+                  <div style="width: 24px; height: 24px; background: #f59e0b; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <span style="color: white; font-size: 14px;">⚠️</span>
+                  </div>
+                  <div>
+                    <p style="color: #92400e; margin: 0; font-weight: 600; font-size: 15px;">Security Notice</p>
+                    <p style="color: #a16207; margin: 4px 0 0; font-size: 14px; line-height: 1.5;">
+                      XoolHub will never ask you to share this code via email, phone, or any other method. 
+                      Keep this code confidential and do not share it with anyone.
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              <div style="text-align: center; margin: 40px 0;">
+                <a href="${process.env.FRONTEND_URL}/verify-email" 
+                   style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 16px 32px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: 600; font-size: 15px; box-shadow: 0 4px 6px -1px rgba(102, 126, 234, 0.3); transition: all 0.2s;">
+                  complete Verification
+                </a>
+              </div>
+            </div>
+            
+            <!-- Footer -->
+            <div style="background: #1e293b; color: #94a3b8; padding: 30px; text-align: center; border-top: 1px solid #334155;">
+              <div style="margin-bottom: 20px;">
+                <div style="width: 40px; height: 40px; background: #667eea; border-radius: 8px; margin: 0 auto 12px; display: flex; align-items: center; justify-content: center;">
+                  <span style="color: white; font-weight: bold; font-size: 18px;">X</span>
+                </div>
+                <h3 style="color: white; margin: 0 0 8px; font-size: 16px; font-weight: 600;">XoolHub</h3>
+                <p style="margin: 0; font-size: 14px;">Empowering Education Through Technology</p>
+              </div>
+              <div style="border-top: 1px solid #334155; padding-top: 20px; font-size: 12px;">
+                <p style="margin: 0;">Questions? Contact us at <a href="mailto:support@xoolhub.com" style="color: #667eea; text-decoration: none;">support@xoolhub.com</a></p>
+              </div>
+            </div>
+          </div>
+        </body>
+        </html>
+      `,
     });
 
     console.log("Email sent:", data);
@@ -1016,7 +1000,7 @@ const getXuls = async (req, res) => {
 // ----------------------- REGISTER CONTROLLER -----------------------
 
 const signup = async (req, res) => {
-  const { schoolEmail, schoolPassword, confirm } = req.body;
+  const { schoolEmail, schoolPassword, confirm, referralCode } = req.body;
   try {
     if (schoolEmail === "" || schoolPassword === "" || confirm === "") {
       return res.json({
@@ -1039,15 +1023,84 @@ const signup = async (req, res) => {
       });
     }
 
+    // Validate referral code if provided
+    let referrerSchoolId = null;
+    if (referralCode) {
+      const { validateReferralCode } = require('../model/apiModel.js');
+      const referralValidation = await validateReferralCode(referralCode);
+
+      if (!referralValidation) {
+        return res.json({
+          success: false,
+          message: "Invalid referral code",
+        });
+      }
+
+      referrerSchoolId = referralValidation.school_id;
+    }
+
     // Hash the password
     const hashedPassword = await bcrypt.hash(schoolPassword, 10);
 
     // Add the new school
     const newSchool = await insertSchool(schoolEmail, hashedPassword);
     if (newSchool) {
+      // If referral code was used, track the referral
+      if (referrerSchoolId && referralCode) {
+        try {
+          const { trackReferralUsage, createReferralCode } = require('../model/apiModel.js');
+
+          // Get the new school ID
+          const newSchoolData = await checkSchool(schoolEmail);
+          const newSchoolId = newSchoolData[0].id;
+
+          // Track the referral usage
+          await trackReferralUsage(referrerSchoolId, newSchoolId, referralCode);
+
+          // Create referral code for the new school
+          await createReferralCode(newSchoolId);
+
+          // Initialize analytics for both schools
+          const { updateReferralAnalytics } = require('../model/apiModel.js');
+          await updateReferralAnalytics(referrerSchoolId, {
+            total_referrals: 1,
+            last_referral_date: new Date()
+          });
+
+          await updateReferralAnalytics(newSchoolId, {
+            total_referrals: 0,
+            successful_referrals: 0,
+            total_rewards_earned: 0,
+            total_discounts_given: 0
+          });
+
+        } catch (referralError) {
+          console.error('Error processing referral:', referralError);
+          // Don't fail registration if referral processing fails
+        }
+      } else {
+        // Create referral code for the new school even without referral
+        try {
+          const { createReferralCode, updateReferralAnalytics } = require('../model/apiModel.js');
+          const newSchoolData = await checkSchool(schoolEmail);
+          const newSchoolId = newSchoolData[0].id;
+
+          await createReferralCode(newSchoolId);
+          await updateReferralAnalytics(newSchoolId, {
+            total_referrals: 0,
+            successful_referrals: 0,
+            total_rewards_earned: 0,
+            total_discounts_given: 0
+          });
+        } catch (error) {
+          console.error('Error creating referral code for new school:', error);
+        }
+      }
+
       res.json({
         success: true,
-        message: "School registered successfully",
+        message: referralCode ? "School registered successfully with referral bonus!" : "School registered successfully",
+        referralApplied: !!referralCode
       });
     } else {
       res.json({
@@ -1056,6 +1109,7 @@ const signup = async (req, res) => {
       });
     }
   } catch (error) {
+    console.error('Registration error:', error);
     res.json({
       success: false,
       message: "Internal Server Error. Please try again later.",
@@ -1346,7 +1400,7 @@ const getAdministrator = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed to get records",
+        message: "failed to get records",
       });
     }
   } catch (error) {
@@ -1381,7 +1435,7 @@ const updateAdministrator = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed to update details",
+        message: "failed to update details",
       });
     }
   } catch (error) {
@@ -1417,7 +1471,7 @@ const insertContacts = async (req, res) => {
       } else {
         res.json({
           success: false,
-          message: "Failed to contact admin",
+          message: "failed to contact admin",
         });
         return;
       }
@@ -1495,16 +1549,19 @@ const login = async (req, res) => {
         });
       }
 
-      // Compare the password
-      if (schoolPassword !== teacher[0].password) {
+      // Compare the password - handle both plain text and encrypted passwords
+      const isPlainTextMatch = schoolPassword === teacher[0].password;
+      const isEncryptedMatch = await bcrypt.compare(schoolPassword, teacher[0].password);
+      
+      if (!isPlainTextMatch && !isEncryptedMatch) {
         return res.json({
           tsuccess: false,
-          tmessage: "Invalid email or password",
+          tmessage: "Invalid email or password 1",
         });
       }
 
       const get = editSchool(teacher[0].sid);
-      if (get.status === "Deactivated") {
+      if (get.status === "deactivated") {
         return res.json({
           success: false,
           message: "Please consult your admin to activate your system.",
@@ -1544,7 +1601,7 @@ const login = async (req, res) => {
         success: false,
         message: "Invalid email or password",
       });
-    } else if (school[0].status === "Deactivated") {
+    } else if (school[0].status === "deactivated") {
       // Generate OTP and save to the database
       const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
       const otpExpiresAt = new Date(Date.now() + 10 * 60000); // Expires in 10 minutes
@@ -1572,7 +1629,7 @@ const login = async (req, res) => {
       } else {
         return res.json({
           success: false,
-          message: "Failed to sent your OTP code to activate account.",
+          message: "failed to sent your OTP code to activate account.",
         });
       }
     }
@@ -1638,7 +1695,7 @@ const verify = (req, res) => {
 const tverify = (req, res) => {
   const token = req.cookies.teacherToken;
   if (!token) {
-    return res.json({ 
+    return res.json({
       success: false,
       message: "Not authenticated. Access denied!",
     });
@@ -1804,7 +1861,7 @@ const resendOTP = async (req, res) => {
     } else {
       return res.json({
         success: false,
-        message: "Failed to resend OTP",
+        message: "failed to resend OTP",
       });
     }
   } catch (error) {
@@ -1814,14 +1871,446 @@ const resendOTP = async (req, res) => {
   }
 };
 
-// Create Reset Session at localhost:5000/api/auth/createSession
-const createResetSession = async (req, res, next) => {
-  res.json("Create Reset Session");
+// Enterprise Password Reset System Implementation
+const { PasswordResetEmail } = require('../emails/passwordResetEmail');
+const { securityUtils, securityMonitor } = require('../utils/security');
+const { auditLogger, AUDIT_EVENTS } = require('../utils/audit');
+
+// Advanced rate limiting with security monitoring
+class AdvancedRateLimiter {
+  constructor() {
+    this.store = new Map();
+    this.cleanupInterval = setInterval(() => this.cleanup(), 60000); // Clean every minute
+  }
+
+  cleanup() {
+    const now = Date.now();
+    for (const [key, data] of this.store.entries()) {
+      if (now > data.expiresAt) {
+        this.store.delete(key);
+      }
+    }
+  }
+
+  isAllowed(identifier, maxAttempts = 3, windowMs = 15 * 60 * 1000) {
+    const now = Date.now();
+    const data = this.store.get(identifier) || { 
+      count: 0, 
+      firstAttempt: now, 
+      expiresAt: now + windowMs,
+      attempts: []
+    };
+    
+    if (now > data.expiresAt) {
+      data.count = 0;
+      data.firstAttempt = now;
+      data.expiresAt = now + windowMs;
+      data.attempts = [];
+    }
+    
+    if (data.count >= maxAttempts) {
+      // Log suspicious activity
+      securityMonitor.logSecurityEvent('RATE_LIMIT_EXCEEDED', {
+        identifier,
+        count: data.count,
+        attempts: data.attempts
+      });
+      
+      return {
+        allowed: false,
+        remaining: 0,
+        resetTime: data.expiresAt,
+        retryAfter: Math.ceil((data.expiresAt - now) / 1000)
+      };
+    }
+    
+    data.count++;
+    data.attempts.push({ timestamp: now, ip: identifier.split(':')[1] });
+    this.store.set(identifier, data);
+    
+    return {
+      allowed: true,
+      remaining: maxAttempts - data.count,
+      resetTime: data.expiresAt,
+      retryAfter: 0
+    };
+  }
+}
+
+const rateLimiter = new AdvancedRateLimiter();
+
+// Create Reset Session at localhost:5000/api/auth/createResetSession
+const createResetSession = async (req, res) => {
+  const { email } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
+  const userAgent = req.get('User-Agent') || 'Unknown';
+  const sessionId = securityUtils.generateSessionId();
+  const correlationId = securityUtils.generateSecureToken(16);
+  
+  try {
+    // Enhanced email validation
+    if (!email || !email.includes('@')) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+        email,
+        ip,
+        userAgent,
+        reason: 'Invalid email format',
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(400).json({
+        success: false,
+        message: "Please provide a valid email address"
+      });
+    }
+
+    // Normalize email
+    const normalizedEmail = email.toLowerCase().trim();
+    
+    // Check rate limit with advanced monitoring
+    const identifier = `${normalizedEmail}:${ip}`;
+    const rateLimitResult = rateLimiter.isAllowed(identifier, 3, 15 * 60 * 1000);
+    
+    if (!rateLimitResult.allowed) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.RATE_LIMIT_EXCEEDED, {
+        email: normalizedEmail,
+        ip,
+        userAgent,
+        retryAfter: rateLimitResult.retryAfter,
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(429).json({
+        success: false,
+        message: "Too many reset requests. Please try again in 15 minutes.",
+        retryAfter: rateLimitResult.retryAfter
+      });
+    }
+
+    // Check if user exists in any of the user tables with enhanced security
+    const { user, userType } = await findUserByEmail(normalizedEmail);
+
+    // Log password reset request
+    await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_REQUESTED, {
+      email: normalizedEmail,
+      ip,
+      userAgent,
+      userExists: !!user,
+      userType,
+      sessionId,
+      correlationId
+    });
+
+    // Always return success to prevent email enumeration
+    if (!user) {
+      return res.json({
+        success: true,
+        message: "If an account with that email exists, we've sent a password reset link."
+      });
+    }
+
+    // Generate secure reset token with metadata
+    const tokenData = securityUtils.generateResetToken(normalizedEmail, ip);
+    const resetToken = tokenData.token;
+    const expiresAt = tokenData.expiresAt;
+
+    // Store reset token in database with enhanced security
+    await storePasswordResetToken(
+      normalizedEmail,
+      resetToken,
+      expiresAt,
+      ip,
+      userAgent,
+      sessionId,
+      correlationId
+    );
+
+    // Generate secure reset link with additional security
+    const resetLink = `${process.env.FRONTEND_URL}/reset?token=${resetToken}&session=${sessionId}`;
+
+    // Prepare email data with enhanced security
+    const userName = user.name || user.first_name || user.username || 'User';
+    
+    // Get email template
+    const emailTemplate = PasswordResetEmail({
+      resetLink,
+      userName,
+      expiresIn: "15 minutes"
+    });
+
+    // Send email using Resend with enhanced security
+    const emailData = {
+      from: 'XoolHub <noreply@xoolhub.com>',
+      to: [normalizedEmail],
+      subject: emailTemplate.subject,
+      html: emailTemplate.html,
+      headers: {
+        'X-Priority': '1',
+        'X-MSMail-Priority': 'high',
+        'X-Mailer': 'XoolHub Security System'
+      }
+    };
+
+    try {
+      await resend.emails.send(emailData);
+      
+      // Log successful email send
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_EMAIL_SENT, {
+        email: normalizedEmail,
+        ip,
+        userAgent,
+        userType,
+        sessionId,
+        correlationId,
+        tokenExpiresAt: expiresAt
+      });
+      
+    } catch (emailError) {
+      // Log email failure
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+        email: normalizedEmail,
+        ip,
+        userAgent,
+        reason: 'Email send failed',
+        error: emailError.message,
+        sessionId,
+        correlationId
+      });
+      
+      throw emailError;
+    }
+
+    res.json({
+      success: true,
+      message: "If an account with that email exists, we've sent a password reset link.",
+      sessionId,
+      correlationId
+    });
+
+  } catch (error) {
+    console.error('Password reset error:', error);
+    
+    // Enhanced error logging with security monitoring
+    await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+      email: req.body.email || 'unknown',
+      ip,
+      userAgent,
+      reason: 'System error',
+      error: error.message,
+      stack: error.stack,
+      sessionId,
+      correlationId
+    });
+    
+    // Log security event for monitoring
+    securityMonitor.logSecurityEvent('SYSTEM_ERROR', {
+      error: error.message,
+      ip,
+      userAgent,
+      endpoint: 'createResetSession'
+    });
+
+    res.status(500).json({
+      success: false,
+      message: "An error occurred. Please try again later.",
+      correlationId
+    });
+  }
 };
 
 // Reset Password at localhost:5000/api/auth/resetPassword
-const resetPassword = async (req, res, next) => {
-  res.json("Reset Password");
+const resetPassword = async (req, res) => {
+  const { token, password, confirmPassword, session } = req.body;
+  const ip = req.ip || req.connection.remoteAddress;
+  const userAgent = req.get('User-Agent') || 'Unknown';
+  const sessionId = session || securityUtils.generateSessionId();
+  const correlationId = securityUtils.generateSecureToken(16);
+  
+  try {
+    // Enhanced input validation
+    if (!token || !password || !confirmPassword) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+        token: token ? token.substring(0, 8) + '...' : 'missing',
+        ip,
+        userAgent,
+        reason: 'Missing required fields',
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(400).json({
+        success: false,
+        message: "All fields are required"
+      });
+    }
+
+    if (password !== confirmPassword) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+        token: token.substring(0, 8) + '...',
+        ip,
+        userAgent,
+        reason: 'Passwords do not match',
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(400).json({
+        success: false,
+        message: "Passwords do not match"
+      });
+    }
+
+    // Enhanced password validation
+    const passwordValidation = securityUtils.validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+        token: token.substring(0, 8) + '...',
+        ip,
+        userAgent,
+        reason: 'Password does not meet security requirements',
+        passwordStrength: passwordValidation.strength,
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(400).json({
+        success: false,
+        message: "Password must be at least 8 characters long and contain uppercase, lowercase, number, and special character",
+        requirements: passwordValidation.checks
+      });
+    }
+
+    // Enhanced token validation with security checks
+    const tokenData = await validatePasswordResetToken(token);
+    
+    if (!tokenData) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_TOKEN_INVALID, {
+        token: token.substring(0, 8) + '...',
+        ip,
+        userAgent,
+        reason: 'Invalid or expired token',
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired reset token"
+      });
+    }
+
+    const email = tokenData.email;
+    
+    // Additional security checks
+    if (tokenData.ip_address !== ip) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.SECURITY_VIOLATION, {
+        token: token.substring(0, 8) + '...',
+        ip,
+        userAgent,
+        reason: 'IP address mismatch',
+        originalIP: tokenData.ip_address,
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(403).json({
+        success: false,
+        message: "Security violation detected"
+      });
+    }
+
+    // Check if user exists with enhanced security
+    const { user, userType } = await findUserByEmail(email);
+
+    if (!user) {
+      await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+        token: token.substring(0, 8) + '...',
+        email,
+        ip,
+        userAgent,
+        reason: 'User not found',
+        sessionId,
+        correlationId
+      });
+      
+      return res.status(400).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Enhanced password hashing with security
+    const hashedPassword = await securityUtils.hashPassword(password);
+
+    // Update password in database with transaction
+    await updateUserPassword(user.id, userType, hashedPassword);
+
+    // Store password in history for security
+    await storePasswordHistory(user.id, userType, hashedPassword);
+
+    // Mark token as used with additional security
+    await markPasswordResetTokenAsUsed(token);
+
+    // Log successful password reset
+    await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_SUCCESS, {
+      token: token.substring(0, 8) + '...',
+      email,
+      ip,
+      userAgent,
+      userType,
+      userId: user.id,
+      sessionId,
+      correlationId,
+      passwordStrength: passwordValidation.strength
+    });
+
+    // Log security event for monitoring
+    securityMonitor.logSecurityEvent('PASSWORD_RESET_SUCCESS', {
+      email,
+      ip,
+      userType,
+      userId: user.id
+    });
+
+    res.json({
+      success: true,
+      message: "Password reset successfully. You can now log in with your new password.",
+      sessionId,
+      correlationId
+    });
+
+  } catch (error) {
+    console.error('Password reset error:', error);
+    
+    // Enhanced error logging with security monitoring
+    await auditLogger.logPasswordResetEvent(AUDIT_EVENTS.PASSWORD_RESET_FAILED, {
+      token: req.body.token ? req.body.token.substring(0, 8) + '...' : 'unknown',
+      email: req.body.email || 'unknown',
+      ip,
+      userAgent,
+      reason: 'System error',
+      error: error.message,
+      stack: error.stack,
+      sessionId,
+      correlationId
+    });
+    
+    // Log security event for monitoring
+    securityMonitor.logSecurityEvent('SYSTEM_ERROR', {
+      error: error.message,
+      ip,
+      userAgent,
+      endpoint: 'resetPassword'
+    });
+
+    res.status(500).json({
+      success: false,
+      message: "An error occurred. Please try again later.",
+      correlationId
+    });
+  }
 };
 
 // ----------------------- EXAM CONTROLLER -----------------------
@@ -3219,12 +3708,12 @@ const deleteTeachers = async (req, res) => {
     if (del) {
       res.json({
         success: true,
-        message: "Teacher deleted successfully",
+        message: "teacher deleted successfully",
       });
     } else {
       res.json({
         successs: false,
-        message: "Teacher deletion failed..",
+        message: "teacher deletion failed..",
       });
     }
   } catch (error) {
@@ -3414,7 +3903,7 @@ const addAssignTeacher = async (req, res) => {
     if (checker.length > 0) {
       res.json({
         success: false,
-        message: "Teacher already assigned...",
+        message: "teacher already assigned...",
       });
     } else {
       // Add new grade
@@ -3427,12 +3916,12 @@ const addAssignTeacher = async (req, res) => {
       if (newTeacher) {
         res.json({
           success: true,
-          message: "Teacher assigned successfully",
+          message: "teacher assigned successfully",
         });
       } else {
         res.json({
           success: false,
-          message: "Teacher assigning failed..",
+          message: "teacher assigning failed..",
         });
       }
     }
@@ -3475,12 +3964,12 @@ const deleteAssignTeachers = async (req, res) => {
     if (del) {
       res.json({
         success: true,
-        message: "Teacher unassigned successfully",
+        message: "teacher unassigned successfully",
       });
     } else {
       res.json({
         successs: false,
-        message: "Teacher unassigning failed..",
+        message: "teacher unassigning failed..",
       });
     }
   } catch (error) {
@@ -3514,7 +4003,7 @@ const addClassTeacher = async (req, res) => {
     if (checker.length > 0) {
       res.json({
         success: false,
-        message: "Teacher already assigned...",
+        message: "teacher already assigned...",
       });
     } else {
       // Add new grade
@@ -3522,12 +4011,12 @@ const addClassTeacher = async (req, res) => {
       if (newTeacher) {
         res.json({
           success: true,
-          message: "Teacher assigned successfully",
+          message: "teacher assigned successfully",
         });
       } else {
         res.json({
           success: false,
-          message: "Teacher assigning failed..",
+          message: "teacher assigning failed..",
         });
       }
     }
@@ -3570,12 +4059,12 @@ const deleteClassTeachers = async (req, res) => {
     if (del) {
       res.json({
         success: true,
-        message: "Teacher unassigned successfully",
+        message: "teacher unassigned successfully",
       });
     } else {
       res.json({
         successs: false,
-        message: "Teacher unassigning failed..",
+        message: "teacher unassigning failed..",
       });
     }
   } catch (error) {
@@ -3589,6 +4078,61 @@ const deleteClassTeachers = async (req, res) => {
 // ----------------------- CLASS TEACHER CONTROLLER -----------------------
 
 // ----------------------- STUDENT CONTROLLER -----------------------
+
+const gotStudents = async (req, res) => {
+  try {
+    const gotter = await statStudents();
+    if (gotter) {
+      // Use the best available count - prioritize active students, fallback to total students
+      const studentCount = gotter.active_students || gotter.total_students || gotter.history_count || 0;
+      return res.json({
+        success: true,
+        gotter: {
+          ount: studentCount,
+          history_count: gotter.history_count,
+          total_students: gotter.total_students,
+          active_students: gotter.active_students
+        },
+      })
+    }
+    else {
+      res.json({
+        success: false,
+        message: "Student fetching failed..",
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: "Internal Server Error. Please try again later.",
+      error: error.message,
+    });
+  }
+}
+
+
+const gotCountry = async (req, res) => {
+  try {
+    const cott = await statCountry();
+    if (cott) {
+      return res.json({
+        success: true,
+        cott,
+      })
+    }
+    else {
+      res.json({
+        successs: false,
+        message: "Country fetching failed..",
+      });
+    }
+  } catch (error) {
+    res.json({
+      message: "Internal Server Error. Please try again later.",
+      error: error.message,
+    });
+  }
+}
+
 
 const addStudent = async (req, res) => {
   const { studentNames, classid, yearid } = req.body.data;
@@ -3664,11 +4208,11 @@ const addStudent = async (req, res) => {
               }
             }
           } else {
-              return res.json({
-                success: false,
-                message:
-                  "You have reached the maximum number of students for this plan. \n Please upgrade",
-              });
+            return res.json({
+              success: false,
+              message:
+                "You have reached the maximum number of students for this plan. \n Please upgrade",
+            });
           }
         }
       }
@@ -3994,7 +4538,7 @@ const addPay = async (req, res) => {
     }
 
     const balance = Number(feeamount) - Number(paid);
-    const status = Number(paid) < Number(feeamount) ? "Pending" : "Complete";
+    const status = Number(paid) < Number(feeamount) ? "pending" : "complete";
 
     // Check if class exists
     const checker = await checkPay(sid, feeid, studentID, term);
@@ -4064,7 +4608,7 @@ const updatePays = async (req, res) => {
   const { id } = req.params;
 
   const balance = Number(amount) - Number(paid);
-  const status = Number(paid) < Number(amount) ? "Pending" : "Complete";
+  const status = Number(paid) < Number(amount) ? "pending" : "complete";
 
   if (!amount || !id || !paid) {
     return res.json({
@@ -4907,7 +5451,7 @@ const insertResults = async (req, res) => {
                         } else {
                           allResults.push({
                             success: false,
-                            message: `Failed to insert result for student ${entry.id}.`,
+                            message: `failed to insert result for student ${entry.id}.`,
                           });
                         }
                       } else {
@@ -4951,7 +5495,7 @@ const insertResults = async (req, res) => {
                         } else {
                           allResults.push({
                             success: false,
-                            message: `Failed to insert result for student ${entry.id}.`,
+                            message: `failed to insert result for student ${entry.id}.`,
                           });
                         }
                       } else {
@@ -5158,7 +5702,7 @@ const updateScores = async (req, res) => {
               } else {
                 return res.json({
                   success: false,
-                  message: `Failed to update result for student.`,
+                  message: `failed to update result for student.`,
                 });
               }
             } else {
@@ -5193,7 +5737,7 @@ const updateScores = async (req, res) => {
               } else {
                 return res.json({
                   success: false,
-                  message: `Failed to update result for student .`,
+                  message: `failed to update result for student .`,
                 });
               }
             } else {
@@ -5545,7 +6089,7 @@ const updatePromotions = async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.sid;
 
-  const status = "Promoted";
+  const status = "promoted";
 
   try {
     const update = await upperPromote(status, currentClass, studentIDs);
@@ -5735,7 +6279,7 @@ const insertPromotion = async (req, res) => {
     const count = await countSubjects(termid, typeid, classid, studentIDs, sid);
 
     if (count[0].count < 6) {
-      remark = "Failed";
+      remark = "failed";
     } else {
       if (
         getClass.denom === venom
@@ -5744,7 +6288,7 @@ const insertPromotion = async (req, res) => {
       ) {
         remark = "Passed";
       } else {
-        remark = "Failed";
+        remark = "failed";
       }
     }
 
@@ -5964,7 +6508,7 @@ const getSubjectPos = async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.id || decoded.sid;
 
-  try { 
+  try {
     if (!termid || !typeid || !classid) {
       return res.json({
         success: false,
@@ -6313,7 +6857,7 @@ const getEvent = async (req, res) => {
     } else {
       return res.json({
         success: false,
-        message: "Failed fetching events",
+        message: "failed fetching events",
       });
     }
   } catch (error) {
@@ -6410,27 +6954,49 @@ const deleteEvents = async (req, res) => {
 // ----------------------- SUPER ADMIN CONTROLLER -----------------------
 
 const addSubscriptions = async (req, res) => {
-  const { name, price, max } = req.body;
+  const {
+    name,
+    price,
+    max,
+    pilot_price,
+    pilot_discount_percentage,
+    pilot_initial_payment_percentage,
+    pilot_enabled,
+    max_students,
+    duration_months,
+    is_active
+  } = req.body;
 
   try {
     if (!name || !price || !max) {
       return res.json({
         success: false,
-        message: "Please fill up all the fields",
+        message: "Please fill up all the required fields",
       });
     }
 
-    const insert = await insertFeatures(name, price, max);
+    const insert = await insertFeatures(
+      name,
+      price,
+      max,
+      pilot_price || null,
+      pilot_discount_percentage || 50.00,
+      pilot_initial_payment_percentage || 33.33,
+      pilot_enabled || false,
+      max_students || null,
+      duration_months || 12,
+      is_active !== undefined ? is_active : true
+    );
 
     if (insert === true) {
       return res.json({
         success: true,
-        message: "Subscription added successfully",
+        message: "Subscription plan added successfully",
       });
     } else {
       return res.json({
         success: false,
-        message: "Failed to add subscription",
+        message: "failed to add subscription plan",
       });
     }
   } catch (error) {
@@ -6452,13 +7018,63 @@ const gotSubscriptions = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching subscriptions",
+        message: "failed fetching subscriptions",
       });
     }
   } catch (error) {
     res.json({
       message: "Internal Server Error. Please try again later.",
       error: error.message,
+    });
+  }
+};
+
+// New endpoint for public pricing data (for landing page and pricing page)
+const getPublicPricingPlans = async (req, res) => {
+  try {
+    const plans = await getSubscriptions();
+    if (plans && plans.length > 0) {
+      // Format the data for public consumption
+      const formattedPlans = plans.map(plan => ({
+        id: plan.id,
+        name: plan.name,
+        price: plan.price,
+        pilot_price: plan.pilot_price,
+        features: plan.features ? plan.features.split(', ') : [],
+        max_students: plan.max_students,
+        duration_months: plan.duration_months,
+        pilot_discount_percentage: plan.pilot_discount_percentage,
+
+
+        // Calculate derived fields
+        pricePerStudent: plan.max_students ? Math.round(plan.price / plan.max_students) : 0,
+        students: plan.max_students ? `Up to ${plan.max_students}` : 'Unlimited',
+        studentCount: plan.max_students || 'Unlimited',
+        popular: plan.name === 'Professional', // Mark Professional as popular
+        description: plan.name === 'Starter' ? 'Perfect for small schools and academies' :
+          plan.name === 'Professional' ? 'Ideal for growing educational institutions' :
+            plan.name === 'Enterprise' ? 'Comprehensive solution for large institutions' :
+              'complete school management solution'
+      }));
+
+      res.json({
+        success: true,
+        plans: formattedPlans,
+        message: "Pricing plans retrieved successfully"
+      });
+    } else {
+      res.json({
+        success: false,
+        message: "No pricing plans found",
+        plans: []
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching public pricing plans:', error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error. Please try again later.",
+      error: error.message
     });
   }
 };
@@ -6512,13 +7128,38 @@ const editPlans = async (req, res) => {
 
 const updatePlans = async (req, res) => {
   const { id } = req.params;
-  const { name, price, max } = req.body;
+  const {
+    name,
+    price,
+    max,
+    pilot_price,
+    pilot_discount_percentage,
+    pilot_initial_payment_percentage,
+    pilot_enabled,
+    max_students,
+    duration_months,
+    is_active
+  } = req.body;
 
   try {
     const now = new Date();
     const updateAt = now.toLocaleString();
 
-    const update = await updatePlan(id, name, price, max, updateAt);
+    const update = await updatePlan(
+      id,
+      name,
+      price,
+      max,
+      pilot_price || null,
+      pilot_discount_percentage || 50.00,
+      pilot_initial_payment_percentage || 33.33,
+      pilot_enabled || false,
+      max_students || null,
+      duration_months || 12,
+      is_active !== undefined ? is_active : true,
+      updateAt
+    );
+
     if (update) {
       res.json({
         success: true,
@@ -6570,17 +7211,46 @@ const SubsByID = async (req, res) => {
 
 const gotSubs = async (req, res) => {
   const { plan } = req.params;
+  const token = req.cookies.schoolToken;
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  const sid = decoded.id;
 
   try {
-    const data = await getSubs(plan); // Fetch data from the model
-    if (data === false) {
-      return res.json({ message: "No subscription plan found." });
-    }
+    // Check if school has an approved pilot program
+    const pilotProgram = await getPilotProgramBySchoolId(sid);
+    if (pilotProgram && (pilotProgram.status === 'active')) {
+      const data = await getSubs(plan);
+      if (data === false) {
+        return res.json({ message: "No subscription plan found." });
+      }
 
-    res.json(data); // Send the data as a JSON response
+      return res.json({
+        success: true,
+        hasPilotProgram: true,
+        data,
+      });
+    } else {
+      // Handle regular subscription (non-pilot program)
+      const data = await getSubs(plan);
+      if (data === false) {
+        return res.json({ 
+          success: false,
+          message: "No subscription plan found." 
+        });
+      }
+
+      return res.json({
+        success: true,
+        hasPilotProgram: false,
+        data,
+      });
+    }
   } catch (error) {
     console.error("Error fetching subscriptions:", error);
-    res.status(500).json({ message: "Internal server error." });
+    res.status(500).json({ 
+      success: false,
+      message: "Internal server error." 
+    });
   }
 };
 
@@ -6589,8 +7259,8 @@ const cancSubscription = async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.id;
 
-  const status = "Cancelled";
-  const billing_status = "Suspended";
+  const status = "cancelled";
+  const billing_status = "suspended";
 
   const checker = await checkSubToCancel(sid);
   if (checker) {
@@ -6609,7 +7279,7 @@ const cancSubscription = async (req, res) => {
       } else {
         return res.json({
           success: false,
-          message: "Failed to cancel subscription",
+          message: "failed to cancel subscription",
         });
       }
     }
@@ -6622,8 +7292,8 @@ const insertSubscription = async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.id;
 
-  const status = "Pending";
-  const billing_status = "Pending";
+  const status = "pending";
+  const billing_status = "pending";
   const amount = Number(parseFloat(grandTotal).toFixed(0));
 
   // Calculate expiry time (24 hours from now)
@@ -6666,15 +7336,35 @@ const insertSubscription = async (req, res) => {
                 expiryTime
               );
               if (billing) {
+                // Get school information for email notification
+                try {
+                  const schoolInfo = await editSchool(sid);
+                  if (schoolInfo) {
+                    const paymentData = {
+                      schoolName: schoolInfo.name,
+                      schoolEmail: schoolInfo.email,
+                      schoolContact: schoolInfo.contact,
+                      subscriptionName,
+                      grandTotal,
+                      billingCycle
+                    };
+                    // Send email notification to super-admin
+                    await sendSuperAdminNotification(paymentData);
+                  }
+                } catch (emailError) {
+                  console.error('Error sending super admin notification:', emailError);
+                  // Don't fail the request if email fails
+                }
+                
                 return res.json({
                   success: true,
                   message:
-                    "Your subscription is set to Pending waiting for confirmation.",
+                    "Your subscription is set to pending waiting for confirmation.",
                 });
               } else {
                 return res.json({
                   success: false,
-                  message: "Failed to add subscription",
+                  message: "failed to add subscription",
                 });
               }
             }
@@ -6715,19 +7405,28 @@ const checkPaidStatus = async (req, res) => {
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.id || decoded.sid;
 
-  const status = "Active";
+  const status = "active";
 
   try {
     const checker = await checkPaid(sid, status);
     if (checker.length > 0) {
-      res.json({
+      // If no pilot program found, return normal success
+      return res.json({
         success: true,
       });
     } else {
-      res.json({
-        success: false,
-        message: "No active subscription found",
-      });
+      // Check if school has an approved pilot program
+      const pilotProgram = await getPilotProgramBySchoolId(sid);
+      if (pilotProgram && (pilotProgram.status === 'approved' || pilotProgram.status === 'active')) {
+        return res.json({
+          hasPilotProgram: true,
+          redirectTo: `/invoicing/${pilotProgram.pilot_plan_name}`
+        });
+      } else {
+        return res.json({
+          success: false,
+        });
+      }
     }
   } catch (error) {
     return res.json({
@@ -6774,7 +7473,7 @@ const gotSubscriptionPayments = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed to fetch payments",
+        message: "failed to fetch payments",
       });
     }
   } catch (error) {
@@ -6803,7 +7502,7 @@ const updateStatuses = async (req, res) => {
     if (!resultOne) {
       return res.status(500).json({
         success: false,
-        message: "Failed to update subscription status",
+        message: "failed to update subscription status",
       });
     }
 
@@ -6812,8 +7511,35 @@ const updateStatuses = async (req, res) => {
     if (!resultTwo) {
       return res.status(500).json({
         success: false,
-        message: "Failed to update billing status",
+        message: "failed to update billing status",
       });
+    }
+
+    // Send email notification to school if payment is approved
+    if (status === "paid" || bill === "active") {
+      try {
+        // Get subscription details to find school information
+        const subscriptionDetails = await getSubscriptionByID(id);
+        if (subscriptionDetails) {
+          const subscription = subscriptionDetails;
+          const schoolInfo = await editSchool(subscription.sid);
+          if (schoolInfo) {
+            const paymentData = {
+              schoolName: schoolInfo.name,
+              schoolEmail: schoolInfo.email,
+              schoolContact: schoolInfo.contact,
+              subscriptionName: subscription.plan || "Premium Plan",
+              grandTotal: subscription.amount || "0",
+              billingCycle: subscription.period || "Termly"
+            };
+            // Send approval email to school
+            await sendSchoolApprovalEmail(paymentData);
+          }
+        }
+      } catch (emailError) {
+        console.error('Error sending school approval email:', emailError);
+        // Don't fail the request if email fails
+      }
     }
 
     // Success response
@@ -6827,6 +7553,43 @@ const updateStatuses = async (req, res) => {
       success: false,
       message: "Internal Server Error. Please try again later.",
       error: error.message,
+    });
+  }
+};
+
+// Real-time payment status endpoint for polling
+const getRealTimePaymentStatus = async (req, res) => {
+  const token = req.cookies.schoolToken;
+  
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: "Authentication required"
+    });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
+    
+    const status = await checkResentSubscriptionStatus(sid);
+    if (status) {
+      return res.json({
+        success: true,
+        status: status,
+        timestamp: new Date().toISOString()
+      });
+    } else {
+      return res.json({
+        success: false,
+        message: "No subscription found"
+      });
+    }
+  } catch (error) {
+    console.error("Error checking real-time status:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error"
     });
   }
 };
@@ -6849,7 +7612,7 @@ const updateSchoolStatuses = async (req, res) => {
     if (resultOne.affectedRows === 0) {
       return res.status(500).json({
         success: false,
-        message: "Failed to update school status",
+        message: "failed to update school status",
       });
     }
 
@@ -6898,7 +7661,7 @@ const addSubscriber = async (req, res) => {
       } else {
         return res.json({
           success: false,
-          message: "Failed to subscribe. Please try again later",
+          message: "failed to subscribe. Please try again later",
         });
       }
     }
@@ -6917,9 +7680,9 @@ const addSubscriber = async (req, res) => {
 
 const insertFeedback = async (req, res) => {
   const { rating, selectedOption, comment } = req.body;
-  const token = req.cookies.schoolToken;
+  const token = req.cookies.schoolToken || req.cookies.teacherToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const sid = decoded.id;
+  const sid = decoded.id || decoded.sid;
 
   try {
     if (!rating || !selectedOption || !comment) {
@@ -6938,7 +7701,7 @@ const insertFeedback = async (req, res) => {
     } else {
       return res.json({
         success: false,
-        message: "Failed to submit feedback",
+        message: "failed to submit feedback",
       });
     }
   } catch (error) {
@@ -6961,7 +7724,7 @@ const getFeedbackRating = async (req, res) => {
     } else {
       return res.json({
         success: false,
-        message: "Failed to fetch feedback",
+        message: "failed to fetch feedback",
       });
     }
   } catch (error) {
@@ -6983,7 +7746,7 @@ const getFeedbacko = async (req, res) => {
     } else {
       return res.json({
         success: false,
-        message: "Failed to fetch feedback",
+        message: "failed to fetch feedback",
       });
     }
   } catch (error) {
@@ -7047,7 +7810,7 @@ const insertExpense = async (req, res) => {
           } else {
             return res.json({
               success: false,
-              message: "Failed to submit expense",
+              message: "failed to submit expense",
             });
           }
         }
@@ -7076,7 +7839,7 @@ const getExpenses = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching expense",
+        message: "failed fetching expense",
       });
     }
   } catch (error) {
@@ -7102,7 +7865,7 @@ const getAdminExpenses = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching expense",
+        message: "failed fetching expense",
       });
     }
   } catch (error) {
@@ -7131,12 +7894,12 @@ const updateStatusEx = async (req, res) => {
     if (resultOne.affectedRows === 0) {
       return res.status(500).json({
         success: false,
-        message: "Failed to update expense status",
+        message: "failed to update expense status",
       });
     }
 
     // Success response
-    if (status === "Approved") {
+    if (status === "approved") {
       return res.json({
         success: true,
         message: "Expense has been approved successfully",
@@ -7171,7 +7934,7 @@ const sumExpenses = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching expense",
+        message: "failed fetching expense",
       });
     }
   } catch (error) {
@@ -7197,7 +7960,7 @@ const countExpenses = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching expense",
+        message: "failed fetching expense",
       });
     }
   } catch (error) {
@@ -7223,7 +7986,7 @@ const AvgMonthly = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching expense",
+        message: "failed fetching expense",
       });
     }
   } catch (error) {
@@ -7248,7 +8011,7 @@ const Transactions = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching transactions",
+        message: "failed fetching transactions",
       });
     }
   } catch (error) {
@@ -7274,7 +8037,7 @@ const getChartLiner = async (req, res) => {
     } else {
       res.json({
         success: false,
-        message: "Failed fetching chart",
+        message: "failed fetching chart",
       });
     }
   } catch (error) {
@@ -7356,7 +8119,460 @@ const updateExpenses = async (req, res) => {
     });
   }
 };
-// ----------------------- EXPENSE CONTROLLER -----------------------
+// ----------------------- PARENT BOT STATISTICS CONTROLLER -----------------------
+
+const getParentBotStats = async (req, res) => {
+  try {
+    const {
+      getParentBotFeedback,
+      getParentBotFeedbackAnalytics,
+      getParentBotFeedbackByRating
+    } = require('../model/apiModel.js');
+
+    // Get overall statistics
+    const today = new Date();
+    const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    // Get all feedback for the last month
+    const allFeedback = await getParentBotFeedback(null, 1000); // Get all schools
+
+    // Calculate overall stats
+    const totalFeedback = allFeedback.length;
+    const avgRating = allFeedback.length > 0 ?
+      (allFeedback.reduce((sum, f) => sum + f.rating, 0) / allFeedback.length).toFixed(2) : 0;
+
+    // Get rating distribution
+    const ratingDistribution = {
+      5: allFeedback.filter(f => f.rating === 5).length,
+      4: allFeedback.filter(f => f.rating === 4).length,
+      3: allFeedback.filter(f => f.rating === 3).length,
+      2: allFeedback.filter(f => f.rating === 2).length,
+      1: allFeedback.filter(f => f.rating === 1).length
+    };
+
+    // Get feedback by type
+    const feedbackByType = {
+      bot_experience: allFeedback.filter(f => f.feedback_type === 'bot_experience').length,
+      ai_features: allFeedback.filter(f => f.feedback_type === 'ai_features').length,
+      school_communication: allFeedback.filter(f => f.feedback_type === 'school_communication').length,
+      student_info_access: allFeedback.filter(f => f.feedback_type === 'student_info_access').length,
+      overall: allFeedback.filter(f => f.feedback_type === 'overall').length
+    };
+
+    // Get recent feedback (last 7 days)
+    const recentFeedback = allFeedback.filter(f =>
+      new Date(f.created_at) >= lastWeek
+    );
+
+    // Get active users (users who submitted feedback in last 7 days)
+    const activeUsers = new Set(recentFeedback.map(f => f.user_id)).size;
+
+    // Get most used features
+    const allFeatures = allFeedback
+      .filter(f => f.features_used)
+      .flatMap(f => JSON.parse(f.features_used || '[]'));
+
+    const featureUsage = {};
+    allFeatures.forEach(feature => {
+      featureUsage[feature] = (featureUsage[feature] || 0) + 1;
+    });
+
+    // Get average session duration
+    const avgSessionDuration = allFeedback.length > 0 ?
+      (allFeedback.reduce((sum, f) => sum + (f.session_duration || 0), 0) / allFeedback.length).toFixed(1) : 0;
+
+    res.json({
+      success: true,
+      data: {
+        totalFeedback,
+        avgRating: parseFloat(avgRating),
+        ratingDistribution,
+        feedbackByType,
+        recentFeedback: recentFeedback.length,
+        activeUsers,
+        featureUsage,
+        avgSessionDuration: parseFloat(avgSessionDuration),
+        lastUpdated: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('Error getting parent bot stats:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const getParentBotFeedbackBySchool = async (req, res) => {
+  try {
+    const { getParentBotFeedback, getParentBotFeedbackAnalytics } = require('../model/apiModel.js');
+    const { schoolId } = req.params;
+
+    if (!schoolId) {
+      return res.status(400).json({ success: false, error: 'School ID is required' });
+    }
+
+    // Get feedback for specific school
+    const schoolFeedback = await getParentBotFeedback(schoolId, 100);
+
+    // Get analytics for last 30 days
+    const today = new Date();
+    const lastMonth = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const analytics = await getParentBotFeedbackAnalytics(
+      schoolId,
+      lastMonth.toISOString().split('T')[0],
+      today.toISOString().split('T')[0]
+    );
+
+    res.json({
+      success: true,
+      data: {
+        schoolId,
+        feedback: schoolFeedback,
+        analytics,
+        totalFeedback: schoolFeedback.length
+      }
+    });
+  } catch (error) {
+    console.error('Error getting school feedback:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const getParentBotRealTimeStats = async (req, res) => {
+  try {
+    const { getParentBotFeedback } = require('../model/apiModel.js');
+
+    // Get feedback from last 24 hours
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const allFeedback = await getParentBotFeedback(null, 1000);
+
+    const recentFeedback = allFeedback.filter(f =>
+      new Date(f.created_at) >= last24Hours
+    );
+
+    // Get feedback from last hour
+    const lastHour = new Date(Date.now() - 60 * 60 * 1000);
+    const lastHourFeedback = allFeedback.filter(f =>
+      new Date(f.created_at) >= lastHour
+    );
+
+    // Calculate real-time metrics
+    const realTimeStats = {
+      feedbackLast24Hours: recentFeedback.length,
+      feedbackLastHour: lastHourFeedback.length,
+      avgRatingLast24Hours: recentFeedback.length > 0 ?
+        (recentFeedback.reduce((sum, f) => sum + f.rating, 0) / recentFeedback.length).toFixed(2) : 0,
+      activeUsersLast24Hours: new Set(recentFeedback.map(f => f.user_id)).size,
+      recentFeedback: recentFeedback.slice(0, 10), // Last 10 feedback entries
+      lastUpdated: new Date().toISOString()
+    };
+
+    res.json({
+      success: true,
+      data: realTimeStats
+    });
+  } catch (error) {
+    console.error('Error getting real-time stats:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+const getParentBotNotifications = async (req, res) => {
+  try {
+    const { getParentBotFeedback } = require('../model/apiModel.js');
+
+    // Get all feedback
+    const allFeedback = await getParentBotFeedback(null, 1000);
+
+    const notifications = [];
+
+    // Check for low ratings (1-2 stars) in last 24 hours
+    const last24Hours = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const lowRatings = allFeedback.filter(f =>
+      f.rating <= 2 && new Date(f.created_at) >= last24Hours
+    );
+
+    if (lowRatings.length > 0) {
+      notifications.push({
+        type: 'warning',
+        title: 'low Ratings Alert',
+        message: `${lowRatings.length} low ratings (1-2 stars) received in the last 24 hours`,
+        count: lowRatings.length,
+        timestamp: new Date().toISOString(),
+        data: lowRatings.slice(0, 5) // Show first 5
+      });
+    }
+
+    // Check for high feedback volume
+    const lastHour = new Date(Date.now() - 60 * 60 * 1000);
+    const recentFeedback = allFeedback.filter(f =>
+      new Date(f.created_at) >= lastHour
+    );
+
+    if (recentFeedback.length > 10) {
+      notifications.push({
+        type: 'info',
+        title: 'high Activity',
+        message: `${recentFeedback.length} feedback entries received in the last hour`,
+        count: recentFeedback.length,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Check for new users (users who submitted their first feedback)
+    const uniqueUsers = new Set(allFeedback.map(f => f.user_id));
+    const newUsersToday = allFeedback.filter(f => {
+      const userFeedback = allFeedback.filter(uf => uf.user_id === f.user_id);
+      return userFeedback.length === 1 && new Date(f.created_at) >= last24Hours;
+    });
+
+    if (newUsersToday.length > 0) {
+      notifications.push({
+        type: 'success',
+        title: 'New Users',
+        message: `${newUsersToday.length} new users submitted feedback today`,
+        count: newUsersToday.length,
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    // Check for feature usage trends
+    const allFeatures = allFeedback
+      .filter(f => f.features_used && new Date(f.created_at) >= last24Hours)
+      .flatMap(f => JSON.parse(f.features_used || '[]'));
+
+    const featureUsage = {};
+    allFeatures.forEach(feature => {
+      featureUsage[feature] = (featureUsage[feature] || 0) + 1;
+    });
+
+    const mostUsedFeature = Object.keys(featureUsage).reduce((a, b) =>
+      featureUsage[a] > featureUsage[b] ? a : b, 'none'
+    );
+
+    if (mostUsedFeature !== 'none') {
+      notifications.push({
+        type: 'info',
+        title: 'Feature Usage',
+        message: `Most used feature: ${mostUsedFeature} (${featureUsage[mostUsedFeature]} times)`,
+        count: featureUsage[mostUsedFeature],
+        timestamp: new Date().toISOString()
+      });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        notifications,
+        totalNotifications: notifications.length,
+        lastUpdated: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('Error getting notifications:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// ----------------------- PARENT BOT STATISTICS CONTROLLER -----------------------
+
+// ==================== REFERRAL SYSTEM CONTROLLERS ====================
+
+// Create referral code for a school
+const createReferralCode = async (req, res) => {
+  try {
+    const { schoolId } = req.params;
+    const { createReferralCode: createCode } = require('../model/apiModel.js');
+
+    const referralCodeId = await createCode(schoolId);
+
+    res.json({
+      success: true,
+      message: 'Referral code created successfully',
+      data: { referralCodeId }
+    });
+  } catch (error) {
+    console.error('Error creating referral code:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get referral code for a school
+const getReferralCode = async (req, res) => {
+  try {
+    const { schoolId } = req.params;
+    const { getReferralCode: getCode } = require('../model/apiModel.js');
+
+    const referralCode = await getCode(schoolId);
+
+    if (!referralCode) {
+      return res.json({
+        success: false,
+        message: 'No referral code found for this school'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: referralCode
+    });
+  } catch (error) {
+    console.error('Error getting referral code:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Validate referral code
+const validateReferralCode = async (req, res) => {
+  try {
+    const { referralCode } = req.body;
+    const { validateReferralCode: validateCode } = require('../model/apiModel.js');
+
+    const validation = await validateCode(referralCode);
+
+    if (!validation) {
+      return res.json({
+        success: false,
+        message: 'Invalid referral code'
+      });
+    }
+
+    res.json({
+      success: true,
+      data: validation
+    });
+  } catch (error) {
+    console.error('Error validating referral code:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Track referral usage
+const trackReferralUsage = async (req, res) => {
+  try {
+    const { referrerSchoolId, referredSchoolId, referralCode } = req.body;
+    const { trackReferralUsage: trackUsage } = require('../model/apiModel.js');
+
+    const trackingId = await trackUsage(referrerSchoolId, referredSchoolId, referralCode);
+
+    res.json({
+      success: true,
+      message: 'Referral usage tracked successfully',
+      data: { trackingId }
+    });
+  } catch (error) {
+    console.error('Error tracking referral usage:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get referral analytics for a school
+const getReferralAnalytics = async (req, res) => {
+  try {
+    const { schoolId } = req.params;
+    const { getReferralAnalytics: getAnalytics } = require('../model/apiModel.js');
+
+    const analytics = await getAnalytics(schoolId);
+
+    res.json({
+      success: true,
+      data: analytics
+    });
+  } catch (error) {
+    console.error('Error getting referral analytics:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get all referral analytics (for super admin)
+const getAllReferralAnalytics = async (req, res) => {
+  try {
+    const { getAllReferralAnalytics: getAllAnalytics } = require('../model/apiModel.js');
+
+    const analytics = await getAllAnalytics();
+
+    res.json({
+      success: true,
+      data: analytics
+    });
+  } catch (error) {
+    console.error('Error getting all referral analytics:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get referral tracking records
+const getReferralTracking = async (req, res) => {
+  try {
+    const { schoolId } = req.query;
+    const { getReferralTracking: getTracking } = require('../model/apiModel.js');
+
+    const tracking = await getTracking(schoolId);
+
+    res.json({
+      success: true,
+      data: tracking
+    });
+  } catch (error) {
+    console.error('Error getting referral tracking:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Apply referral discount
+const applyReferralDiscount = async (req, res) => {
+  try {
+    const { referralTrackingId, subscriptionAmount } = req.body;
+    const { applyReferralDiscount: applyDiscount } = require('../model/apiModel.js');
+
+    const discountAmount = await applyDiscount(referralTrackingId, subscriptionAmount);
+
+    res.json({
+      success: true,
+      message: 'Referral discount applied successfully',
+      data: { discountAmount }
+    });
+  } catch (error) {
+    console.error('Error applying referral discount:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Get referral settings
+const getReferralSettings = async (req, res) => {
+  try {
+    const { getReferralSettings: getSettings } = require('../model/apiModel.js');
+
+    const settings = await getSettings();
+
+    res.json({
+      success: true,
+      data: settings
+    });
+  } catch (error) {
+    console.error('Error getting referral settings:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+// Update referral settings
+const updateReferralSettings = async (req, res) => {
+  try {
+    const { settings } = req.body;
+    const { updateReferralSettings: updateSettings } = require('../model/apiModel.js');
+
+    await updateSettings(settings);
+
+    res.json({
+      success: true,
+      message: 'Referral settings updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating referral settings:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
 
 module.exports = {
 
@@ -7374,7 +8590,7 @@ module.exports = {
   insertAttendance,
   // ----- ATTENDANCE EXPORTS ------
 
-  
+
   // ----- EXPENSE EXPORTS ------
   insertExpense,
   getExpenses,
@@ -7535,6 +8751,8 @@ module.exports = {
   countFemales,
   countGenderForClass,
   genderByPercentage,
+  gotStudents,
+  gotCountry,
   // ----- STUDENT EXPORTS ------
 
   // ----- FEE EXPORTS ------
@@ -7636,6 +8854,7 @@ module.exports = {
   // ----- SUPER ADMIN EXPORTS ------
   addSubscriptions,
   gotSubscriptions,
+  getPublicPricingPlans,
   deletePlan,
   editPlans,
   updatePlans,
@@ -7652,6 +8871,7 @@ module.exports = {
   gotSubscriptionPayments,
   updateStatuses,
   updateSchoolStatuses,
+  getRealTimePaymentStatus,
   // ----- SUBSCRIPTION EXPORTS ------
 
   // ----- SUBSCRIBE EXPORTS ------
@@ -7663,4 +8883,24 @@ module.exports = {
   getFeedbacko,
   getFeedbackRating,
   // ----- FEEDBACK EXPORTS ------
+
+  // ----- PARENT BOT STATISTICS EXPORTS ------
+  getParentBotStats,
+  getParentBotFeedbackBySchool,
+  getParentBotRealTimeStats,
+  getParentBotNotifications,
+  // ----- PARENT BOT STATISTICS EXPORTS ------
+
+  // ----- REFERRAL SYSTEM EXPORTS ------
+  createReferralCode,
+  getReferralCode,
+  validateReferralCode,
+  trackReferralUsage,
+  getReferralAnalytics,
+  getAllReferralAnalytics,
+  getReferralTracking,
+  applyReferralDiscount,
+  getReferralSettings,
+  updateReferralSettings,
+  // ----- REFERRAL SYSTEM EXPORTS ------
 };

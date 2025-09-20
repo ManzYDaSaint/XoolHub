@@ -145,7 +145,7 @@ const Overview = () => {
                     <UsersRound size={24} className="text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-gray-600 text-sm font-medium mb-1">Male Students</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">male Students</p>
                     <h4 className="text-2xl font-bold text-gray-900">{male}</h4>
                   </div>
                 </div>
@@ -159,7 +159,7 @@ const Overview = () => {
                     <Users size={24} className="text-white" />
                   </div>
                   <div className="flex-1">
-                    <p className="text-gray-600 text-sm font-medium mb-1">Female Students</p>
+                    <p className="text-gray-600 text-sm font-medium mb-1">female Students</p>
                     <h4 className="text-2xl font-bold text-gray-900">{female}</h4>
                   </div>
                 </div>

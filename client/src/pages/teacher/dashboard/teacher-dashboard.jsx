@@ -72,13 +72,13 @@ const TeacherBoard = () => {
               <Presentation className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-emerald-800 to-teal-800 bg-clip-text text-transparent">
-              Teacher Dashboard
+              teacher Dashboard
             </h1>
           </div>
           <div className="w-32 h-1 bg-gradient-to-r from-emerald-500 to-teal-600 rounded-full mx-auto"></div>
         </div>
 
-        {/* Teacher Statistics */}
+        {/* teacher Statistics */}
         <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-50/50 to-teal-50/30"></div>
           <div className="relative p-8">
@@ -86,7 +86,7 @@ const TeacherBoard = () => {
               <div className="p-2 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl">
                 <UsersRound className="w-5 h-5 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900">Teacher Statistics</h3>
+              <h3 className="text-xl font-bold text-gray-900">teacher Statistics</h3>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -98,7 +98,7 @@ const TeacherBoard = () => {
                   </div>
                   <div>
                     <h4 className="text-2xl font-bold text-gray-900">{male}</h4>
-                    <p className="text-gray-600 font-medium">Male Teachers</p>
+                    <p className="text-gray-600 font-medium">male Teachers</p>
                   </div>
                 </div>
               </div>
@@ -109,7 +109,7 @@ const TeacherBoard = () => {
                   </div>
                   <div>
                     <h4 className="text-2xl font-bold text-gray-900">{female}</h4>
-                    <p className="text-gray-600 font-medium">Female Teachers</p>
+                    <p className="text-gray-600 font-medium">female Teachers</p>
                   </div>
                 </div>
               </div>

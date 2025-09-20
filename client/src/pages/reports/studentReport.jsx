@@ -177,7 +177,7 @@ const StudentReport = () => {
     subpos(reportFormData, subjectid); // eslint-disable-next-line
   }, [reportFormData, subjectid]);
 
-  // Get Teacher by subject
+  // Get teacher by subject
 
   const getTeacher = async (id) => {
     try {
@@ -207,7 +207,7 @@ const StudentReport = () => {
     fetchRemarks(classid); // eslint-disable-next-line
   }, [classid]);
 
-  // Get Teacher by subject
+  // Get teacher by subject
 
   useEffect(() => {
     if (report.length > 0) {
@@ -317,7 +317,7 @@ const StudentReport = () => {
                   <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 border border-white/30">
                     <div className="flex items-center gap-3 mb-2">
                       <Users className="w-4 h-4 text-purple-600" />
-                      <span className="text-sm font-medium text-gray-600">Class Teacher(s)</span>
+                      <span className="text-sm font-medium text-gray-600">Class teacher(s)</span>
                     </div>
                     <p className="text-sm font-semibold text-gray-900">
                       {ct.map((it, index) => (
@@ -405,7 +405,7 @@ const StudentReport = () => {
                       <th className="px-6 py-4 text-left text-sm font-semibold">Grade</th>
                       <th className="px-6 py-4 text-left text-sm font-semibold">Position</th>
                       <th className="px-6 py-4 text-left text-sm font-semibold">Remarks</th>
-                      <th className="px-6 py-4 text-left text-sm font-semibold">Teacher</th>
+                      <th className="px-6 py-4 text-left text-sm font-semibold">teacher</th>
                     </tr>
                   </thead>
                   <tbody>

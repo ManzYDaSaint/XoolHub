@@ -3,6 +3,8 @@
 import { Check, Star, Trophy } from "lucide-react";
 import HeaderBtn from "./ui/headerBtn";
 import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import api from "../../../services/apiServices";
 
 // Features Section Component (inline)
 function SubscriptionOptions({ features }) {
@@ -44,59 +46,80 @@ function SubscriptionOptions({ features }) {
 }
 
 export default function Component() {
-  const plans = [
-    {
-      name: "Starter",
-      description: "Perfect for small schools and academies",
-      price: "150,000",
-      students: "Up to 100",
-      studentCount: "100",
-      popular: false,
-      pricePerStudent: "1500",
-    },
-    {
-      name: "Professional",
-      description: "Ideal for growing educational institutions",
-      price: "250,000",
-      students: "Up to 250",
-      studentCount: "250",
-      popular: true,
-      pricePerStudent: "1000",
-    },
-    {
-      name: "Enterprise",
-      description: "Comprehensive solution for large institutions",
-      price: "375,000",
-      students: "Up to 500",
-      studentCount: "500",
-      popular: false,
-      pricePerStudent: "750",
-    },
-  ];
+  const [plans, setPlans] = useState([]);
+  const [allFeatures, setAllFeatures] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Single feature list that applies to all plans
-  const allFeatures = [
-    "Complete student information management",
-    "Comprehensive grade & assessment management",
-    "Parent & student communication portal",
-    "Staff management",
-    "Timetable & class scheduling",
-    "Fee management & invoicing",
-    "Transport & hostel management",
-    "Exam management & downloadable report cards",
-    "Custom reports & analytics dashboard",
-    "Mobile app for all users (In development)",
-    "SMS & email notifications",
-    "Multi-campus support",
-    "24/7 priority support",
-    "Data backup & security",
-    "Advanced Analytics",
-    "White-label Branding",
-    "API Access & Integrations",
-    "WhatsApp Integrations",
-    "Dedicated Accounts Managements",
-    "Bulk Data Import/Export",
-  ];
+  // Fetch pricing plans from database
+  useEffect(() => {
+    const fetchPricingPlans = async () => {
+      try {
+        setLoading(true); 
+        const response = await api.getPublicPricingPlans();
+        
+        if (response.data.success) {
+          setPlans(response.data.plans);
+          // Get features from the first plan (all plans have the same features)
+          if (response.data.plans.length > 0) {
+            setAllFeatures(response.data.plans[0].features || []);
+          }
+        } else {
+          setError(response.data.message || 'failed to fetch pricing plans');
+        }
+      } catch (err) {
+        console.error('Error fetching pricing plans:', err);
+        setError('failed to load pricing plans. Please try again later.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPricingPlans();
+  }, []);
+
+  // Format price for display
+  // const formatPrice = (price) => {
+  //   if (price >= 1000000) {
+  //     return (price / 1000000).toFixed(1).replace(/\.0$/, "") + "M";
+  //   } else if (price >= 1000) {
+  //     return (price / 1000).toFixed(1).replace(/\.0$/, "") + "K";
+  //   }
+  //   return price.toString();
+  // };
+
+  const formattedPrice = (price) => {
+    return new Intl.NumberFormat('en-US').format(price);
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen px-14 py-6 my-20 space-y-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading pricing plans...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen px-14 py-6 my-20 space-y-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+              <p className="text-red-600">{error}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen px-14 py-6 my-20 space-y-8">
@@ -107,8 +130,8 @@ export default function Component() {
             <HeaderBtn>Pricing</HeaderBtn>
           </p>
           <h5 className="text-xl font-bold text-blue-900 md:text-4xl">
-            Flexible Plans to Grow with Your <br /> School either Public or
-            Private
+            Flexible Plans to Grow with Your <br /> School either public or
+            private
           </h5>
           <p className="text-gray-700 text-md md:text-lg">
             Check out our pricing options and choose the best
@@ -156,7 +179,7 @@ export default function Component() {
                 <div className="mt-6">
                   <div className="flex items-baseline justify-center">
                     <span className="text-lg md:text-4xl font-bold text-gray-900">
-                      MK{plan.price}
+                      MK{formattedPrice(plan.price)}
                     </span>
                     <span className="text-gray-600 ml-2">/term</span>
                   </div>
@@ -185,7 +208,7 @@ export default function Component() {
                 {/* Full Feature Access Badge */}
                 <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-center">
                   <div className="text-sm font-semibold text-slate-700 mb-1">
-                    🎯 Complete System Access
+                    🎯 complete System Access
                   </div>
                   <div className="text-xs text-slate-600">
                     All features included in every plan
@@ -219,7 +242,7 @@ export default function Component() {
                     }`}
                     variant={plan.popular ? "default" : "outline"}
                   >
-                    {plan.popular ? "Start Free Trial" : "Get Started"}
+                    Get Started
                   </button>
                 </Link>
               </section>

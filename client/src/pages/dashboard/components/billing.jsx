@@ -54,7 +54,7 @@ const Billing = () => {
 
     if (Array.isArray(data) && data.length > 0) {
       const activeSub = data.find(
-        (sub) => sub.status === "Paid" || sub.status === "Active"
+        (sub) => sub.status === "paid" || sub.status === "active"
       );
       if (activeSub) {
         setPlan(activeSub.name);
@@ -158,7 +158,7 @@ const Billing = () => {
                 {/* Full Feature Access Badge */}
                 <div className="mb-4 p-3 bg-slate-50 rounded-lg border border-slate-200 text-center">
                   <div className="text-sm font-semibold text-slate-700 mb-1">
-                    🎯 Complete System Access
+                    🎯 complete System Access
                   </div>
                   <div className="text-xs text-slate-600">
                     All features included in every plan

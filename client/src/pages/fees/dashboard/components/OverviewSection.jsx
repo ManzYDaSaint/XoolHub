@@ -101,7 +101,7 @@ const OverviewSection = () => {
         icon={TrendingUpDown}
         title={pendingFee}
         small={<span style={{ color: "grey" }}>{"MK"}</span>}
-        description="Pending Payments"
+        description="pending Payments"
       />
       <Card
         icon={Scale}

@@ -111,7 +111,7 @@ const Data = () => {
         >
           <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200"></div>
           <Plus size={16} className="relative z-10 group-hover:scale-110 transition-transform duration-200" />
-          <span className="relative z-10">Add Teacher</span>
+          <span className="relative z-10">Add teacher</span>
         </button>
       </div>
       <div

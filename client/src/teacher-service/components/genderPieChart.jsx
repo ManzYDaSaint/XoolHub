@@ -24,7 +24,7 @@ const fetchData = async (id) => {
       fetchData(id);  
   }, [id]); // eslint-disable-next-line 
 
-  const COLORS = ['#0088FE', '#FFBB28', '#FF8042']; // Adding a third color for 'Other'
+  const COLORS = ['#0088FE', '#FFBB28', '#FF8042']; // Adding a third color for 'other'
 
   return (
     <PieChart width={150} height={150}>

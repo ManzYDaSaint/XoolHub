@@ -9,7 +9,7 @@ const PfTable = ({ payData }) => {
     { key: 'fee', label: 'Fee', width: '10%' },
     { key: 'term', label: 'Term', width: '20%' },
     { key: 'amount', label: 'Amount', width: '20%' },
-    { key: 'paid', label: 'Paid', width: '15%' },
+    { key: 'paid', label: 'paid', width: '15%' },
     { key: 'balance', label: 'Balance', width: '10%' },
   ];
 

@@ -37,10 +37,10 @@ export default function PilotBanner() {
           {/* Modal */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }} 
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
-            className="relative w-full max-w-4xl rounded-3xl bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
+            className="relative mt-10 w-full max-w-4xl rounded-3xl bg-white shadow-2xl ring-1 ring-black/5 overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close Button */}
@@ -56,7 +56,7 @@ export default function PilotBanner() {
 
             {/* Header Section */}
             <div className="relative overflow-hidden">
-              <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 px-8 pt-10 pb-8 text-white">
+              <div className="bg-gradient-to-br from-indigo-600 via-violet-600 to-fuchsia-600 px-6 pt-8 pb-6 text-white">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-10">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-white/20 rounded-full blur-2xl"></div>
@@ -81,14 +81,14 @@ export default function PilotBanner() {
                         transition={{ duration: 0.5, delay: 0.4 }}
                       >
                         <Sparkles className="h-4 w-4" />
-                        <span className="text-sm font-semibold">Limited Time Opportunity</span>
+                        <span className="text-sm font-semibold">50% Off for 1 Year</span>
                       </motion.div>
                       
                       <h3 className="text-3xl md:text-4xl font-bold leading-tight mb-3">
-                        Be First: Join the XoolHub Pilot Program
+                        Join Our Pilot Program - 50% Off for 1 Year
                       </h3>
                       <p className="text-lg text-white/90 leading-relaxed">
-                        Early partner schools get premium onboarding, direct product influence, and exclusive launch incentives.
+                        Be among the first schools to experience XoolHub at an exclusive 50% discount. Start with a small initial payment and save thousands over the year.
                       </p>
                     </div>
                   </motion.div>
@@ -106,10 +106,10 @@ export default function PilotBanner() {
                 transition={{ duration: 0.6, delay: 0.6 }}
               >
                 {[
-                  "Priority onboarding and white‑glove setup for your school",
-                  "Early access to new features and roadmap input",
-                  "Free during the pilot, with loyalty pricing afterward",
-                  "Secure, reliable, and fast support when you need it"
+                  "50% off all plans for a full year - save up to MK 187,500",
+                  "Start with a small initial payment, no long-term commitment",
+                  "Priority support and dedicated onboarding assistance",
+                  "Early access to new features and direct product influence"
                 ].map((benefit, index) => (
                   <motion.div
                     key={index}
@@ -134,23 +134,23 @@ export default function PilotBanner() {
                 transition={{ duration: 0.6, delay: 1.2 }}
               >
                 <motion.button
-                  onClick={() => (window.location.href = "/register")}
+                  onClick={() => (window.location.href = "/pilot-program")}
                   className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-white font-semibold shadow-lg hover:shadow-xl active:shadow-md transition-all duration-200 hover:scale-105"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Sparkles className="h-5 w-5 mr-2" />
-                  Request Pilot Access
+                  View Pilot Plans
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </motion.button>
                 
                 <motion.a
-                  href="/contact"
+                  href="/pilot-program#apply"
                   className="flex-1 sm:flex-none inline-flex items-center justify-center rounded-xl border-2 border-gray-300 bg-white px-8 py-4 text-gray-800 font-semibold shadow-md hover:shadow-lg hover:border-indigo-300 transition-all duration-200 hover:scale-105"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  Talk to our Team
+                  Apply Now
                 </motion.a>
               </motion.div>
 
@@ -164,9 +164,9 @@ export default function PilotBanner() {
                 <p className="text-sm text-gray-500 font-medium">
                   <span className="inline-flex items-center space-x-1">
                     <span className="w-2 h-2 bg-orange-500 rounded-full animate-pulse"></span>
-                    <span>Limited seats available</span>
+                    <span>Limited Time Offer - 50% Off for 1 Year</span>
                   </span>
-                  . We onboard schools in waves to ensure quality support.
+                  . Start with a small initial payment and save thousands.
                 </p>
               </motion.div>
             </div>

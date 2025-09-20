@@ -136,6 +136,7 @@ const {
     getXuls,
     addSubscriptions,
     gotSubscriptions,
+    getPublicPricingPlans,
     deletePlan,
     editPlans,
     updatePlans,
@@ -147,6 +148,7 @@ const {
     gotSubscriptionPayments,
     updateStatuses,
     updateSchoolStatuses,
+    getRealTimePaymentStatus,
     countPrivateXuls,
     countPublicXuls,
     countSubscribedXuls,
@@ -202,6 +204,23 @@ const {
     updateDisciplinary,
     deleteDisciplinary,
     getDisciplinaryStats,
+    getParentBotStats,
+    getParentBotFeedbackBySchool,
+    getParentBotRealTimeStats,
+    getParentBotNotifications,
+    // Referral system imports
+    createReferralCode,
+    getReferralCode,
+    validateReferralCode,
+    trackReferralUsage,
+    getReferralAnalytics,
+    getAllReferralAnalytics,
+    getReferralTracking,
+    applyReferralDiscount,
+    getReferralSettings,
+    updateReferralSettings,
+    gotStudents,
+    gotCountry,
 } = require('../controller/apiController.js');
 
 
@@ -228,11 +247,25 @@ router.route('/payment-linechart').get(paymentLineChart);
 // ***** GET Methods
 router.route('/verifyOTP').post(verifyOTP);
 router.route('/resendOTP').post(resendOTP);
-router.route('/createResetSession').get(createResetSession);
+router.route('/forgot-password').post(createResetSession);
+router.route('/reset-password').post(resetPassword);
 
+// Security monitoring routes
+const {
+  getSecurityDashboard,
+  getSecurityAlerts,
+  getPasswordResetAnalytics,
+  getSecurityIncidents,
+  blockSuspiciousIP,
+  exportSecurityData
+} = require('../controller/securityController');
 
-// ***** PUT Methods
-router.route('/resetPassword').put(resetPassword);
+router.route('/security/dashboard').get(getSecurityDashboard);
+router.route('/security/alerts').get(getSecurityAlerts);
+router.route('/security/analytics').get(getPasswordResetAnalytics);
+router.route('/security/incidents').get(getSecurityIncidents);
+router.route('/security/block-ip').post(blockSuspiciousIP);
+router.route('/security/export').get(exportSecurityData);
 
 
 
@@ -240,6 +273,7 @@ router.route('/resetPassword').put(resetPassword);
 
 router.route('/add-subscriptions').post(addSubscriptions);
 router.route('/get-subscriptions').get(gotSubscriptions);
+router.route('/public-pricing-plans').get(getPublicPricingPlans);
 router.route('/delete-subscriptions/:id').delete(deletePlan);
 router.route('/edit-subscriptions/:id').get(editPlans);
 router.route('/update-subscriptions/:id').put(updatePlans);
@@ -261,6 +295,7 @@ router.route('/cancel-subscription').put(cancSubscription);
 router.route('/get-subscription-payments').get(gotSubscriptionPayments);
 router.route('/update-statuses/:id').put(updateStatuses);
 router.route('/update-school-status/:id').put(updateSchoolStatuses);
+router.route('/real-time-payment-status').get(getRealTimePaymentStatus);
 
 // ------- SUBSCRIPTION ROUTES -----------
 
@@ -457,6 +492,8 @@ router.route('/gender-percentage').get(genderByPercentage);
 router.route('/getsinglestudent/:id').get(getSingleStudents);
 router.route('/deletstudent/:id').delete(deleteStudents);
 router.route('/updatstudent/:id').put(updateStudents);
+router.route('/stat-students').get(gotStudents);
+router.route('/stat-country').get(gotCountry);
 
 // ------- STUDENT ROUTES ----------- 
 
@@ -633,8 +670,77 @@ router.route('/delete-disciplinary/:id').delete(deleteDisciplinary);
 router.route('/disciplinary-stats').get(getDisciplinaryStats); 
 // ------- DISCIPLINARY ROUTES -----------
 
+// ------- AI ROUTES -----------
+// AI functionality is now handled by the enhanced Telegram bot
+// ------- AI ROUTES -----------
 
 
 
+
+
+// ------- PARENT BOT STATISTICS ROUTES -----------
+router.route('/parent-bot-stats').get(getParentBotStats);
+router.route('/parent-bot-feedback-school/:schoolId').get(getParentBotFeedbackBySchool);
+router.route('/parent-bot-realtime-stats').get(getParentBotRealTimeStats);
+router.route('/parent-bot-notifications').get(getParentBotNotifications);
+// ------- PARENT BOT STATISTICS ROUTES -----------
+
+// ------- PILOT PROGRAM ROUTES -----------
+const pilotProgramController = require('../controller/pilotProgramController');
+
+// Pilot Applications
+router.route('/pilot-applications').post(pilotProgramController.submitPilotApplication);
+router.route('/pilot-applications').get(pilotProgramController.getApplications);
+router.route('/pilot-applications/:id/status').put(pilotProgramController.updateApplicationStatus);
+
+// Pilot Programs
+router.route('/pilot-programs').post(pilotProgramController.createProgram);
+router.route('/pilot-programs').get(pilotProgramController.getPrograms);
+router.route('/pilot-programs/school/:schoolId').get(pilotProgramController.getProgramBySchool);
+router.route('/pilot-programs/school').get(pilotProgramController.getPilotProgramForSchool);
+router.route('/pilot-programs/:id/status').put(pilotProgramController.updateProgramStatus);
+
+// Pilot Payments
+router.route('/pilot-programs/:programId/payments').get(pilotProgramController.getProgramPayments);
+router.route('/pilot-payments/:id/status').put(pilotProgramController.updatePaymentStatus);
+router.route('/pilot-payments').post(pilotProgramController.submitPilotPayment);
+
+// Pilot Milestones
+router.route('/pilot-programs/:programId/milestones').get(pilotProgramController.getProgramMilestones);
+router.route('/pilot-milestones/:id').put(pilotProgramController.updateMilestone);
+
+// ------- PILOT PROGRAM ROUTES -----------
+
+// ------- REFERRAL SYSTEM ROUTES -----------
+// Create referral code for a school
+router.route('/referral/create-code/:schoolId').post(createReferralCode);
+
+// Get referral code for a school
+router.route('/referral/get-code/:schoolId').get(getReferralCode);
+
+// Validate referral code
+router.route('/referral/validate-code').post(validateReferralCode);
+
+// Track referral usage
+router.route('/referral/track-usage').post(trackReferralUsage);
+
+// Get referral analytics for a school
+router.route('/referral/analytics/:schoolId').get(getReferralAnalytics);
+
+// Get all referral analytics (super admin)
+router.route('/referral/analytics').get(getAllReferralAnalytics);
+
+// Get referral tracking records
+router.route('/referral/tracking').get(getReferralTracking);
+
+// Apply referral discount
+router.route('/referral/apply-discount').post(applyReferralDiscount);
+
+// Get referral settings
+router.route('/referral/settings').get(getReferralSettings);
+
+// Update referral settings
+router.route('/referral/settings').put(updateReferralSettings);
+// ------- REFERRAL SYSTEM ROUTES -----------
 
 module.exports = router;

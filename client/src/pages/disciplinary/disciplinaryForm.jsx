@@ -180,7 +180,7 @@ const DisciplinaryForm = ({ isOpen, onClose, loading, fetchData }) => {
                 <option value="Property Damage">Property Damage</option>
                 <option value="Substance Abuse">Substance Abuse</option>
                 <option value="Truancy">Truancy</option>
-                <option value="Other">Other</option>
+                <option value="other">other</option>
               </FormSelect>
 
               <FormSelect
@@ -190,10 +190,10 @@ const DisciplinaryForm = ({ isOpen, onClose, loading, fetchData }) => {
                 onChange={handleChange}
                 required
               >
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-                <option value="Critical">Critical</option>
+                <option value="low">low</option>
+                <option value="medium">medium</option>
+                <option value="high">high</option>
+                <option value="critical">critical</option>
               </FormSelect>
 
               <FormInput
@@ -212,10 +212,10 @@ const DisciplinaryForm = ({ isOpen, onClose, loading, fetchData }) => {
                 onChange={handleChange}
                 required
               >
-                <option value="Pending">Pending</option>
-                <option value="Under Investigation">Under Investigation</option>
-                <option value="Resolved">Resolved</option>
-                <option value="Closed">Closed</option>
+                <option value="pending">pending</option>
+                <option value="under investigation">under investigation</option>
+                <option value="resolved">resolved</option>
+                <option value="closed">closed</option>
               </FormSelect>
             </div>
 
@@ -288,7 +288,7 @@ const DisciplinaryForm = ({ isOpen, onClose, loading, fetchData }) => {
                   className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                 />
                 <label htmlFor="parentNotified" className="text-sm font-medium text-gray-700">
-                  Parent/Guardian Notified
+                  parent/Guardian Notified
                 </label>
               </div>
 

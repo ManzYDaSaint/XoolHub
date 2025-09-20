@@ -105,15 +105,20 @@ const Navbar = () => {
                 <Link
                   to={link.to}
                   onClick={(e) => handleNavClick(e, link.to)}
-                  className={`relative text-gray-700 hover:text-blue-700 transition-all duration-300 text-md font-medium group ${
-                    location.pathname === link.to ? "text-blue-700 font-semibold" : ""
+                  className={`relative transition-all duration-300 text-md font-medium group ${
+                    link.highlight 
+                      ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 rounded-full hover:shadow-lg hover:scale-105" 
+                      : `text-gray-700 hover:text-blue-700 ${location.pathname === link.to ? "text-blue-700 font-semibold" : ""}`
                   }`}
                 >
+                  {link.highlight && <Sparkles className="inline h-4 w-4 mr-1" />}
                   {link.label}
-                  <motion.div
-                    className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"
-                    whileHover={{ width: "100%" }}
-                  />
+                  {!link.highlight && (
+                    <motion.div
+                      className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 group-hover:w-full transition-all duration-300"
+                      whileHover={{ width: "100%" }}
+                    />
+                  )}
                 </Link>
               </motion.li>
             ))}
@@ -148,12 +153,12 @@ const Navbar = () => {
                   Login
                 </Link>
                 <Link
-                  to="/register"
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 rounded-full px-6 py-3 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center space-x-2"
+                  to="/pilot-program"
+                  className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-full px-6 py-3 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 flex items-center space-x-2"
                 >
                   <Sparkles className="h-4 w-4" />
-                  <span>Start Free Trial</span>
-                </Link>
+                  <span>Pilot Program</span>
+                </Link> 
               </motion.div>
             )}
           </div>
@@ -232,11 +237,14 @@ const Navbar = () => {
                 >
                   <Link
                     to={link.to}
-                    className={`block px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 font-medium ${
-                      location.pathname === link.to ? "text-blue-600 bg-blue-50" : ""
+                    className={`block px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
+                      link.highlight 
+                        ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:shadow-lg" 
+                        : `text-gray-700 hover:text-blue-600 hover:bg-blue-50 ${location.pathname === link.to ? "text-blue-600 bg-blue-50" : ""}`
                     }`}
                     onClick={() => setMenuOpen(false)}
                   >
+                    {link.highlight && <Sparkles className="inline h-4 w-4 mr-2" />}
                     {link.label}
                   </Link>
                 </motion.div>
@@ -250,11 +258,11 @@ const Navbar = () => {
                   transition={{ duration: 0.3, delay: 0.4 }}
                 >
                   <Link
-                    to="/register"
-                    className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white text-center py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                    to="/pilot-program"
+                    className="block w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white text-center py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
                     onClick={() => setMenuOpen(false)}
                   >
-                    Start Free Trial
+                    Pilot Program
                   </Link>
                 </motion.div>
               )}

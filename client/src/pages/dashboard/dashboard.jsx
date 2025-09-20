@@ -102,7 +102,7 @@ const AdminDashboard = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" />
                     </svg>
                   </div>
-                  <h4 className="text-xl font-bold text-gray-900">Collected Fees Vs Pending</h4>
+                  <h4 className="text-xl font-bold text-gray-900">Collected Fees Vs pending</h4>
                 </div>
                 <PieChartComponent />
               </div>

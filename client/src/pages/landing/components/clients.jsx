@@ -1,26 +1,96 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import { motion } from 'framer-motion';
-import { Building2, Users, Award, Globe, Shield } from 'lucide-react';
+import { Building2, Users, Award, Globe, Shield, Loader2 } from 'lucide-react';
 import Logo from '../schools/logo.png';
-
-// Sample data for schools with enhanced information
-const sampleSchools = [
-  { logo: Logo, name: "St. Mary's Academy", type: "Private School", students: "500+" },
-  { logo: Logo, name: "Lincoln High School", type: "Public School", students: "800+" },
-  { logo: Logo, name: "International Academy", type: "International School", students: "300+" },
-  { logo: Logo, name: "Tech Prep Institute", type: "Vocational School", students: "400+" },
-  { logo: Logo, name: "Community College", type: "Higher Education", students: "1200+" },
-  { logo: Logo, name: "Elementary Plus", type: "Elementary School", students: "250+" },
-  { logo: Logo, name: "STEM Academy", type: "Specialized School", students: "350+" },
-  { logo: Logo, name: "Arts & Sciences", type: "Arts School", students: "200+" },
-  { logo: Logo, name: "Business Institute", type: "Business School", students: "600+" },
-  { logo: Logo, name: "Medical Academy", type: "Medical School", students: "450+" },
-  { logo: Logo, name: "Engineering College", type: "Engineering School", students: "700+" },
-  { logo: Logo, name: "Liberal Arts", type: "Liberal Arts College", students: "550+" },
-];
+import apiServices from '../../../services/apiServices';
 
 const Schools = () => {
+  const [schools, setSchools] = useState([]);
+  const [students, setStudents] = useState([]);
+  const [country, setCountry] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState({
+    totalSchools: 0,
+    totalStudents: 0,
+    totalCountries: 0
+  });
+
+  useEffect(() => {
+    const fetchSchools = async () => {
+      try {
+        setLoading(true);
+        const response = await apiServices.getXuls();
+        
+        if (response.data.success) {
+          const schoolsData = response.data.school;
+          setSchools(schoolsData);
+          
+          // Calculate stats from real data
+          const totalSchools = schoolsData.length;
+          
+          setStats({
+            totalSchools,
+          });
+        } else {
+          setError('failed to fetch schools data');
+        }
+      } catch (err) {
+        console.error('Error fetching schools:', err);
+        setError('Error loading schools data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSchools();
+  }, []);
+
+  // Fetch Students
+  useEffect(() => {
+    const fetchStudents = async () => {
+      try {
+        const response = await apiServices.statStudents();
+        
+        if (response.data.success) {
+          const studentsData = response.data.gotter;
+          setStudents(studentsData?.ount || 0);
+        } else {
+          setError('failed to fetch students data');
+        }
+      } catch (err) {
+        console.error('Error fetching students:', err);
+        setError('Error loading students data');
+      }
+    };
+
+    fetchStudents();
+  }, []);
+
+  console.log(students)
+
+
+  useEffect(() => {
+    const fetchCountries = async () => {
+      try {
+        const response = await apiServices.statCountry();
+        
+        if (response.data.success) {
+          const cuntData = response.data.cott;
+          setCountry(cuntData.cunt || 0);
+        } else {
+          setError('failed to fetch countries data');
+        }
+      } catch (err) {
+        console.error('Error fetching countries:', err);
+        setError('Error loading countries data');
+      }
+    };
+
+    fetchCountries();
+  }, []);
+
   const settings = {
     dots: false,
     infinite: true,
@@ -31,28 +101,56 @@ const Schools = () => {
     autoplaySpeed: 0,
     cssEase: "linear",
     arrows: false,
+    vertical: false,
+    centerMode: false,
+    variableWidth: false,
+    adaptiveHeight: true,
+    swipeToSlide: true,
+    touchMove: true,
     responsive: [
       {
         breakpoint: 1200,
-        settings: { slidesToShow: 5 }
+        settings: { slidesToShow: 5, adaptiveHeight: true }
       },
       {
         breakpoint: 900,
-        settings: { slidesToShow: 4 }
+        settings: { slidesToShow: 4, adaptiveHeight: true }
       },
       {
         breakpoint: 600,
-        settings: { slidesToShow: 3 }
+        settings: { slidesToShow: 3, adaptiveHeight: true }
       },
       {
         breakpoint: 400,
-        settings: { slidesToShow: 2 }
+        settings: { slidesToShow: 2, adaptiveHeight: true }
       },
     ],
   };
 
   return (
     <section className="py-20 relative overflow-hidden">
+      {/* Custom styles for slider */}
+      <style jsx>{`
+        .schools-slider .slick-track {
+          display: flex !important;
+          align-items: stretch;
+        }
+        .schools-slider .slick-slide {
+          height: auto;
+          display: flex !important;
+        }
+        .schools-slider .slick-slide > div {
+          height: 100%;
+          width: 100%;
+        }
+        .schools-slider .slick-list {
+          overflow: hidden;
+        }
+        .schools-slider .slick-slide.slick-active {
+          display: flex !important;
+        }
+      `}</style>
+      
       {/* Background decorative elements */}
       <div className="absolute inset-0">
         <div className="absolute top-10 left-20 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
@@ -84,7 +182,16 @@ const Schools = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
             >
-              Trusted By Over {sampleSchools.length}+ Schools
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="h-8 w-8 animate-spin mr-3" />
+                  Loading Schools...
+                </div>
+              ) : error ? (
+                "Trusted By Schools Worldwide"
+              ) : (
+                `Trusted By ${stats.totalSchools}+ Schools`
+              )}
             </motion.h2>
 
             <motion.p
@@ -105,9 +212,31 @@ const Schools = () => {
             transition={{ duration: 0.8, delay: 0.6 }}
           >
             {[
-              { icon: Building2, label: "Schools", value: "500+", color: "from-blue-500 to-indigo-600" },
-              { icon: Users, label: "Students", value: "50K+", color: "from-purple-500 to-pink-600" },
-              { icon: Award, label: "Countries", value: "25+", color: "from-green-500 to-emerald-600" }
+              { 
+                icon: Building2, 
+                label: "Schools", 
+                value: loading ? "..." : error ? "500+" : `${stats.totalSchools}+`, 
+                color: "from-blue-500 to-indigo-600" 
+              },
+              { 
+                icon: Users, 
+                label: "Students", 
+                value: loading ? "..." : error ? "50K+" : (() => {
+                  const studentCount = Number(students) || 0;
+                  if (studentCount >= 1000) {
+                    return `${Math.floor(studentCount / 1000)}K+`;
+                  } else {
+                    return `${studentCount}+`;
+                  }
+                })(), 
+                color: "from-purple-500 to-pink-600" 
+              },
+              { 
+                icon: Award, 
+                label: "Countries", 
+                value: loading ? "..." : error ? "25+" : `${country || 0}+`, 
+                color: "from-green-500 to-emerald-600" 
+              }
             ].map((stat, index) => (
               <motion.div
                 key={index}
@@ -142,30 +271,71 @@ const Schools = () => {
               }}
             />
 
-            <Slider {...settings} className="schools-slider">
-              {sampleSchools.map((school, index) => (
-                <motion.div
-                  key={index}
-                  className="px-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                >
-                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/30 hover:shadow-xl transition-all duration-300 group">
-                    <div className="flex flex-col items-center text-center space-y-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-blue-100 to-purple-100 rounded-2xl flex items-center justify-center p-3 group-hover:scale-110 transition-transform duration-300">
-                        <img src={school.logo} className="w-full h-full object-contain" alt={school.name} />
-                      </div>
-                      <div>
-                        <h4 className="font-semibold text-gray-900 text-sm mb-1">{school.name}</h4>
-                        <p className="text-xs text-gray-600 mb-1">{school.type}</p>
-                        <p className="text-xs text-blue-600 font-medium">{school.students} students</p>
-                      </div>
+            {loading ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-blue-600" />
+                  <p className="text-gray-600">Loading schools...</p>
+                </div>
+              </div>
+            ) : error ? (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <p className="text-gray-600 mb-4">Unable to load schools data</p>
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            ) : schools.length > 0 ? (
+              <div className="w-full">
+                <div className="mb-4 text-sm text-gray-600">
+                  Showing {schools.length} schools
+                </div>
+                <Slider {...settings} className="schools-slider">
+                  {schools.map((school, index) => (
+                    <div key={school.id || index} className="px-3">
+                      <motion.div
+                        className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 shadow-lg border border-white/30 hover:shadow-xl transition-all duration-300 group h-full"
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.6, delay: index * 0.1 }}
+                      >
+                        <div className="flex flex-col items-center text-center space-y-3 h-full">
+                          <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-purple-100 rounded-xl flex items-center justify-center p-2 group-hover:scale-110 transition-transform duration-300">
+                            <img 
+                              src={school.logo || Logo} 
+                              className="w-full h-full object-contain" 
+                              alt={school.name || 'School'} 
+                            />
+                          </div>
+                          <div className="flex-1 flex flex-col justify-center">
+                            <h4 className="font-semibold text-gray-900 text-xs mb-1 line-clamp-2">
+                              {school.name || 'School Name'}
+                            </h4>
+                            <p className="text-xs text-gray-600 mb-1 line-clamp-1">
+                              {school.type || 'Educational Institution'}
+                            </p>
+                            <p className="text-xs text-blue-600 font-medium">
+                              {school.country || 'Global'}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
                     </div>
-                  </div>
-                </motion.div>
-              ))}
-            </Slider>
+                  ))}
+                </Slider>
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-20">
+                <div className="text-center">
+                  <p className="text-gray-600">No schools data available</p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Bottom CTA */}

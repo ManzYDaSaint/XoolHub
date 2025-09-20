@@ -30,7 +30,7 @@ import CountUp from "react-countup";
 //     category: "Supplies",
 //     description: "Classroom materials",
 //     amount: 250.0,
-//     status: "Approved",
+//     status: "approved",
 //   },
 //   {
 //     id: 2,
@@ -38,7 +38,7 @@ import CountUp from "react-countup";
 //     category: "Equipment",
 //     description: "Projector repair",
 //     amount: 175.5,
-//     status: "Pending",
+//     status: "pending",
 //   },
 //   {
 //     id: 3,
@@ -46,7 +46,7 @@ import CountUp from "react-countup";
 //     category: "Transportation",
 //     description: "Field trip buses",
 //     amount: 450.0,
-//     status: "Approved",
+//     status: "approved",
 //   },
 //   {
 //     id: 4,
@@ -54,7 +54,7 @@ import CountUp from "react-countup";
 //     category: "Utilities",
 //     description: "Electricity bill",
 //     amount: 320.75,
-//     status: "Approved",
+//     status: "approved",
 //   },
 //   {
 //     id: 5,
@@ -62,7 +62,7 @@ import CountUp from "react-countup";
 //     category: "Maintenance",
 //     description: "Plumbing repairs",
 //     amount: 180.25,
-//     status: "Rejected",
+//     status: "rejected",
 //   },
 // ];
 
@@ -95,7 +95,7 @@ const ExpensesPage = () => {
       color: "bg-purple-500",
     },
     {
-      title: "Pending Approvals",
+      title: "pending Approvals",
       value: count,
       icon: <Calendar className="h-5 w-5" />,
       trend: "0",
@@ -195,9 +195,9 @@ const ExpensesPage = () => {
         status: (
           <span
             className={`inline-flex rounded-md px-2 py-1 text-xs font-semibold leading-5 ${
-              item.status === "Approved"
+              item.status === "approved"
                 ? "bg-green-100 text-green-800"
-                : item.status === "Pending"
+                : item.status === "pending"
                 ? "bg-yellow-100 text-yellow-800"
                 : "bg-red-100 text-red-800"
             }`}
@@ -207,7 +207,7 @@ const ExpensesPage = () => {
         ),
         action: (
           <div>
-            {item.status === "Approved" ? (
+            {item.status === "approved" ? (
               ""
             ) : (
               <span>
@@ -456,7 +456,7 @@ const ExpensesPage = () => {
                           <option value="transportation">Transportation</option>
                           <option value="utilities">Utilities</option>
                           <option value="maintenance">Maintenance</option>
-                          <option value="other">Other</option>
+                          <option value="other">other</option>
                         </select>
                       </div>
 

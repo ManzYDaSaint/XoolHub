@@ -87,7 +87,7 @@ const TeacherProfile = () => {
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-800 bg-clip-text text-transparent">
-                      Teacher Profile
+                      teacher Profile
                     </h1>
                     <p className="text-gray-600 font-medium">
                       View and manage teacher information

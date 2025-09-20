@@ -11,7 +11,7 @@ const PrintComp = forwardRef(
       ct,
       subjectInfo,
       rank,
-      counter,
+      counter, 
       pos,
       teacher,
       remarks,
@@ -23,64 +23,57 @@ const PrintComp = forwardRef(
     const generatePdf = () => {
       const doc = new jsPDF();
 
-      // Modern Header with Gradient-like Effect
-      doc.setFillColor(59, 130, 246); // Blue gradient start
-      doc.rect(0, 0, 210, 50, 'F');
-      
-      // Add School Logo with modern styling
+      // Clean Header - No Background
+      // Add School Logo with minimal styling
       if (school.logo) {
-        doc.addImage(school.logo, "JPEG", 20, 15, 25, 25);
+        doc.addImage(school.logo, "JPEG", 15, 8, 20, 20);
       }
 
-      // Modern School Name with better typography
-      doc.setTextColor(255, 255, 255); // White text
-      doc.setFontSize(18);
+      // Clean School Name
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(16);
       doc.setFont("helvetica", "bold");
-      doc.text(school.name || "", 105, 25, { align: "center" });
+      doc.text(school.name || "", 105, 18, { align: "center" });
 
-      doc.setFontSize(10);
+      doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
-      doc.text(school.address || "", 105, 32, { align: "center" });
-      doc.text(school.contact || "", 105, 37, { align: "center" });
-      doc.text(school.email || "", 105, 42, { align: "center" });
+      doc.setTextColor(75, 85, 99);
+      doc.text(school.address || "", 105, 24, { align: "center" });
+      doc.text(school.contact || "", 105, 28, { align: "center" });
 
-      // Modern Report Title with accent
-      doc.setTextColor(59, 130, 246); // Blue text
-      doc.setFontSize(14);
+      // Minimal Report Title
+      doc.setTextColor(0, 0, 0);
+      doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
       doc.text(
-        `${student.year || ""} ${student.term || ""} ${student.exam || ""} Report Card`,
+        `${student.year || ""} ${student.term || ""} ${student.exam || ""} Report`,
         105,
-        55,
+        35,
         { align: "center" }
       );
 
-      // Modern Student Info Cards
-      doc.setTextColor(0, 0, 0); // Black text
-      
-      // Student Name Card
-      doc.setFillColor(248, 250, 252); // Light gray background
-      doc.roundedRect(20, 65, 85, 20, 3, 3, 'F');
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(75, 85, 99); // Gray text
-      doc.text("STUDENT NAME", 25, 72);
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "bold");
+      // Clean Student Info Section
       doc.setTextColor(0, 0, 0);
-      doc.text(student.studentname || "", 25, 78);
-
-      // Class Information Card
-      doc.setFillColor(239, 246, 255); // Light blue background
-      doc.roundedRect(110, 65, 85, 20, 3, 3, 'F');
-      doc.setFontSize(9);
+      
+      // Student Name - Compact
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(75, 85, 99);
-      doc.text("CLASS", 115, 72);
-      doc.setFontSize(11);
+      doc.text("STUDENT:", 20, 45);
+      doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
       doc.setTextColor(0, 0, 0);
-      doc.text(student.class || "", 115, 78);
+      doc.text(student.studentname || "", 50, 45);
+
+      // Class Information - Compact
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(75, 85, 99);
+      doc.text("CLASS:", 120, 45);
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text(student.class || "", 145, 45);
 
       // Table Header and Rows
       const tableColumns = [
@@ -90,7 +83,7 @@ const PrintComp = forwardRef(
         "Grade",
         "Position",
         "Remarks",
-        "Teacher",
+        "teacher",
       ];
       const tableRows = subjectInfo.map((item, index) => {
         const matchingRank = pos
@@ -113,133 +106,128 @@ const PrintComp = forwardRef(
         ];
       });
 
-      // Modern Table with Enhanced Styling
-      doc.setFontSize(10);
+      // Clean Table with No Background Colors
+      doc.setFontSize(9);
       doc.autoTable({
-        startY: 95,
+        startY: 52,
         head: [tableColumns],
         body: tableRows,
-        theme: "striped", 
+        theme: "grid", 
         headStyles: { 
-          fillColor: [59, 130, 246], 
-          textColor: [255, 255, 255], 
+          fillColor: [255, 255, 255], 
+          textColor: [0, 0, 0], 
           fontStyle: "bold",
-          fontSize: 10,
-          halign: "center"
+          fontSize: 9,
+          halign: "center",
+          cellPadding: 2
         },
         alternateRowStyles: {
-          fillColor: [248, 250, 252]
+          fillColor: [255, 255, 255]
         },
         styles: {
-          fontSize: 9,
-          cellPadding: 4,
+          fontSize: 8,
+          cellPadding: 2,
           font: "helvetica",
           fontStyle: "normal",
           halign: "center",
           valign: "middle",
-          lineColor: [229, 231, 235],
+          lineColor: [0, 0, 0],
           lineWidth: 0.5
         },
         columnStyles: {
-          0: { halign: "center", cellWidth: 15 }, // #
-          1: { halign: "left", cellWidth: 40 },   // Subject
-          2: { halign: "center", cellWidth: 20 }, // Marks
-          3: { halign: "center", cellWidth: 20 }, // Grade
-          4: { halign: "center", cellWidth: 25 }, // Position
-          5: { halign: "left", cellWidth: 35 },   // Remarks
-          6: { halign: "left", cellWidth: 35 }    // Teacher
+          0: { halign: "center", cellWidth: 12 }, // #
+          1: { halign: "left", cellWidth: 45 },   // Subject
+          2: { halign: "center", cellWidth: 18 }, // Marks
+          3: { halign: "center", cellWidth: 18 }, // Grade
+          4: { halign: "center", cellWidth: 22 }, // Position
+          5: { halign: "left", cellWidth: 40 },   // Remarks
+          6: { halign: "left", cellWidth: 35 }    // teacher
         }
       });
 
-      // Modern Summary Cards
-      const Y = doc.lastAutoTable.finalY + 10;
+      // Compact Summary Section
+      const Y = doc.lastAutoTable.finalY + 8;
       
-      // Aggregate Card
-      doc.setFillColor(34, 197, 94); // Green background
-      doc.roundedRect(20, Y, 85, 25, 5, 5, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(9);
+      // Aggregate - Inline
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
-      doc.text("AGGREGATE SCORE", 25, Y + 8);
-      doc.setFontSize(16);
-      doc.setFont("helvetica", "bold");
-      doc.text(`${student.aggregate || ""}`, 25, Y + 18);
-
-      // Position Card
-      doc.setFillColor(168, 85, 247); // Purple background
-      doc.roundedRect(110, Y, 85, 25, 5, 5, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(9);
-      doc.setFont("helvetica", "bold");
-      doc.text("CLASS POSITION", 115, Y + 8);
+      doc.setTextColor(75, 85, 99);
+      doc.text("AGGREGATE:", 20, Y);
       doc.setFontSize(12);
       doc.setFont("helvetica", "bold");
-      doc.text(`${rank || ""} of ${counter || ""}`, 115, Y + 18);
-
-      // Teacher's Remarks Section
-      const remarksY = Y + 35;
       doc.setTextColor(0, 0, 0);
-      doc.setFillColor(254, 243, 199); // Yellow background
-      doc.roundedRect(20, remarksY, 170, 20, 5, 5, 'F');
-      doc.setFontSize(10);
+      doc.text(`${student.aggregate || ""}`, 60, Y);
+
+      // Position - Inline
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
-      doc.text("TEACHER'S REMARKS", 25, remarksY + 8);
+      doc.setTextColor(75, 85, 99);
+      doc.text("POSITION:", 120, Y);
+      doc.setFontSize(12);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${rank || ""} of ${counter || ""}`, 160, Y);
+
+      // Compact Remarks Section
+      const remarksY = Y + 12;
+      doc.setFontSize(8);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(75, 85, 99);
+      doc.text("REMARKS:", 20, remarksY);
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text(`${remarks || "No remarks available"}`, 25, remarksY + 15);
+      doc.setTextColor(0, 0, 0);
+      doc.text(`${remarks || "No remarks available"}`, 60, remarksY);
 
-      // Class Teachers Section
-      const teachersY = remarksY + 30;
+      // Compact Teachers Section
+      const teachersY = remarksY + 8;
       const teachers = ct.map((teacher) => teacher.name).join(", ");
-      doc.setFillColor(219, 234, 254); // Light blue background
-      doc.roundedRect(20, teachersY, 170, 20, 5, 5, 'F');
-      doc.setFontSize(10);
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
-      doc.text("CLASS TEACHER(S)", 25, teachersY + 8);
+      doc.setTextColor(75, 85, 99);
+      doc.text("TEACHER(S):", 20, teachersY);
       doc.setFontSize(9);
       doc.setFont("helvetica", "normal");
-      doc.text(`${teachers || "Not assigned"}`, 25, teachersY + 15);
-
-      // Modern Footer with Signature
-      const finalY = teachersY + 30;
-      doc.setFillColor(243, 244, 246); // Light gray background
-      doc.roundedRect(20, finalY, 170, 25, 5, 5, 'F');
       doc.setTextColor(0, 0, 0);
-      doc.setFontSize(10);
+      doc.text(`${teachers || "Not assigned"}`, 70, teachersY);
+
+      // Minimal Signature Section
+      const finalY = teachersY + 12;
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
-      doc.text("HEAD TEACHER SIGNATURE", 25, finalY + 8);
+      doc.setTextColor(75, 85, 99);
+      doc.text("HEAD TEACHER:", 20, finalY);
       doc.setFontSize(8);
       doc.setFont("helvetica", "normal");
-      doc.text("_________________________", 25, finalY + 18);
+      doc.setTextColor(0, 0, 0);
+      doc.text("_________________________", 80, finalY);
 
-      // Modern Grading System MSCE
-      const Grade = finalY + 35;
-      doc.setFillColor(59, 130, 246); // Blue header
-      doc.roundedRect(15, Grade, 180, 15, 5, 5, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(11);
+      // Clean Grading System MSCE
+      const Grade = finalY + 15;
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
-      doc.text("MSCE GRADING SYSTEM", 105, Grade + 10, { align: "center" });
+      doc.setTextColor(0, 0, 0);
+      doc.text("MSCE GRADING SYSTEM", 20, Grade);
 
       doc.setTextColor(0, 0, 0);
-      const gradesRow = grade.map((item) => `${item.roof} - ${item.floor}`);
+      const gradesRow = grade.map((item) => `${item.roof}-${item.floor}`);
       const totalWidth = 180;
       const columnWidth = totalWidth / gradesRow.length;
 
       doc.autoTable({
         body: [gradesRow],
-        startY: Grade + 20,
-        theme: "striped",
+        startY: Grade + 5,
+        theme: "grid",
         tableWidth: totalWidth,
-        headStyles: { fillColor: [59, 130, 246], textColor: [255, 255, 255] },
+        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
         styles: {
           halign: "center",
           valign: "middle",
-          fontSize: 9,
+          fontSize: 8,
           font: "helvetica",
           fontStyle: "bold",
-          cellPadding: 3,
-          lineColor: [229, 231, 235]
+          cellPadding: 1,
+          lineColor: [0, 0, 0]
         },
         columnStyles: gradesRow.reduce((styles, _, index) => {
           styles[index] = { cellWidth: columnWidth };
@@ -247,22 +235,22 @@ const PrintComp = forwardRef(
         }, {}),
       });
 
-      // Modern Grade Letters MSCE
+      // Clean Grade Letters MSCE
       const Rem = grade.map((item) => `${item.grade}`);
       const remWidth = totalWidth / Rem.length;
       doc.autoTable({
         body: [Rem],
-        startY: Grade + 30,
-        theme: "striped",
+        startY: Grade + 12,
+        theme: "grid",
         tableWidth: totalWidth,
         styles: {
           halign: "center",
           valign: "middle",
-          fontSize: 9,
+          fontSize: 8,
           font: "helvetica",
           fontStyle: "bold",
-          cellPadding: 3,
-          lineColor: [229, 231, 235]
+          cellPadding: 1,
+          lineColor: [0, 0, 0]
         },
         columnStyles: Rem.reduce((styles, _, index) => {
           styles[index] = { cellWidth: remWidth };
@@ -270,34 +258,32 @@ const PrintComp = forwardRef(
         }, {}),
       });
 
-      // Modern JCE GRADING SYSTEM
-      const JGrade = doc.lastAutoTable.finalY + 15;
-      doc.setFillColor(168, 85, 247); // Purple header
-      doc.roundedRect(15, JGrade, 180, 15, 5, 5, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(11);
+      // Clean JCE GRADING SYSTEM
+      const JGrade = doc.lastAutoTable.finalY + 8;
+      doc.setFontSize(8);
       doc.setFont("helvetica", "bold");
-      doc.text("JCE GRADING SYSTEM", 105, JGrade + 10, { align: "center" });
+      doc.setTextColor(0, 0, 0);
+      doc.text("JCE GRADING SYSTEM", 20, JGrade);
 
       doc.setTextColor(0, 0, 0);
-      const JRow = Jgrade.map((item) => `${item.roof} - ${item.floor}`);
+      const JRow = Jgrade.map((item) => `${item.roof}-${item.floor}`);
       const JWidth = 180;
       const CWidth = JWidth / JRow.length;
 
       doc.autoTable({
         body: [JRow],
-        startY: JGrade + 20,
-        theme: "striped",
+        startY: JGrade + 5,
+        theme: "grid",
         tableWidth: JWidth,
-        headStyles: { fillColor: [168, 85, 247], textColor: [255, 255, 255] },
+        headStyles: { fillColor: [255, 255, 255], textColor: [0, 0, 0] },
         styles: {
           halign: "center",
           valign: "middle",
-          fontSize: 9,
+          fontSize: 8,
           font: "helvetica",
           fontStyle: "bold",
-          cellPadding: 3,
-          lineColor: [229, 231, 235]
+          cellPadding: 1,
+          lineColor: [0, 0, 0]
         },
         columnStyles: JRow.reduce((styles, _, index) => {
           styles[index] = { cellWidth: CWidth };
@@ -310,17 +296,17 @@ const PrintComp = forwardRef(
 
       doc.autoTable({
         body: [JRem],
-        startY: JGrade + 30,
-        theme: "striped",
+        startY: JGrade + 12,
+        theme: "grid",
         tableWidth: JWidth,
         styles: {
           halign: "center",
           valign: "middle",
-          fontSize: 9,
+          fontSize: 8,
           font: "helvetica",
           fontStyle: "bold",
-          cellPadding: 3,
-          lineColor: [229, 231, 235]
+          cellPadding: 1,
+          lineColor: [0, 0, 0]
         },
         columnStyles: JRem.reduce((styles, _, index) => {
           styles[index] = { cellWidth: JremWidth };
@@ -328,14 +314,12 @@ const PrintComp = forwardRef(
         }, {}),
       });
 
-      // Modern Footer with School Slogan
-      const slogan = doc.lastAutoTable.finalY + 15;
-      doc.setFillColor(59, 130, 246); // Blue background
-      doc.roundedRect(15, slogan, 180, 20, 5, 5, 'F');
-      doc.setTextColor(255, 255, 255);
-      doc.setFontSize(10);
+      // Minimal Footer
+      const slogan = doc.lastAutoTable.finalY + 8;
+      doc.setFontSize(8);
       doc.setFont("helvetica", "italic");
-      doc.text(`"${school.slogan || "Excellence in Education"}"`, 105, slogan + 12, { align: "center" });
+      doc.setTextColor(75, 85, 99);
+      doc.text(`"${school.slogan || "Excellence in Education"}"`, 105, slogan, { align: "center" });
 
       // Save or Preview PDF
       doc.save(`${student.studentname || "report"}.pdf`);

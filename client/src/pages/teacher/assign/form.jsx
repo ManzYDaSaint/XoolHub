@@ -56,7 +56,7 @@ const AssignForm = ({ fetchData }) => {
     <form onSubmit={onSubmit} autoComplete='off' className='w-1/2 py-4'>
       <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
         <TeacherSelectInput 
-          label={'Teacher'}
+          label={'teacher'}
           handleChange={handleChange}
           name={'teacherid'}
           value={assignTeacherFormData.teacherid}
@@ -74,7 +74,7 @@ const AssignForm = ({ fetchData }) => {
           value={assignTeacherFormData.subjectid}
         />
       </div>
-      <FormButton label={isEditMode ? 'Update Assigned Teacher' : 'Assign Teacher'} id="tyepButton" />
+      <FormButton label={isEditMode ? 'Update Assigned teacher' : 'Assign teacher'} id="tyepButton" />
     </form>
   );
 };

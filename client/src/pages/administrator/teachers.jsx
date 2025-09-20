@@ -25,7 +25,7 @@ const Teachers = () => {
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-emerald-800 to-teal-800 bg-clip-text text-transparent">
-                  Teacher Management
+                  teacher Management
                 </h1>
                 <p className="text-gray-600 font-medium">
                   Manage and oversee teacher information and activities

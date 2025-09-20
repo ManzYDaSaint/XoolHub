@@ -41,6 +41,12 @@ const PlanData = () => {
         sr: index + 1,
         name: item.name,
         price: `MK${item.price}`,
+        pilot_price: item.pilot_enabled ? `MK${item.pilot_price}` : 'N/A',
+        pilot_status: item.pilot_enabled ? (
+          <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Enabled</span>
+        ) : (
+          <span className="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">Disabled</span>
+        ),
         max: item.features,
         actions: (
           <div>
@@ -87,6 +93,13 @@ const PlanData = () => {
         name: res.data.edit.name || "",
         price: res.data.edit.price || "",
         max: res.data.edit.features || "",
+        pilot_price: res.data.edit.pilot_price || "",
+        pilot_discount_percentage: res.data.edit.pilot_discount_percentage || 50.00,
+        pilot_initial_payment_percentage: res.data.edit.pilot_initial_payment_percentage || 33.33,
+        pilot_enabled: res.data.edit.pilot_enabled || false,
+        max_students: res.data.edit.max_students || "",
+        duration_months: res.data.edit.duration_months || 12,
+        is_active: res.data.edit.is_active !== undefined ? res.data.edit.is_active : true,
       })
     );
     dispatch(setIsEditMode(true));

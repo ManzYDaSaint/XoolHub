@@ -60,7 +60,7 @@ const Info = ({setOpen}) => {
                 <div className="classTeacher">
                     <Accessibility size={15} className='classtIcon' />
                     <div className="splitLeft">
-                        <h6>Class Teacher:</h6>
+                        <h6>Class teacher:</h6>
                         <p>{assign.class}</p>
                     </div>
                 </div>

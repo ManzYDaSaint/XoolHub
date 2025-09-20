@@ -70,7 +70,7 @@ const DashPieChart = ({ id }) => {
     fetchData();
   }, [id]);
 
-  const COLORS = ['#0088FE', '#FFBB28', '#FF8042']; // Adding a third color for 'Other'
+  const COLORS = ['#0088FE', '#FFBB28', '#FF8042']; // Adding a third color for 'other'
 
   // Event handler to set active segment
   const onPieEnter = (_, index) => {

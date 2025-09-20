@@ -1,9 +1,78 @@
 const conn = require('../database/mysql.js');
 
+// ------ ------------------------- COONVERSATION BUILDER ------------------------------------------------
+
+const conversationRequest = async (parentId, recipientId, recipientType, studentId, schoolId, message) => {
+  const sql = `INSERT INTO conversation_requests (parent_id, recipient_id, recipient_type, student_id, school_id, message, status, created_at) 
+              VALUES (?, ?, ?, ?, ?, ?, 'pending', NOW())`;
+  const values = [parentId, recipientId, recipientType, studentId, schoolId, message];
+  const [res] = await conn.query(sql, values);
+  return res.insertId;
+} 
+
+const getConversationRequest = async (id) => {
+  const sql = `SELECT * FROM conversation_requests WHERE id = ?`;
+  const values = [id];
+  const [res] = await conn.query(sql, values);
+  return res[0];
+}
+
+const updateConversationRequestStatus = async (id, status) => {
+  const sql = `UPDATE conversation_requests 
+      SET status = ?, updated_at = NOW()
+      WHERE id = ?`;
+  const values = [status, id];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const createConversation = async (requestId, parentId, recipientId, recipientType) => {
+  const sql = `INSERT INTO conversations 
+      (request_id, parent_id, recipient_id, recipient_type, status, created_at)
+      VALUES (?, ?, ?, ?, 'active', NOW())`;
+  const values = [requestId, parentId, recipientId, recipientType];
+  const [res] = await conn.query(sql, values);
+  return res.insertId;
+}
+
+const addConversationMessage = async (conversationId, senderId, senderType, message) => {
+  const sql = `INSERT INTO conversation_messages 
+      (conversation_id, sender_id, sender_type, message, created_at)
+      VALUES (?, ?, ?, ?, NOW())`;
+  const values = [conversationId, senderId, senderType, message];
+  const [res] = await conn.query(sql, values);
+  return res.insertId;
+}
+
+const getConversationMessages = async (conversationId) => {
+  const sql = `SELECT * FROM conversation_messages 
+      WHERE conversation_id = ?
+      ORDER BY created_at ASC`;
+  const values = [conversationId];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+const closeConversation = async (id) => {
+  const sql = `UPDATE conversations 
+      SET status = 'closed', closed_at = NOW()
+      WHERE id = ?`;
+  const values = [id];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
+
+
+
+// ------ ------------------------- COONVERSATION BUILDER ------------------------------------------------
+
+
+
+
 // ------ ------------------------- DISCIPLINARY BUILDER ------------------------------------------------
 
 const checkDisciplinary = async (studentid, schoolid) => {
-  const sql = 'SELECT id FROM students WHERE id = ? AND id IN (SELECT studentid FROM history WHERE schoolid = ? AND status = "Active")';
+  const sql = 'SELECT id FROM students WHERE id = ? AND id IN (SELECT studentid FROM history WHERE schoolid = ? AND status = "active")';
   const values = [studentid, schoolid];
   const [res] = await conn.query(sql, values);
   return res;
@@ -166,19 +235,19 @@ const countAllTeachers = async () => {
 }
 
 const countAllStudents = async () => {
-  const sql = `SELECT COUNT(*) as count FROM history WHERE status = 'Active'`;
+  const sql = `SELECT COUNT(*) as count FROM history WHERE status = 'active'`;
   const [res] = await conn.query(sql); // Changed to async/await
   return res[0];
 }
 
 const countPrivateSchools = async () => {
-  const sql = 'SELECT COUNT(*) as count FROM schools WHERE type = "Private"';
+  const sql = 'SELECT COUNT(*) as count FROM schools WHERE type = "private"';
   const [res] = await conn.query(sql); // Changed to async/await
   return res[0];
 }
 
 const countPublicSchools = async () => {
-  const sql = 'SELECT COUNT(*) as count FROM schools WHERE type = "Public"';
+  const sql = 'SELECT COUNT(*) as count FROM schools WHERE type = "public"';
   const [res] = await conn.query(sql); // Changed to async/await
   return res[0];
 }
@@ -217,7 +286,7 @@ const paymentChart = async (year) => {
 const getSchools = async () => {
   const sql = `SELECT schools.* FROM schools
     INNER JOIN subscriptions ON subscriptions.sid = schools.id
-    WHERE subscriptions.status = 'Active'
+    WHERE subscriptions.status = 'active'
     ORDER BY name ASC`;
   const [res] = await conn.query(sql); // Changed to async/await
   return res;
@@ -236,6 +305,16 @@ const updateOTPStatus = async (status) => {
   const [res] = await conn.query(sql, values); // Changed to async/await
   return res;
 }  
+
+const getSchoolByID = async (id) => {
+  const sql = `SELECT id, name, contact, email
+      FROM schools
+      WHERE id = ?
+      LIMIT 1`;
+  const values = [id];
+  const [res] = await conn.query(sql, values);
+  return res;
+}
 
 // // --------------------------------------- SCHOOL ------------------------------------------------
 
@@ -334,7 +413,7 @@ const OTPGeneration = async(otpCode, otpExpire, email) => {
 };
 
 const OTPVerification = async(email) => {
-  const sql = "UPDATE schools SET status = 'Activated' WHERE email = ?";
+  const sql = "UPDATE schools SET status = 'activated' WHERE email = ?";
   const values = [email];
   const [res] = await conn.query(sql, values);
   return res;
@@ -941,7 +1020,7 @@ const countTeachers = async (sid) => {
 const countMaleTeachers = async (sid) => {
   const query = `SELECT COUNT(*) as count
     FROM teachers 
-    WHERE sid = ? AND gender = 'Male'`;
+    WHERE sid = ? AND gender = 'male'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res[0];
@@ -950,7 +1029,7 @@ const countMaleTeachers = async (sid) => {
 const countFemaleTeachers = async (sid) => {
   const query = `SELECT COUNT(*) as count
     FROM teachers 
-    WHERE sid = ? AND gender = 'Female'`;
+    WHERE sid = ? AND gender = 'female'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res[0];
@@ -1017,7 +1096,7 @@ const deleteAssignTeacher = async (id) => {
 // // --------------------------------------- ASSIGN TEACHER CRUD ------------------------------------------------
 
 // // --------------------------------------- CLASS TEACHER CRUD ------------------------------------------------
-
+ 
 // // Check if object exists
 const checkClassTeacher = async (sid, classid) => {
   const query =
@@ -1054,6 +1133,17 @@ const deleteClassTeacher = async (id) => {
   const [res] = await conn.query(query, value);
   return res;
 };
+
+const getClassTeacherByStudentID = async (studentid) => {
+  const query = `SELECT classteacher.id, teachers.name AS teacher, class.name AS class FROM classteacher
+    INNER JOIN teachers ON teachers.id=classteacher.teacherid
+    INNER JOIN class ON class.id=classteacher.classid
+    INNER JOIN history ON history.classid = classteacher.classid
+    WHERE history.studentid = ? AND history.status = 'active'`;
+  const value = [studentid];
+  const [res] = await conn.query(query, value);
+  return res;
+}
 
 // // --------------------------------------- CLASS TEACHER CRUD ------------------------------------------------
 
@@ -1114,7 +1204,7 @@ const getStudent = async (sid) => {
     INNER JOIN acyear ON acyear.id=history.yearid
     INNER JOIN class ON class.id=history.classid
     INNER JOIN schools ON schools.id=history.schoolid
-    WHERE history.schoolid = ? AND history.status = 'Active'`;
+    WHERE history.schoolid = ? AND history.status = 'active'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -1126,7 +1216,7 @@ const getSingleStudent = async (sid, id) => {
 FROM students s
 INNER JOIN history h ON h.studentid = s.id 
 INNER JOIN class ON class.id = h.classid
-WHERE s.id = ? AND h.schoolid = ? AND h.status = 'Active'`;
+WHERE s.id = ? AND h.schoolid = ? AND h.status = 'active'`;
   const value = [id, sid];
   const [res] = await conn.query(query, value);
   return res;
@@ -1158,7 +1248,7 @@ const updateStudent = async (
 };
 
 const countStudents = async (sid) => {
-  const query = "SELECT COUNT(*) as count FROM history WHERE schoolid = ? AND status = 'Active'";
+  const query = "SELECT COUNT(*) as count FROM history WHERE schoolid = ? AND status = 'active'";
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res[0];
@@ -1168,7 +1258,7 @@ const countMale = async (sid) => {
   const query = `SELECT COUNT(*) as count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
-    WHERE history.schoolid = ? AND status = 'Active' AND s.gender = 'Male'`;
+    WHERE history.schoolid = ? AND status = 'active' AND s.gender = 'male'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res[0];
@@ -1178,7 +1268,7 @@ const countFemale = async (sid) => {
   const query = `SELECT COUNT(*) as count
     FROM history 
     INNER JOIN students s ON s.id = history.studentid
-    WHERE history.schoolid = ? AND status = 'Active' AND s.gender = 'Female'`;
+    WHERE history.schoolid = ? AND status = 'active' AND s.gender = 'female'`;
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res[0];
@@ -1193,7 +1283,7 @@ FROM
     history
 INNER JOIN students s ON s.id = history.studentid
 INNER JOIN class c ON c.id = history.classid
-WHERE history.schoolid = ? AND status = 'Active'
+WHERE history.schoolid = ? AND status = 'active'
 GROUP BY 
     c.name, s.gender
 ORDER BY 
@@ -1210,7 +1300,7 @@ const genderPercentage = async (sid) => {
 FROM 
     history
 INNER JOIN students s ON s.id = history.studentid
-WHERE history.schoolid = ? AND status = 'Active'
+WHERE history.schoolid = ? AND status = 'active'
 GROUP BY 
     s.gender
 ORDER BY 
@@ -1218,6 +1308,24 @@ ORDER BY
   const value = [sid];
   const [res] = await conn.query(query, value);
   return res;
+}
+
+const statStudents = async () => {
+  // Try multiple approaches to count students
+  const sql = `SELECT 
+    (SELECT COUNT(*) FROM history WHERE status = 'active') as history_count,
+    (SELECT COUNT(*) FROM students) as total_students,
+    (SELECT COUNT(DISTINCT studentid) FROM history WHERE status = 'active') as active_students`;
+  const [res] = await conn.query(sql);
+  return res[0]
+}
+
+const statCountry = async () => {
+  const sql = `SELECT COUNT(DISTINCT country) AS cunt
+FROM schools
+WHERE status = 'activated'`;
+const [res] = await conn.query(sql);
+  return res[0]
 }
 
 // // --------------------------------------- STUDENT CRUD ------------------------------------------------
@@ -1558,7 +1666,7 @@ const getSubjectByTeacherID = async (sid, id, classid) => {
 const getStudentForEntry = async (sid, classid) => {
   const query = `SELECT students.id, name FROM students 
   INNER JOIN history ON history.studentid = students.id
-  WHERE history.schoolid = ? AND classid = ? AND status = 'Active'
+  WHERE history.schoolid = ? AND classid = ? AND status = 'active'
   ORDER BY name ASC`;
   const values = [sid, classid];
   const [res] = await conn.query(query, values);
@@ -1696,7 +1804,7 @@ INNER JOIN students ON students.id = history.studentid
 INNER JOIN class ON class.id = classteacher.classid
 WHERE classteacher.sid = ? 
 AND classteacher.teacherid = ? 
-AND history.status = 'Active'`;
+AND history.status = 'active'`;
   const value = [sid, teacherid];
   const [res] = await conn.query(query, value);
   return res;
@@ -1726,11 +1834,11 @@ const dashboardClassTeacher = async (sid, teacherid) => {
 // // --------------------------------------- CHART CRUD ------------------------------------------------
 
 const getStudentByGender = async (sid, classid) => {
-  const query = `SELECT COALESCE(gender, 'Other') as gender, COUNT(*) as count
+  const query = `SELECT COALESCE(gender, 'other') as gender, COUNT(*) as count
     FROM students
     INNER JOIN history h ON h.studentid = students.id
     WHERE classid = ? AND h.schoolid = ?
-    GROUP BY COALESCE(gender, 'Other')`;
+    GROUP BY COALESCE(gender, 'other')`;
   const values = [classid, sid];
   const [res] = await conn.query(query, values);
   return res;
@@ -1815,7 +1923,7 @@ const countStudentByAssign = async (sid, teacherid, classid) => {
     FROM students
     INNER JOIN history ON history.studentid = students.id
     INNER JOIN assignteacher ON assignteacher.classid = history.classid
-    WHERE assignteacher.classid = ? AND assignteacher.teacherid = ? AND history.schoolid = ? AND status = 'Active'`;
+    WHERE assignteacher.classid = ? AND assignteacher.teacherid = ? AND history.schoolid = ? AND status = 'active'`;
   const value = [classid, teacherid, sid];
   const [res] = await conn.query(query, value); // Changed to async/await
   return res[0];
@@ -2101,7 +2209,7 @@ ORDER BY st.name;
 };
 // MSCE
 
-// Class Teacher
+// Class teacher
 const getClassTeacher4Report = async (classid, sid) => {
   const query = `SELECT teachers.name
     FROM classteacher
@@ -2173,7 +2281,7 @@ const getTeacherBySubject = async (subjectid, sid) => {
   const [res] = await conn.query(query, value); // Changed to async/await
   return res; // Adjusted for MySQL
 };
-// Class Teacher
+// Class teacher
 
 const getRemarks = async (denom, sid) => {
   const query = `SELECT * FROM remarks WHERE denom = ? AND sid = ?`;
@@ -2383,9 +2491,9 @@ const deleteEvent = async (id) => {
 
 // // --------------------------------------- SUPER ADMIN CRUD ------------------------------------------------
 
-const insertFeatures = async (name, price, max) => {
-  const query = `INSERT INTO subscription_plans (name, price, features) VALUES (?, ?, ?)`;
-  const value = [name, price, max];
+const insertFeatures = async (name, price, max, pilot_price, pilot_discount_percentage, pilot_initial_payment_percentage, pilot_enabled, max_students, duration_months, is_active) => {
+  const query = `INSERT INTO subscription_plans (name, price, features, pilot_price, pilot_discount_percentage, pilot_initial_payment_percentage, pilot_enabled, max_students, duration_months, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const value = [name, price, max, pilot_price, pilot_discount_percentage, pilot_initial_payment_percentage, pilot_enabled, max_students, duration_months, is_active];
   const [res] = await conn.query(query, value); // Changed to async/await
   return res.affectedRows > 0; // Adjusted for MySQL
 };
@@ -2411,10 +2519,10 @@ const editPlan = async (id) => {
 };
 
 // Updating object
-const updatePlan = async (id, name, price, max, update) => {
+const updatePlan = async (id, name, price, max, pilot_price, pilot_discount_percentage, pilot_initial_payment_percentage, pilot_enabled, max_students, duration_months, is_active, update) => {
   const query =
-    "UPDATE subscription_plans SET name = ?, price = ?, features = ?, created_at = ? WHERE id = ?";
-  const values = [name, price, max, update, id];
+    "UPDATE subscription_plans SET name = ?, price = ?, features = ?, pilot_price = ?, pilot_discount_percentage = ?, pilot_initial_payment_percentage = ?, pilot_enabled = ?, max_students = ?, duration_months = ?, is_active = ?, created_at = ? WHERE id = ?";
+  const values = [name, price, max, pilot_price, pilot_discount_percentage, pilot_initial_payment_percentage, pilot_enabled, max_students, duration_months, is_active, update, id];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res; // Adjusted for MySQL
 };
@@ -2448,13 +2556,13 @@ const addSubscription = async (id, sid, planid, strata, period) => {
   return res;
 }
 const checkSubToCancel = async (sid) => {
-  const query = `SELECT * FROM subscriptions WHERE status = 'Active' AND sid = ?`;
+  const query = `SELECT * FROM subscriptions WHERE status = 'active' AND sid = ?`;
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res[0];
 }
 const cancelSubscription = async (status, sid) => {
-  const query = `UPDATE subscriptions SET status = ? WHERE status = 'Active' AND sid = ?`;
+  const query = `UPDATE subscriptions SET status = ? WHERE status = 'active' AND sid = ?`;
   const values = [status, sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
@@ -2476,7 +2584,7 @@ const addBilling = async (subscriptionid, amount, strata, expiry) => {
 }
 
 const checkSubscription = async (sid) => {
-  const query = `SELECT * FROM subscriptions WHERE sid = ? AND status = 'Active'`;
+  const query = `SELECT * FROM subscriptions WHERE sid = ? AND status = 'active'`;
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
@@ -2485,7 +2593,16 @@ const checkSubscription = async (sid) => {
 const checkSubscriptionStatus = async (sid) => {
   const query = `SELECT b.status, b.expiry FROM billing b
     INNER JOIN subscriptions s ON s.id = b.subscriptionid
-    WHERE s.sid = ? AND b.status = 'Pending'`;
+    WHERE s.sid = ? AND b.status = 'pending'`;
+  const values = [sid];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res[0];
+}
+
+const checkResentSubscriptionStatus = async (sid) => {
+  const query = `SELECT b.status, b.expiry, b.id FROM billing b
+    INNER JOIN subscriptions s ON s.id = b.subscriptionid
+    WHERE s.sid = ? ORDER BY b.created_at DESC LIMIT 1`;
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res[0];
@@ -2499,6 +2616,17 @@ const checkSubsByID = async (sid) => {
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res;
+}
+
+const getSubscriptionByID = async (id) => {
+  const query = `SELECT sp.name AS plan, s.period, s.sid, b.amount
+FROM subscriptions s
+INNER JOIN subscription_plans sp ON sp.id = s.planid
+INNER JOIN billing b ON b.subscriptionid = s.id
+WHERE s.id = ?`;
+  const values = [id];
+  const [res] = await conn.query(query, values); // Changed to async/await
+  return res[0];
 }
 
 const updateSubscriptionStatus = async (status, sid) => {
@@ -2608,11 +2736,93 @@ const getFeedback = async () => {
   return res; // Adjusted for MySQL
 }
 
-// // --------------------------------------- FEEDBACK CRUD ------------------------------------------------
+// // --------------------------------------- PARENT BOT FEEDBACK CRUD ------------------------------------------------
 
+const addParentBotFeedback = async (userId, schoolId, studentId, rating, feedbackType, comment, sessionDuration, featuresUsed) => {
+  const query = `INSERT INTO parent_bot_feedback (user_id, school_id, student_id, rating, feedback_type, comment, session_duration, features_used) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+  const values = [userId, schoolId, studentId, rating, feedbackType, comment, sessionDuration, JSON.stringify(featuresUsed)];
+  const [res] = await conn.query(query, values);
+  return res.affectedRows > 0;
+}
 
+const getParentBotFeedback = async (schoolId, limit = 50) => {
+  let query, values;
+  
+  if (schoolId === null || schoolId === undefined) {
+    // Get all feedback when schoolId is null
+    query = `
+      SELECT pbf.*, s.name as school_name, st.name as student_name
+      FROM parent_bot_feedback pbf
+      LEFT JOIN schools s ON s.id = pbf.school_id
+      LEFT JOIN students st ON st.id = pbf.student_id
+      ORDER BY pbf.created_at DESC
+      LIMIT ?
+    `;
+    values = [limit];
+  } else {
+    // Get feedback for specific school
+    query = `
+      SELECT pbf.*, s.name as school_name, st.name as student_name
+      FROM parent_bot_feedback pbf
+      LEFT JOIN schools s ON s.id = pbf.school_id
+      LEFT JOIN students st ON st.id = pbf.student_id
+      WHERE pbf.school_id = ?
+      ORDER BY pbf.created_at DESC
+      LIMIT ?
+    `;
+    values = [schoolId, limit];
+  }
+  
+  const [res] = await conn.query(query, values);
+  return res;
+}
 
+const getParentBotFeedbackByRating = async (schoolId, rating) => {
+  const query = `
+    SELECT pbf.*, s.name as school_name, st.name as student_name
+    FROM parent_bot_feedback pbf
+    LEFT JOIN schools s ON s.id = pbf.school_id
+    LEFT JOIN students st ON st.id = pbf.student_id
+    WHERE pbf.school_id = ? AND pbf.rating = ?
+    ORDER BY pbf.created_at DESC
+  `;
+  const values = [schoolId, rating];
+  const [res] = await conn.query(query, values);
+  return res;
+}
 
+const getParentBotFeedbackAnalytics = async (schoolId, startDate, endDate) => {
+  const query = `
+    SELECT 
+      COUNT(*) as total_feedback,
+      AVG(rating) as avg_rating,
+      SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as rating_1_count,
+      SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as rating_2_count,
+      SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) as rating_3_count,
+      SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) as rating_4_count,
+      SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as rating_5_count
+    FROM parent_bot_feedback 
+    WHERE school_id = ? 
+    AND created_at BETWEEN ? AND ?
+  `;
+  const values = [schoolId, startDate, endDate];
+  const [res] = await conn.query(query, values);
+  return res[0];
+}
+
+const getParentBotFeedbackByUser = async (userId) => {
+  const query = `
+    SELECT pbf.*, s.name as school_name, st.name as student_name
+    FROM parent_bot_feedback pbf
+    LEFT JOIN schools s ON s.id = pbf.school_id
+    LEFT JOIN students st ON st.id = pbf.student_id
+    WHERE pbf.user_id = ?
+    ORDER BY pbf.created_at DESC
+  `;
+  const values = [userId];
+  const [res] = await conn.query(query, values);
+  return res;
+}
 
 // // --------------------------------------- EXPENSES CRUD ------------------------------------------------
 
@@ -2662,7 +2872,7 @@ const updateExpense = async (id, date, description, category, amount) => {
 
 const sumExpense = async (sid) => {
   const query =
-    "SELECT SUM(amount) AS sam FROM expense WHERE status = 'Approved' AND sid = ?";
+    "SELECT SUM(amount) AS sam FROM expense WHERE status = 'approved' AND sid = ?";
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res[0]; // Adjusted for MySQL
@@ -2670,7 +2880,7 @@ const sumExpense = async (sid) => {
 
 const countExpense = async (sid) => {
   const query =
-    "SELECT COUNT(id) AS conta FROM expense WHERE status = 'Pending' AND sid = ?";
+    "SELECT COUNT(id) AS conta FROM expense WHERE status = 'pending' AND sid = ?";
   const values = [sid];
   const [res] = await conn.query(query, values); // Changed to async/await
   return res[0]; // Adjusted for MySQL
@@ -2681,7 +2891,7 @@ const monthlyAverage = async(sid) => {
     AVG(amount) AS average
 FROM expense
 WHERE sid = ?
-AND status = 'Approved'
+AND status = 'approved'
 AND YEAR(date) = YEAR(CURDATE()) 
 AND MONTH(date) = MONTH(CURDATE());
 
@@ -2740,7 +2950,7 @@ LEFT JOIN
             DATE_FORMAT(created_at, '%Y-%m') AS month, 
             SUM(amount) AS expense
         FROM expense
-        WHERE expense.status = 'Approved' AND expense.sid = ?
+        WHERE expense.status = 'approved' AND expense.sid = ?
         GROUP BY name, month
     ) AS e 
     ON e.month = m.month
@@ -2758,29 +2968,200 @@ ORDER BY m.month`;
 // // --------------------------------------- WHATSAPP API ------------------------------------------------
 
 const getFeeBalance = async(phone) => {
-  const query = `SELECT balance, term.name AS term FROM payment
-    INNER JOIN students ON students.id = payment.studentid
-    INNER JOIN term ON term.id = payment.termid
-    WHERE students.contact = ?`;
+  const query = `SELECT 
+    p.balance, 
+    p.paid,
+    p.status,
+    p.created_at AS payment_date,
+    p.updated_at AS last_updated,
+    t.name AS term,
+    t.start_date AS term_start,
+    t.end_date AS term_end,
+    ay.name AS academic_year,
+    ay.start_date AS year_start,
+    ay.end_date AS year_end,
+    f.name AS fee_name,
+    f.amount AS fee_amount,
+    s.created_at AS admission_date
+  FROM payment p
+  INNER JOIN students s ON s.id = p.studentid
+  INNER JOIN term t ON t.id = p.termid
+  INNER JOIN acyear ay ON ay.id = t.yearid
+  INNER JOIN fees f ON f.id = p.feeid
+  WHERE s.contact = ?
+  ORDER BY ay.start_date DESC, t.start_date DESC, p.created_at DESC`;
   const value = [phone];
   const [res] = await conn.query(query, value);
-  return res[0];
+  return res;
 }
 
 const getStudentNameByContact = async(phone) => {
-  const query = `SELECT name FROM students WHERE contact = ?`;
+  const query = `SELECT students.id, students.name, students.contact, students.address, students.gender, CAST(students.dob AS DATE) AS dob, 
+history.schoolid, schools.name AS school, class.name AS class, CAST(students.created_at AS DATE) AS admission
+FROM students 
+INNER JOIN history ON history.studentid = students.id
+INNER JOIN schools ON history.schoolid = schools.id
+INNER JOIN class ON history.classid = class.id
+WHERE students.contact = ? AND history.status = 'active'`;
   const value = [phone];
   const [res] = await conn.query(query, value);
   return res[0];
 }
 
 
-// // --------------------------------------- WHATSAPP API ------------------------------------------------
+// // --------------------------------------- TELEGRAM API ------------------------------------------------
+
+
+
+
+// // --------------------------------------- PILOT PROGRAM CRUD ------------------------------------------------
+
+const getPilotPrograms = async () => {
+  const query = `SELECT pp.*, s.name as school_name, sp.name as pilot_plan_name, 
+                 sp.pilot_price as initial_payment_amount,
+                 (sp.price - sp.pilot_price) as total_savings
+                 FROM pilot_programs pp
+                 LEFT JOIN schools s ON s.id = pp.school_id
+                 LEFT JOIN subscription_plans sp ON sp.id = pp.preferred_plan_id
+                 WHERE pp.status = 'active'
+                 ORDER BY pp.created_at DESC`;
+  const [res] = await conn.query(query);
+  return res;
+};
+
+const getPilotProgramBySchoolId = async (schoolId) => {
+  const query = `SELECT pp.*, s.name as school_name, sp.name as pilot_plan_name,
+                 sp.pilot_price as initial_payment_amount,
+                 (sp.price - sp.pilot_price) as total_savings
+                 FROM pilot_programs pp
+                 LEFT JOIN schools s ON s.id = pp.school_id
+                 LEFT JOIN subscription_plans sp ON sp.id = pp.preferred_plan_id
+                 WHERE pp.school_id = ? AND (pp.status = 'approved' OR pp.status = 'active')`;
+  const values = [schoolId];
+  const [res] = await conn.query(query, values);
+  return res[0];
+};
+
+const updatePilotProgramStatus = async (id, status) => {
+  const query = `UPDATE pilot_programs SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+  const values = [status, id];
+  const [res] = await conn.query(query, values);
+  return res;
+};
+
+
+
+
+
+
+// --------------------------------------- PILOT PROGRAM CRUD ------------------------------------------------
+
+// Check Pilot Program
+const checkPilotProgram = async (schoolId) => {
+  const query = `SELECT * FROM pilot_programs WHERE school_id = ?`;
+  const values = [schoolId];
+  const [res] = await conn.query(query, values);
+  return res;
+};
+
+// Pilot Application Management
+const createPilotProgram = async (id, schoolId, schoolSize, currentSystem, note, expectedStudents, preferredPlanId, startDate, endDate, pilotActive, status = 'pending') => {
+  const query = `INSERT INTO pilot_programs (id, school_id, school_size, current_system, note, expected_students, preferred_plan_id, start_date, end_date, pilot_active, status) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const values = [id, schoolId, schoolSize, currentSystem, note, expectedStudents, preferredPlanId, startDate, endDate, pilotActive, status];
+  const [res] = await conn.query(query, values);
+  return res;
+};
+ 
+const getPilotApplications = async () => {
+  const query = `SELECT pp.id, pp.school_id, pp.preferred_plan_id, pp.school_size, pp.current_system,
+                 pp.expected_students, pp.start_date, pp.end_date, pp.pilot_active, pp.status,
+                 pp.note as motivation, pp.created_at as applied_at,
+                 s.name as school_name, s.email as contact_email, s.contact as contact_phone,
+                 sp.name as preferred_plan_name, pp.status as application_status
+                 FROM pilot_programs pp
+                 LEFT JOIN schools s ON s.id = pp.school_id
+                 LEFT JOIN subscription_plans sp ON sp.id = pp.preferred_plan_id
+                 ORDER BY pp.created_at DESC`;
+  const [res] = await conn.query(query);
+  return res;
+};
+
+const updatePilotApplicationStatus = async (id, status, adminNotes, reviewedBy) => {
+  const query = `UPDATE pilot_programs SET status = ?, note = CONCAT(COALESCE(note, ''), '\n\nAdmin Notes: ', ?), updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+  const values = [status, adminNotes, id];
+  const [res] = await conn.query(query, values);
+  return res;
+};
+
+// Pilot Subscription Plans (now using unified subscription_plans table)
+const getPilotSubscriptionPlans = async () => {
+  const query = `SELECT * FROM subscription_plans 
+                 WHERE pilot_enabled = TRUE AND is_active = TRUE
+                 ORDER BY price ASC`;
+  const [res] = await conn.query(query);
+  return res;
+};
+
+const getPilotPlanById = async (id) => {
+  const query = `SELECT * FROM subscription_plans 
+                 WHERE id = ? AND pilot_enabled = TRUE AND is_active = TRUE`;
+  const values = [id];
+  const [res] = await conn.query(query, values);
+  return res[0];
+};
+
+// Pilot Payments - Simplified for unified table
+const createPilotPayment = async (id, pilotProgramId, paymentType, amount, originalAmount, discountAmount, dueDate) => {
+  // Since we're using unified table, we'll just return success
+  // Payment tracking would need to be handled separately or added to pilot_programs table
+  return { affectedRows: 1 };
+};
+
+const getPilotPayments = async (pilotProgramId) => {
+  // Return empty array since we're not tracking payments in separate table
+  return [];
+};
+
+const updatePilotPaymentStatus = async (id, status, transactionId, paymentMethod) => {
+  // Since we're using unified table, we'll just return success
+  return { affectedRows: 1 };
+};
+
+// Pilot Milestones - Simplified for unified table
+const createPilotMilestone = async (id, pilotProgramId, milestoneType, milestoneDate) => {
+  // Since we're using unified table, we'll just return success
+  // Milestone tracking would need to be handled separately or added to pilot_programs table
+  return { affectedRows: 1 };
+};
+
+const getPilotMilestones = async (pilotProgramId) => {
+  // Return empty array since we're not tracking milestones in separate table
+  return [];
+};
+
+const updatePilotMilestone = async (id, status, notes, feedbackScore) => {
+  // Since we're using unified table, we'll just return success
+  return { affectedRows: 1 };
+};
+
+
 
 
 
 
 module.exports = {
+
+  // ----- CONVERSATION SECTION -----
+  conversationRequest,
+  getConversationRequest,
+  updateConversationRequestStatus,
+  createConversation,
+  addConversationMessage,
+  getConversationMessages,
+  closeConversation,
+  // ----- CONVERSATION SECTION -----
+
 
   // ----- DISCIPLINARY SECTION -----
   checkDisciplinary,
@@ -2857,6 +3238,7 @@ getLineChart,
   updateSuperPassword,
   getAdmin,
   updateAdmin,
+  getSchoolByID,
 //   // ----- REGISTER SECTION -----
 
 
@@ -2972,6 +3354,8 @@ addContacts,
   countFemale,
   countGenderAndClass,
   genderPercentage,
+  statStudents,
+  statCountry,
 //   // ----- STUDENT SECTION -----
 
 //   // ----- FEE SECTION -----
@@ -3033,6 +3417,7 @@ addContacts,
   insertClassTeacher,
   getClassTeacher,
   deleteClassTeacher,
+  getClassTeacherByStudentID,
 //   // ----- TEACHER CLASS SECTION -----
 
 //   // ----- CHART SECTION -----
@@ -3101,6 +3486,7 @@ addContacts,
   cancelBilling,
   checkSubscription,
   checkSubscriptionStatus,
+  checkResentSubscriptionStatus,
   checkSubsByID,
   updateSubscriptionStatus,
   checkPaid,
@@ -3108,22 +3494,718 @@ addContacts,
   updateSubStatus,
   updateBillingStatus,
   updateSchoolStatus,
-//   // ----- SUBSCRIPTION SECTION -----
+  getSubscriptionByID,
+  // ----- SUBSCRIPTION SECTION -----
 
 
 
 
-//   // ----- SUBSCRIBE SECTION -----
+  // ----- SUBSCRIBE SECTION -----
   checkSubscribe,
   addSubscribe,
-//   // ----- SUBSCRIBE SECTION -----
 
 
 
-//   // ----- FEEDBACK SECTION -----
+  // ----- FEEDBACK SECTION -----
   addFeedback,
   getFeedbackByRating,
   getFeedback,
-//   // ----- FEEDBACK SECTION -----
 
+  // ----- PARENT BOT FEEDBACK SECTION -----
+  addParentBotFeedback,
+  getParentBotFeedback,
+  getParentBotFeedbackByRating,
+  getParentBotFeedbackAnalytics,
+  getParentBotFeedbackByUser,
+
+  // ----- AI STUDENT DATA SECTION -----
+  getStudentDataForAI,
+
+  // ----- PILOT PROGRAM SECTION -----
+  createPilotProgram,
+  getPilotPrograms,
+  getPilotApplications,
+  updatePilotApplicationStatus,
+  getPilotProgramBySchoolId,
+  updatePilotProgramStatus,
+  checkPilotProgram,
+  getPilotPayments,
+  updatePilotPaymentStatus,
+//   // ----- PILOT PROGRAM SECTION -----
+
+//   // ----- REFERRAL SYSTEM SECTION -----
+
+};
+
+// ==================== AI STUDENT DATA FUNCTIONS ====================
+
+/**
+ * Get comprehensive student data for AI analysis (enhanced with additional tables)
+ * @param {number} studentId - Student ID
+ * @param {number} schoolId - School ID
+ * @returns {Object} Comprehensive student data for AI consumption
+ */
+async function getStudentDataForAI(studentId, schoolId) {
+  const startTime = Date.now();
+  
+  try {
+    // Enhanced: Single query with UNION for all data types using correct table names and fields
+    // Note: Using subqueries to handle ORDER BY and LIMIT properly in UNION
+    const [rows] = await conn.query(`
+      SELECT * FROM (
+        SELECT 
+          'academic' as data_type,
+          r.score, r.grade, r.remarks, subj.name as subject, r.created_at,
+          NULL as date, NULL as status, NULL as note, NULL as category, NULL as action, NULL as severity,
+          NULL as amount, NULL as payment_status, NULL as due_date, NULL as term, NULL as year,
+          NULL as event_title, NULL as event_description, NULL as event_date, NULL as event_type,
+          NULL as class_name, NULL as teacher_name, NULL as term_name
+        FROM results r
+        INNER JOIN subject subj ON subj.id = r.subjectid
+        WHERE r.studentid = ? AND r.sid = ?
+        ORDER BY r.created_at DESC
+        LIMIT 20
+      ) academic_data
+      
+      UNION ALL
+      
+      SELECT * FROM (
+        SELECT 
+          'attendance' as data_type,
+          NULL as score, NULL as grade, NULL as remarks, NULL as subject, created_at,
+          date, status, note, NULL as category, NULL as action, NULL as severity,
+          NULL as amount, NULL as payment_status, NULL as due_date, NULL as term, NULL as year,
+          NULL as event_title, NULL as event_description, NULL as event_date, NULL as event_type,
+          NULL as class_name, NULL as teacher_name, NULL as term_name
+        FROM attendance
+        WHERE studentid = ?
+        ORDER BY date DESC
+        LIMIT 30
+      ) attendance_data
+      
+      UNION ALL
+      
+      SELECT * FROM (
+        SELECT 
+          'disciplinary' as data_type,
+          NULL as score, NULL as grade, NULL as remarks, NULL as subject, dr.created_at,
+          dr.incident_date as date, dr.status, NULL as note, dr.category, dr.action_taken as action, dr.severity_level as severity,
+          NULL as amount, NULL as payment_status, NULL as due_date, NULL as term, NULL as year,
+          NULL as event_title, NULL as event_description, NULL as event_date, NULL as event_type,
+          NULL as class_name, NULL as teacher_name, NULL as term_name
+        FROM disciplinary_records dr
+        WHERE dr.student_id = ?
+        ORDER BY dr.incident_date DESC
+        LIMIT 10
+      ) disciplinary_data
+      
+      UNION ALL
+      
+      SELECT * FROM (
+        SELECT 
+          'fees' as data_type,
+          NULL as score, NULL as grade, NULL as remarks, NULL as subject, p.created_at,
+          NULL as date, p.status, NULL as note, NULL as category, NULL as action, NULL as severity,
+          p.paid as amount, p.status as payment_status, NULL as due_date, t.name as term, ay.name as year,
+          NULL as event_title, NULL as event_description, NULL as event_date, NULL as event_type,
+          NULL as class_name, NULL as teacher_name, NULL as term_name
+        FROM payment p
+        INNER JOIN fees f ON f.id = p.feeid
+        INNER JOIN term t ON t.id = p.termid
+        INNER JOIN acyear ay ON ay.id = t.yearid
+        WHERE p.studentid = ? AND p.sid = ?
+        ORDER BY p.created_at DESC
+        LIMIT 15
+      ) fees_data
+      
+      UNION ALL
+      
+      SELECT * FROM (
+        SELECT 
+          'events' as data_type,
+          NULL as score, NULL as grade, NULL as remarks, NULL as subject, created_at,
+          NULL as date, NULL as status, NULL as note, NULL as category, NULL as action, NULL as severity,
+          NULL as amount, NULL as payment_status, NULL as due_date, NULL as term, NULL as year,
+          title as event_title, description as event_description, date as event_date, NULL as event_type,
+          NULL as class_name, NULL as teacher_name, NULL as term_name
+        FROM events
+        WHERE sid = ? AND (date >= CURDATE() OR date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY))
+        ORDER BY date DESC
+        LIMIT 10
+      ) events_data
+      
+      UNION ALL
+      
+      SELECT * FROM (
+        SELECT 
+          'class_info' as data_type,
+          NULL as score, NULL as grade, NULL as remarks, NULL as subject, s.created_at,
+          NULL as date, NULL as status, NULL as note, NULL as category, NULL as action, NULL as severity,
+          NULL as amount, NULL as payment_status, NULL as due_date,
+          NULL as event_title, NULL as event_description, NULL as event_date, NULL as event_type,
+          c.name as class_name, t.name as teacher_name
+        FROM students s
+        LEFT JOIN history h ON h.studentid = s.id
+        LEFT JOIN class c ON c.id = h.classid
+        LEFT JOIN classteacher ct ON ct.classid = c.id
+        LEFT JOIN teachers t ON t.id = ct.teacherid
+        WHERE s.id = ? AND h.schoolid = ?
+        LIMIT 1
+      ) class_info_data
+    `, [studentId, schoolId, studentId, studentId, studentId, schoolId, schoolId, studentId, schoolId]);
+
+    // Process and separate data by type
+    const academic = [];
+    const attendance = [];
+    const disciplinary = [];
+    const fees = [];
+    const events = [];
+    const classInfo = [];
+
+    rows.forEach(row => {
+      switch (row.data_type) {
+        case 'academic':
+          academic.push({
+            score: row.score,
+            grade: row.grade,
+            remarks: row.remarks,
+            subject: row.subject,
+            created_at: row.created_at
+          });
+          break;
+        case 'attendance':
+          attendance.push({
+            date: row.date,
+            status: row.status,
+            note: row.note,
+            created_at: row.created_at
+          });
+          break;
+        case 'disciplinary':
+          disciplinary.push({
+            date: row.date,
+            category: row.category,
+            action: row.action,
+            severity: row.severity,
+            status: row.status,
+            created_at: row.created_at
+          });
+          break;
+        case 'fees':
+          fees.push({
+            amount: row.amount,
+            payment_status: row.payment_status,
+            term: row.term,
+            year: row.year,
+            created_at: row.created_at
+          });
+          break;
+        case 'events':
+          events.push({
+            title: row.event_title,
+            description: row.event_description,
+            event_date: row.event_date,
+            created_at: row.created_at
+          });
+          break;
+        case 'class_info':
+          classInfo.push({
+            class_name: row.class_name,
+            teacher_name: row.teacher_name,
+            term_name: row.term_name,
+            created_at: row.created_at
+          });
+          break;
+      }
+    });
+
+    const queryTime = Date.now() - startTime;
+    
+    // Log performance metrics
+    if (queryTime > 200) {
+      console.log(`[AI] Slow student data query: ${queryTime}ms for student ${studentId}`);
+    }
+
+    return {
+      academic,
+      attendance,
+      disciplinary,
+      fees,
+      events,
+      classInfo: classInfo[0] || null // Single class info object
+    };
+  } catch (error) {
+    console.error('[AI] Error getting student data:', error);
+    return { 
+      academic: [], 
+      attendance: [], 
+      disciplinary: [], 
+      fees: [], 
+      events: [], 
+      classInfo: null 
+    };
+  }
+}
+
+// ==================== REFERRAL SYSTEM FUNCTIONS ====================
+
+// Generate a unique referral code
+const generateReferralCode = async (schoolId) => {
+  try {
+    const length = 8; // Default length
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    
+    // Generate code until we find a unique one
+    let isUnique = false;
+    while (!isUnique) {
+      code = '';
+      for (let i = 0; i < length; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      
+      // Check if code already exists
+      const sql = 'SELECT id FROM referral_codes WHERE referral_code = ?';
+      const [existing] = await conn.query(sql, [code]);
+      isUnique = existing.length === 0;
+    }
+    
+    return code;
+  } catch (error) {
+    console.error('Error generating referral code:', error);
+    throw error;
+  }
+};
+
+// Create referral code for a school
+const createReferralCode = async (schoolId) => {
+  try {
+    // Check if school already has a referral code
+    const checkSql = 'SELECT id FROM referral_codes WHERE school_id = ? AND is_active = TRUE';
+    const [existing] = await conn.query(checkSql, [schoolId]);
+    
+    if (existing.length > 0) {
+      return existing[0].id; // Return existing code ID
+    }
+    
+    // Generate new referral code
+    const referralCode = await generateReferralCode(schoolId);
+    
+    // Insert new referral code
+    const sql = 'INSERT INTO referral_codes (school_id, referral_code) VALUES (?, ?)';
+    const [result] = await conn.query(sql, [schoolId, referralCode]);
+    
+    return result.insertId;
+  } catch (error) {
+    console.error('Error creating referral code:', error);
+    throw error;
+  }
+};
+
+// Get referral code for a school
+const getReferralCode = async (schoolId) => {
+  try {
+    const sql = 'SELECT * FROM referral_codes WHERE school_id = ? AND is_active = TRUE';
+    const [result] = await conn.query(sql, [schoolId]);
+    return result[0] || null;
+  } catch (error) {
+    console.error('Error getting referral code:', error);
+    throw error;
+  }
+};
+
+// Validate referral code
+const validateReferralCode = async (referralCode) => {
+  try {
+    const sql = `
+      SELECT rc.*, s.email as referrer_email 
+      FROM referral_codes rc 
+      JOIN schools s ON rc.school_id = s.id 
+      WHERE rc.referral_code = ? AND rc.is_active = TRUE
+    `;
+    const [result] = await conn.query(sql, [referralCode]);
+    return result[0] || null;
+  } catch (error) {
+    console.error('Error validating referral code:', error);
+    throw error;
+  }
+};
+
+// Track referral usage
+const trackReferralUsage = async (referrerSchoolId, referredSchoolId, referralCode) => {
+  try {
+    // Get referral settings
+    const settings = await getReferralSettings();
+    const discountPercentage = parseFloat(settings.referral_discount_percentage) || 10.00;
+    const rewardAmount = parseFloat(settings.referral_reward_amount) || 50.00;
+    
+    const sql = `
+      INSERT INTO referral_tracking 
+      (referrer_school_id, referred_school_id, referral_code_used, discount_percentage, reward_amount) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    const [result] = await conn.query(sql, [
+      referrerSchoolId, 
+      referredSchoolId, 
+      referralCode, 
+      discountPercentage, 
+      rewardAmount
+    ]);
+    
+    return result.insertId;
+  } catch (error) {
+    console.error('Error tracking referral usage:', error);
+    throw error;
+  }
+};
+
+// Get referral settings
+const getReferralSettings = async () => {
+  try {
+    const sql = 'SELECT setting_key, setting_value FROM referral_settings';
+    const [result] = await conn.query(sql);
+    
+    const settings = {};
+    result.forEach(row => {
+      settings[row.setting_key] = row.setting_value;
+    });
+    
+    return settings;
+  } catch (error) {
+    console.error('Error getting referral settings:', error);
+    throw error;
+  }
+};
+
+// Update referral settings
+const updateReferralSettings = async (settings) => {
+  try {
+    const updates = [];
+    for (const [key, value] of Object.entries(settings)) {
+      updates.push(`('${key}', '${value}')`);
+    }
+    
+    const sql = `
+      INSERT INTO referral_settings (setting_key, setting_value) 
+      VALUES ${updates.join(', ')}
+      ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
+    `;
+    
+    await conn.query(sql);
+    return true;
+  } catch (error) {
+    console.error('Error updating referral settings:', error);
+    throw error;
+  }
+};
+
+// Get referral analytics for a school
+const getReferralAnalytics = async (schoolId) => {
+  try {
+    const sql = `
+      SELECT 
+        ra.total_referrals,
+        ra.successful_referrals,
+        ra.total_rewards_earned,
+        ra.total_discounts_given,
+        ra.last_referral_date,
+        rc.referral_code,
+        s.email as school_email
+      FROM referral_analytics ra
+      LEFT JOIN referral_codes rc ON ra.school_id = rc.school_id AND rc.is_active = TRUE
+      LEFT JOIN schools s ON ra.school_id = s.id
+      WHERE ra.school_id = ?
+    `;
+    const [result] = await conn.query(sql, [schoolId]);
+    return result[0] || null;
+  } catch (error) {
+    console.error('Error getting referral analytics:', error);
+    throw error;
+  }
+};
+
+// Get all referral analytics (for super admin)
+const getAllReferralAnalytics = async () => {
+  try {
+    const sql = `
+      SELECT 
+        ra.school_id,
+        s.email as school_email,
+        ra.total_referrals,
+        ra.successful_referrals,
+        ra.total_rewards_earned,
+        ra.total_discounts_given,
+        ra.last_referral_date,
+        rc.referral_code,
+        ra.created_at
+      FROM referral_analytics ra
+      LEFT JOIN schools s ON ra.school_id = s.id
+      LEFT JOIN referral_codes rc ON ra.school_id = rc.school_id AND rc.is_active = TRUE
+      ORDER BY ra.total_referrals DESC
+    `;
+    const [result] = await conn.query(sql);
+    return result;
+  } catch (error) {
+    console.error('Error getting all referral analytics:', error);
+    throw error;
+  }
+};
+
+// Update referral analytics
+const updateReferralAnalytics = async (schoolId, updateData) => {
+  try {
+    const fields = [];
+    const values = [];
+    
+    for (const [key, value] of Object.entries(updateData)) {
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
+    
+    values.push(schoolId);
+    
+    const sql = `
+      INSERT INTO referral_analytics (school_id, ${Object.keys(updateData).join(', ')})
+      VALUES (?, ${Object.keys(updateData).map(() => '?').join(', ')})
+      ON DUPLICATE KEY UPDATE ${fields.join(', ')}
+    `;
+    
+    await conn.query(sql, values);
+    return true;
+  } catch (error) {
+    console.error('Error updating referral analytics:', error);
+    throw error;
+  }
+};
+
+// Get referral tracking records
+const getReferralTracking = async (schoolId = null) => {
+  try {
+    let sql = `
+      SELECT 
+        rt.*,
+        s1.email as referrer_email,
+        s2.email as referred_email,
+        s1.id as referrer_school_id,
+        s2.id as referred_school_id
+      FROM referral_tracking rt
+      LEFT JOIN schools s1 ON rt.referrer_school_id = s1.id
+      LEFT JOIN schools s2 ON rt.referred_school_id = s2.id
+    `;
+    
+    const values = [];
+    if (schoolId) {
+      sql += ' WHERE rt.referrer_school_id = ? OR rt.referred_school_id = ?';
+      values.push(schoolId, schoolId);
+    }
+    
+    sql += ' ORDER BY rt.created_at DESC';
+    
+    const [result] = await conn.query(sql, values);
+    return result;
+  } catch (error) {
+    console.error('Error getting referral tracking:', error);
+    throw error;
+  }
+};
+
+// Apply referral discount
+const applyReferralDiscount = async (referralTrackingId, subscriptionAmount) => {
+  try {
+    const sql = `
+      SELECT rt.*, rc.referral_code 
+      FROM referral_tracking rt
+      LEFT JOIN referral_codes rc ON rt.referral_code_used = rc.referral_code
+      WHERE rt.id = ?
+    `;
+    const [result] = await conn.query(sql, [referralTrackingId]);
+    
+    if (result.length === 0) {
+      throw new Error('Referral tracking record not found');
+    }
+    
+    const tracking = result[0];
+    const discountAmount = (subscriptionAmount * tracking.discount_percentage) / 100;
+    
+    // Update tracking record
+    const updateSql = `
+      UPDATE referral_tracking 
+      SET discount_applied = ?, status = 'completed'
+      WHERE id = ?
+    `;
+    await conn.query(updateSql, [discountAmount, referralTrackingId]);
+    
+    // Update analytics
+    await updateReferralAnalytics(tracking.referrer_school_id, {
+      successful_referrals: 1,
+      total_discounts_given: discountAmount,
+      last_referral_date: new Date()
+    });
+    
+    return discountAmount;
+  } catch (error) {
+    console.error('Error applying referral discount:', error);
+    throw error;
+  }
+};
+
+// ----- PASSWORD RESET SYSTEM SECTION -----
+
+// Find user by email across all user tables
+const findUserByEmail = async (email) => {
+  const schoolQuery = "SELECT id, name, email FROM schools WHERE email = ?";
+  const teacherQuery = "SELECT id, name, email, sid FROM teachers WHERE email = ?";
+  const superAdminQuery = "SELECT id, email FROM administrator WHERE email = ?";
+
+  const [schoolResult] = await conn.query(schoolQuery, [email]);
+  const [teacherResult] = await conn.query(teacherQuery, [email]);
+  const [superAdminResult] = await conn.query(superAdminQuery, [email]);
+
+  let user = null;
+  let userType = null;
+
+  if (schoolResult.length > 0) {
+    user = schoolResult[0];
+    userType = 'school';
+  } else if (teacherResult.length > 0) {
+    user = teacherResult[0];
+    userType = 'teacher';
+  } else if (superAdminResult.length > 0) {
+    user = superAdminResult[0];
+    userType = 'super_admin';
+  }
+
+  return { user, userType };
+};
+
+// Store password reset token
+const storePasswordResetToken = async (email, token, expiresAt, ipAddress, userAgent, sessionId, correlationId) => {
+  const sql = `
+    INSERT INTO password_reset_tokens (email, token, expires_at, ip_address, user_agent, session_id, correlation_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  const values = [email, token, expiresAt, ipAddress, userAgent, sessionId, correlationId];
+  const [result] = await conn.query(sql, values);
+  return result.insertId;
+};
+
+// Validate password reset token
+const validatePasswordResetToken = async (token) => {
+  const sql = `
+    SELECT * FROM password_reset_tokens 
+    WHERE token = ? AND used = FALSE AND expires_at > NOW()
+  `;
+  const [result] = await conn.query(sql, [token]);
+  return result[0] || null;
+};
+
+// Update user password based on user type
+const updateUserPassword = async (userId, userType, hashedPassword) => {
+  let updateQuery;
+  
+  if (userType === 'school') {
+    updateQuery = "UPDATE schools SET password = ? WHERE id = ?";
+  } else if (userType === 'teacher') {
+    updateQuery = "UPDATE teachers SET password = ? WHERE id = ?";
+  } else if (userType === 'super_admin') {
+    updateQuery = "UPDATE administrator SET password = ? WHERE id = ?";
+  } else {
+    throw new Error('Invalid user type');
+  }
+
+  const [result] = await conn.query(updateQuery, [hashedPassword, userId]);
+  return result;
+};
+
+// Store password in history
+const storePasswordHistory = async (userId, userType, passwordHash) => {
+  const sql = `
+    INSERT INTO password_history (user_id, user_type, password_hash, created_at) 
+    VALUES (?, ?, ?, NOW())
+  `;
+  const values = [userId, userType, passwordHash];
+  const [result] = await conn.query(sql, values);
+  return result.insertId;
+};
+
+// Mark password reset token as used
+const markPasswordResetTokenAsUsed = async (token) => {
+  const sql = `
+    UPDATE password_reset_tokens 
+    SET used = TRUE, used_at = NOW() 
+    WHERE token = ?
+  `;
+  const [result] = await conn.query(sql, [token]);
+  return result;
+};
+
+// Get password reset token by email
+const getPasswordResetTokenByEmail = async (email) => {
+  const sql = `
+    SELECT * FROM password_reset_tokens 
+    WHERE email = ? AND used = FALSE AND expires_at > NOW()
+    ORDER BY created_at DESC
+    LIMIT 1
+  `;
+  const [result] = await conn.query(sql, [email]);
+  return result[0] || null;
+};
+
+// Clean up expired tokens
+const cleanupExpiredTokens = async () => {
+  const sql = `
+    DELETE FROM password_reset_tokens 
+    WHERE expires_at < NOW() OR (used = TRUE AND used_at < DATE_SUB(NOW(), INTERVAL 1 DAY))
+  `;
+  const [result] = await conn.query(sql);
+  return result.affectedRows;
+};
+
+// Get password reset statistics
+const getPasswordResetStats = async (email = null) => {
+  let sql = `
+    SELECT 
+      COUNT(*) as total_requests,
+      COUNT(CASE WHEN used = TRUE THEN 1 END) as successful_resets,
+      COUNT(CASE WHEN used = FALSE AND expires_at > NOW() THEN 1 END) as pending_tokens,
+      COUNT(CASE WHEN expires_at < NOW() AND used = FALSE THEN 1 END) as expired_tokens
+    FROM password_reset_tokens
+  `;
+  const values = [];
+  
+  if (email) {
+    sql += " WHERE email = ?";
+    values.push(email);
+  }
+  
+  const [result] = await conn.query(sql, values);
+  return result[0];
+};
+
+// Add password reset functions to module.exports
+module.exports = {
+  ...module.exports,
+  // ----- REFERRAL SYSTEM SECTION -----
+  generateReferralCode,
+  createReferralCode,
+  getReferralCode,
+  validateReferralCode,
+  trackReferralUsage,
+  getReferralSettings,
+  updateReferralSettings,
+  getReferralAnalytics,
+  getAllReferralAnalytics,
+  updateReferralAnalytics,
+  getReferralTracking,
+  applyReferralDiscount,
+  // ----- PASSWORD RESET SYSTEM SECTION -----
+  findUserByEmail,
+  storePasswordResetToken,
+  validatePasswordResetToken,
+  updateUserPassword,
+  storePasswordHistory,
+  markPasswordResetTokenAsUsed,
+  getPasswordResetTokenByEmail,
+  cleanupExpiredTokens,
+  getPasswordResetStats
 };

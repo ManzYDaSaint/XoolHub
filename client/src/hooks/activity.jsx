@@ -20,7 +20,7 @@ const InactivityHandler = ({ children }) => {
       await api.Logout();
       navigate('/login');
     } catch (error) {
-      console.error('Failed to logout', error);
+      console.error('failed to logout', error);
     }
   };
 

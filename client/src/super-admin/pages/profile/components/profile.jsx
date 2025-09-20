@@ -132,10 +132,10 @@ const SuperProfile = () => {
       <div className="profileUpdate">
         <div className="border-b-2 border-gray-300 pb-3">
           <h5 className="text-lg font-semibold text-gray-600">
-            Super Administrator Information
+            Super administrator Information
           </h5>
           <p className="text-sm text-gray-600">
-            Here you can update the password of the Super Administrator. <br />{" "}
+            Here you can update the password of the Super administrator. <br />{" "}
             The changes will be displayed and effective once updated.
           </p>
         </div>

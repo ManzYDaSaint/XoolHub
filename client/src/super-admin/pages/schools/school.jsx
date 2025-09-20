@@ -52,7 +52,7 @@ const Schools = () => {
 
   const handleToggle = async (id, currentStatus) => {
     const newStatus =
-      currentStatus === "Activated" ? "Deactivated" : "Activated";
+      currentStatus === "activated" ? "deactivated" : "activated";
 
     try {
       // API call to update the data

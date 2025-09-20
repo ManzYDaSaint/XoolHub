@@ -19,8 +19,8 @@ const StudentBarChart = ({ data }) => {
         <YAxis />
         <Tooltip />
         <Legend />
-        <Bar dataKey="Male" fill="#8884d8" />
-        <Bar dataKey="Female" fill="#82ca9d" />
+        <Bar dataKey="male" fill="#8884d8" />
+        <Bar dataKey="female" fill="#82ca9d" />
       </BarChart>
     </ResponsiveContainer>
   );

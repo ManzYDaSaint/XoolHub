@@ -3,7 +3,7 @@ import AuthT from "../../hooks/tauth";
 import Howa from "./components/hoa";
 import Layout from "../../components/layout";
 
-const Hoa = () => {
+const hoa = () => {
   return (
     <AuthT>
       <Layout>
@@ -13,4 +13,4 @@ const Hoa = () => {
   );
 };
 
-export default Hoa;
+export default hoa;

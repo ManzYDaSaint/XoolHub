@@ -65,19 +65,19 @@ const FeePayments = () => {
         amount: item.paid,
         status: (
           <>
-            {item.status === "Pending" ? (
+            {item.status === "pending" ? (
               <>
                 <Timer size={16} className="iconLucide" color="orange" />
                 Ongoing
               </>
-            ) : item.status === "Complete" ? (
+            ) : item.status === "complete" ? (
               <>
                 <CircleCheckBig
                   size={15}
                   className="iconLucide"
                   color="green"
                 />
-                Complete
+                complete
               </>
             ) : (
               item.status

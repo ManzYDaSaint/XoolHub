@@ -57,7 +57,7 @@ const PieChartComponent = () => {
 
     const data = [
         { name: 'Fees Collected', value: Number(sum)},
-        { name: 'Pending Fees', value: Number(pendingFee) },
+        { name: 'pending Fees', value: Number(pendingFee) },
       ];
       
   return (

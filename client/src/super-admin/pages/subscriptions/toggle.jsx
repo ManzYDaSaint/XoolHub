@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 
 const ToggleSwitch = ({ id, status, billing, onToggle }) => {
   // Determine if the toggle should be initially checked
-  const [isChecked, setIsChecked] = useState(status === 'Active' && billing === 'Paid');
+  const [isChecked, setIsChecked] = useState(status === 'active' && billing === 'paid');
 
   useEffect(() => {
       // Update local state if props change
-      setIsChecked(status === 'Active' && billing === 'Paid');
+      setIsChecked(status === 'active' && billing === 'paid');
   }, [status, billing]);
 
   const handleChange = () => {

@@ -9,8 +9,8 @@ const TypeSelect = ({ label, type, name, value, onChange }) => {
           <option value={""} disabled selected>
             --select option--
           </option>
-          <option value={"Public"}>Public</option>
-          <option value={"Private"}>Private</option>
+          <option value={"public"}>public</option>
+          <option value={"private"}>private</option>
         </select>
       </div>
     </div>

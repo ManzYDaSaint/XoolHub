@@ -45,11 +45,11 @@ const DisciplinaryData = () => {
           toast.success("Disciplinary record deleted successfully");
           fetchData();
         } else {
-          toast.error(response.data.message || "Failed to delete record");
+          toast.error(response.data.message || "failed to delete record");
         }
       } catch (error) {
         console.error("Delete error:", error);
-        toast.error("Failed to delete disciplinary record");
+        toast.error("failed to delete disciplinary record");
       } finally {
         setLoading(false);
       }
@@ -108,8 +108,8 @@ const DisciplinaryData = () => {
          
         // Calculate stats
         const total = data.length;
-        const pending = data.filter(item => item.status === 'Pending').length;
-        const resolved = data.filter(item => item.status === 'Resolved').length;
+        const pending = data.filter(item => item.status === 'pending').length;
+        const resolved = data.filter(item => item.status === 'resolved').length;
         setStats({ total, pending, resolved });
       } else {
         setDisciplinaryData([]);
@@ -117,7 +117,7 @@ const DisciplinaryData = () => {
       }
     } catch (error) {
       console.error("Fetch error:", error);
-      toast.error("Failed to fetch disciplinary records");
+      toast.error("failed to fetch disciplinary records");
       setDisciplinaryData([]);
     } finally {
       setLoading(false);
@@ -191,7 +191,7 @@ const DisciplinaryData = () => {
                     </div>
                     <div>
                       <div className="text-3xl font-bold text-gray-900">{stats.pending}</div>
-                      <div className="text-gray-600 font-medium">Pending Cases</div>
+                      <div className="text-gray-600 font-medium">pending Cases</div>
                     </div>
                   </div>
                 </div>
@@ -206,7 +206,7 @@ const DisciplinaryData = () => {
                     </div>
                     <div>
                       <div className="text-3xl font-bold text-gray-900">{stats.resolved}</div>
-                      <div className="text-gray-600 font-medium">Resolved Cases</div>
+                      <div className="text-gray-600 font-medium">resolved Cases</div>
                     </div>
                   </div>
                 </div>

@@ -21,7 +21,7 @@ const Features = () => {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "name": "XoolHub Features - Complete School Management Solution",
+    "name": "XoolHub Features - complete School Management Solution",
     "description": "Discover all the powerful features of XoolHub school management system including student management, attendance tracking, parent communication, and more.",
     "url": "https://xoolhub.com/features",
     "mainEntity": {
@@ -34,7 +34,7 @@ const Features = () => {
         "Student Information Management",
         "Multi-User Portal System", 
         "Attendance Tracking",
-        "Parent-Teacher Communication",
+        "parent-teacher Communication",
         "Fee Management",
         "Academic Management",
         "Report Generation",
@@ -55,7 +55,7 @@ const Features = () => {
     {
       icon: <BookOpen className="w-8 h-8 text-green-600" />,
       title: "Student Information Management",
-      description: "Complete student lifecycle management from enrollment to graduation with academic history tracking.",
+      description: "complete student lifecycle management from enrollment to graduation with academic history tracking.",
       benefits: ["Student profiles", "Academic records", "Promotion system"]
     },
     {
@@ -67,12 +67,12 @@ const Features = () => {
     {
       icon: <Clock className="w-8 h-8 text-orange-600" />,
       title: "Attendance Tracking",
-      description: "Real-time attendance marking with Present/Absent/Late status and automated parent notifications.",
-      benefits: ["Daily attendance", "Automated reports", "Parent notifications"]
+      description: "Real-time attendance marking with present/absent/late status and automated parent notifications.",
+      benefits: ["Daily attendance", "Automated reports", "parent notifications"]
     },
     {
       icon: <MessageSquare className="w-8 h-8 text-teal-600" />,
-      title: "Parent-Teacher Communication",
+      title: "parent-teacher Communication",
       description: "Seamless communication through Telegram bots with conversation management and real-time notifications.",
       benefits: ["Telegram integration", "Real-time messaging", "Conversation history"]
     },
@@ -123,7 +123,7 @@ const Features = () => {
   return (
     <>
       <SEO 
-        title="Features - Complete School Management Solution"
+        title="Features - complete School Management Solution"
         description="Discover all the powerful features of XoolHub school management system including student management, attendance tracking, parent communication, fee management, and multi-school support."
         keywords="school management system features, student information system, attendance tracking, parent portal, teacher portal, school communication, fee management, academic management, school reports, multi-school platform, education software features, school ERP features"
         url="/features"

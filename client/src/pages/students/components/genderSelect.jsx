@@ -21,8 +21,8 @@ const GenderSelect = ({ label, type, name, value, onChange }) => {
         <option value={""} disabled selected>
           --select option--
         </option>
-        <option value={"Male"}>Male</option>
-        <option value={"Female"}>Female</option>
+        <option value={"male"}>male</option>
+        <option value={"female"}>female</option>
       </select>
     </div>
   );

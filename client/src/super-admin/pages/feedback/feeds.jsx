@@ -1,44 +1,11 @@
-import React, { useState, useEffect } from "react";
-import api from "../../../services/apiServices.jsx";
+import React, { useState } from "react";
 import SuperAuth0 from "../../../hooks/superauth.jsx";
 import SuperSidebar from "../../components/navbar/navbar.jsx";
-import Table from "./table.jsx";
+import FeedbackAnalytics from "./FeedbackAnalytics.jsx";
+import { BarChart3 } from "lucide-react";
 
 const Feeds = () => {
-  const [feedback, setFeedback] = useState([]);
-
-  // Fetch all the exams
-  const fetchData = async () => {
-    const res = await api.getFeedback();
-    const data = res.data.feedback;
-    if (data.length === 0) {
-      const info = [
-        {
-          sr: "",
-          name: "No records found!",
-          rating: "",
-          option: "",
-          comment: "",
-          date: "",
-        },
-      ];
-      setFeedback(info);
-    } else {
-      const info = data.map((item, index) => ({
-        sr: index + 1,
-        name: item.name,
-        rating: item.rating,
-        option: item.optioni,
-        comment: item.commenti,
-        date: item.date,
-      }));
-      setFeedback(info);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  const [viewMode, setViewMode] = useState('analytics'); // 'analytics' or 'table'
 
   return (
     <SuperAuth0>
@@ -63,13 +30,25 @@ const Feeds = () => {
                           Manage feedback from schools and their details.
                         </p>
                       </div>
-                      <div className="mt-4 sm:mt-0"></div>
+                      <div className="mt-4 sm:mt-0 flex space-x-2">
+                        <button
+                          onClick={() => setViewMode('analytics')}
+                          className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                            viewMode === 'analytics'
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          <BarChart3 size={16} className="mr-2" />
+                          Analytics
+                        </button>
+                      </div>
                     </div>
 
                     {/* Content */}
                     <div className="px-5">
                       <div className="p-5 bg-gray-100 rounded-lg shadow-lg">
-                        <Table data={feedback} />
+                        <FeedbackAnalytics />
                       </div>
                     </div>
                   </div>

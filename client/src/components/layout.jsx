@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Sidebar from "./input/sidebar";
 import { Toaster } from "react-hot-toast";
+import FeedbackWidget from "./feedback/FeedbackWidget";
 
 function SidebarTrigger({ onClick, className }) {
   return (
@@ -28,6 +29,7 @@ const Layout = ({ children }) => {
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50">
+      <FeedbackWidget position="bottom-right" theme="default" />
       <Toaster />
       {/* SidebarTrigger only visible when sidebar is closed */}
       {!sidebarOpen && (

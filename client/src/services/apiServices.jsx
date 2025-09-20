@@ -17,6 +17,26 @@ const getDisciplinaryById = (id) => axios.get(API + '/get-disciplinary/' + id);
 const getDisciplinaryStats = () => axios.get(API + '/disciplinary-stats');
 // --------- DISCIPLINARY AXIOS -----------
 
+// --------- PARENT BOT STATISTICS AXIOS -----------
+const getParentBotStats = () => axios.get(API + '/parent-bot-stats');
+const getParentBotFeedbackBySchool = (schoolId) => axios.get(API + '/parent-bot-feedback-school/' + schoolId);
+const getParentBotRealTimeStats = () => axios.get(API + '/parent-bot-realtime-stats');
+const getParentBotNotifications = () => axios.get(API + '/parent-bot-notifications');
+// --------- PARENT BOT STATISTICS AXIOS -----------
+
+// --------- REFERRAL SYSTEM AXIOS -----------
+const createReferralCode = (schoolId) => axios.post(API + '/referral/create-code/' + schoolId);
+const getReferralCode = (schoolId) => axios.get(API + '/referral/get-code/' + schoolId);
+const validateReferralCode = (data) => axios.post(API + '/referral/validate-code', data);
+const trackReferralUsage = (data) => axios.post(API + '/referral/track-usage', data);
+const getReferralAnalytics = (schoolId) => axios.get(API + '/referral/analytics/' + schoolId);
+const getAllReferralAnalytics = () => axios.get(API + '/referral/analytics');
+const getReferralTracking = (schoolId) => axios.get(API + '/referral/tracking?schoolId=' + schoolId);
+const applyReferralDiscount = (data) => axios.post(API + '/referral/apply-discount', data);
+const getReferralSettings = () => axios.get(API + '/referral/settings');
+const updateReferralSettings = (data) => axios.put(API + '/referral/settings', data);
+// --------- REFERRAL SYSTEM AXIOS -----------
+
 const countXuls = () => axios.get(API + '/count-schools');
 const countAllTeacher = () => axios.get(API + '/count-o-teachers');
 const countAllStudent = () => axios.get(API + '/count-o-students');
@@ -30,6 +50,7 @@ const getXuls = () => axios.get(API + '/get-schools');
 // --------- SUPER ADMIN AXIOS -----------
 const addSubscription = (data) => axios.post(API + '/add-subscriptions', data);
 const getSubscription = () => axios.get(API + '/get-subscriptions');
+const getPublicPricingPlans = () => axios.get(API + '/public-pricing-plans');
 const deletePlan = (id) => axios.delete(API + '/delete-subscriptions/'  + id);
 const editPlan = (id) => axios.get(API + '/edit-subscriptions/'  + id);
 const updatePlan = (id, data) => axios.put(API + '/update-subscriptions/'  + id, data);
@@ -37,6 +58,8 @@ const gotsubs = (data) => axios.get(API + '/got-subscription/' + data);
 const addBilling = (data) => axios.post(API + '/add-billing', data);
 const checkSubscriptionStatus = () => axios.get(API + '/check-subscription-status');
 const checkPaidStatus = () => axios.get(API + '/check-paid-status');
+const getRealTimePaymentStatus = () => axios.get(API + '/real-time-payment-status');
+const testEmailNotification = () => axios.post(API + '/test-email');
 const updateSubscriptionStatus = (data) => axios.put(API + '/update-suspended-status', data);
 const cancelSubscription = () => axios.put(API + '/cancel-subscription');
 const getSubscriptionPayment = () => axios.get(API + '/get-subscription-payments');
@@ -79,6 +102,8 @@ const superVerify = () => axios.post(API + '/superverify');
 const Logout = () => axios.post(API + '/logout');
 const VerifyOTP = (data) => axios.post(API + '/verifyOTP', data);
 const ResendOTP = (data) => axios.post(API + '/resendOTP', data);
+const ForgotPassword = (data) => axios.post(API + '/forgot-password', data);
+const ResetPassword = (data) => axios.post(API + '/reset-password', data);
 
 // --------- LOGIN AXIOS -----------
 
@@ -240,6 +265,8 @@ const genderPercentage = () => axios.get(API + '/gender-percentage');
 const getSingleStudent = (id) => axios.get(API + '/getsinglestudent/' + id);
 const deleteStudent = (id) => axios.delete(API + '/deletstudent/' + id);
 const updateStudent = (id, data) => axios.put(API + '/updatstudent/' + id, data);
+const statStudents = () => axios.get(API + '/stat-students');
+const statCountry = () => axios.get(API + '/stat-country');
 
 // --------- STUDENT AXIOS -----------
 
@@ -443,6 +470,7 @@ export default {
   // ------ SUPER ADMIN EXPORT -------
   addSubscription,
   getSubscription,
+  getPublicPricingPlans,
   deletePlan,
   editPlan,
   updatePlan,
@@ -450,6 +478,8 @@ export default {
   addBilling,
   checkSubscriptionStatus,
   checkPaidStatus,
+  getRealTimePaymentStatus,
+  testEmailNotification,
   updateSubscriptionStatus,
   cancelSubscription,
   getSubscriptionPayment,
@@ -484,6 +514,8 @@ export default {
   Logout,
   VerifyOTP,
   ResendOTP,
+  ForgotPassword,
+  ResetPassword,
   // ------ LOGIN EXPORT -------
   
   // ------ EXAM EXPORT -------
@@ -613,6 +645,8 @@ export default {
       countMale,
       countFemale,
       countGenderByClass,
+      statStudents,
+      statCountry,
       genderPercentage,
       // ------ STUDENT EXPORT -------
 
@@ -756,7 +790,7 @@ export default {
        // ------ ATTENDANCE EXPORT -------
        insertAttendance,
        // ------ ATTENDANCE EXPORT -------
-
+ 
        // ------ DISCIPLINARY EXPORT -------
        InsertDisciplinary,
        getDisciplinary,
@@ -765,4 +799,43 @@ export default {
        getDisciplinaryById,
        getDisciplinaryStats,
        // ------ DISCIPLINARY EXPORT -------
+
+       // ------ PARENT BOT STATISTICS EXPORT -------
+       getParentBotStats,
+       getParentBotFeedbackBySchool,
+       getParentBotRealTimeStats,
+       getParentBotNotifications,
+       // ------ PARENT BOT STATISTICS EXPORT -------
+
+       // ------ REFERRAL SYSTEM EXPORT -------
+       createReferralCode,
+       getReferralCode,
+       validateReferralCode,
+       trackReferralUsage,
+       getReferralAnalytics,
+       getAllReferralAnalytics,
+       getReferralTracking,
+       applyReferralDiscount,
+       getReferralSettings,
+       updateReferralSettings,
+       // ------ REFERRAL SYSTEM EXPORT -------
+ 
+       // --------- PILOT PROGRAM AXIOS -----------
+       getPilotPlans: () => axios.get(API + '/pilot-plans'),
+       getPilotPlan: (id) => axios.get(API + '/pilot-plans/' + id),
+       submitPilotApplication: (data) => axios.post(API + '/pilot-applications', data),
+       getPilotApplications: () => axios.get(API + '/pilot-applications'),
+       updatePilotApplicationStatus: (id, data) => axios.put(API + '/pilot-applications/' + id + '/status', data),
+       createPilotProgram: (data) => axios.post(API + '/pilot-programs', data),
+       getPilotPrograms: () => axios.get(API + '/pilot-programs'),
+       getPilotProgramBySchoolId: (schoolId) => axios.get(API + '/pilot-programs/school/' + schoolId),
+       getPilotProgramBySchool: () => axios.get(API + '/pilot-programs/school'),
+       updatePilotProgramStatus: (id, data) => axios.put(API + '/pilot-programs/' + id + '/status', data),
+       getPilotProgramPayments: (programId) => axios.get(API + '/pilot-programs/' + programId + '/payments'),
+       updatePilotPaymentStatus: (id, data) => axios.put(API + '/pilot-payments/' + id + '/status', data),
+       getPilotProgramMilestones: (programId) => axios.get(API + '/pilot-programs/' + programId + '/milestones'),
+       updatePilotMilestone: (id, data) => axios.put(API + '/pilot-milestones/' + id, data),
+       getPilotPlanById: (id) => axios.get(API + '/pilot-plans/' + id),
+       submitPilotPayment: (data) => axios.post(API + '/pilot-payments', data),
+       // --------- PILOT PROGRAM AXIOS -----------
 };
