@@ -34,5 +34,9 @@
     "resend": "^4.6.0",
     "sentiment": "^5.0.2",
     "uuid": "^11.1.0"
+  },
+  "overrides": {
+    "form-data": "^4.0.0",
+    "tough-cookie": "^4.1.3"
   }
 }
