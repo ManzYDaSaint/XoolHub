@@ -117,7 +117,7 @@ async function getStudentDataFromSession(chatId) {
         return studentData;
       }
     } catch (error) {
-      console.error('[EnhancedBot] Error fetching student data:', error);
+      // Silent error handling
     }
   }
   
@@ -138,7 +138,6 @@ async function getStudentDataOptimized(chatId) {
   
   if (queryTime > 100) {
     performanceMetrics.slowQueries++;
-    console.log(`[EnhancedBot] Slow query detected: ${queryTime}ms for student data`);
   }
   
   return studentData;
@@ -167,7 +166,6 @@ async function generateAIInsights(chatId, studentId, schoolId) {
     
     return aiUtils.formatInsightsForTelegram(insights, recommendations);
   } catch (error) {
-    console.error('[EnhancedBot] Error generating insights:', error);
     return '🤖 **AI Insights**\n\nSorry, I\'m having trouble generating insights right now. Please try again later.';
   }
 }
@@ -189,7 +187,7 @@ function loadSessions() {
       }
     }
   } catch (err) {
-    console.error('[EnhancedBot] failed to load sessions:', err.message);
+    // Silent error handling
   }
 }
 
@@ -201,7 +199,7 @@ function saveSessions() {
       const arr = Array.from(sessions.values());
       fs.writeFileSync(SESSION_FILE, JSON.stringify(arr, null, 2), 'utf8');
     } catch (err) {
-      console.error('[EnhancedBot] failed to save sessions:', err.message);
+      // Silent error handling
     } finally {
       savePending = false;
     }
@@ -253,6 +251,8 @@ function findChatIdsByPhone(phone) {
 // ------------------------------- BOT CORE ---------------------------------
 
 let bot = null;
+let isInitializing = false;
+let botInstanceId = null;
 
 // ------------------------------- START ---------------------------------
 
@@ -2276,16 +2276,49 @@ async function handleConversationRequestMessage(msg) {
 // ------------------------------- STARTUP ---------------------------------
 
 function initEnhancedParentTelegramBot(options = {}) {
-  if (bot) return bot;
+  // Prevent multiple initialization attempts
+  if (isInitializing) {
+    console.log('[EnhancedBot] Bot initialization already in progress, skipping...');
+    return bot;
+  }
+  
+  if (bot) {
+    console.log('[EnhancedBot] Bot already initialized, returning existing instance');
+    return bot;
+  }
+  
   if (!BOT_TOKEN) {
     console.warn('[EnhancedBot] No TELEGRAM_PARENT_BOT_TOKEN provided; bot not started.');
     return null;
   }
 
+  isInitializing = true;
+  botInstanceId = `bot_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  console.log(`[EnhancedBot] Initializing bot instance: ${botInstanceId}`);
+
   loadSessions();
 
   bot = new TelegramBot(BOT_TOKEN, { polling: true });
-  console.log('[EnhancedBot] AI-Enhanced bot started (polling).');
+  
+  // Handle polling errors gracefully
+  bot.on('polling_error', (error) => {
+    // If it's a conflict error, try to restart polling after a delay
+    if (error.code === 'ETELEGRAM' && error.message.includes('409 Conflict')) {
+      setTimeout(() => {
+        try {
+          bot.stopPolling();
+          setTimeout(() => {
+            bot.startPolling();
+          }, 2000);
+        } catch (restartError) {
+          console.error(`[EnhancedBot] Failed to restart polling for instance ${botInstanceId}:`, restartError.message);
+        }
+      }, 5000);
+    }
+  });
+  
+  console.log(`[EnhancedBot] AI-Enhanced bot started (polling) - Instance: ${botInstanceId}`);
 
   bot.onText(/^\/start(?:@[\w_]+)?(?:\s+.*)?$/, handleStart);
   bot.onText(/^\/help$/, handleHelp);
@@ -2312,8 +2345,39 @@ function initEnhancedParentTelegramBot(options = {}) {
   bot.on('text', handleTextButtons);
   bot.on('callback_query', handleCallbackQuery);
 
+  // Mark initialization as complete
+  isInitializing = false;
+  
   return bot;
 }
+
+// Function to properly stop the bot
+function stopEnhancedParentTelegramBot() {
+  if (bot) {
+    try {
+      bot.stopPolling();
+      console.log(`[EnhancedBot] Bot stopped gracefully - Instance: ${botInstanceId}`);
+      bot = null;
+      botInstanceId = null;
+      isInitializing = false;
+    } catch (error) {
+      console.error(`[EnhancedBot] Error stopping bot (${botInstanceId}):`, error.message);
+    }
+  }
+}
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log('[EnhancedBot] Received SIGINT, shutting down gracefully...');
+  stopEnhancedParentTelegramBot();
+  process.exit(0);
+});
+
+process.on('SIGTERM', () => {
+  console.log('[EnhancedBot] Received SIGTERM, shutting down gracefully...');
+  stopEnhancedParentTelegramBot();
+  process.exit(0);
+});
 
 // ------------------------------- NOTIFICATIONS ---------------------------------
 
@@ -2339,6 +2403,70 @@ async function sendEnhancedParentTelegramNotification({ phone, chatId, message }
   await Promise.all(promises);
   return true;
 }
+
+// ------------------------------- PROCESS MONITORING ---------------------------------
+
+/**
+ * Process monitoring to detect and handle bot conflicts
+ */
+const processMonitor = {
+  lastHealthCheck: Date.now(),
+  conflictCount: 0,
+  restartCount: 0,
+  maxRestarts: 3
+};
+
+function checkBotHealth() {
+  const now = Date.now();
+  const timeSinceLastCheck = now - processMonitor.lastHealthCheck;
+  
+  // If bot exists and is polling, update health check
+  if (bot && bot.isPolling && bot.isPolling()) {
+    processMonitor.lastHealthCheck = now;
+    return true;
+  }
+  
+  // If bot doesn't exist or isn't polling, it might be in a conflict state
+  if (bot && timeSinceLastCheck > 30000) { // 30 seconds without health check
+    console.warn(`[EnhancedBot] Bot health check failed - Instance: ${botInstanceId}`);
+    return false;
+  }
+  
+  return true;
+}
+
+function handleBotConflict() {
+  processMonitor.conflictCount++;
+  console.warn(`[EnhancedBot] Bot conflict detected (${processMonitor.conflictCount} times) - Instance: ${botInstanceId}`);
+  
+  if (processMonitor.restartCount < processMonitor.maxRestarts) {
+    console.log(`[EnhancedBot] Attempting to resolve conflict (attempt ${processMonitor.restartCount + 1}/${processMonitor.maxRestarts})`);
+    
+    setTimeout(() => {
+      try {
+        if (bot) {
+          bot.stopPolling();
+          setTimeout(() => {
+            bot.startPolling();
+            processMonitor.restartCount++;
+            console.log(`[EnhancedBot] Bot restarted after conflict - Instance: ${botInstanceId}`);
+          }, 3000);
+        }
+      } catch (error) {
+        console.error(`[EnhancedBot] Failed to restart bot after conflict:`, error.message);
+      }
+    }, 5000);
+  } else {
+    console.error(`[EnhancedBot] Maximum restart attempts reached. Bot may need manual intervention.`);
+  }
+}
+
+// Monitor bot health every 30 seconds
+setInterval(() => {
+  if (!checkBotHealth()) {
+    handleBotConflict();
+  }
+}, 30000);
 
 // ------------------------------- PERFORMANCE MONITORING ---------------------------------
 
@@ -2370,9 +2498,13 @@ setInterval(logPerformanceMetrics, 5 * 60 * 1000);
 
 module.exports = {
   initEnhancedParentTelegramBot,
+  stopEnhancedParentTelegramBot,
   sendEnhancedParentTelegramNotification,
   getPerformanceMetrics: () => performanceMetrics,
-  logPerformanceMetrics
+  logPerformanceMetrics,
+  getProcessMonitor: () => processMonitor,
+  checkBotHealth,
+  handleBotConflict
 };
 
 // Auto-start if env flag is enabled

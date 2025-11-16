@@ -3,26 +3,19 @@ import api from "../../../services/apiServices.jsx";
 
 const FeesSelectInput = ({ label, name, onChange, value }) => {
   const [options, setOptions] = useState([]);
-  const [selectedAmount, setSelectedAmount] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
 
   const handleSelectChange = (event) => {
     const selectedOption = options.find(
       (option) => option.id === event.target.value
     );
     if (selectedOption) {
-      setSelectedAmount(selectedOption.amount);
-      setSelectedId(selectedOption.id);
       // Call the provided onChange function with selected data
       onChange({ id: selectedOption.id, amount: selectedOption.amount });
     } else {
       // Handle case where no option is selected (e.g., reset state)
-      setSelectedAmount(null);
-      setSelectedId(null);
       onChange({ id: null, amount: null }); // Pass null values if needed
     }
   };
-  console.log(selectedId, selectedAmount);
 
   useEffect(() => {
     const fetchData = async () => {

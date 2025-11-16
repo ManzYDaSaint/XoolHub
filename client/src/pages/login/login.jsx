@@ -9,6 +9,7 @@ import { setLoginData } from "../../helpers/examination/examSlice.jsx";
 import { Mail, Lock, Shield, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import logo from "../../logo.png";
+import { handleValidationErrors, showSuccessToast } from "../../utils/validationErrorHandler";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const Login = () => {
     try {
       const res = await api.Logon(data);
       if (res.data.success === true) {
-        toast.success(res.data.message);
+        showSuccessToast(res.data.message);
 
         // Redirecting to administrator dashboard after successful login
         setTimeout(() => {
@@ -29,7 +30,7 @@ const Login = () => {
         }, 2000);
         return;
       } else if (res.data.tsuccess === true) {
-        toast.success(res.data.tmessage);
+        showSuccessToast(res.data.tmessage);
         if (res.data.role === "bursar") {
           // Redirecting to bursar dashboard after successful login
           setTimeout(() => {
@@ -56,7 +57,7 @@ const Login = () => {
           return;
         }
       } else if (res.data.ssuccess === true) {
-        toast.success(res.data.smessage);
+        showSuccessToast(res.data.smessage);
 
         // Redirecting to Super Admin dashboard after successful login
         setTimeout(() => {
@@ -77,7 +78,8 @@ const Login = () => {
         })
       );
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      // Handle axios error responses with validation errors
+      handleValidationErrors(error);
     } finally {
       setLoading(false);
     }

@@ -83,7 +83,7 @@ const Personal = () => {
                                 label={'Name'}
                                 type='text'
                                 name='student'
-                                placeholder='Type here..'
+                                placeholder='Enter name'
                                 onChange={handleChange}
                                 value={updateFormData.student}
                                 disabled
@@ -106,7 +106,7 @@ const Personal = () => {
                                 label={'Class'}
                                 type='text'
                                 name='class'
-                                placeholder='Type here..'
+                                placeholder='Enter class'
                                 onChange={handleChange}
                                 value={updateFormData.class}
                                 disabled
@@ -117,17 +117,17 @@ const Personal = () => {
                                 label={'Address'}
                                 type='text'
                                 name='address'
-                                placeholder='Type here..'
+                                placeholder='Enter address'
                                 onChange={handleChange}
                                 value={updateFormData.address}
-                            />
+                            /> 
                         </div>
                         <div>
                             <FormInput
                                 label={'Contact'}
                                 type='text'
                                 name='contact'
-                                placeholder='Type here..'
+                                placeholder='Guardians telegram no (e.g. 265XXXXXXXXX)'
                                 onChange={handleChange}
                                 value={updateFormData.contact}
                             />

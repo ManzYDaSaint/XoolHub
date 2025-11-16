@@ -19,7 +19,7 @@ const AssignForm = ({ fetchData }) => {
       // Handle submit
       const handleSubmit = async(data) => {
           try {
-            const res = await api.addAssignTeacher({ data });
+            const res = await api.addAssignTeacher(data);
             if (res.data.success === true) {
               fetchData();
               toast.success(res.data.message);

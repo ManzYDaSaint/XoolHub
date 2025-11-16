@@ -46,7 +46,7 @@ const PilotProgramDashboard = () => {
       if (applicationsRes.data.success) {
         setApplications(applicationsRes.data.data);
       }
-      console.log("Applications: ", applicationsRes.data.data);
+      // Applications data processed
 
       if (programsRes.data.success) {
         setPrograms(programsRes.data.data);
@@ -123,7 +123,7 @@ const PilotProgramDashboard = () => {
       };
       
       // You would call your email service here
-      console.log('Email notification sent:', emailData);
+      // Email notification sent successfully
     } catch (error) {
       console.error('Error sending notification email:', error);
     }

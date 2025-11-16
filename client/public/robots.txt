@@ -1,3 +1,26 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /tdashboard/
+Disallow: /parent/
+Disallow: /bursar/
+Disallow: /super-admin/
+Disallow: /teacher-service/
+Disallow: /_next/
+Disallow: /static/
+
+# Allow important pages
+Allow: /about
+Allow: /features
+Allow: /pricing
+Allow: /contact
+Allow: /faq
+Allow: /login
+Allow: /register
+
 Sitemap: https://xoolhub.com/sitemap.xml
+
+# Crawl delay for better server performance
+Crawl-delay: 1

@@ -1,4 +1,10 @@
 const router = require('express').Router();
+const performanceMonitor = require('../utils/performanceMonitor');
+const { cache } = require('../database/fileCache.js');
+const realTimeCacheService = require('../services/realTimeCache.js');
+const { sessionStatsMiddleware, sessionHealthCheck } = require('../middleware/session.js');
+// Input validation middleware removed
+const { ipRateLimit, emailRateLimit } = require('../middleware/security.js');
 const { 
     signup, 
     login, 
@@ -9,7 +15,7 @@ const {
     addExam, 
     getExams, 
     deleteExams,
-    updateExams,
+    updateExams, 
     editExams,
     addYear,
     getYears,
@@ -209,16 +215,16 @@ const {
     getParentBotRealTimeStats,
     getParentBotNotifications,
     // Referral system imports
-    createReferralCode,
-    getReferralCode,
-    validateReferralCode,
-    trackReferralUsage,
-    getReferralAnalytics,
-    getAllReferralAnalytics,
-    getReferralTracking,
-    applyReferralDiscount,
-    getReferralSettings,
-    updateReferralSettings,
+    // createReferralCode,
+    // getReferralCode,
+    // validateReferralCode,
+    // trackReferralUsage,
+    // getReferralAnalytics,
+    // getAllReferralAnalytics,
+    // getReferralTracking,
+    // applyReferralDiscount,
+    // getReferralSettings,
+    // updateReferralSettings,
     gotStudents,
     gotCountry,
 } = require('../controller/apiController.js');
@@ -247,8 +253,8 @@ router.route('/payment-linechart').get(paymentLineChart);
 // ***** GET Methods
 router.route('/verifyOTP').post(verifyOTP);
 router.route('/resendOTP').post(resendOTP);
-router.route('/forgot-password').post(createResetSession);
-router.route('/reset-password').post(resetPassword);
+router.route('/forgot-password').post(emailRateLimit, createResetSession);
+router.route('/reset-password').post(emailRateLimit, resetPassword);
 
 // Security monitoring routes
 const {
@@ -304,7 +310,7 @@ router.route('/real-time-payment-status').get(getRealTimePaymentStatus);
 
 
 // ------- REGISTER ROUTES -----------
-router.route('/signup').post(signup)
+router.route('/signup').post(ipRateLimit, signup)
 router.route('/updateschool').put(updateSchools);
 router.route('/update-school-password').put(PasswordUpdates);
 router.route('/update-teacher-password').put(TeacherPasswordUpdates);
@@ -324,7 +330,7 @@ router.route('/add-contacts').post(insertContacts);
 
 // ------- LOGIN ROUTES -----------
 
-router.route('/login').post(login);
+router.route('/login').post(ipRateLimit, login);
 router.route('/verify').post(verify);
 router.route('/tverify').post(tverify);
 router.route('/superverify').post(superVerify);
@@ -713,34 +719,323 @@ router.route('/pilot-milestones/:id').put(pilotProgramController.updateMilestone
 
 // ------- REFERRAL SYSTEM ROUTES -----------
 // Create referral code for a school
-router.route('/referral/create-code/:schoolId').post(createReferralCode);
+// router.route('/referral/create-code/:schoolId').post(createReferralCode);
 
 // Get referral code for a school
-router.route('/referral/get-code/:schoolId').get(getReferralCode);
+// router.route('/referral/get-code/:schoolId').get(getReferralCode);
 
 // Validate referral code
-router.route('/referral/validate-code').post(validateReferralCode);
+// router.route('/referral/validate-code').post(validateReferralCode);
 
 // Track referral usage
-router.route('/referral/track-usage').post(trackReferralUsage);
+// router.route('/referral/track-usage').post(trackReferralUsage);
 
 // Get referral analytics for a school
-router.route('/referral/analytics/:schoolId').get(getReferralAnalytics);
+// router.route('/referral/analytics/:schoolId').get(getReferralAnalytics);
 
 // Get all referral analytics (super admin)
-router.route('/referral/analytics').get(getAllReferralAnalytics);
+// router.route('/referral/analytics').get(getAllReferralAnalytics);
 
 // Get referral tracking records
-router.route('/referral/tracking').get(getReferralTracking);
+// router.route('/referral/tracking').get(getReferralTracking);
 
 // Apply referral discount
-router.route('/referral/apply-discount').post(applyReferralDiscount);
+// router.route('/referral/apply-discount').post(applyReferralDiscount);
 
 // Get referral settings
-router.route('/referral/settings').get(getReferralSettings);
+// router.route('/referral/settings').get(getReferralSettings);
 
 // Update referral settings
-router.route('/referral/settings').put(updateReferralSettings);
+// router.route('/referral/settings').put(updateReferralSettings);
 // ------- REFERRAL SYSTEM ROUTES -----------
+
+// ------- PERFORMANCE MONITORING ROUTES -----------
+// Get system health status
+router.route('/performance/health').get(async (req, res) => {
+  try {
+    const health = await performanceMonitor.getSystemHealth();
+    res.status(200).json({
+      status: 'success',
+      data: health
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get system health',
+      error: error.message
+    });
+  }
+});
+
+// Get connection pool status
+router.route('/performance/connections').get(async (req, res) => {
+  try {
+    const connections = await performanceMonitor.getConnectionPoolStatus();
+    res.status(200).json({
+      status: 'success',
+      data: connections
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get connection status',
+      error: error.message
+    });
+  }
+});
+
+// Get school capacity statistics
+router.route('/performance/capacity').get(async (req, res) => {
+  try {
+    const capacity = await performanceMonitor.getSchoolCapacityStats();
+    res.status(200).json({
+      status: 'success',
+      data: capacity
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get capacity statistics',
+      error: error.message
+    });
+  }
+});
+
+// Get query performance statistics
+router.route('/performance/queries').get(async (req, res) => {
+  try {
+    const queries = await performanceMonitor.getQueryPerformanceStats();
+    res.status(200).json({
+      status: 'success',
+      data: queries
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get query performance',
+      error: error.message
+    });
+  }
+});
+
+// ------- REDIS CACHING ROUTES -----------
+// Get Redis cache statistics
+router.route('/cache/stats').get(async (req, res) => {
+  try {
+    const stats = await cache.getCacheStats();
+    res.status(200).json({
+      status: 'success',
+      data: stats
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get cache statistics',
+      error: error.message
+    });
+  }
+});
+
+// Clear Redis cache
+router.route('/cache/clear').post(async (req, res) => {
+  try {
+    const { school_id } = req.body;
+    
+    if (school_id) {
+      await cache.clearSchoolCache(school_id);
+      res.status(200).json({
+        status: 'success',
+        message: `Cache cleared for school ${school_id}`
+      });
+    } else {
+      await cache.clearAllCache();
+      res.status(200).json({
+        status: 'success',
+        message: 'All cache cleared'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to clear cache',
+      error: error.message
+    });
+  }
+});
+
+// Redis health check
+router.route('/cache/health').get(async (req, res) => {
+  try {
+    const isHealthy = await cache.healthCheck();
+    res.status(200).json({
+      status: 'success',
+      data: {
+        healthy: isHealthy,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Redis health check failed',
+      error: error.message
+    });
+  }
+});
+
+// ------- REAL-TIME CACHING ROUTES -----------
+// Get real-time dashboard data
+router.route('/realtime/dashboard').get(async (req, res) => {
+  try {
+    const { school_id } = req.query;
+    const data = await realTimeCacheService.getDashboardData(school_id);
+    
+    if (data) {
+      res.status(200).json({
+        status: 'success',
+        data: data
+      });
+    } else {
+      res.status(404).json({
+        status: 'error',
+        message: 'Real-time data not available'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get real-time dashboard data',
+      error: error.message
+    });
+  }
+});
+
+// Get school-specific real-time data
+router.route('/realtime/school/:schoolId').get(async (req, res) => {
+  try {
+    const { schoolId } = req.params;
+    const data = await realTimeCacheService.getSchoolRealTimeData(schoolId);
+    
+    if (data) {
+      res.status(200).json({
+        status: 'success',
+        data: data
+      });
+    } else {
+      res.status(404).json({
+        status: 'error',
+        message: `Real-time data not available for school ${schoolId}`
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get school real-time data',
+      error: error.message
+    });
+  }
+});
+
+// Get global real-time data
+router.route('/realtime/global').get(async (req, res) => {
+  try {
+    const data = await realTimeCacheService.getGlobalRealTimeData();
+    
+    if (data) {
+      res.status(200).json({
+        status: 'success',
+        data: data
+      });
+    } else {
+      res.status(404).json({
+        status: 'error',
+        message: 'Global real-time data not available'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get global real-time data',
+      error: error.message
+    });
+  }
+});
+
+// Clear real-time cache
+router.route('/realtime/clear').post(async (req, res) => {
+  try {
+    const { school_id } = req.body;
+    const cleared = await realTimeCacheService.clearCache(school_id);
+    
+    if (cleared) {
+      res.status(200).json({
+        status: 'success',
+        message: school_id ? `Real-time cache cleared for school ${school_id}` : 'All real-time cache cleared'
+      });
+    } else {
+      res.status(500).json({
+        status: 'error',
+        message: 'Failed to clear real-time cache'
+      });
+    }
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to clear real-time cache',
+      error: error.message
+    });
+  }
+});
+
+// Get real-time cache statistics
+router.route('/realtime/stats').get(async (req, res) => {
+  try {
+    const stats = await realTimeCacheService.getCacheStats();
+    res.status(200).json({
+      status: 'success',
+      data: stats
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get real-time cache statistics',
+      error: error.message
+    });
+  }
+});
+
+// ------- SESSION MANAGEMENT ROUTES -----------
+// Get session statistics
+router.route('/sessions/stats').get(sessionStatsMiddleware, async (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'success',
+      data: req.sessionStats
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to get session statistics',
+      error: error.message
+    });
+  }
+});
+
+// Session health check
+router.route('/sessions/health').get(sessionHealthCheck, async (req, res) => {
+  try {
+    res.status(200).json({
+      status: 'success',
+      message: 'Session store is healthy',
+      timestamp: new Date().toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Session store health check failed',
+      error: error.message
+    });
+  }
+});
 
 module.exports = router;

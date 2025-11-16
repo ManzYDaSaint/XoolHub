@@ -825,7 +825,6 @@ const sendEmail = async (to, template, data) => {
     };
 
     const result = await resend.emails.send(emailData);
-    console.log('Email sent successfully:', result.data?.id);
     return { success: true, messageId: result.data?.id };
   } catch (error) {
     console.error('Error sending email:', error);
@@ -976,7 +975,6 @@ const sendAdminNotification = async (eventType, data) => {
     };
 
     const result = await resend.emails.send(emailData);
-    console.log('Admin notification sent:', result.data?.id);
     return { success: true, messageId: result.data?.id };
   } catch (error) {
     console.error('Error sending admin notification:', error);

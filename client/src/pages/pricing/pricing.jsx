@@ -45,6 +45,48 @@ const Pricing = () => {
     ]
   };
 
+  const faqStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "name": "XoolHub Pricing Questions",
+    "description": "Common questions about XoolHub pricing and plans",
+    "url": "https://xoolhub.com/pricing",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is included in the free trial?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The free trial includes full access to all XoolHub features for one complete term, including student management, attendance tracking, grade management, parent communication, and all reporting features. No credit card required."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I change my plan later?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, you can upgrade or downgrade your plan at any time. Changes take effect at the beginning of the next billing cycle. We also offer custom enterprise solutions for large school districts."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Are there any setup fees?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "No setup fees for any of our standard plans. We include data migration assistance and basic training at no extra cost. Custom enterprise implementations may include additional setup services."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What payment methods do you accept?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "We accept bank transfers, mobile money payments, and credit cards. Payment is typically made per term (3 months) with discounts available for annual payments."
+        }
+      }
+    ]
+  };
+
   return (
     <> 
       <SEO 
@@ -53,6 +95,7 @@ const Pricing = () => {
         keywords="school management system pricing, education software cost, school ERP pricing, student information system cost, school administration software plans, education management pricing"
         url="/pricing"
         structuredData={structuredData}
+        additionalStructuredData={faqStructuredData}
       />
       <Navbar />
       <PlanOptions />

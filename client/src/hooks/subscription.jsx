@@ -49,7 +49,7 @@ function PAID({ children }) {
       </div>
     );
   } 
-// console.log(hasPilotProgram, hasRedirectTo);
+  
   if (!isActivated) {
     return <Navigate to={hasPilotProgram ? hasRedirectTo : "/pricing"} />;
   }

@@ -391,7 +391,6 @@ const sendSuperAdminNotification = async (paymentData) => {
     };
 
     const result = await resend.emails.send(emailData);
-    console.log('Super admin notification email sent successfully:', result.data?.id);
     return { success: true, messageId: result.data?.id };
   } catch (error) {
     console.error('Error sending super admin notification email:', error);
@@ -421,7 +420,6 @@ const sendSchoolApprovalEmail = async (paymentData) => {
     };
 
     const result = await resend.emails.send(emailData);
-    console.log('School approval email sent successfully:', result.data?.id);
     return { success: true, messageId: result.data?.id };
   } catch (error) {
     console.error('Error sending school approval email:', error);

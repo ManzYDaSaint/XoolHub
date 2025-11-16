@@ -8,7 +8,15 @@ const SEO = ({
   image = "/logo.png", 
   url, 
   type = "website",
-  structuredData
+  structuredData,
+  additionalStructuredData,
+  noindex = false,
+  nofollow = false,
+  author,
+  publishedTime,
+  modifiedTime,
+  section,
+  tags
 }) => {
   const siteName = "XoolHub";
   const baseUrl = "https://xoolhub.com";
@@ -22,6 +30,14 @@ const SEO = ({
   
   const finalDescription = description || defaultDescription;
   const finalKeywords = keywords || defaultKeywords;
+  
+  // Build robots directive
+  const robotsDirective = [];
+  if (noindex) robotsDirective.push('noindex');
+  else robotsDirective.push('index');
+  if (nofollow) robotsDirective.push('nofollow');
+  else robotsDirective.push('follow');
+  const robotsContent = robotsDirective.join(', ');
 
   return (
     <Helmet>
@@ -29,8 +45,8 @@ const SEO = ({
       <title>{fullTitle}</title>
       <meta name="description" content={finalDescription} />
       <meta name="keywords" content={finalKeywords} />
-      <meta name="author" content="XoolHub" />
-      <meta name="robots" content="index, follow" />
+      <meta name="author" content={author || "XoolHub"} />
+      <meta name="robots" content={robotsContent} />
       
       {/* Canonical URL */}
       <link rel="canonical" href={fullUrl} />
@@ -58,10 +74,35 @@ const SEO = ({
       <meta name="apple-mobile-web-app-title" content={siteName} />
       <meta name="application-name" content={siteName} />
       
+      {/* Article/Content Meta Tags */}
+      {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+      {modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+      {section && <meta property="article:section" content={section} />}
+      {tags && <meta property="article:tag" content={tags} />}
+      {author && <meta property="article:author" content={author} />}
+      
+      {/* Additional SEO Meta Tags */}
+      <meta name="format-detection" content="telephone=no" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+      
+      {/* Language and Region */}
+      <meta name="language" content="English" />
+      <meta name="geo.region" content="MW" />
+      <meta name="geo.country" content="Malawi" />
+      
       {/* Structured Data */}
       {structuredData && (
         <script type="application/ld+json">
           {JSON.stringify(structuredData)}
+        </script>
+      )}
+      
+      {/* Additional Structured Data */}
+      {additionalStructuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(additionalStructuredData)}
         </script>
       )}
     </Helmet>

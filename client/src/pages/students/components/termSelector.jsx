@@ -30,7 +30,7 @@ const TermSelector = ({ label, onChange, name, value }) => {
         onChange={onChange}
         className="w-full bg-transparent text-sm outline-none px-4 pb-2"
       >
-        <option value="" selected disabled>
+        <option value="" disabled>
           Select an option
         </option>
         {options.map((option) => (

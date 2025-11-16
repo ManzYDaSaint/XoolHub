@@ -18,7 +18,7 @@ const StudentForm = ({ fetchData }) => {
   // Handle form submission
   const handleSubmit = async (data) => {
     try {
-      const res = await api.addStudent({ data });
+      const res = await api.addStudent(data);
       if (res.data.success === true) {
         fetchData();
         toast.success(res.data.message);

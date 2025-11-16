@@ -41,7 +41,7 @@ const ClassSelector = ({ label, selectedClass, handleClassChange, handleSubjectC
         {label && <label htmlFor={''} className="text-sm font-medium text-gray-700 py-2">{label}</label>}
         <div className="inputContainer">
           <select name={name} value={value} onChange={handleClassChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2">
-            <option value="" selected disabled>Select an option</option>
+            <option value="" disabled>Select an option</option>
             {classs.map((clas) => (
               <option key={clas.id} value={clas.id}>
                 {clas.name}
@@ -54,7 +54,7 @@ const ClassSelector = ({ label, selectedClass, handleClassChange, handleSubjectC
         {labell && <label htmlFor={''} className="text-sm font-medium text-gray-700 py-2">{labell}</label>}
         <div className="inputContainer">
           <select name={namee} value={valuee} onChange={handleSubjectChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2" disabled={!selectedClass}>
-            <option value="" selected disabled>Select an option</option>
+            <option value="" disabled>Select an option</option>
             {subject.map((code) => (
               <option key={code.subjectid} value={code.subjectid}>
                 {code.name}

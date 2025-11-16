@@ -17,7 +17,7 @@ const ClassTForm = ({ fetchData }) => {
       // Handle submit
       const handleSubmit = async(data) => {
           try {
-            const res = await api.addClassTeacher({ data });
+            const res = await api.addClassTeacher(data);
             if (res.data.success === true) {
               fetchData();
               toast.success(res.data.message);

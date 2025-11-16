@@ -30,7 +30,7 @@ const ClassForm = ({ fetchData }) => {
         }
         else {
             try {
-              const res = await api.addClass({ data });
+              const res = await api.addClass(data);
               if (res.data.success === true) {
                 fetchData();
                 toast.success(res.data.message);

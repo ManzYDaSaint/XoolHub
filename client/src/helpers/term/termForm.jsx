@@ -30,7 +30,7 @@ const TermForm = ({ fetchData }) => {
         }
         else {
             try {
-              const res = await api.addTerm({ data });
+              const res = await api.addTerm(data);
               if (res.data.success === true) {
                 fetchData();
                 toast.success(res.data.message);

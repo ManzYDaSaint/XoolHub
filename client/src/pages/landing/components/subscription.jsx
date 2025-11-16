@@ -126,9 +126,9 @@ export default function Component() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 space-y-8">
-          <p className="inline-flex">
+          <div className="inline-flex">
             <HeaderBtn>Pricing</HeaderBtn>
-          </p>
+          </div>
           <h5 className="text-xl font-bold text-blue-900 md:text-4xl">
             Flexible Plans to Grow with Your <br /> School either public or
             private

@@ -1,6 +1,6 @@
 import { forwardRef, useImperativeHandle } from "react";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 
 // Forwarding a ref to allow the parent to call methods in the child
 const PrintComp = forwardRef(
@@ -108,7 +108,7 @@ const PrintComp = forwardRef(
 
       // Clean Table with No Background Colors
       doc.setFontSize(9);
-      doc.autoTable({
+      autoTable(doc, {
         startY: 52,
         head: [tableColumns],
         body: tableRows,
@@ -214,7 +214,7 @@ const PrintComp = forwardRef(
       const totalWidth = 180;
       const columnWidth = totalWidth / gradesRow.length;
 
-      doc.autoTable({
+      autoTable(doc, {
         body: [gradesRow],
         startY: Grade + 5,
         theme: "grid",
@@ -238,7 +238,7 @@ const PrintComp = forwardRef(
       // Clean Grade Letters MSCE
       const Rem = grade.map((item) => `${item.grade}`);
       const remWidth = totalWidth / Rem.length;
-      doc.autoTable({
+      autoTable(doc, {
         body: [Rem],
         startY: Grade + 12,
         theme: "grid",
@@ -270,7 +270,7 @@ const PrintComp = forwardRef(
       const JWidth = 180;
       const CWidth = JWidth / JRow.length;
 
-      doc.autoTable({
+      autoTable(doc, {
         body: [JRow],
         startY: JGrade + 5,
         theme: "grid",
@@ -294,7 +294,7 @@ const PrintComp = forwardRef(
       const JRem = Jgrade.map((item) => `${item.grade}`);
       const JremWidth = JWidth / JRem.length;
 
-      doc.autoTable({
+      autoTable(doc, {
         body: [JRem],
         startY: JGrade + 12,
         theme: "grid",

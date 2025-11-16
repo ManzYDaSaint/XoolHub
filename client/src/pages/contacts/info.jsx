@@ -23,7 +23,7 @@ const ContactPage = () => {
         toast.error(res.data.message);
       }
     } catch (error) {
-      console.log(error.message);
+      // Error handling without console log
     } finally {
       dispatch(
         setContactData({
@@ -102,7 +102,7 @@ const ContactPage = () => {
               {
                 icon: Phone,
                 title: "Phone",
-                value: "0886 563 330",
+                value: "099 353 3315",
                 color: "from-green-500 to-emerald-500",
                 bgColor: "bg-green-100",
                 delay: 0.4
@@ -118,7 +118,7 @@ const ContactPage = () => {
               {
                 icon: LocateFixed,
                 title: "Address",
-                value: "Mchinji",
+                value: "Lilongwe",
                 color: "from-purple-500 to-pink-500",
                 bgColor: "bg-purple-100",
                 delay: 0.6

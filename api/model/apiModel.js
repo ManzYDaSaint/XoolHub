@@ -1755,7 +1755,6 @@ const getX = async (sid, termid, typeid, classid, subjectid) => {
 };
 
 const deleteResult = async (
-  yearid,
   termid,
   typeid,
   classid,
@@ -1763,8 +1762,8 @@ const deleteResult = async (
   sid
 ) => {
   const query =
-    "DELETE FROM results WHERE yearid = ? AND termid = ? AND typeid = ? AND classid = ? AND subjectid = ? AND sid = ?";
-  const value = [yearid, termid, typeid, classid, subjectid, sid];
+    "DELETE FROM results WHERE termid = ? AND typeid = ? AND classid = ? AND subjectid = ? AND sid = ?";
+  const value = [termid, typeid, classid, subjectid, sid];
   const [res] = await conn.query(query, value);
   return res;
 };
@@ -3721,10 +3720,7 @@ async function getStudentDataForAI(studentId, schoolId) {
 
     const queryTime = Date.now() - startTime;
     
-    // Log performance metrics
-    if (queryTime > 200) {
-      console.log(`[AI] Slow student data query: ${queryTime}ms for student ${studentId}`);
-    }
+    // Performance monitoring - slow query threshold: 200ms
 
     return {
       academic,
@@ -3750,304 +3746,304 @@ async function getStudentDataForAI(studentId, schoolId) {
 // ==================== REFERRAL SYSTEM FUNCTIONS ====================
 
 // Generate a unique referral code
-const generateReferralCode = async (schoolId) => {
-  try {
-    const length = 8; // Default length
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-    let code = '';
+// const generateReferralCode = async (schoolId) => {
+//   try {
+//     const length = 8; // Default length
+//     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+//     let code = '';
     
-    // Generate code until we find a unique one
-    let isUnique = false;
-    while (!isUnique) {
-      code = '';
-      for (let i = 0; i < length; i++) {
-        code += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
+//     // Generate code until we find a unique one
+//     let isUnique = false;
+//     while (!isUnique) {
+//       code = '';
+//       for (let i = 0; i < length; i++) {
+//         code += chars.charAt(Math.floor(Math.random() * chars.length));
+//       }
       
-      // Check if code already exists
-      const sql = 'SELECT id FROM referral_codes WHERE referral_code = ?';
-      const [existing] = await conn.query(sql, [code]);
-      isUnique = existing.length === 0;
-    }
+//       // Check if code already exists
+//       const sql = 'SELECT id FROM referral_codes WHERE referral_code = ?';
+//       const [existing] = await conn.query(sql, [code]);
+//       isUnique = existing.length === 0;
+//     }
     
-    return code;
-  } catch (error) {
-    console.error('Error generating referral code:', error);
-    throw error;
-  }
-};
+//     return code;
+//   } catch (error) {
+//     console.error('Error generating referral code:', error);
+//     throw error;
+//   }
+// };
 
 // Create referral code for a school
-const createReferralCode = async (schoolId) => {
-  try {
-    // Check if school already has a referral code
-    const checkSql = 'SELECT id FROM referral_codes WHERE school_id = ? AND is_active = TRUE';
-    const [existing] = await conn.query(checkSql, [schoolId]);
+// const createReferralCode = async (schoolId) => {
+//   try {
+//     // Check if school already has a referral code
+//     const checkSql = 'SELECT id FROM referral_codes WHERE school_id = ? AND is_active = TRUE';
+//     const [existing] = await conn.query(checkSql, [schoolId]);
     
-    if (existing.length > 0) {
-      return existing[0].id; // Return existing code ID
-    }
+//     if (existing.length > 0) {
+//       return existing[0].id; // Return existing code ID
+//     }
     
-    // Generate new referral code
-    const referralCode = await generateReferralCode(schoolId);
+//     // Generate new referral code
+//     const referralCode = await generateReferralCode(schoolId);
     
-    // Insert new referral code
-    const sql = 'INSERT INTO referral_codes (school_id, referral_code) VALUES (?, ?)';
-    const [result] = await conn.query(sql, [schoolId, referralCode]);
+//     // Insert new referral code
+//     const sql = 'INSERT INTO referral_codes (school_id, referral_code) VALUES (?, ?)';
+//     const [result] = await conn.query(sql, [schoolId, referralCode]);
     
-    return result.insertId;
-  } catch (error) {
-    console.error('Error creating referral code:', error);
-    throw error;
-  }
-};
+//     return result.insertId;
+//   } catch (error) {
+//     console.error('Error creating referral code:', error);
+//     throw error;
+//   }
+// };
 
 // Get referral code for a school
-const getReferralCode = async (schoolId) => {
-  try {
-    const sql = 'SELECT * FROM referral_codes WHERE school_id = ? AND is_active = TRUE';
-    const [result] = await conn.query(sql, [schoolId]);
-    return result[0] || null;
-  } catch (error) {
-    console.error('Error getting referral code:', error);
-    throw error;
-  }
-};
+// const getReferralCode = async (schoolId) => {
+//   try {
+//     const sql = 'SELECT * FROM referral_codes WHERE school_id = ? AND is_active = TRUE';
+//     const [result] = await conn.query(sql, [schoolId]);
+//     return result[0] || null;
+//   } catch (error) {
+//     console.error('Error getting referral code:', error);
+//     throw error;
+//   }
+// };
 
 // Validate referral code
-const validateReferralCode = async (referralCode) => {
-  try {
-    const sql = `
-      SELECT rc.*, s.email as referrer_email 
-      FROM referral_codes rc 
-      JOIN schools s ON rc.school_id = s.id 
-      WHERE rc.referral_code = ? AND rc.is_active = TRUE
-    `;
-    const [result] = await conn.query(sql, [referralCode]);
-    return result[0] || null;
-  } catch (error) {
-    console.error('Error validating referral code:', error);
-    throw error;
-  }
-};
+// const validateReferralCode = async (referralCode) => {
+//   try {
+//     const sql = `
+//       SELECT rc.*, s.email as referrer_email 
+//       FROM referral_codes rc 
+//       JOIN schools s ON rc.school_id = s.id 
+//       WHERE rc.referral_code = ? AND rc.is_active = TRUE
+//     `;
+//     const [result] = await conn.query(sql, [referralCode]);
+//     return result[0] || null;
+//   } catch (error) {
+//     console.error('Error validating referral code:', error);
+//     throw error;
+//   }
+// };
 
 // Track referral usage
-const trackReferralUsage = async (referrerSchoolId, referredSchoolId, referralCode) => {
-  try {
-    // Get referral settings
-    const settings = await getReferralSettings();
-    const discountPercentage = parseFloat(settings.referral_discount_percentage) || 10.00;
-    const rewardAmount = parseFloat(settings.referral_reward_amount) || 50.00;
+// const trackReferralUsage = async (referrerSchoolId, referredSchoolId, referralCode) => {
+//   try {
+//     // Get referral settings
+//     const settings = await getReferralSettings();
+//     const discountPercentage = parseFloat(settings.referral_discount_percentage) || 10.00;
+//     const rewardAmount = parseFloat(settings.referral_reward_amount) || 50.00;
     
-    const sql = `
-      INSERT INTO referral_tracking 
-      (referrer_school_id, referred_school_id, referral_code_used, discount_percentage, reward_amount) 
-      VALUES (?, ?, ?, ?, ?)
-    `;
-    const [result] = await conn.query(sql, [
-      referrerSchoolId, 
-      referredSchoolId, 
-      referralCode, 
-      discountPercentage, 
-      rewardAmount
-    ]);
+//     const sql = `
+//       INSERT INTO referral_tracking 
+//       (referrer_school_id, referred_school_id, referral_code_used, discount_percentage, reward_amount) 
+//       VALUES (?, ?, ?, ?, ?)
+//     `;
+//     const [result] = await conn.query(sql, [
+//       referrerSchoolId, 
+//       referredSchoolId, 
+//       referralCode, 
+//       discountPercentage, 
+//       rewardAmount
+//     ]);
     
-    return result.insertId;
-  } catch (error) {
-    console.error('Error tracking referral usage:', error);
-    throw error;
-  }
-};
+//     return result.insertId;
+//   } catch (error) {
+//     console.error('Error tracking referral usage:', error);
+//     throw error;
+//   }
+// };
 
 // Get referral settings
-const getReferralSettings = async () => {
-  try {
-    const sql = 'SELECT setting_key, setting_value FROM referral_settings';
-    const [result] = await conn.query(sql);
+// const getReferralSettings = async () => {
+//   try {
+//     const sql = 'SELECT setting_key, setting_value FROM referral_settings';
+//     const [result] = await conn.query(sql);
     
-    const settings = {};
-    result.forEach(row => {
-      settings[row.setting_key] = row.setting_value;
-    });
+//     const settings = {};
+//     result.forEach(row => {
+//       settings[row.setting_key] = row.setting_value;
+//     });
     
-    return settings;
-  } catch (error) {
-    console.error('Error getting referral settings:', error);
-    throw error;
-  }
-};
+//     return settings;
+//   } catch (error) {
+//     console.error('Error getting referral settings:', error);
+//     throw error;
+//   }
+// };
 
 // Update referral settings
-const updateReferralSettings = async (settings) => {
-  try {
-    const updates = [];
-    for (const [key, value] of Object.entries(settings)) {
-      updates.push(`('${key}', '${value}')`);
-    }
+// const updateReferralSettings = async (settings) => {
+//   try {
+//     const updates = [];
+//     for (const [key, value] of Object.entries(settings)) {
+//       updates.push(`('${key}', '${value}')`);
+//     }
     
-    const sql = `
-      INSERT INTO referral_settings (setting_key, setting_value) 
-      VALUES ${updates.join(', ')}
-      ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
-    `;
+//     const sql = `
+//       INSERT INTO referral_settings (setting_key, setting_value) 
+//       VALUES ${updates.join(', ')}
+//       ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)
+//     `;
     
-    await conn.query(sql);
-    return true;
-  } catch (error) {
-    console.error('Error updating referral settings:', error);
-    throw error;
-  }
-};
+//     await conn.query(sql);
+//     return true;
+//   } catch (error) {
+//     console.error('Error updating referral settings:', error);
+//     throw error;
+//   }
+// };
 
 // Get referral analytics for a school
-const getReferralAnalytics = async (schoolId) => {
-  try {
-    const sql = `
-      SELECT 
-        ra.total_referrals,
-        ra.successful_referrals,
-        ra.total_rewards_earned,
-        ra.total_discounts_given,
-        ra.last_referral_date,
-        rc.referral_code,
-        s.email as school_email
-      FROM referral_analytics ra
-      LEFT JOIN referral_codes rc ON ra.school_id = rc.school_id AND rc.is_active = TRUE
-      LEFT JOIN schools s ON ra.school_id = s.id
-      WHERE ra.school_id = ?
-    `;
-    const [result] = await conn.query(sql, [schoolId]);
-    return result[0] || null;
-  } catch (error) {
-    console.error('Error getting referral analytics:', error);
-    throw error;
-  }
-};
+// const getReferralAnalytics = async (schoolId) => {
+//   try {
+//     const sql = `
+//       SELECT 
+//         ra.total_referrals,
+//         ra.successful_referrals,
+//         ra.total_rewards_earned,
+//         ra.total_discounts_given,
+//         ra.last_referral_date,
+//         rc.referral_code,
+//         s.email as school_email
+//       FROM referral_analytics ra
+//       LEFT JOIN referral_codes rc ON ra.school_id = rc.school_id AND rc.is_active = TRUE
+//       LEFT JOIN schools s ON ra.school_id = s.id
+//       WHERE ra.school_id = ?
+//     `;
+//     const [result] = await conn.query(sql, [schoolId]);
+//     return result[0] || null;
+//   } catch (error) {
+//     console.error('Error getting referral analytics:', error);
+//     throw error;
+//   }
+// };
 
 // Get all referral analytics (for super admin)
-const getAllReferralAnalytics = async () => {
-  try {
-    const sql = `
-      SELECT 
-        ra.school_id,
-        s.email as school_email,
-        ra.total_referrals,
-        ra.successful_referrals,
-        ra.total_rewards_earned,
-        ra.total_discounts_given,
-        ra.last_referral_date,
-        rc.referral_code,
-        ra.created_at
-      FROM referral_analytics ra
-      LEFT JOIN schools s ON ra.school_id = s.id
-      LEFT JOIN referral_codes rc ON ra.school_id = rc.school_id AND rc.is_active = TRUE
-      ORDER BY ra.total_referrals DESC
-    `;
-    const [result] = await conn.query(sql);
-    return result;
-  } catch (error) {
-    console.error('Error getting all referral analytics:', error);
-    throw error;
-  }
-};
+// const getAllReferralAnalytics = async () => {
+//   try {
+//     const sql = `
+//       SELECT 
+//         ra.school_id,
+//         s.email as school_email,
+//         ra.total_referrals,
+//         ra.successful_referrals,
+//         ra.total_rewards_earned,
+//         ra.total_discounts_given,
+//         ra.last_referral_date,
+//         rc.referral_code,
+//         ra.created_at
+//       FROM referral_analytics ra
+//       LEFT JOIN schools s ON ra.school_id = s.id
+//       LEFT JOIN referral_codes rc ON ra.school_id = rc.school_id AND rc.is_active = TRUE
+//       ORDER BY ra.total_referrals DESC
+//     `;
+//     const [result] = await conn.query(sql);
+//     return result;
+//   } catch (error) {
+//     console.error('Error getting all referral analytics:', error);
+//     throw error;
+//   }
+// };
 
 // Update referral analytics
-const updateReferralAnalytics = async (schoolId, updateData) => {
-  try {
-    const fields = [];
-    const values = [];
+// const updateReferralAnalytics = async (schoolId, updateData) => {
+//   try {
+//     const fields = [];
+//     const values = [];
     
-    for (const [key, value] of Object.entries(updateData)) {
-      fields.push(`${key} = ?`);
-      values.push(value);
-    }
+//     for (const [key, value] of Object.entries(updateData)) {
+//       fields.push(`${key} = ?`);
+//       values.push(value);
+//     }
     
-    values.push(schoolId);
+//     values.push(schoolId);
     
-    const sql = `
-      INSERT INTO referral_analytics (school_id, ${Object.keys(updateData).join(', ')})
-      VALUES (?, ${Object.keys(updateData).map(() => '?').join(', ')})
-      ON DUPLICATE KEY UPDATE ${fields.join(', ')}
-    `;
+//     const sql = `
+//       INSERT INTO referral_analytics (school_id, ${Object.keys(updateData).join(', ')})
+//       VALUES (?, ${Object.keys(updateData).map(() => '?').join(', ')})
+//       ON DUPLICATE KEY UPDATE ${fields.join(', ')}
+//     `;
     
-    await conn.query(sql, values);
-    return true;
-  } catch (error) {
-    console.error('Error updating referral analytics:', error);
-    throw error;
-  }
-};
+//     await conn.query(sql, values);
+//     return true;
+//   } catch (error) {
+//     console.error('Error updating referral analytics:', error);
+//     throw error;
+//   }
+// };
 
 // Get referral tracking records
-const getReferralTracking = async (schoolId = null) => {
-  try {
-    let sql = `
-      SELECT 
-        rt.*,
-        s1.email as referrer_email,
-        s2.email as referred_email,
-        s1.id as referrer_school_id,
-        s2.id as referred_school_id
-      FROM referral_tracking rt
-      LEFT JOIN schools s1 ON rt.referrer_school_id = s1.id
-      LEFT JOIN schools s2 ON rt.referred_school_id = s2.id
-    `;
+// const getReferralTracking = async (schoolId = null) => {
+//   try {
+//     let sql = `
+//       SELECT 
+//         rt.*,
+//         s1.email as referrer_email,
+//         s2.email as referred_email,
+//         s1.id as referrer_school_id,
+//         s2.id as referred_school_id
+//       FROM referral_tracking rt
+//       LEFT JOIN schools s1 ON rt.referrer_school_id = s1.id
+//       LEFT JOIN schools s2 ON rt.referred_school_id = s2.id
+//     `;
     
-    const values = [];
-    if (schoolId) {
-      sql += ' WHERE rt.referrer_school_id = ? OR rt.referred_school_id = ?';
-      values.push(schoolId, schoolId);
-    }
+//     const values = [];
+//     if (schoolId) {
+//       sql += ' WHERE rt.referrer_school_id = ? OR rt.referred_school_id = ?';
+//       values.push(schoolId, schoolId);
+//     }
     
-    sql += ' ORDER BY rt.created_at DESC';
+//     sql += ' ORDER BY rt.created_at DESC';
     
-    const [result] = await conn.query(sql, values);
-    return result;
-  } catch (error) {
-    console.error('Error getting referral tracking:', error);
-    throw error;
-  }
-};
+//     const [result] = await conn.query(sql, values);
+//     return result;
+//   } catch (error) {
+//     console.error('Error getting referral tracking:', error);
+//     throw error;
+//   }
+// };
 
 // Apply referral discount
-const applyReferralDiscount = async (referralTrackingId, subscriptionAmount) => {
-  try {
-    const sql = `
-      SELECT rt.*, rc.referral_code 
-      FROM referral_tracking rt
-      LEFT JOIN referral_codes rc ON rt.referral_code_used = rc.referral_code
-      WHERE rt.id = ?
-    `;
-    const [result] = await conn.query(sql, [referralTrackingId]);
+// const applyReferralDiscount = async (referralTrackingId, subscriptionAmount) => {
+//   try {
+//     const sql = `
+//       SELECT rt.*, rc.referral_code 
+//       FROM referral_tracking rt
+//       LEFT JOIN referral_codes rc ON rt.referral_code_used = rc.referral_code
+//       WHERE rt.id = ?
+//     `;
+//     const [result] = await conn.query(sql, [referralTrackingId]);
     
-    if (result.length === 0) {
-      throw new Error('Referral tracking record not found');
-    }
+//     if (result.length === 0) {
+//       throw new Error('Referral tracking record not found');
+//     }
     
-    const tracking = result[0];
-    const discountAmount = (subscriptionAmount * tracking.discount_percentage) / 100;
+//     const tracking = result[0];
+//     const discountAmount = (subscriptionAmount * tracking.discount_percentage) / 100;
     
-    // Update tracking record
-    const updateSql = `
-      UPDATE referral_tracking 
-      SET discount_applied = ?, status = 'completed'
-      WHERE id = ?
-    `;
-    await conn.query(updateSql, [discountAmount, referralTrackingId]);
+//     // Update tracking record
+//     const updateSql = `
+//       UPDATE referral_tracking 
+//       SET discount_applied = ?, status = 'completed'
+//       WHERE id = ?
+//     `;
+//     await conn.query(updateSql, [discountAmount, referralTrackingId]);
     
-    // Update analytics
-    await updateReferralAnalytics(tracking.referrer_school_id, {
-      successful_referrals: 1,
-      total_discounts_given: discountAmount,
-      last_referral_date: new Date()
-    });
+//     // Update analytics
+//     await updateReferralAnalytics(tracking.referrer_school_id, {
+//       successful_referrals: 1,
+//       total_discounts_given: discountAmount,
+//       last_referral_date: new Date()
+//     });
     
-    return discountAmount;
-  } catch (error) {
-    console.error('Error applying referral discount:', error);
-    throw error;
-  }
-};
+//     return discountAmount;
+//   } catch (error) {
+//     console.error('Error applying referral discount:', error);
+//     throw error;
+//   }
+// };
 
 // ----- PASSWORD RESET SYSTEM SECTION -----
 
@@ -4186,18 +4182,18 @@ const getPasswordResetStats = async (email = null) => {
 module.exports = {
   ...module.exports,
   // ----- REFERRAL SYSTEM SECTION -----
-  generateReferralCode,
-  createReferralCode,
-  getReferralCode,
-  validateReferralCode,
-  trackReferralUsage,
-  getReferralSettings,
-  updateReferralSettings,
-  getReferralAnalytics,
-  getAllReferralAnalytics,
-  updateReferralAnalytics,
-  getReferralTracking,
-  applyReferralDiscount,
+  // generateReferralCode,
+  // createReferralCode,
+  // getReferralCode,
+  // validateReferralCode,
+  // trackReferralUsage,
+  // getReferralSettings,
+  // updateReferralSettings,
+  // getReferralAnalytics,
+  // getAllReferralAnalytics,
+  // updateReferralAnalytics,
+  // getReferralTracking,
+  // applyReferralDiscount,
   // ----- PASSWORD RESET SYSTEM SECTION -----
   findUserByEmail,
   storePasswordResetToken,

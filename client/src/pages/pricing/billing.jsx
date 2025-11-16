@@ -74,32 +74,66 @@ const Invoicing = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    try {
-      const payload = {
-        subscriptionName: Subscription,
-        grandTotal: sub,
-        billingCycle: isYearly ? "Yearly" : "Termly",
-      };
+    
+    const payload = {
+      subscriptionName: Subscription,
+      grandTotal: sub,
+      billingCycle: isYearly ? "Yearly" : "Termly",
+    };
 
-      const response = await api.addBilling(payload);
-      if (response.data.success === true) {
-        toast.success("Payment request created successfully!");
-        navigate("/payment-confirmation", { 
-          state: {
-            subscriptionName: Subscription,
-            grandTotal: sub,
-            billingCycle: isYearly ? "Yearly" : "Termly"
-          }
-        });
-      } else {
-        toast.error(response.data.message);
+    // Retry logic for network issues
+    const maxRetries = 3;
+    let retryCount = 0;
+    
+    while (retryCount < maxRetries) {
+      try {
+        const response = await api.addBilling(payload);
+        if (response.data.success === true) {
+          toast.success("Payment request created successfully!");
+          navigate("/payment-confirmation", { 
+            state: {
+              subscriptionName: Subscription,
+              grandTotal: sub,
+              billingCycle: isYearly ? "Yearly" : "Termly"
+            }
+          });
+          return; // Success, exit the function
+        } else {
+          toast.error(response.data.message || "Payment request failed");
+          return; // Exit on API error response
+        }
+      } catch (error) {
+        console.error(`Attempt ${retryCount + 1} - Error submitting invoice:`, error);
+        
+        // Check if it's a network error that we should retry
+        const isNetworkError = error.code === 'ERR_NETWORK' || 
+                              error.message === 'Network Error' ||
+                              error.response?.status >= 500;
+        
+        if (isNetworkError && retryCount < maxRetries - 1) {
+          retryCount++;
+          await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+          continue;
+        }
+        
+        // Handle specific error types
+        if (error.response?.status === 401) {
+          toast.error("Session expired. Please log in again.");
+          // Optionally redirect to login
+        } else if (error.response?.status === 400) {
+          toast.error(error.response.data.message || "Invalid request data");
+        } else if (error.response?.status === 503) {
+          toast.error("Service temporarily unavailable. Please try again later.");
+        } else if (error.code === 'ERR_NETWORK') {
+          toast.error("Network error. Please check your connection and try again.");
+        } else {
+          toast.error(error.response?.data?.message || "Payment failed. Please try again.");
+        }
+        break; // Exit the retry loop
       }
-    } catch (error) {
-      console.error("Error submitting invoice:", error);
-      toast.error("Payment failed. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
+    
+    setIsLoading(false);
   };
 
   return (

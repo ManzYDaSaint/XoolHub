@@ -16,13 +16,14 @@ const AdminPersonal = () => {
   const [loading, setLoading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
   const navigate = useNavigate();
 
   const fetchData = async () => {
     try {
       const res = await api.getSchool();
       const data = res.data.details;
-
+ 
       dispatch(
         setAdminFormData({
           name: data.name || "",
@@ -38,7 +39,9 @@ const AdminPersonal = () => {
 
       // If the logo is retrieved as a URL, display it
       if (data.logo) {
-        setLogoFile(data.logo); // URL to show the image
+        setLogoPreview(data.logo); // URL to show the image
+      } else {
+        setLogoPreview(null);
       }
     } catch (error) {
       console.error("Error fetching individual:", error);
@@ -48,6 +51,15 @@ const AdminPersonal = () => {
   useEffect(() => {
     fetchData(); // eslint-disable-next-line
   }, []);
+
+  // Cleanup object URL on component unmount
+  useEffect(() => {
+    return () => {
+      if (logoPreview && logoPreview.startsWith('blob:')) {
+        URL.revokeObjectURL(logoPreview);
+      }
+    };
+  }, [logoPreview]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -70,27 +82,33 @@ const AdminPersonal = () => {
   };
 
   const handleFileChange = (e) => {
-    setLogoFile(e.target.files[0]); // Handle file selection
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file); // Store the actual file for upload
+      const previewUrl = URL.createObjectURL(file);
+      setLogoPreview(previewUrl); // Create preview URL
+    }
   };
 
   const handleSubmit = async (data) => {
     try {
       const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("address", data.address);
-      formData.append("city", data.city);
-      formData.append("country", data.country);
-      formData.append("email", data.email);
-      formData.append("contact", data.contact);
-      formData.append("slogan", data.slogan);
-      formData.append("type", data.type);
+      formData.append("name", data.name || "");
+      formData.append("address", data.address || "");
+      formData.append("city", data.city || "");
+      formData.append("country", data.country || "");
+      formData.append("email", data.email || "");
+      formData.append("contact", data.contact || "");
+      formData.append("slogan", data.slogan || "");
+      formData.append("type", data.type || "");
       if (logoFile) {
         formData.append("logo", logoFile); // Append logo file
       }
-
+      
       const res = await api.updateSchool(formData);
+
       if (res.data.success) {
-        fetchData();
+        fetchData(); // This will update logoPreview with the new URL
         toast.success(res.data.message);
       } else {
         toast.error(res.data.message);
@@ -160,14 +178,9 @@ const AdminPersonal = () => {
           will be displayed and effective once updated.
         </p>
         <div className="imgContainer mt-3 mb-4">
-          {logoFile && (
+          {logoPreview && (
             <img
-              // Check if logoFile is a File object or a URL
-              src={
-                logoFile instanceof File
-                  ? URL.createObjectURL(logoFile)
-                  : logoFile
-              }
+              src={logoPreview}
               alt="Logo Preview"
               className="w-20 h-20 object-cover mt-5"
             />
@@ -199,7 +212,6 @@ const AdminPersonal = () => {
                   placeholder={"Type here.."}
                   onChange={handleChange}
                   value={adminFormData.name}
-                  disabled
                 />
               </div>
               <div>
@@ -230,7 +242,6 @@ const AdminPersonal = () => {
                   placeholder={"Type here.."}
                   onChange={handleChange}
                   value={adminFormData.city}
-                  disabled
                 />
               </div>
               <div>

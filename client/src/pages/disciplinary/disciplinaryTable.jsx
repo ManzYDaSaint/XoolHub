@@ -271,7 +271,6 @@ const DisciplinaryTable = ({ disciplinaryData, loading }) => {
             <button
               onClick={() => {
                 // Export functionality would go here
-                console.log('Export clicked');
               }}
               className="px-4 py-2 text-sm bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors flex items-center space-x-2"
             >

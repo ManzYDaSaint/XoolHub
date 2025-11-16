@@ -37,7 +37,7 @@ const Schools = () => {
           setError('failed to fetch schools data');
         }
       } catch (err) {
-        console.error('Error fetching schools:', err);
+        // Error fetching schools data
         setError('Error loading schools data');
       } finally {
         setLoading(false);
@@ -60,7 +60,7 @@ const Schools = () => {
           setError('failed to fetch students data');
         }
       } catch (err) {
-        console.error('Error fetching students:', err);
+        // Error fetching students data
         setError('Error loading students data');
       }
     };
@@ -68,7 +68,10 @@ const Schools = () => {
     fetchStudents();
   }, []);
 
-  console.log(students)
+  // Debug log - only in development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Students data:', students);
+  }
 
 
   useEffect(() => {
@@ -83,7 +86,7 @@ const Schools = () => {
           setError('failed to fetch countries data');
         }
       } catch (err) {
-        console.error('Error fetching countries:', err);
+        // Error fetching countries data
         setError('Error loading countries data');
       }
     };
@@ -130,7 +133,7 @@ const Schools = () => {
   return (
     <section className="py-20 relative overflow-hidden">
       {/* Custom styles for slider */}
-      <style jsx>{`
+      <style>{`
         .schools-slider .slick-track {
           display: flex !important;
           align-items: stretch;

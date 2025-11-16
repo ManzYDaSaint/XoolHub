@@ -15,6 +15,7 @@ import api from "../../services/apiServices";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../logo.png";
 import toast from "react-hot-toast";
+import logger from "../../utils/logger";
 
 // Sidebar wrapper (renamed from Sidebar to avoid shadowing)
 const SidebarWrapper = ({ children, className }) => (
@@ -41,7 +42,7 @@ const Sidebar = ({ open, onClose }) => {
         setTimeout(() => navigate("/login"), 1000);
       }
     } catch (err) {
-      console.error("Logout error:", err);
+      logger.apiError("logout", err);
     }
   };
 
@@ -54,7 +55,7 @@ const Sidebar = ({ open, onClose }) => {
           return;
         }
       } catch (err) {
-        console.error("Admin verification error:", err);
+        logger.apiError("admin verification", err);
       }
 
       try {
@@ -65,7 +66,7 @@ const Sidebar = ({ open, onClose }) => {
           : "";
         setRole(normalizedRole);
       } catch (err) {
-        console.error("User verification error:", err);
+        logger.apiError("user verification", err);
       }
     };
 
@@ -80,7 +81,7 @@ const Sidebar = ({ open, onClose }) => {
         setSchool(data.name);
         if (data.logo) setLogoFile(data.logo);
       } catch (err) {
-        console.error("School fetch error:", err);
+        logger.apiError("school fetch", err);
       }
     };
 
@@ -100,6 +101,7 @@ const Sidebar = ({ open, onClose }) => {
       { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },
       { path: "/entry", icon: <File size={23} />, label: "Entry", active: true },
       { path: "/tstudents", icon: <GraduationCap size={23} />, label: "Students" },
+      { path: "/attendance", icon: <CalendarDays size={23} />, label: "Attendance" },
     ],
     bursar: [
       { path: "/bursar/profile", icon: <User size={23} />, label: "Profile" },

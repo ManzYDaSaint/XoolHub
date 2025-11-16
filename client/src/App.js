@@ -9,11 +9,15 @@ import TPAID from "./hooks/teacherSubscription.jsx";
 import PAID from "./hooks/subscription.jsx";
 import AuthT from "./hooks/tauth.jsx";
 import Auth0 from "./hooks/auth.jsx";
+import SecurityHeaders from "./components/SecurityHeaders.jsx";
+import { AnalyticsConsentProvider } from "./context/AnalyticsConsentContext.jsx";
+import AnalyticsConsentBanner from "./components/AnalyticsConsentBanner.jsx";
+import "./config/production.js"; // Import production configuration
 
 // Lazy load components
 const ReferralPage = lazy(() =>
   import("./pages/landing/components/referral.jsx")
-);
+); 
 const Disciplinary = lazy(() => import("./pages/disciplinary/disciplinary.jsx"));
 const Expense = lazy(() => import("./pages/administrator/expense.jsx"));
 const Report = lazy(() => import("./pages/administrator/report.jsx"));
@@ -777,9 +781,13 @@ function App() {
   return (
     <HelmetProvider>
       <Provider store={Store}>
-        <main>
-          <RouterProvider router={router} />
-        </main>
+        <AnalyticsConsentProvider>
+          <SecurityHeaders />
+          <AnalyticsConsentBanner />
+          <main>
+            <RouterProvider router={router} />
+          </main>
+        </AnalyticsConsentProvider>
       </Provider>
     </HelmetProvider>
   );

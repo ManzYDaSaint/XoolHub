@@ -58,6 +58,7 @@ const ExamSlice = createSlice({
       schoolEmail: '',
       schoolPassword: '',
       confirm: '',
+      referralCode: '',
     },
     loginData: {
       schoolEmail: "",

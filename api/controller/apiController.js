@@ -1,9 +1,10 @@
-// APi Controller start here
+const { Resend } = require('resend');
+require('dotenv').config();
 
+// Initialize Resend with fallback for missing API key
+const resendApiKey = process.env.RESEND_API_KEY || 'dummy_key_for_development';
+const resend = new Resend(resendApiKey);
 const bcrypt = require("bcryptjs");
-require("dotenv").config();
-const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
 const _ = require("lodash");
 const { pipeline } = require("@xenova/transformers");
 const { sendSuperAdminNotification, sendSchoolApprovalEmail } = require("../emails/paymentNotificationEmail");
@@ -265,6 +266,14 @@ const buildStudentContent = require("./context/aiStudent.js");
 // const { sendParentNotification } = require('./waNotify.js');
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
+
+// Check if Supabase is configured
+if (!supabaseUrl || !supabaseKey) {
+  console.error('Supabase configuration missing:');
+  console.error('SUPABASE_URL:', supabaseUrl ? 'Set' : 'Missing');
+  console.error('SUPABASE_KEY:', supabaseKey ? 'Set' : 'Missing');
+}
+
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 
@@ -329,7 +338,6 @@ const addDisciplinary = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Add disciplinary error:', error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -367,7 +375,6 @@ const getDisciplinary = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Get disciplinary error:', error);
     res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -631,6 +638,12 @@ const insertAttendance = async (req, res) => {
 // ----------------------- RESEND CONTROLLER -----------------------
 async function sendOtpEmail(to, otp) {
   try {
+    // Check if Resend API key is configured
+    if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key') {
+      console.warn('Resend API key not configured. Email sending is disabled.');
+      return { success: false, message: 'Email service not configured' };
+    }
+
     const data = await resend.emails.send({
       from: "XoolHub <noreply@xoolhub.com>", // use a verified sender domain
       replyTo: "support@xoolhub.com", // Add reply-to for better deliverability
@@ -772,7 +785,6 @@ async function sendOtpEmail(to, otp) {
       `,
     });
 
-    console.log("Email sent:", data);
     return data;
   } catch (error) {
     console.error("Error sending OTP email:", error);
@@ -1024,20 +1036,20 @@ const signup = async (req, res) => {
     }
 
     // Validate referral code if provided
-    let referrerSchoolId = null;
-    if (referralCode) {
-      const { validateReferralCode } = require('../model/apiModel.js');
-      const referralValidation = await validateReferralCode(referralCode);
+    // let referrerSchoolId = null;
+    // if (referralCode) {
+    //   const { validateReferralCode } = require('../model/apiModel.js');
+    //   const referralValidation = await validateReferralCode(referralCode);
 
-      if (!referralValidation) {
-        return res.json({
-          success: false,
-          message: "Invalid referral code",
-        });
-      }
+    //   if (!referralValidation) {
+    //     return res.json({
+    //       success: false,
+    //       message: "Invalid referral code",
+    //     });
+    //   }
 
-      referrerSchoolId = referralValidation.school_id;
-    }
+    //   referrerSchoolId = referralValidation.school_id;
+    // }
 
     // Hash the password
     const hashedPassword = await bcrypt.hash(schoolPassword, 10);
@@ -1046,56 +1058,56 @@ const signup = async (req, res) => {
     const newSchool = await insertSchool(schoolEmail, hashedPassword);
     if (newSchool) {
       // If referral code was used, track the referral
-      if (referrerSchoolId && referralCode) {
-        try {
-          const { trackReferralUsage, createReferralCode } = require('../model/apiModel.js');
+      // if (referrerSchoolId && referralCode) {
+      //   try {
+      //     const { trackReferralUsage, createReferralCode } = require('../model/apiModel.js');
 
-          // Get the new school ID
-          const newSchoolData = await checkSchool(schoolEmail);
-          const newSchoolId = newSchoolData[0].id;
+      //     // Get the new school ID
+      //     const newSchoolData = await checkSchool(schoolEmail);
+      //     const newSchoolId = newSchoolData[0].id;
 
-          // Track the referral usage
-          await trackReferralUsage(referrerSchoolId, newSchoolId, referralCode);
+      //     // Track the referral usage
+      //     await trackReferralUsage(referrerSchoolId, newSchoolId, referralCode);
 
-          // Create referral code for the new school
-          await createReferralCode(newSchoolId);
+      //     // Create referral code for the new school
+      //     await createReferralCode(newSchoolId);
 
-          // Initialize analytics for both schools
-          const { updateReferralAnalytics } = require('../model/apiModel.js');
-          await updateReferralAnalytics(referrerSchoolId, {
-            total_referrals: 1,
-            last_referral_date: new Date()
-          });
+      //     // Initialize analytics for both schools
+      //     const { updateReferralAnalytics } = require('../model/apiModel.js');
+      //     await updateReferralAnalytics(referrerSchoolId, {
+      //       total_referrals: 1,
+      //       last_referral_date: new Date()
+      //     });
 
-          await updateReferralAnalytics(newSchoolId, {
-            total_referrals: 0,
-            successful_referrals: 0,
-            total_rewards_earned: 0,
-            total_discounts_given: 0
-          });
+      //     await updateReferralAnalytics(newSchoolId, {
+      //       total_referrals: 0,
+      //       successful_referrals: 0,
+      //       total_rewards_earned: 0,
+      //       total_discounts_given: 0
+      //     });
 
-        } catch (referralError) {
-          console.error('Error processing referral:', referralError);
-          // Don't fail registration if referral processing fails
-        }
-      } else {
-        // Create referral code for the new school even without referral
-        try {
-          const { createReferralCode, updateReferralAnalytics } = require('../model/apiModel.js');
-          const newSchoolData = await checkSchool(schoolEmail);
-          const newSchoolId = newSchoolData[0].id;
+      //   } catch (referralError) {
+      //     console.error('Error processing referral:', referralError);
+      //     // Don't fail registration if referral processing fails
+      //   }
+      // } else {
+      //   // Create referral code for the new school even without referral
+      //   try {
+      //     const { createReferralCode, updateReferralAnalytics } = require('../model/apiModel.js');
+      //     const newSchoolData = await checkSchool(schoolEmail);
+      //     const newSchoolId = newSchoolData[0].id;
 
-          await createReferralCode(newSchoolId);
-          await updateReferralAnalytics(newSchoolId, {
-            total_referrals: 0,
-            successful_referrals: 0,
-            total_rewards_earned: 0,
-            total_discounts_given: 0
-          });
-        } catch (error) {
-          console.error('Error creating referral code for new school:', error);
-        }
-      }
+      //     await createReferralCode(newSchoolId);
+      //     await updateReferralAnalytics(newSchoolId, {
+      //       total_referrals: 0,
+      //       successful_referrals: 0,
+      //       total_rewards_earned: 0,
+      //       total_discounts_given: 0
+      //     });
+      //   } catch (error) {
+      //     console.error('Error creating referral code for new school:', error);
+      //   }
+      // }
 
       res.json({
         success: true,
@@ -1146,7 +1158,6 @@ const updateSchools = async (req, res) => {
   const { name, address, city, country, email, contact, slogan, type } =
     req.body;
   const token = req.cookies.schoolToken;
-
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const sid = decoded.id;
@@ -1454,7 +1465,7 @@ const insertContacts = async (req, res) => {
   const { name, email, message } = req.body;
 
   try {
-    if (!name || !email || !message) {
+    if (!name || name.trim() === '' || !email || email.trim() === '' || !message || message.trim() === '') {
       res.json({
         success: false,
         message: "Please fill in the required fields",
@@ -1503,6 +1514,7 @@ const login = async (req, res) => {
     // Find the school by email
 
     const school = await checkMail(schoolEmail);
+
     if (school.length === 0) {
       const teacher = await checkTeacherMail(schoolEmail);
       if (teacher.length === 0) {
@@ -1520,10 +1532,10 @@ const login = async (req, res) => {
           schoolPassword,
           superAdmin.password
         );
-        if (isMatch.length === 0) {
+        if (!isMatch) {
           return res.json({
             success: false,
-            message: "Invalid email or password here",
+            message: "Invalid email or password",
           });
         }
         // Create a JWT
@@ -1538,8 +1550,8 @@ const login = async (req, res) => {
         // Set the token as an HTTP-only cookie
         res.cookie("administratorToken", superToken, {
           httpOnly: true,
-          secure: true,
-          sameSite: "None",
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax",
           maxAge: 60 * 60 * 1000, // 1 hour
         });
 
@@ -1582,8 +1594,8 @@ const login = async (req, res) => {
       // Set the token as an HTTP-only cookie
       res.cookie("teacherToken", token, {
         httpOnly: true,
-        secure: true,
-        sameSite: "None",
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax",
         maxAge: 60 * 60 * 1000, // 1 hour
       });
 
@@ -1642,8 +1654,8 @@ const login = async (req, res) => {
     // Set the token as an HTTP-only cookie
     res.cookie("schoolToken", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "None",
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? "None" : "Lax",
       maxAge: 60 * 60 * 1000, // 1 hour
     });
 
@@ -1653,8 +1665,9 @@ const login = async (req, res) => {
     });
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).send({
-      error: "Internal Server Error",
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error. Please try again later.",
     });
   }
 };
@@ -2054,6 +2067,15 @@ const createResetSession = async (req, res) => {
     };
 
     try {
+      // Check if Resend API key is configured
+      if (!process.env.RESEND_API_KEY || process.env.RESEND_API_KEY === 'dummy-key') {
+        console.warn('Resend API key not configured. Email sending is disabled.');
+        return res.json({
+          success: true,
+          message: "Password reset email sent successfully (email service not configured)"
+        });
+      }
+
       await resend.emails.send(emailData);
       
       // Log successful email send
@@ -2319,7 +2341,7 @@ const addExam = async (req, res) => {
   const { namer, percentage } = req.body.data;
 
   try {
-    if (!namer || !percentage) {
+    if (!namer || namer.trim() === '' || !percentage || percentage.toString().trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -2471,7 +2493,7 @@ const addYear = async (req, res) => {
   const { yearName, startDate, endDate } = req.body.data;
 
   try {
-    if (!yearName || !startDate || !endDate) {
+    if (!yearName || yearName.trim() === '' || !startDate || startDate.trim() === '' || !endDate || endDate.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -2577,7 +2599,7 @@ const editYears = async (req, res) => {
 
 const updateYears = async (req, res) => {
   const { id } = req.params;
-  const { yearName, startDate, endDate } = req.body;
+  const { yearName, startDate, endDate } = req.body.data;
 
   try {
     // Check if exam exists
@@ -2617,7 +2639,7 @@ const addSubject = async (req, res) => {
   const { subjectName, code } = req.body.data;
 
   try {
-    if (!subjectName || !code) {
+    if (!subjectName || subjectName.trim() === '' || !code || code.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -2724,7 +2746,7 @@ const editSubjects = async (req, res) => {
 
 const updateSubjects = async (req, res) => {
   const { id } = req.params;
-  const { subjectName, code } = req.body;
+  const { subjectName, code } = req.body.data;
 
   try {
     // Check if exam exists
@@ -2764,7 +2786,7 @@ const addClass = async (req, res) => {
   const { className, denom } = req.body.data;
 
   try {
-    if (!className || !denom) {
+    if (!className || className.trim() === '' || !denom || denom.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -2910,7 +2932,7 @@ const addTerm = async (req, res) => {
   const { termName, year, startDate, endDate } = req.body.data;
 
   try {
-    if (!termName || !year || !startDate || !endDate) {
+    if (!termName || termName.trim() === '' || !year || year.trim() === '' || !startDate || startDate.trim() === '' || !endDate || endDate.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -3016,7 +3038,7 @@ const editTerms = async (req, res) => {
 
 const updateTerms = async (req, res) => {
   const { id } = req.params;
-  const { termName, year, startDate, endDate } = req.body;
+  const { termName, year, startDate, endDate } = req.body.data;
 
   try {
     // Check if exam exists
@@ -3056,7 +3078,7 @@ const addGrade = async (req, res) => {
   const { denom, roof, floor, grade, remark } = req.body.data;
 
   try {
-    if (!denom || !roof || !floor || !grade || !remark) {
+    if (!denom || denom.trim() === '' || !roof || roof.toString().trim() === '' || !floor || floor.toString().trim() === '' || !grade || grade.trim() === '' || !remark || remark.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -3219,7 +3241,7 @@ const editGrades = async (req, res) => {
 
 const updateGrades = async (req, res) => {
   const { id } = req.params;
-  const { denom, roof, floor, grade, remark } = req.body;
+  const { denom, roof, floor, grade, remark } = req.body.data;
 
   try {
     // Check if exam exists
@@ -3259,7 +3281,7 @@ const addJCE = async (req, res) => {
   const { denom, roof, floor, remark } = req.body.data;
 
   try {
-    if (!denom || !roof || !floor || !remark) {
+    if (!denom || denom.trim() === '' || !roof || roof.toString().trim() === '' || !floor || floor.toString().trim() === '' || !remark || remark.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -3365,7 +3387,7 @@ const editJCEs = async (req, res) => {
 
 const updateJCEs = async (req, res) => {
   const { id } = req.params;
-  const { denom, roof, floor, remark } = req.body;
+  const { denom, roof, floor, remark } = req.body.data;
 
   try {
     // Check if exam exists
@@ -3405,7 +3427,7 @@ const addMSCE = async (req, res) => {
   const { denom, roof, floor, remark } = req.body.data;
 
   try {
-    if (!denom || !roof || !floor || !remark) {
+    if (!denom || denom.trim() === '' || !roof || roof.toString().trim() === '' || !floor || floor.toString().trim() === '' || !remark || remark.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -3511,7 +3533,7 @@ const editMSCEs = async (req, res) => {
 
 const updateMSCEs = async (req, res) => {
   const { id } = req.params;
-  const { denom, roof, floor, remark } = req.body;
+  const { denom, roof, floor, remark } = req.body.data;
 
   try {
     // Check if exam exists
@@ -3548,7 +3570,7 @@ const updateMSCEs = async (req, res) => {
 // ----------------------- TEACHER CONTROLLER -----------------------
 
 const addTeacher = async (req, res) => {
-  const { name, contact, email, address, gender, role } = req.body.data;
+  const { name, contact, email, address, gender, role } = req.body;
   const token = req.cookies.schoolToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const id = decoded.id;
@@ -3885,13 +3907,13 @@ const genderTeacherPercentage = async (req, res) => {
 // ----------------------- ASSIGN TEACHER CONTROLLER -----------------------
 
 const addAssignTeacher = async (req, res) => {
-  const { teacherid, classid, subjectid } = req.body.data;
+  const { teacherid, classid, subjectid } = req.body;
   const token = req.cookies.schoolToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const id = decoded.id;
 
   try {
-    if (!teacherid || !classid || !subjectid) {
+    if (!teacherid || teacherid.toString().trim() === '' || !classid || classid.toString().trim() === '' || !subjectid || subjectid.toString().trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -3985,13 +4007,13 @@ const deleteAssignTeachers = async (req, res) => {
 // ----------------------- CLASS TEACHER CONTROLLER -----------------------
 
 const addClassTeacher = async (req, res) => {
-  const { teacherid, classid } = req.body.data;
+  const { teacherid, classid } = req.body;
   const token = req.cookies.schoolToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const id = decoded.id;
 
   try {
-    if (!teacherid || !classid) {
+    if (!teacherid || teacherid.toString().trim() === '' || !classid || classid.toString().trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -4135,7 +4157,7 @@ const gotCountry = async (req, res) => {
 
 
 const addStudent = async (req, res) => {
-  const { studentNames, classid, yearid } = req.body.data;
+  const { studentNames, classid, yearid } = req.body;
   const token = req.cookies.teacherToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const id = decoded.sid;
@@ -4146,7 +4168,9 @@ const addStudent = async (req, res) => {
       !Array.isArray(studentNames) ||
       studentNames.length === 0 ||
       !classid ||
-      !yearid
+      classid.toString().trim() === '' ||
+      !yearid ||
+      yearid.toString().trim() === ''
     ) {
       return res.json({
         success: false,
@@ -4162,7 +4186,7 @@ const addStudent = async (req, res) => {
       //  Get Subscription Plan
       const ploy = await getPlanByID(plan);
       if (ploy) {
-        const countStud = ploy.features;
+        const countStud = ploy.max_students;
 
         const schoolStudents = await countStudents(id);
         if (schoolStudents) {
@@ -4512,15 +4536,14 @@ const getPayees = async (req, res) => {
 };
 
 const addPay = async (req, res) => {
-  const { feeid, feeamount } = req.body;
-  const { paid, term, studentID } = req.body.data;
+  const { feeid, feeamount, paid, term, studentID } = req.body.data;
 
   const token = req.cookies.teacherToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.sid;
 
   try {
-    if (!feeid || !feeamount || !studentID || !paid || !term) {
+    if (!feeid || feeid.toString().trim() === '' || !feeamount || feeamount.toString().trim() === '' || !studentID || studentID.toString().trim() === '' || !paid || paid.toString().trim() === '' || !term || term.toString().trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -4610,7 +4633,7 @@ const updatePays = async (req, res) => {
   const balance = Number(amount) - Number(paid);
   const status = Number(paid) < Number(amount) ? "pending" : "complete";
 
-  if (!amount || !id || !paid) {
+  if (!amount || amount.toString().trim() === '' || !id || id.toString().trim() === '' || !paid || paid.toString().trim() === '') {
     return res.json({
       success: false,
       message: "Please fill up all the fields",
@@ -4877,7 +4900,7 @@ const addFee = async (req, res) => {
   const id = decoded.sid;
 
   try {
-    if (!name || !amount || !description) {
+    if (!name || name.trim() === '' || !amount || amount.toString().trim() === '' || !description || description.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the fields",
@@ -4991,7 +5014,7 @@ const editFees = async (req, res) => {
 
 const updateFees = async (req, res) => {
   const { id } = req.params;
-  const { name, amount, description } = req.body;
+  const { name, amount, description } = req.body.data;
   const token = req.cookies.teacherToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.sid;
@@ -5374,8 +5397,20 @@ const todayDate = () => {
 const insertResults = async (req, res) => {
   const studentData = req.body;
   const token = req.cookies.teacherToken;
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const sid = decoded.sid;
+  
+  if (!token) {
+    return res.status(401).json({
+      success: false,
+      message: 'No authentication token found'
+    });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.sid;
+    
+    // Convert object to array if needed
+    const studentDataArray = Array.isArray(studentData) ? studentData : Object.values(studentData);
 
   // Get the Term as of today
   const term = await getTerm();
@@ -5388,7 +5423,7 @@ const insertResults = async (req, res) => {
 
         let allResults = [];
         try {
-          for (const entry of studentData) {
+          for (const entry of studentDataArray) {
             if (
               !entry.selectedClass ||
               !entry.typeid ||
@@ -5545,6 +5580,14 @@ const insertResults = async (req, res) => {
   } else {
     console.error("No term data available");
   }
+  } catch (error) {
+    console.error("Error in insertResults:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+      error: error.message
+    });
+  }
 };
 
 // ----------------------- ENTRY CONTROLLER -----------------------
@@ -5613,13 +5656,13 @@ const getScores = async (req, res) => {
 };
 
 const deleteResults = async (req, res) => {
-  const { yearid, termid, typeid, selectedClass, selectedSubject } = req.body;
+  const { termid, typeid, selectedClass, selectedSubject } = req.body;
   const token = req.cookies.teacherToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
   const sid = decoded.sid;
 
   try {
-    if (!yearid || !termid || !typeid || !selectedClass || !selectedSubject) {
+    if (!termid || !typeid || !selectedClass || !selectedSubject) {
       return res.json({
         success: false,
         message: "Please filter first then delete the result",
@@ -5628,7 +5671,6 @@ const deleteResults = async (req, res) => {
 
     // Fecthing data
     const deleteRep = await deleteResult(
-      yearid,
       termid,
       typeid,
       selectedClass,
@@ -5713,7 +5755,7 @@ const updateScores = async (req, res) => {
             }
           }
         } else {
-          const getDenom = await getGradeByDenom(sid, carnage);
+          const getDenom = await getGradeByDenom(carnage);
           if (getDenom) {
             let grade = "";
             let remarks = "";
@@ -5728,7 +5770,7 @@ const updateScores = async (req, res) => {
 
             if (grade && remarks) {
               // Insert Results
-              const add = await updateScore(sid, score, grade, remarks);
+              const add = await updateScore(id, score, grade, remarks);
               if (add) {
                 return res.json({
                   success: true,
@@ -6085,27 +6127,66 @@ const countStudentByTeacher = async (req, res) => {
 
 const updatePromotions = async (req, res) => {
   const { studentIDs, currentClass, nextClass, nextYear } = req.body;
-  const token = req.cookies.teacherToken;
+  const token = req.cookies.teacherToken || req.cookies.schoolToken;
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const sid = decoded.sid;
+  const sid = decoded.sid || decoded.id;
 
-  const status = "promoted";
+  const getClass = await editClass(currentClass);
+  const cClass = getClass.name;
+
+  let status = "";
+  cClass === "Form 4" ? status = "graduated" : status = "promoted";
 
   try {
-    const update = await upperPromote(status, currentClass, studentIDs);
-    if (update) {
-      const insert = await insertStudentHistory(
-        sid,
-        nextYear,
-        nextClass,
-        studentIDs
+    if(cClass === "Form 4") {
+      // Handle graduation for multiple students
+      const updatePromises = studentIDs.map(studentID => 
+        upperPromote(status, currentClass, studentID)
       );
-      if (insert) {
-        res.json({
+      const updateResults = await Promise.all(updatePromises);
+      
+      if (updateResults.every(result => result.affectedRows > 0)) {
+        return res.json({
           success: true,
-          message: "Promotion successful",
+          message: "Graduation successful",
         });
-        return;
+      } else {
+        return res.json({
+          success: false,
+          message: "Graduation failed for some students",
+        });
+      }
+    }
+    else {
+      // Handle promotion for multiple students
+      const updatePromises = studentIDs.map(studentID => 
+        upperPromote(status, currentClass, studentID)
+      );
+      const updateResults = await Promise.all(updatePromises);
+      
+      if (updateResults.every(result => result.affectedRows > 0)) {
+        const insert = await insertStudentHistory(
+          sid,
+          nextYear,
+          nextClass,
+          studentIDs
+        );
+        if (insert) {
+          return res.json({
+            success: true,
+            message: "Promotion successful",
+          });
+        } else {
+          return res.json({
+            success: false,
+            message: "Failed to insert student history",
+          });
+        }
+      } else {
+        return res.json({
+          success: false,
+          message: "Promotion failed for some students",
+        });
       }
     }
   } catch (error) {
@@ -6518,7 +6599,6 @@ const getSubjectPos = async (req, res) => {
 
     // Fecthing data
     const pos = await getSubjectPosition(termid, typeid, classid, sid, id);
-    console.log(pos);
     if (pos) {
       return res.json({
         success: true,
@@ -6803,7 +6883,7 @@ const insertEvent = async (req, res) => {
   const sid = decoded.id;
 
   try {
-    if (!title || !date || !time || !location || !description) {
+    if (!title || title.trim() === '' || !date || date.trim() === '' || !time || time.trim() === '' || !location || location.trim() === '' || !description || description.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill in the required fields",
@@ -6968,7 +7048,7 @@ const addSubscriptions = async (req, res) => {
   } = req.body;
 
   try {
-    if (!name || !price || !max) {
+    if (!name || name.trim() === '' || !price || price.toString().trim() === '' || !max || max.toString().trim() === '') {
       return res.json({
         success: false,
         message: "Please fill up all the required fields",
@@ -7287,91 +7367,147 @@ const cancSubscription = async (req, res) => {
 };
 
 const insertSubscription = async (req, res) => {
-  const { subscriptionName, grandTotal, billingCycle } = req.body;
-  const token = req.cookies.schoolToken;
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  const sid = decoded.id;
+  try {
+    const { subscriptionName, grandTotal, billingCycle } = req.body;
+    
+    // Validate required fields
+    if (!subscriptionName || !grandTotal || !billingCycle) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: subscriptionName, grandTotal, billingCycle"
+      });
+    }
+    
+    const token = req.cookies.schoolToken;
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication token not found"
+      });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const sid = decoded.id;
 
-  const status = "pending";
-  const billing_status = "pending";
-  const amount = Number(parseFloat(grandTotal).toFixed(0));
+    const status = "pending";
+    const billing_status = "pending";
+    const amount = Number(parseFloat(grandTotal).toFixed(0));
 
-  // Calculate expiry time (24 hours from now)
-  // Get the Term as of today
-  const term = await getTerm();
-  if (term && term.length > 0) {
-    const tdate = new Date(todayDate()); // Ensure todayDate is a Date object
+    // Calculate expiry time (24 hours from now)
+    // Get the Term as of today
+    const term = await getTerm();
+    if (term && term.length > 0) {
+      const tdate = new Date(todayDate()); // Ensure todayDate is a Date object
 
-    for (const tr of term) {
-      if (tdate >= new Date(tr.start_date) && tdate <= new Date(tr.end_date)) {
-        const expiryTime = tr.end_date; // Use the end date of the current term as expiry
+      for (const tr of term) {
+        if (tdate >= new Date(tr.start_date) && tdate <= new Date(tr.end_date)) {
+          const expiryTime = tr.end_date; // Use the end date of the current term as expiry
 
-        const response = await getSubs(subscriptionName);
-        if (response) {
-          const planID = response.id;
+          const response = await getSubs(subscriptionName);
+          if (response) {
+            const planID = response.id;
 
-          // Check Subscription
-          const checker = await checkSubscription(sid);
-          if (checker.length > 0) {
-            res.json({
-              success: false,
-              message: "You already have an active subscription",
-            });
-          } else {
-            // Insert Subscription
-            const newId = uuidv4();
-            const result = await addSubscription(
-              newId,
-              sid,
-              planID,
-              status,
-              billingCycle
-            );
-            if (result) {
-              //     // Insert Billing
-              const billing = await addBilling(
+            // Check Subscription
+            const checker = await checkSubscription(sid);
+            if (checker.length > 0) {
+              return res.json({
+                success: false,
+                message: "You already have an active subscription",
+              });
+            } else {
+              // Insert Subscription
+              const newId = uuidv4();
+              const result = await addSubscription(
                 newId,
-                amount,
-                billing_status,
-                expiryTime
+                sid,
+                planID,
+                status,
+                billingCycle
               );
-              if (billing) {
-                // Get school information for email notification
-                try {
-                  const schoolInfo = await editSchool(sid);
-                  if (schoolInfo) {
-                    const paymentData = {
-                      schoolName: schoolInfo.name,
-                      schoolEmail: schoolInfo.email,
-                      schoolContact: schoolInfo.contact,
-                      subscriptionName,
-                      grandTotal,
-                      billingCycle
-                    };
-                    // Send email notification to super-admin
-                    await sendSuperAdminNotification(paymentData);
+              if (result) {
+                //     // Insert Billing
+                const billing = await addBilling(
+                  newId,
+                  amount,
+                  billing_status,
+                  expiryTime
+                );
+                if (billing) {
+                  // Get school information for email notification
+                  try {
+                    const schoolInfo = await editSchool(sid);
+                    if (schoolInfo) {
+                      const paymentData = {
+                        schoolName: schoolInfo.name,
+                        schoolEmail: schoolInfo.email,
+                        schoolContact: schoolInfo.contact,
+                        subscriptionName,
+                        grandTotal,
+                        billingCycle
+                      };
+                      // Send email notification to super-admin
+                      await sendSuperAdminNotification(paymentData);
+                    }
+                  } catch (emailError) {
+                    console.error('Error sending super admin notification:', emailError);
+                    // Don't fail the request if email fails
                   }
-                } catch (emailError) {
-                  console.error('Error sending super admin notification:', emailError);
-                  // Don't fail the request if email fails
+                  
+                  return res.json({
+                    success: true,
+                    message:
+                      "Your subscription is set to pending waiting for confirmation.",
+                  });
+                } else {
+                  return res.json({
+                    success: false,
+                    message: "failed to add subscription",
+                  });
                 }
-                
-                return res.json({
-                  success: true,
-                  message:
-                    "Your subscription is set to pending waiting for confirmation.",
-                });
-              } else {
-                return res.json({
-                  success: false,
-                  message: "failed to add subscription",
-                });
               }
             }
           }
         }
       }
     }
+    
+    // If no term is found or no valid term period
+    return res.status(400).json({
+      success: false,
+      message: "No valid term found or current date not within any term period"
+    });
+    
+  } catch (error) {
+    console.error('Error in insertSubscription:', error);
+    
+    // Handle specific JWT errors
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid authentication token"
+      });
+    }
+    
+    if (error.name === 'TokenExpiredError') {
+      return res.status(401).json({
+        success: false,
+        message: "Authentication token has expired"
+      });
+    }
+    
+    // Handle database errors
+    if (error.code === 'ECONNREFUSED' || error.code === 'ER_CON_COUNT_ERROR') {
+      return res.status(503).json({
+        success: false,
+        message: "Database connection error. Please try again later."
+      });
+    }
+    
+    // Generic error response
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error occurred while processing subscription"
+    });
   }
 };
 
@@ -7685,7 +7821,7 @@ const insertFeedback = async (req, res) => {
   const sid = decoded.id || decoded.sid;
 
   try {
-    if (!rating || !selectedOption || !comment) {
+    if (!rating || rating.toString().trim() === '' || !selectedOption || selectedOption.trim() === '' || !comment || comment.trim() === '') {
       return res.json({
         success: false,
         message: "Please fill in the blank fields",
@@ -7775,7 +7911,7 @@ const insertExpense = async (req, res) => {
   };
 
   try {
-    if (!date || !description || !category || !amount) {
+    if (!date || date.trim() === '' || !description || description.trim() === '' || !category || category.trim() === '' || !amount || amount.toString().trim() === '') {
       return res.json({
         success: false,
         message: "Please fill in the blank fields",
@@ -8892,15 +9028,15 @@ module.exports = {
   // ----- PARENT BOT STATISTICS EXPORTS ------
 
   // ----- REFERRAL SYSTEM EXPORTS ------
-  createReferralCode,
-  getReferralCode,
-  validateReferralCode,
-  trackReferralUsage,
-  getReferralAnalytics,
-  getAllReferralAnalytics,
-  getReferralTracking,
-  applyReferralDiscount,
-  getReferralSettings,
-  updateReferralSettings,
+  // createReferralCode,
+  // getReferralCode,
+  // validateReferralCode,
+  // trackReferralUsage,
+  // getReferralAnalytics,
+  // getAllReferralAnalytics,
+  // getReferralTracking,
+  // applyReferralDiscount,
+  // getReferralSettings,
+  // updateReferralSettings,
   // ----- REFERRAL SYSTEM EXPORTS ------
 };

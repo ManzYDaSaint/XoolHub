@@ -5,7 +5,7 @@ import Table from "./table";
 import api from "../../../services/apiServices";
 import ToggleSwitch from "./toggle";
 import { InfinitySpin } from "react-loader-spinner";
-import { toast } from "react-hot-toast";
+import { toast, Toaster } from "react-hot-toast";
 import { ChevronLeft, GraduationCap, ArrowRight, Users, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -101,19 +101,26 @@ const PromotionData = () => {
         nextClass,
         nextYear,
       });
+
       if (res.data.success === true) {
-        toast.success("Students promoted successfully.");
+        toast.success(res.data.message);
         setStudentIDs([]);
         setCurrentClass("");
         setNextClass("");
         setNextYear("");
       } else {
-        toast.error("An error occurred. Please try again.");
+        toast.error(res.data.message);
       }
     } catch (error) {
-      error.response.data.errors.forEach((error) => {
-        toast.error(error.message);
-      });
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        error.response.data.errors.forEach((error) => {
+          toast.error(error.message);
+        });
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An error occurred while processing the promotion");
+      }
     }
   };
 
@@ -150,6 +157,7 @@ const PromotionData = () => {
       </div>
 
       <div className="max-w-7xl mx-auto">
+        <Toaster />
       <form onSubmit={onSubmit}>
         <div className="p-6 space-y-6">
           {/* Promotion Configuration Section */}

@@ -31,7 +31,7 @@ const AddForm = ({ fetchData }) => {
       }
     } else {
       try {
-        const res = await api.addTeacher({ data });
+        const res = await api.addTeacher(teacherFormData);
         if (res.data.success === true) {
           fetchData();
           toast.success(res.data.message);

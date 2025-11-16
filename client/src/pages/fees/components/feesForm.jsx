@@ -30,7 +30,7 @@ const FeesForm = ({ fetchData }) => {
       }
     } else {
       try {
-        const res = await api.addFee({ data });
+        const res = await api.addFee(data);
         if (res.data.success === true) {
           fetchData();
           toast.success(res.data.message);

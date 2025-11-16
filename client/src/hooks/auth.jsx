@@ -17,7 +17,7 @@ function Auth0({ children }) {
           setIsAuthenticated(true);
         } 
         else {
-          <Navigate to={'/login'} />
+          return <Navigate to={'/login'} />;
         }
       } catch (error) {
         console.error('Authentication error:', error);

@@ -1,7 +1,70 @@
 import axios from 'axios';
+import { prepareApiData } from '../utils/inputSanitizer';
 
 axios.defaults.withCredentials = true;
-const API = 'http://localhost:5000/api';
+axios.defaults.timeout = 30000; // 30 seconds timeout
+// Note: Content-Type is set per request to allow FormData to set its own Content-Type
+
+const API = 'https://api.xoolhub.com/api';
+// const API = 'http://localhost:5000/api';
+
+// Add request interceptor for logging and data sanitization
+axios.interceptors.request.use(
+  (config) => {
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Making ${config.method?.toUpperCase()} request to ${config.url}`);
+    }
+    
+    // Set Content-Type based on data type
+    if (config.data && config.data.constructor.name === 'FormData') {
+      // Let FormData set its own Content-Type (multipart/form-data with boundary)
+      delete config.headers['Content-Type'];
+    } else if (config.data && typeof config.data === 'object') {
+      // Set JSON Content-Type for regular objects
+      config.headers['Content-Type'] = 'application/json';
+    }
+    
+    // Sanitize request data (skip FormData completely)
+    if (config.data && typeof config.data === 'object' && config.data.constructor.name !== 'FormData') {
+      try {
+        config.data = prepareApiData(config.data);
+      } catch (error) {
+        console.error('Data sanitization error:', error);
+        return Promise.reject(error);
+      }
+    }
+    
+    return config;
+  },
+  (error) => {
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for error handling
+axios.interceptors.response.use(
+  (response) => {
+    // Only log in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Response received from ${response.config.url}:`, response.status);
+    }
+    return response;
+  },
+  (error) => {
+    console.error('Response error:', error.response?.status, error.message);
+    
+    // Handle specific error cases
+    if (error.code === 'ECONNABORTED') {
+      error.message = 'Request timeout - please try again';
+    } else if (error.code === 'ERR_NETWORK') {
+      error.message = 'Network error - please check your connection';
+    }
+    
+    return Promise.reject(error);
+  }
+);
 
 
 // --------- ATTENDANCE AXIOS -----------
@@ -77,7 +140,10 @@ const updateAdmin = (data) => axios.put(API + '/update-administrator', data);
 
 // --------- REGISTER AXIOS -----------
 const createSchool = (data) => axios.post(API + '/signup', data);
-const updateSchool = (data) => axios.put(API + '/updateschool', data);
+const updateSchool = (data) => {
+  // For FormData, let axios automatically set Content-Type with proper boundary
+  return axios.put(API + '/updateschool', data);
+};
 const updatePassword = (data) => axios.put(API + '/update-school-password', data);
 const updateTeacherPassword = (data) => axios.put(API + '/update-teacher-password', data);
 const updateSuperPassword = (data) => axios.put(API + '/update-super-password', data);

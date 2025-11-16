@@ -22,7 +22,7 @@ const TeacherSelectInput = ({ label, handleChange, name, value }) => {
       <div className="bg-gray-100 px-4 py-2 rounded-lg flex flex-col mb-4">
         {label && <label htmlFor={''} className="text-sm font-medium text-gray-700 py-2">{label}</label>}
           <select name={name} value={value} onChange={handleChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2">
-            <option value="" selected disabled>Select an option</option>
+            <option value="" disabled>Select an option</option>
             {options.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.name}

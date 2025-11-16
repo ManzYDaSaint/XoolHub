@@ -3,13 +3,13 @@ import Input from "../../components/input/input";
 import api from "../../services/apiServices.jsx";
 import { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { toast } from "react-hot-toast";
 import { useSelector, useDispatch } from "react-redux";
 import { setRegisterData } from "../../helpers/examination/examSlice.jsx";
 import { CircleCheck, Lock, Mail, ArrowRight, UserPlus, Gift } from "lucide-react";
 import { motion } from "framer-motion";
 import logo from "../../logo.png";
 import { useNavigate } from "react-router-dom";
+import { handleValidationErrors, handleResponseValidationErrors, showSuccessToast } from "../../utils/validationErrorHandler";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Register = () => {
     try {
       const res = await api.createSchool(data);
       if (res.data.success === true) {
-        toast.success(res.data.message);
+        showSuccessToast(res.data.message);
 
         // Redirecting to dashboard after successful login
         setTimeout(() => {
@@ -31,10 +31,12 @@ const Register = () => {
         }, 3000);
         return;
       } else {
-        toast.error(res.data.message);
+        // Handle validation errors with detailed field information
+        handleResponseValidationErrors(res.data);
       }
     } catch (error) {
-      toast.error("An error occurred. Please try again.");
+      // Handle axios error responses with validation errors
+      handleValidationErrors(error);
     } finally {
       setLoading(false);
     }

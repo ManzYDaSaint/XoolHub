@@ -23,7 +23,7 @@ const TypeSelector = ({ label, onChange, name, value }) => {
         {label && <label htmlFor={''} className="text-sm font-medium text-gray-700 py-2">{label}</label>}
         <div className="inputContainer">
           <select name={name} value={value} onChange={onChange} className="w-full bg-transparent text-sm outline-none px-4 pb-2">
-            <option value="" selected disabled>Select an option</option>
+            <option value="" disabled>Select an option</option>
             {options.map((option) => (
               <option key={option.id} value={option.id}>
                 {option.name}

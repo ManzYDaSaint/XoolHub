@@ -12,61 +12,43 @@ const AttendanceComponent = () => {
   const [absentReasons, setAbsentReasons] = useState({});
 
   const fetchData = async () => {
-    const res = await api.getCS();
+    try {
+      const res = await api.getCS();
 
-    if(res.data.success === false) {
-        // Use sample data for demonstration
-        const sampleData = [
-            { id: 447, name: 'Savannah Nguyen', class: 'BSCS-3A' },
-            { id: 177, name: 'Brooklyn Simmons', class: 'BSCS-3A' },
-            { id: 185, name: 'Darrell Steward', class: 'BSCS-3A' },
-            { id: 816, name: 'Marvin McKinney', class: 'BSCS-3A' },
-            { id: 429, name: 'Cameron Williamson', class: 'BSCS-3A' },
-            { id: 154, name: 'Cody Fisher', class: 'BSCS-3A' },
-            { id: 892, name: 'Leslie Alexander', class: 'BSCS-3A' },
-            { id: 234, name: 'Jenny Wilson', class: 'BSCS-3A' }
-        ];
+      if(res.data.success === false) {
+        // No student data available
+        setAttendanceData([]);
+        setAttendanceStatus({});
+      }
+      else {
+        const data = res.data.cs;
         
-        const attendanceData = sampleData.map((item, index) => ({
+        if (!data || data.length === 0) {
+          // Empty student data
+          setAttendanceData([]);
+          setAttendanceStatus({});
+        } else {
+          const attendanceData = data.map((item, index) => ({
             sr: index + 1,
             student: item.name,
             class: item.class,
             studentId: item.id,
             actions: ""
-        }));
-        setAttendanceData(attendanceData);
-        
-        // Initialize attendance status for each student
-        const initialStatus = {};
-        attendanceData.forEach((student, index) => {
-          // Set some students as absent/leave to match the screenshot
-          if (index === 2) { // Darrell Steward
-            initialStatus[student.studentId] = 'absent';
-          } else if (index === 6) { // Leslie Alexander
-            initialStatus[student.studentId] = 'leave';
-          } else {
+          }));
+          setAttendanceData(attendanceData);
+          
+          // Initialize attendance status for each student
+          const initialStatus = {};
+          attendanceData.forEach(student => {
             initialStatus[student.studentId] = 'present';
-          }
-        });
-        setAttendanceStatus(initialStatus);
-    }
-    else {
-        const data = res.data.cs;
-        const attendanceData = data.map((item, index) => ({
-        sr: index + 1,
-        student: item.name,
-        class: item.class,
-        studentId: item.id,
-        actions: ""
-        }));
-        setAttendanceData(attendanceData);
-        
-        // Initialize attendance status for each student
-        const initialStatus = {};
-        attendanceData.forEach(student => {
-          initialStatus[student.studentId] = 'present';
-        });
-        setAttendanceStatus(initialStatus);
+          });
+          setAttendanceStatus(initialStatus);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching student data:', error);
+      setAttendanceData([]);
+      setAttendanceStatus({});
     }
   };
 
@@ -261,24 +243,45 @@ const AttendanceComponent = () => {
                       </div>
                       <h3 className="text-xl font-bold text-gray-900">Attendance Records</h3>
                     </div>
-                    <AttendanceTable 
-                      attendanceData={attendanceData} 
-                      attendanceStatus={attendanceStatus}
-                      onAttendanceChange={handleAttendanceChange}
-                      onAbsentReasonChange={handleAbsentReasonChange}
-                      absentReasons={absentReasons}
-                    />
-                    <div className="mt-6 flex justify-end">
-                      <button 
-                        onClick={handleSaveAttendance}
-                        className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
-                      >
-                        <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                        Save Attendance
-                      </button>
-                    </div>
+                    
+                    {attendanceData.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <div className="p-4 bg-gray-100 rounded-full mb-4">
+                          <GraduationCap className="w-12 h-12 text-gray-400" />
+                        </div>
+                        <h4 className="text-lg font-semibold text-gray-700 mb-2">No Students Found</h4>
+                        <p className="text-gray-500 mb-4 max-w-md">
+                          There are no students available for attendance tracking. Please contact your administrator to add students to this class.
+                        </p>
+                        <button 
+                          onClick={fetchData}
+                          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                        >
+                          Refresh Data
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <AttendanceTable 
+                          attendanceData={attendanceData} 
+                          attendanceStatus={attendanceStatus}
+                          onAttendanceChange={handleAttendanceChange}
+                          onAbsentReasonChange={handleAbsentReasonChange}
+                          absentReasons={absentReasons}
+                        />
+                        <div className="mt-6 flex justify-end">
+                          <button 
+                            onClick={handleSaveAttendance}
+                            className="group flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500 to-indigo-600 text-white rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl font-medium"
+                          >
+                            <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            Save Attendance
+                          </button>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>

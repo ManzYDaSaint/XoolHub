@@ -132,7 +132,6 @@ const sendPasswordResetEmail = async (to, resetLink, userName, expiresIn = "15 m
     };
 
     const result = await resend.emails.send(emailData);
-    console.log('Password reset email sent successfully:', result.data?.id);
     return { success: true, messageId: result.data?.id };
   } catch (error) {
     console.error('Error sending password reset email:', error);

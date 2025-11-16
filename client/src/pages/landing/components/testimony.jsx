@@ -111,7 +111,7 @@ const Testimonials = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <p className="inline-flex"><HeaderBtn>Testimonials</HeaderBtn></p>
+            <div className="inline-flex"><HeaderBtn>Testimonials</HeaderBtn></div>
           </motion.div>
 
           <motion.h2

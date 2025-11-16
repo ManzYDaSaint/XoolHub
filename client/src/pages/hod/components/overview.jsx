@@ -47,6 +47,7 @@ const Overview = () => {
   const fethCount = async () => {
     try {
       const res = await api.countStudent();
+      // Data fetched successfully
       const data = res.data.counter;
       setCount(data.count);
     } catch (error) {
@@ -61,6 +62,7 @@ const Overview = () => {
   const fetchMale = async () => {
     try {
       const res = await api.countMale();
+      // Data fetched successfully
       const data = res.data.counter;
       setMale(data.count);
     } catch (error) {
@@ -75,6 +77,7 @@ const Overview = () => {
   const fetchFemale = async () => {
     try {
       const res = await api.countFemale();
+      // Data fetched successfully
       const data = res.data.counter;
       setFemale(data.count);
     } catch (error) {

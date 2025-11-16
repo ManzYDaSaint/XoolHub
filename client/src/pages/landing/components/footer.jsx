@@ -28,7 +28,7 @@ const Footer = () => {
       );
     } catch (error) {
       toast.error("An error occurred. Please try again.");
-      console.error("Error:", error);
+      // Newsletter subscription error handled
     }
   };
 
@@ -40,7 +40,7 @@ const Footer = () => {
         [name]: value,
       })
     );
-    console.log(e.target.value);
+    // Email input handled
   };
 
   const onSubmit = (e) => {
@@ -83,7 +83,7 @@ const Footer = () => {
               >
                 <motion.img 
                   src={logo} 
-                  alt="logo" 
+                  alt="XoolHub School Management System Logo" 
                   className="h-8 md:h-14 w-auto" 
                   whileHover={{ rotate: 5 }}
                   transition={{ duration: 0.3 }}

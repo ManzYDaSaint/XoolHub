@@ -27,7 +27,7 @@ const JceForm = ({ fetchJCE }) => {
         }
         else {
             try {
-              const res = await api.addJCE({ data });
+              const res = await api.addJCE(data);
               if (res.data.success === true) {
                 fetchJCE();
                 toast.success(res.data.message);

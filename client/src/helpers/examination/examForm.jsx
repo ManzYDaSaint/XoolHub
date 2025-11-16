@@ -27,7 +27,7 @@ const ExamForm = ({ fetchData }) => {
         }
         else {
             try {
-              const res = await api.addExam({ data });
+              const res = await api.addExam(data);
               if (res.data.success === true) {
                 fetchData();
                 toast.success(res.data.message);

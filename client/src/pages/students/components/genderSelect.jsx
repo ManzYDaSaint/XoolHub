@@ -18,7 +18,7 @@ const GenderSelect = ({ label, type, name, value, onChange }) => {
         onChange={onChange}
         className="w-full bg-transparent text-sm outline-none px-4 pb-2"
       >
-        <option value={""} disabled selected>
+        <option value={""} disabled>
           --select option--
         </option>
         <option value={"male"}>male</option>

@@ -6,7 +6,7 @@ const TypeSelect = ({ label, type, name, value, onChange }) => {
       {label && <label htmlFor={name}>{label}</label>}
       <div className="inputContainer">
         <select type={type} name={name} value={value} onChange={onChange}>
-          <option value={""} disabled selected>
+          <option value={""} disabled>
             --select option--
           </option>
           <option value={"public"}>public</option>

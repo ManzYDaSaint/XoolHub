@@ -21,7 +21,6 @@ const EventPage = () => {
   const fetchData = async () => {
     const res = await api.getEvent();
     const data = res.data.event;
-    console.log(data);
     setEvents(data);
   };
 

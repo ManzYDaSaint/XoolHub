@@ -1,0 +1,38 @@
+[
+  {
+    "chatId": "2074569278",
+    "createdAt": 1758351756777,
+    "lastActive": 1758351756777,
+    "expiresAt": 1758956556777,
+    "expectingContact": false,
+    "phone": "265993533315",
+    "studentData": {
+      "id": "c8019293-cf6c-4269-abd2-d7db8a4a52ba",
+      "name": "Eugiene",
+      "contact": "265993533315",
+      "schoolId": "7a23e81b-95e0-11f0-a067-a434d9218116",
+      "school": "",
+      "class": "Form 4",
+      "admission": "2025-09-19T22:00:00.000Z",
+      "address": "",
+      "gender": "male",
+      "dob": null
+    },
+    "studentName": "Eugiene",
+    "studentId": "c8019293-cf6c-4269-abd2-d7db8a4a52ba",
+    "schoolId": "7a23e81b-95e0-11f0-a067-a434d9218116",
+    "school": "",
+    "class": "Form 4",
+    "admission": "2025-09-19T22:00:00.000Z",
+    "address": "",
+    "gender": "male",
+    "dob": null,
+    "prefs": {
+      "events": true,
+      "fees": true,
+      "aiInsights": true
+    },
+    "sessionStart": 1758351822858,
+    "featuresUsed": []
+  }
+]
