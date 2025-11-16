@@ -153,19 +153,6 @@ const FeatureSection = () => {
 							</motion.div>
 						))}
 					</div>
-
-					{/* Bottom CTA */}
-					<motion.div 
-						className="mt-20 text-center"
-						initial={{ opacity: 0, y: 20 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.8, delay: 1.2 }}
-					>
-						<div className="inline-flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-full shadow-lg">
-							<Zap className="h-5 w-5" />
-							<span className="font-semibold">Ready to transform your school management?</span>
-						</div>
-					</motion.div>
 				</div>
 			</div>
 		</section>

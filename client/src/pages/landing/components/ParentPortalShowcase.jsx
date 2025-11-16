@@ -1,20 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, useAnimation, useInView } from "framer-motion";
 import {
-  MessageSquare,
   Users,
   Shield,
   Zap,
-  ArrowRight,
   Sparkles,
   CheckCircle,
-  Clock,
-  Globe,
   Bell,
   Bot,
   Heart,
   Star,
+  TrendingUp,
 } from "lucide-react";
+import apple from "../assets/apple.svg"
+import google from "../assets/playstore.svg"
 
 const ParentPortalShowcase = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -25,29 +24,29 @@ const ParentPortalShowcase = () => {
 
   const features = [
     {
-      icon: MessageSquare,
-      title: "AI-Powered Chat",
-      description: "Natural conversations with intelligent bot assistance",
+      icon: TrendingUp,
+      title: "Real-Time Progress",
+      description: "Track academic perfomance with live updates",
       color: "from-blue-500 to-cyan-500",
       delay: 0.1
     },
     {
       icon: Users,
-      title: "Student Tracking",
-      description: "Real-time updates on your child's academic progress",
+      title: "Direct Communication",
+      description: "Connect instantly with teachers and staff",
       color: "from-green-500 to-emerald-500",
       delay: 0.2
     },
     {
       icon: Bell,
-      title: "Instant Notifications",
+      title: "Smart Notifications",
       description: "Get notified immediately about important updates",
       color: "from-orange-500 to-red-500",
       delay: 0.3
     },
     {
       icon: Shield,
-      title: "Secure Access",
+      title: "Secure & Private",
       description: "Protected with enterprise-grade security",
       color: "from-purple-500 to-pink-500",
       delay: 0.4
@@ -55,12 +54,12 @@ const ParentPortalShowcase = () => {
   ];
 
   const benefits = [
-    "24/7 Access to Student Information",
-    "Real-time Attendance Updates",
-    "Direct Communication with Teachers",
-    "Fee Payment Reminders",
-    "Academic Progress Tracking",
-    "Event Notifications"
+    "View grades and academic perfomance",
+    "Receive assignment updates",
+    "View calendar events",
+    "Access attendance records",
+    "Manage fee payments",
+    "Message teachers directly"
   ];
 
   // Animation controls
@@ -140,8 +139,7 @@ const ParentPortalShowcase = () => {
             </h2>
             
             <p className="text-lg md:text-xl lg:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed">
-              Experience seamless communication through our intelligent Telegram bot. 
-              <span className="font-semibold text-gray-800"> Get instant updates, track progress, and stay informed</span> about your child's academic journey. No app download required - access directly through Telegram!
+              A modern mobile app designed for parents. Get real-time updates, track academic progress, and communicate directly with educators.
             </p>
           </motion.div>
 
@@ -212,8 +210,7 @@ const ParentPortalShowcase = () => {
                 variants={itemVariants}
               >
                 <h5 className="font-bold text-xl text-gray-900 mb-6 flex items-center">
-                  <Heart className="h-5 w-5 text-pink-500 mr-2" />
-                  What Parents Love
+                  What's Included
                 </h5>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {benefits.map((benefit, index) => (
@@ -394,21 +391,38 @@ const ParentPortalShowcase = () => {
           >
             <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 border border-white/30 max-w-4xl mx-auto">
               <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">
-                Ready to Stay Connected?
+                Ready to Get Started?
               </h3>
               <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
-                Join thousands of parents who are already using our intelligent Telegram bot to stay informed about their child's education. No app download required!
+                Download the Parent Portal App today and stay connected with <br /> your child's education journey
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <motion.button
-                  className="border-2 border-purple-600 text-purple-600 px-8 py-2 rounded-xl font-semibold text-lg hover:bg-purple-600 hover:text-white transition-all duration-300 flex items-center justify-center"
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+                <motion.a
+                  href="#"
+                  className="bg-gray-100 shadow-md px-12 py-3 rounded-xl hover:border-gradient-to-br from-green-500 to-emerald-500 hover:text-gray-600 transition-colors flex items-center justify-center gap-3"
                   whileHover={{ scale: 1.05, y: -2 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Bot className="h-5 w-5 mr-2" />
-                  Access via Telegram
-                </motion.button>
+                  <img src={apple} alt="applestore" className="h-6 w-6" />
+                  <div className="text-left">
+                    <div className="text-xs opacity-75">Coming soon on</div>
+                    <div className="text-md font-medium">App Store</div>
+                  </div>
+                </motion.a>
+
+                <motion.a
+                  href="#"
+                  className="bg-gray-100 shadow-md px-12 py-3 rounded-xl hover:border-gradient-to-br from-green-500 to-emerald-500 hover:text-gray-600 transition-colors flex items-center justify-center gap-3"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <img src={google} alt="playstore" className="h-5 w-5" />
+                  <div className="text-left">
+                    <div className="text-xs opacity-75">Coming soon on</div>
+                    <div className="text-md font-medium">Google Play</div>
+                  </div>
+                </motion.a>
               </div>
 
               {/* Trust Indicators */}
@@ -419,12 +433,12 @@ const ParentPortalShowcase = () => {
                     <span>Secure & Private</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Clock className="h-4 w-4 text-blue-500" />
-                    <span>24/7 Available</span>
+                    <Users className="h-4 w-4 text-blue-500" />
+                    <span>50K+ Parents</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <Globe className="h-4 w-4 text-purple-500" />
-                    <span>Multi-Language</span>
+                    <TrendingUp className="h-4 w-4 text-purple-500" />
+                    <span className="flex items-center gap-1">4.8 <Star size={12} /> Rating </span>
                   </div>
                 </div>
               </div>
